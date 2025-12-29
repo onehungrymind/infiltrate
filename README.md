@@ -4,7 +4,7 @@ An interactive flashcard application designed to help you master core Machine Le
 
 ## 🎯 Purpose
 
-INFILTRATE is a spaced repetition learning tool featuring 20 essential ML/AI flashcards covering topics from supervised learning to transformers, embeddings, and modern LLM techniques. The app provides an immersive, cyberpunk-themed interface for efficient knowledge acquisition.
+INFILTRATE is a spaced repetition learning tool featuring 20 essential ML/AI flashcards covering topics from supervised learning to transformers, embedd7ings, and modern LLM techniques. The app provides an immersive, cyberpunk-themed interface for efficient knowledge acquisition.
 
 ## ✨ Features
 
@@ -74,13 +74,15 @@ npm run build:prod
 
 ## 🏗️ Project Structure
 
-This is an [Nx workspace](https://nx.dev) monorepo:
+This is an [Nx workspace](https://nx.dev) monorepo called **Kasita**:
 
 ```
-infiltrate/
+kasita/
 ├── apps/
-│   ├── infiltrate/          # Main Angular application
+│   ├── infiltrate/          # INFILTRATE - ML/AI flashcard app
 │   └── infiltrate-e2e/      # End-to-end tests
+├── libs/
+│   └── common-models/       # Shared data models
 └── ...
 ```
 
