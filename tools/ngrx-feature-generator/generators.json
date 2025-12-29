@@ -1,0 +1,9 @@
+{
+  "generators": {
+    "ngrx-feature": {
+      "factory": "./src/generators/ngrx-feature/ngrx-feature",
+      "schema": "./src/generators/ngrx-feature/schema.json",
+      "description": "Generate a complete NgRx feature module with actions, effects, facade, feature, and tests based on the profiles feature pattern."
+    }
+  }
+}

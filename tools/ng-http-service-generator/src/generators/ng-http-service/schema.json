@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "$id": "NgHttpService",
+  "title": "Angular HTTP Service Generator",
+  "description": "Generate an Angular HTTP service following the profiles.service.ts pattern.",
+  "type": "object",
+  "properties": {
+    "pluralName": {
+      "type": "string",
+      "description": "The plural name of the service (e.g., 'users', 'products', 'orders')",
+      "pattern": "^[a-z][a-z0-9-]*$",
+      "x-prompt": "What is the plural name of the service? (e.g., users, products, orders)"
+    },
+    "singularName": {
+      "type": "string",
+      "description": "The singular name of the service (e.g., 'user', 'product', 'order')",
+      "pattern": "^[a-z][a-z0-9-]*$",
+      "x-prompt": "What is the singular name of the service? (e.g., user, product, order)"
+    },
+    "project": {
+      "type": "string",
+      "description": "The name of the project to add the service to",
+      "x-prompt": "Which project should contain the service?"
+    },
+    "skipTests": {
+      "type": "boolean",
+      "description": "Skip generating test files",
+      "default": false
+    },
+    "skipFormat": {
+      "type": "boolean",
+      "description": "Skip formatting files",
+      "default": false
+    }
+  },
+  "required": ["pluralName", "singularName", "project"]
+}

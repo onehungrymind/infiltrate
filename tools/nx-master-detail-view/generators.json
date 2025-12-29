@@ -1,0 +1,9 @@
+{
+  "generators": {
+    "master-detail-view": {
+      "factory": "./src/generators/master-detail-view/master-detail-view",
+      "schema": "./src/generators/master-detail-view/schema.json",
+      "description": "master-detail-view generator"
+    }
+  }
+}

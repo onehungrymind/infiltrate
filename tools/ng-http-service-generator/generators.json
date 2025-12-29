@@ -1,0 +1,9 @@
+{
+  "generators": {
+    "ng-http-service": {
+      "factory": "./src/generators/ng-http-service/ng-http-service",
+      "schema": "./src/generators/ng-http-service/schema.json",
+      "description": "ng-http-service generator"
+    }
+  }
+}

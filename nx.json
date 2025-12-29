@@ -86,6 +86,18 @@
         "targetName": "test"
       },
       "exclude": ["apps/api-e2e/**/*"]
+    },
+    {
+      "plugin": "./tools/ngrx-feature-generator/src/index.ts",
+      "options": {}
+    },
+    {
+      "plugin": "./tools/ng-http-service-generator/src/index.ts",
+      "options": {}
+    },
+    {
+      "plugin": "./tools/nx-master-detail-view/src/index.ts",
+      "options": {}
     }
   ],
   "generators": {

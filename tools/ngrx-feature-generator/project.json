@@ -1,0 +1,48 @@
+{
+  "name": "ngrx-feature-generator",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "tools/ngrx-feature-generator/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/tools/ngrx-feature-generator",
+        "main": "tools/ngrx-feature-generator/src/index.ts",
+        "tsConfig": "tools/ngrx-feature-generator/tsconfig.lib.json",
+        "assets": [
+          "tools/ngrx-feature-generator/*.md",
+          {
+            "input": "./tools/ngrx-feature-generator/src",
+            "glob": "**/!(*.ts)",
+            "output": "./src"
+          },
+          {
+            "input": "./tools/ngrx-feature-generator/src",
+            "glob": "**/*.d.ts",
+            "output": "./src"
+          },
+          {
+            "input": "./tools/ngrx-feature-generator",
+            "glob": "generators.json",
+            "output": "."
+          },
+          {
+            "input": "./tools/ngrx-feature-generator",
+            "glob": "executors.json",
+            "output": "."
+          }
+        ]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "tools/ngrx-feature-generator/jest.config.ts"
+      }
+    }
+  }
+}

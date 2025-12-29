@@ -17,7 +17,8 @@
     "paths": {
       "@kasita/common-models": ["libs/common-models/src/index.ts"],
       "@kasita/core-data": ["libs/core-data/src/index.ts"],
-      "@kasita/core-state": ["libs/core-state/src/index.ts"]
+      "@kasita/core-state": ["libs/core-state/src/index.ts"],
+      "@kasita/material": ["libs/material/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
