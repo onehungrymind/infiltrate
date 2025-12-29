@@ -74,26 +74,31 @@ This methodology draws inspiration from interview preparation but extends beyond
 
 ```
 kasita/
-├── packages/
-│   ├── core/              # Shared data models and types
-│   ├── web/               # Main web application
-│   ├── api/               # Backend API services
-│   └── mobile/            # (Future) Mobile applications
 ├── apps/
-│   ├── infiltrate/        # Infiltrate flashcard application
-│   └── dashboard/         # Analytics and progress tracking
+│   ├── infiltrate/        # Infiltrate flashcard application (Angular)
+│   ├── infiltrate-e2e/    # E2E tests for infiltrate
+│   ├── dashboard/         # Analytics and progress tracking (Angular)
+│   ├── dashboard-e2e/     # E2E tests for dashboard
+│   ├── api/               # Backend API services (NestJS)
+│   └── api-e2e/           # E2E tests for API
+├── libs/
+│   ├── common-models/     # Shared data models and types
+│   ├── core-data/         # HTTP client services
+│   └── core-state/        # NgRx feature slices and state management
 └── docs/                  # Documentation and guides
 ```
 
 ## Technology Stack
 
 - **TypeScript** - Type-safe development across the entire stack
-- **React** - Component-based UI with modern hooks
-- **Next.js** - Server-side rendering and routing
-- **TailwindCSS** - Utility-first styling
-- **Nx** - Monorepo management and build optimization
-- **Prisma** - Type-safe database ORM
-- **tRPC** - End-to-end type safety for APIs
+- **Angular 21** - Component-based UI framework with standalone components
+- **NestJS** - Backend API framework with Express
+- **NgRx** - State management with Store, Effects, and Entity
+- **Nx 22** - Monorepo management and build optimization
+- **Vitest** - Unit testing framework
+- **Playwright** - End-to-end testing
+- **ESLint** - Code linting
+- **Prettier** - Code formatting
 
 ## Data Model
 
@@ -111,7 +116,7 @@ Structured progressions through knowledge with phases, completion criteria, and 
 ### 4. User Progress
 Granular tracking of mastery levels, spaced repetition scheduling, attempt history, and performance analytics.
 
-See [`kas-data-model.ts`](./packages/core/src/types/kas-data-model.ts) for the complete TypeScript definitions.
+See [`libs/common-models`](./libs/common-models) for the complete TypeScript definitions.
 
 ## Getting Started
 
@@ -130,46 +135,58 @@ cd kasita
 # Install dependencies
 npm install
 
-# Set up environment variables
-cp .env.example .env
-# Edit .env with your database credentials
-
-# Run database migrations
-npm run db:migrate
-
-# Start development server
-npm run dev
+# Start development servers
+npm run serve:infiltrate    # Start infiltrate app (default: http://localhost:4200)
+npm run serve:dashboard     # Start dashboard app
+npm run serve:api           # Start API server
 ```
 
-Visit `http://localhost:3000` to see the application.
+### Available Commands
 
-### Quick Start: Create Your First Infiltrate Deck
+**Development:**
+- `npm run serve:infiltrate` - Start infiltrate app
+- `npm run serve:dashboard` - Start dashboard app
+- `npm run serve:api` - Start API server
+- `npm start` / `npm run dev` - Start infiltrate (default)
 
-```typescript
-import { InfiltrateDeck, KnowledgeUnit } from '@kasita/core';
+**Building:**
+- `npm run build:infiltrate` - Build infiltrate app
+- `npm run build:dashboard` - Build dashboard app
+- `npm run build:api` - Build API server
+- `npm run build:prod:infiltrate` - Production build for infiltrate
+- `npm run build:prod:dashboard` - Production build for dashboard
+- `npm run build:prod:api` - Production build for API
 
-// Define knowledge units
-const units: KnowledgeUnit[] = [
-  {
-    concept: 'Gradient Descent',
-    question: 'How does gradient descent work?',
-    answer: 'Gradient descent is walking downhill in the dark...',
-    difficulty: 'intermediate',
-    cognitiveLevel: 'understand'
-  }
-  // ... more units
-];
+**Testing:**
+- `npm run test:infiltrate` - Run infiltrate unit tests
+- `npm run test:dashboard` - Run dashboard unit tests
+- `npm run test:api` - Run API unit tests
+- `npm run e2e:infiltrate` - Run infiltrate E2E tests
+- `npm run e2e:dashboard` - Run dashboard E2E tests
+- `npm run e2e:api` - Run API E2E tests
 
-// Create an Infiltrate deck
-const deck: InfiltrateDeck = {
-  name: 'ML Fundamentals',
-  methodology: 'infiltrate',
-  targetAudience: 'technical',
-  phases: [
-    /* memorization, recitation, performance */
-  ]
-};
-```
+**Code Quality:**
+- `npm run lint:infiltrate` - Lint infiltrate app
+- `npm run lint:dashboard` - Lint dashboard app
+- `npm run lint:api` - Lint API server
+- `npm run format` - Format all code
+- `npm run format:check` - Check code formatting
+
+### Quick Start: Using the Applications
+
+**Infiltrate App:**
+The main flashcard application for learning ML/AI concepts. See the [Infiltrate README](./apps/infiltrate/README.md) for detailed documentation.
+
+**Dashboard App:**
+Administration and analytics interface for tracking learning progress, managing knowledge units, and viewing insights.
+
+**API Server:**
+Backend REST API built with NestJS for managing data, authentication, and serving the frontend applications.
+
+**Shared Libraries:**
+- `@kasita/common-models` - Shared data models and types
+- `@kasita/core-data` - HTTP client services for API communication
+- `@kasita/core-state` - NgRx feature slices for state management
 
 ## Example Use Cases
 
@@ -188,18 +205,23 @@ Import certification exam topics into Kasita, track mastery levels, and use spac
 ## Roadmap
 
 ### Current (v0.1)
-- [x] Core data model definition
-- [x] Infiltrate flashcard web application
+- [x] Core data model definition (`common-models`)
+- [x] Infiltrate flashcard web application (Angular)
+- [x] Dashboard application (Angular)
+- [x] API server (NestJS)
+- [x] Core data library for HTTP services
+- [x] Core state library for NgRx state management
 - [x] Basic spaced repetition algorithm
 - [ ] User authentication and profiles
 - [ ] PostgreSQL backend implementation
 
 ### Near-term (v0.2)
-- [ ] Analytics dashboard
+- [ ] Complete analytics dashboard implementation
 - [ ] Learning path creation UI
 - [ ] Export to Anki/Quizlet
 - [ ] Mobile-responsive improvements
 - [ ] Whiteboard challenge interface
+- [ ] API endpoints for data persistence
 
 ### Medium-term (v0.3)
 - [ ] Gamification system
