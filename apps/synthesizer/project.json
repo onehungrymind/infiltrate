@@ -1,0 +1,96 @@
+{
+  "name": "synthesizer",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/synthesizer/src",
+  "projectType": "application",
+  "targets": {
+    "install": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "uv sync",
+        "cwd": "apps/synthesizer"
+      },
+      "inputs": [
+        "{projectRoot}/pyproject.toml"
+      ]
+    },
+    "process": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "uv run python src/main.py process",
+        "cwd": "apps/synthesizer"
+      },
+      "dependsOn": ["^install", "install"],
+      "inputs": [
+        "default",
+        "{projectRoot}/src/**/*.py",
+        "{projectRoot}/processors/**/*.py",
+        "{projectRoot}/generators/**/*.py",
+        "{workspaceRoot}/data/raw/**/*.json"
+      ],
+      "outputs": [
+        "{workspaceRoot}/data/processed",
+        "{workspaceRoot}/data/synthesized"
+      ]
+    },
+    "embeddings": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "uv run python src/main.py embeddings",
+        "cwd": "apps/synthesizer"
+      },
+      "dependsOn": ["install"]
+    },
+    "cluster": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "uv run python src/main.py cluster",
+        "cwd": "apps/synthesizer"
+      },
+      "dependsOn": ["embeddings"]
+    },
+    "generate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "uv run python src/main.py generate",
+        "cwd": "apps/synthesizer"
+      },
+      "dependsOn": ["cluster"]
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "uv run ruff check src/ processors/ generators/ models/",
+        "cwd": "apps/synthesizer"
+      },
+      "dependsOn": ["install"]
+    },
+    "format": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "uv run black src/ processors/ generators/ models/",
+        "cwd": "apps/synthesizer"
+      },
+      "dependsOn": ["install"]
+    },
+    "type-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "uv run mypy src/ processors/ generators/ models/",
+        "cwd": "apps/synthesizer"
+      },
+      "dependsOn": ["install"]
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "uv run pytest tests/",
+        "cwd": "apps/synthesizer"
+      },
+      "dependsOn": ["install"]
+    }
+  },
+  "tags": ["python", "app", "synthesizer"],
+  "implicitDependencies": ["python-shared", "patchbay"]
+}
+

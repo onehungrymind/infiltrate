@@ -1,0 +1,52 @@
+{
+  "name": "python-shared",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/python-shared/src",
+  "projectType": "library",
+  "targets": {
+    "install": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "uv sync",
+        "cwd": "libs/python-shared"
+      },
+      "inputs": [
+        "{projectRoot}/pyproject.toml"
+      ]
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "uv run ruff check src/",
+        "cwd": "libs/python-shared"
+      },
+      "dependsOn": ["install"]
+    },
+    "format": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "uv run black src/",
+        "cwd": "libs/python-shared"
+      },
+      "dependsOn": ["install"]
+    },
+    "type-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "uv run mypy src/",
+        "cwd": "libs/python-shared"
+      },
+      "dependsOn": ["install"]
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "uv run pytest tests/",
+        "cwd": "libs/python-shared"
+      },
+      "dependsOn": ["install"]
+    }
+  },
+  "tags": ["python", "lib"]
+}
+

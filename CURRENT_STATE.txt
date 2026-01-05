@@ -1,0 +1,29 @@
+kasita/
+├── apps/
+│   ├── api/                    # NestJS API
+│   ├── dashboard/               # Angular admin dashboard
+│   ├── infiltrate/              # Angular app
+│   ├── patchbay/                # Python content ingestion
+│   │   ├── adapters/           # Content adapters (RSS, Article, JS Weekly, etc.)
+│   │   ├── models/             # Pydantic models
+│   │   ├── scripts/            # Utility scripts (ingest_archives.py)
+│   │   └── src/                 # Main ingestion logic
+│   └── synthesizer/            # Python content processing
+│       ├── generators/         # Knowledge unit generators
+│       ├── models/              # Pydantic models
+│       ├── processors/          # Embeddings, clustering
+│       └── src/                 # Main orchestration
+├── libs/
+│   ├── core-data/              # Angular HTTP services
+│   ├── core-state/              # NgRx feature slices
+│   ├── material/                # Angular Material module
+│   └── python-shared/          # Shared Python utilities
+│       └── src/python_shared/  # File I/O, logging, utils
+├── tools/                       # Custom Nx generators
+│   ├── ng-http-service-generator/
+│   ├── ngrx-feature-generator/
+│   └── nx-master-detail-view/
+└── data/                        # Data storage
+    ├── raw/                     # Ingested content (one file per issue)
+    ├── processed/               # Processed content
+    └── synthesized/             # Knowledge units
