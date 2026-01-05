@@ -1,0 +1,92 @@
+{
+  "name": "patchbay",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/patchbay/src",
+  "projectType": "application",
+  "targets": {
+    "install": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "uv sync",
+        "cwd": "apps/patchbay"
+      },
+      "inputs": [
+        "{projectRoot}/pyproject.toml"
+      ]
+    },
+    "ingest": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "uv run python -m src.main ingest",
+        "cwd": "apps/patchbay"
+      },
+      "dependsOn": ["^install", "install"],
+      "inputs": [
+        "default",
+        "{projectRoot}/src/**/*.py",
+        "{projectRoot}/adapters/**/*.py"
+      ],
+      "outputs": [
+        "{workspaceRoot}/data/raw"
+      ]
+    },
+    "ingest-source": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "uv run python -m src.main ingest-source",
+        "cwd": "apps/patchbay"
+      },
+      "dependsOn": ["install"]
+    },
+    "ingest-archives": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "uv run python scripts/ingest_archives.py {args}",
+        "cwd": "apps/patchbay"
+      },
+      "dependsOn": ["install"],
+      "inputs": [
+        "default",
+        "{projectRoot}/scripts/**/*.py"
+      ],
+      "outputs": [
+        "{workspaceRoot}/data/raw"
+      ]
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "uv run ruff check src/ adapters/ models/",
+        "cwd": "apps/patchbay"
+      },
+      "dependsOn": ["install"]
+    },
+    "format": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "uv run black src/ adapters/ models/",
+        "cwd": "apps/patchbay"
+      },
+      "dependsOn": ["install"]
+    },
+    "type-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "uv run mypy src/ adapters/ models/",
+        "cwd": "apps/patchbay"
+      },
+      "dependsOn": ["install"]
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "uv run pytest tests/",
+        "cwd": "apps/patchbay"
+      },
+      "dependsOn": ["install"]
+    }
+  },
+  "tags": ["python", "app", "patchbay"],
+  "implicitDependencies": ["python-shared"]
+}
+

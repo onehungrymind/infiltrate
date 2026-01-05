@@ -1,0 +1,26 @@
+[project]
+name = "python-shared"
+version = "0.1.0"
+description = "Shared utilities for Kasita Python applications"
+requires-python = ">=3.11"
+dependencies = [
+    "pydantic>=2.5.0",
+    "python-dotenv>=1.0.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/python_shared"]
+
+[tool.uv]
+dev-dependencies = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "ruff>=0.1.0",
+    "black>=23.0.0",
+    "mypy>=1.7.0",
+]
+
