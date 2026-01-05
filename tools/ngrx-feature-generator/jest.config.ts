@@ -7,4 +7,5 @@ export default {
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
   coverageDirectory: '../../coverage/tools/ngrx-feature-generator',
+  testPathIgnorePatterns: ['/files/'],
 };
