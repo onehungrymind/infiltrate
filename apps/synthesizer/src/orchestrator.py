@@ -1,10 +1,13 @@
 """Orchestrates the full synthesis pipeline."""
 import logging
+import os
 from pathlib import Path
+from typing import Optional
 from processors.embeddings import EmbeddingProcessor
 from processors.clustering import ClusteringProcessor
 from generators.knowledge_unit_generator import KnowledgeUnitGenerator
 from python_shared.file_io import DataReader, DataWriter
+from src.api_client import KasitaApiClient
 
 
 logger = logging.getLogger("synthesizer.orchestrator")
@@ -19,7 +22,9 @@ class SynthesisOrchestrator:
         embedding_model: str = "all-MiniLM-L6-v2",
         claude_model: str = "claude-sonnet-4-20250514",
         min_cluster_size: int = 3,
-        max_clusters: int = 10
+        max_clusters: int = 10,
+        use_api: bool = True,
+        api_base_url: Optional[str] = None
     ):
         self.reader = DataReader(base_path=data_dir)
         self.writer = DataWriter(base_path=data_dir)
@@ -31,6 +36,10 @@ class SynthesisOrchestrator:
             max_clusters=max_clusters
         )
         self.knowledge_unit_generator = KnowledgeUnitGenerator(model=claude_model)
+        
+        # API client (optional)
+        self.use_api = use_api and os.getenv("API_URL") is not None
+        self.api_client = KasitaApiClient(api_base_url) if self.use_api else None
     
     def run_full_pipeline(self) -> dict:
         """
@@ -77,6 +86,16 @@ class SynthesisOrchestrator:
         # Step 4: Generate knowledge units
         logger.info("\n[4/4] Generating knowledge units...")
         all_units = []
+        unit_source_mapping = {}  # Maps unit.id to list of source IDs (API raw content IDs)
+        
+        # Extract pathId from processed content metadata (if available)
+        # ProcessedContent should have preserved pathId from raw content
+        path_id = None
+        if processed_batch.items:
+            first_processed = processed_batch.items[0]
+            path_id = first_processed.metadata.get('pathId') or os.getenv("DEFAULT_PATH_ID")
+        else:
+            path_id = os.getenv("DEFAULT_PATH_ID")
         
         for cluster in cluster_batch.clusters:
             logger.info(f"\nProcessing cluster {cluster.cluster_id} ({cluster.size} items)...")
@@ -94,18 +113,65 @@ class SynthesisOrchestrator:
                     content_items
                 )
                 all_units.extend(unit_batch.units)
+                
+                # Map source IDs for each unit
+                # We need to map ProcessedContent original_id to API raw content IDs
+                for unit in unit_batch.units:
+                    source_ids = []
+                    for content_item in content_items:
+                        # Try to find the API ID for this raw content
+                        # First check if we have an API ID in metadata
+                        api_id = content_item.metadata.get('api_id')
+                        if api_id:
+                            source_ids.append(api_id)
+                        elif self.use_api and self.api_client:
+                            # Try to fetch from API
+                            raw_content = self.api_client.get_raw_content_by_original_id(
+                                content_item.original_id
+                            )
+                            if raw_content:
+                                source_ids.append(raw_content['id'])
+                        else:
+                            # Fallback: use original_id if we can't fetch from API
+                            source_ids.append(content_item.original_id)
+                    unit_source_mapping[unit.id] = source_ids
+                
                 logger.info(f"Generated {unit_batch.total} units")
             except Exception as e:
                 logger.error(f"Failed to generate units for cluster {cluster.cluster_id}: {e}")
         
-        # Save knowledge units
+        # Try to ingest to API if enabled
+        if all_units and self.use_api and self.api_client and path_id:
+            try:
+                # Ingest to API (batch if multiple items, single otherwise)
+                if len(all_units) > 1:
+                    results = self.api_client.ingest_knowledge_units_batch(
+                        all_units,
+                        path_id,
+                        unit_source_mapping
+                    )
+                    if results:
+                        logger.info(f"Successfully ingested {len(results)} knowledge units to API")
+                else:
+                    source_ids = unit_source_mapping.get(all_units[0].id, [])
+                    result = self.api_client.ingest_knowledge_unit(
+                        all_units[0],
+                        path_id,
+                        source_ids
+                    )
+                    if result:
+                        logger.info(f"Successfully ingested to API: {all_units[0].concept}")
+            except Exception as e:
+                logger.warning(f"API ingestion failed, falling back to file writing: {e}")
+        
+        # Always save knowledge units to files as backup
         if all_units:
             output = {
                 "units": [unit.model_dump(mode='json') for unit in all_units],
                 "total": len(all_units)
             }
             self.writer.write_synthesized(output, "knowledge_units")
-            logger.info(f"\nSaved {len(all_units)} knowledge units")
+            logger.info(f"\nSaved {len(all_units)} knowledge units to files")
         
         # Summary
         summary = {

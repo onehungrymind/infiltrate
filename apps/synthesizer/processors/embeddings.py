@@ -54,18 +54,30 @@ class EmbeddingProcessor:
         # Create ProcessedContent items
         processed_items = []
         for i, item in enumerate(raw_content_items):
+            # Preserve pathId and api_id from raw content metadata if available
+            metadata = {
+                'source_type': item.get('source_type', ''),
+                'source_url': item.get('source_url', ''),
+                'author': item.get('author'),
+                'published_date': item.get('published_date'),
+            }
+            # Copy metadata from raw content if it exists
+            if 'metadata' in item and isinstance(item['metadata'], dict):
+                raw_metadata = item['metadata']
+                if 'pathId' in raw_metadata:
+                    metadata['pathId'] = raw_metadata['pathId']
+                if 'api_id' in raw_metadata:
+                    metadata['api_id'] = raw_metadata['api_id']
+                # Also preserve original_id for API lookup
+                metadata['original_id'] = item.get('id')
+            
             processed = ProcessedContent(
                 id=generate_id(),
-                original_id=item['id'],
-                title=item['title'],
-                content=item['content'],
+                original_id=item.get('id', ''),
+                title=item.get('title', ''),
+                content=item.get('content', ''),
                 embedding=embeddings[i].tolist(),
-                metadata={
-                    'source_type': item['source_type'],
-                    'source_url': item['source_url'],
-                    'author': item.get('author'),
-                    'published_date': item.get('published_date')
-                }
+                metadata=metadata
             )
             processed_items.append(processed)
         

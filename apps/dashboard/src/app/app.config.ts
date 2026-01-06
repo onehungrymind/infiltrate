@@ -1,6 +1,6 @@
 import {
   ApplicationConfig,
-  provideBrowserGlobalErrorListeners,
+  ErrorHandler,
   isDevMode,
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
@@ -9,7 +9,7 @@ import { provideStore } from '@ngrx/store';
 import { provideEffects } from '@ngrx/effects';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
 import { appRoutes } from './app.routes';
-import { API_URL } from '@kasita/core-data';
+import { API_URL, authInterceptor, errorInterceptor, GlobalErrorHandler } from '@kasita/core-data';
 import { environment } from '../environments/environment';
 import {
   learningPathsFeature,
@@ -23,14 +23,13 @@ import {
   SourceConfigsEffects,
   UserProgressEffects,
 } from '@kasita/core-state';
-import { authInterceptor } from '@kasita/core-data';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideBrowserGlobalErrorListeners(),
     provideRouter(appRoutes),
-    provideHttpClient(withInterceptors([authInterceptor])),
+    provideHttpClient(withInterceptors([errorInterceptor, authInterceptor])),
     { provide: API_URL, useValue: environment.apiUrl },
+    { provide: ErrorHandler, useClass: GlobalErrorHandler },
     // NgRx Store Configuration
     provideStore({
       learningPaths: learningPathsFeature.reducer,

@@ -69,6 +69,9 @@ class KasitaApiClient:
             response.raise_for_status()
             result = response.json()
             logger.debug(f"Successfully ingested raw content: {raw_content.title}")
+            # Store the API ID in metadata for later reference
+            if result and 'id' in result:
+                raw_content.metadata['api_id'] = result['id']
             return result
         except requests.exceptions.RequestException as e:
             logger.error(f"Failed to ingest raw content '{raw_content.title}': {e}")
@@ -112,6 +115,10 @@ class KasitaApiClient:
             response.raise_for_status()
             results = response.json()
             logger.info(f"Successfully ingested {len(results)} raw content items in batch")
+            # Store API IDs in metadata for later reference
+            for i, result in enumerate(results):
+                if i < len(raw_content_items) and result and 'id' in result:
+                    raw_content_items[i].metadata['api_id'] = result['id']
             return results
         except requests.exceptions.RequestException as e:
             logger.error(f"Failed to ingest raw content batch: {e}")

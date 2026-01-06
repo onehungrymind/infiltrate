@@ -86,6 +86,11 @@ class Ingestor:
         # Try to ingest to API if enabled
         path_id = os.getenv("DEFAULT_PATH_ID")
         if self.use_api and self.api_client and path_id:
+            # Store pathId in metadata for Synthesizer to use later
+            for item in batch.items:
+                if not item.metadata:
+                    item.metadata = {}
+                item.metadata['pathId'] = path_id
             try:
                 # Ingest to API (batch if multiple items, single otherwise)
                 if batch.total > 1:

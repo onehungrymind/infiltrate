@@ -6,6 +6,9 @@ export * from './lib/config/api-url.token';
 export * from './lib/services/auth.service';
 export * from './lib/guards/auth.guard';
 export * from './lib/interceptors/auth.interceptor';
+export * from './lib/interceptors/error.interceptor';
+export * from './lib/error-handler/global-error-handler';
+export * from './lib/utils/error-messages';
 
 /* LearningPaths */
 export * from './lib/services/learning-paths/learning-paths.service';

@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { LearningPath } from '@kasita/common-models';
-import { LearningPathsService } from '@kasita/core-data';
+import { LearningPathsService, formatErrorMessage } from '@kasita/core-data';
 import { of } from 'rxjs';
 import { catchError, exhaustMap, map } from 'rxjs/operators';
 import { LearningPathsActions } from './learning-paths.actions';
@@ -21,7 +21,7 @@ export const loadLearningPaths = createEffect(
           catchError((error) =>
             of(
               LearningPathsActions.loadLearningPathsFailure({
-                error: error?.message || 'Failed to load learningPaths',
+                error: formatErrorMessage(error),
               }),
             ),
           ),
@@ -47,7 +47,7 @@ export const loadLearningPath = createEffect(
           catchError((error) =>
             of(
               LearningPathsActions.loadLearningPathFailure({
-                error: error?.message || 'Failed to load learningPath',
+                error: formatErrorMessage(error),
               }),
             ),
           ),
@@ -73,7 +73,7 @@ export const createLearningPath = createEffect(
           catchError((error) =>
             of(
               LearningPathsActions.createLearningPathFailure({
-                error: error?.message || 'Failed to create learningPath',
+                error: formatErrorMessage(error),
               }),
             ),
           ),
@@ -99,7 +99,7 @@ export const updateLearningPath = createEffect(
           catchError((error) =>
             of(
               LearningPathsActions.updateLearningPathFailure({
-                error: error?.message || 'Failed to update learningPath',
+                error: formatErrorMessage(error),
               }),
             ),
           ),
@@ -125,7 +125,7 @@ export const deleteLearningPath = createEffect(
           catchError((error) =>
             of(
               LearningPathsActions.deleteLearningPathFailure({
-                error: error?.message || 'Failed to delete learningPath',
+                error: formatErrorMessage(error),
               }),
             ),
           ),

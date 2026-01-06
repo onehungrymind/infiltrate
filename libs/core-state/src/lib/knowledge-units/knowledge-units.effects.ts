@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { KnowledgeUnit } from '@kasita/common-models';
-import { KnowledgeUnitsService } from '@kasita/core-data';
+import { KnowledgeUnitsService, formatErrorMessage } from '@kasita/core-data';
 import { of } from 'rxjs';
 import { catchError, exhaustMap, map } from 'rxjs/operators';
 import { KnowledgeUnitsActions } from './knowledge-units.actions';
@@ -21,7 +21,7 @@ export const loadKnowledgeUnits = createEffect(
           catchError((error) =>
             of(
               KnowledgeUnitsActions.loadKnowledgeUnitsFailure({
-                error: error?.message || 'Failed to load knowledgeUnits',
+                error: formatErrorMessage(error),
               }),
             ),
           ),
@@ -47,7 +47,7 @@ export const loadKnowledgeUnit = createEffect(
           catchError((error) =>
             of(
               KnowledgeUnitsActions.loadKnowledgeUnitFailure({
-                error: error?.message || 'Failed to load knowledgeUnit',
+                error: formatErrorMessage(error),
               }),
             ),
           ),
@@ -73,7 +73,7 @@ export const createKnowledgeUnit = createEffect(
           catchError((error) =>
             of(
               KnowledgeUnitsActions.createKnowledgeUnitFailure({
-                error: error?.message || 'Failed to create knowledgeUnit',
+                error: formatErrorMessage(error),
               }),
             ),
           ),
@@ -99,7 +99,7 @@ export const updateKnowledgeUnit = createEffect(
           catchError((error) =>
             of(
               KnowledgeUnitsActions.updateKnowledgeUnitFailure({
-                error: error?.message || 'Failed to update knowledgeUnit',
+                error: formatErrorMessage(error),
               }),
             ),
           ),
@@ -125,7 +125,7 @@ export const deleteKnowledgeUnit = createEffect(
           catchError((error) =>
             of(
               KnowledgeUnitsActions.deleteKnowledgeUnitFailure({
-                error: error?.message || 'Failed to delete knowledgeUnit',
+                error: formatErrorMessage(error),
               }),
             ),
           ),
