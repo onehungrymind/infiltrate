@@ -1,0 +1,128 @@
+kasita/
+├── apps
+│   ├── api                    # NestJS API
+│   │   └── src                    # Source code
+│   │       ├── app
+│   │       ├── assets
+│   │       ├── ingestion
+│   │       ├── knowledge-units                    # NgRx feature module
+│   │       │   ├── dto
+│   │       │   └── entities
+│   │       ├── learning-paths                    # NgRx feature module
+│   │       │   ├── dto
+│   │       │   └── entities
+│   │       ├── progress
+│   │       ├── raw-content                    # NgRx feature module
+│   │       │   ├── dto
+│   │       │   └── entities
+│   │       ├── source-configs                    # NgRx feature module
+│   │       │   ├── dto
+│   │       │   └── entities
+│   │       └── user-progress                    # NgRx feature module
+│   │           ├── dto
+│   │           └── entities
+│   ├── api-e2e
+│   │   └── src                    # Source code
+│   │       ├── api                    # NestJS API
+│   │       └── support
+│   ├── dashboard                    # Angular admin dashboard
+│   │   ├── public
+│   │   └── src                    # Source code
+│   │       ├── app
+│   │       │   ├── components
+│   │       │   │   ├── aside
+│   │       │   │   ├── footer
+│   │       │   │   ├── header
+│   │       │   │   └── logo
+│   │       │   ├── home
+│   │       │   ├── knowledge-units                    # NgRx feature module
+│   │       │   │   ├── knowledge-unit-detail
+│   │       │   │   └── knowledge-units-list
+│   │       │   ├── learning-paths                    # NgRx feature module
+│   │       │   │   ├── learning-path-detail
+│   │       │   │   └── learning-paths-list
+│   │       │   ├── raw-content                    # NgRx feature module
+│   │       │   │   ├── raw-content-detail
+│   │       │   │   └── raw-content-list
+│   │       │   ├── source-configs                    # NgRx feature module
+│   │       │   │   ├── source-config-detail
+│   │       │   │   └── source-configs-list
+│   │       │   └── user-progress                    # NgRx feature module
+│   │       │       ├── user-progress-detail
+│   │       │       └── user-progress-list
+│   │       └── environments
+│   ├── dashboard-e2e
+│   │   └── src                    # Source code
+│   ├── infiltrate                    #  INFILTRATE - ML/AI Mastery Protocol
+│   │   ├── public
+│   │   └── src                    # Source code
+│   │       ├── app
+│   │       └── environments
+│   ├── infiltrate-e2e
+│   │   └── src                    # Source code
+│   ├── patchbay                    #  Patchbay
+│   │   ├── adapters                    # Content adapters (RSS, Article, JS Weekly, etc.)
+│   │   ├── models                    # Pydantic models
+│   │   ├── scripts                    # Utility scripts
+│   │   ├── src                    # Main ingestion logic
+│   │   └── tests
+│   └── synthesizer                    #  Synthesizer
+│       ├── generators                    # Code generators
+│       ├── models                    # Pydantic models
+│       ├── processors                    # Embeddings, clustering
+│       ├── src                    # Main orchestration
+│       └── tests
+├── libs
+│   ├── common-models                    #  common-models
+│   │   └── src                    # Source code
+│   │       └── lib
+│   ├── core-data                    #  core-data
+│   │   └── src                    # Source code
+│   │       └── lib
+│   │           ├── config
+│   │           ├── services
+│   │           │   ├── knowledge-units                    # NgRx feature module
+│   │           │   ├── learning-paths                    # NgRx feature module
+│   │           │   ├── raw-content                    # NgRx feature module
+│   │           │   ├── source-configs                    # NgRx feature module
+│   │           │   └── user-progress                    # NgRx feature module
+│   │           └── utils
+│   ├── core-state                    #  core-state
+│   │   └── src                    # Source code
+│   │       └── lib
+│   │           ├── knowledge-units                    # NgRx feature module
+│   │           ├── learning-paths                    # NgRx feature module
+│   │           ├── raw-content                    # NgRx feature module
+│   │           ├── source-configs                    # NgRx feature module
+│   │           └── user-progress                    # NgRx feature module
+│   ├── material                    #  material
+│   │   └── src                    # Source code
+│   │       └── lib
+│   │           └── confirmation-dialog
+│   └── python-shared                    # Shared Python utilities
+│       ├── src                    # File I/O, logging, utils
+│       │   └── python_shared
+│       └── tests
+├── tools
+│   ├── ng-http-service-generator                    #  ng-http-service-generator
+│   │   └── src                    # Source code
+│   │       └── generators                    # Code generators
+│   │           └── ng-http-service
+│   │               └── files
+│   ├── ngrx-feature-generator                    #  NgRx Feature Generator
+│   │   └── src                    # Source code
+│   │       └── generators                    # Code generators
+│   │           └── ngrx-feature
+│   │               └── files
+│   └── nx-master-detail-view                    #  nx-master-detail-view
+│       └── src                    # Source code
+│           └── generators                    # Code generators
+│               └── master-detail-view
+│                   └── files
+│                       ├── __pluralKebabCase__-list
+│                       ├── __singularKebabCase__-detail
+│                       └── src                    # Source code
+└── data
+    ├── processed                    # Processed content
+    ├── raw                    # Ingested content (one file per issue)
+    └── synthesized                    # Knowledge units
