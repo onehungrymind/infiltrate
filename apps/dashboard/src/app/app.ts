@@ -1,13 +1,20 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { NxWelcome } from './nx-welcome';
+import { Header } from './components/header/header';
+import { ThemeService } from './services/theme.service';
 
 @Component({
-  imports: [NxWelcome, RouterModule],
+  imports: [RouterModule, Header],
   selector: 'app-root',
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
-export class App {
+export class App implements OnInit {
   protected title = 'dashboard';
+  private themeService = inject(ThemeService);
+
+  ngOnInit(): void {
+    // Initialize theme on app start
+    this.themeService.theme();
+  }
 }

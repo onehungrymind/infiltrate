@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { KnowledgeUnit } from '@kasita/common-models';
-import { KnowledgeUnitService } from '@kasita/core-data';
+import { KnowledgeUnitsService } from '@kasita/core-data';
 import { of } from 'rxjs';
 import { catchError, exhaustMap, map } from 'rxjs/operators';
 import { KnowledgeUnitsActions } from './knowledge-units.actions';
@@ -9,7 +9,7 @@ import { KnowledgeUnitsActions } from './knowledge-units.actions';
 export const loadKnowledgeUnits = createEffect(
   (
     actions$ = inject(Actions),
-    knowledgeUnitsService = inject(KnowledgeUnitService),
+    knowledgeUnitsService = inject(KnowledgeUnitsService),
   ) => {
     return actions$.pipe(
       ofType(KnowledgeUnitsActions.loadKnowledgeUnits),
@@ -35,7 +35,7 @@ export const loadKnowledgeUnits = createEffect(
 export const loadKnowledgeUnit = createEffect(
   (
     actions$ = inject(Actions),
-    knowledgeUnitsService = inject(KnowledgeUnitService),
+    knowledgeUnitsService = inject(KnowledgeUnitsService),
   ) => {
     return actions$.pipe(
       ofType(KnowledgeUnitsActions.loadKnowledgeUnit),
@@ -61,7 +61,7 @@ export const loadKnowledgeUnit = createEffect(
 export const createKnowledgeUnit = createEffect(
   (
     actions$ = inject(Actions),
-    knowledgeUnitsService = inject(KnowledgeUnitService),
+    knowledgeUnitsService = inject(KnowledgeUnitsService),
   ) => {
     return actions$.pipe(
       ofType(KnowledgeUnitsActions.createKnowledgeUnit),
@@ -87,7 +87,7 @@ export const createKnowledgeUnit = createEffect(
 export const updateKnowledgeUnit = createEffect(
   (
     actions$ = inject(Actions),
-    knowledgeUnitsService = inject(KnowledgeUnitService),
+    knowledgeUnitsService = inject(KnowledgeUnitsService),
   ) => {
     return actions$.pipe(
       ofType(KnowledgeUnitsActions.updateKnowledgeUnit),
@@ -113,7 +113,7 @@ export const updateKnowledgeUnit = createEffect(
 export const deleteKnowledgeUnit = createEffect(
   (
     actions$ = inject(Actions),
-    knowledgeUnitsService = inject(KnowledgeUnitService),
+    knowledgeUnitsService = inject(KnowledgeUnitsService),
   ) => {
     return actions$.pipe(
       ofType(KnowledgeUnitsActions.deleteKnowledgeUnit),

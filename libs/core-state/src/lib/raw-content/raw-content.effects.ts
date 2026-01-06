@@ -16,7 +16,7 @@ export const loadRawContent = createEffect(
       exhaustMap(() =>
         rawContentService.all().pipe(
           map((rawContent: RawContent[]) =>
-            RawContentActions.loadRawContentSuccess({ rawContent }),
+            RawContentActions.loadRawContentSuccess({ rawContent: rawContent }),
           ),
           catchError((error) =>
             of(
@@ -32,21 +32,21 @@ export const loadRawContent = createEffect(
   { functional: true },
 );
 
-export const loadRawContent = createEffect(
+export const loadRawContentItem = createEffect(
   (
     actions$ = inject(Actions),
     rawContentService = inject(RawContentService),
   ) => {
     return actions$.pipe(
-      ofType(RawContentActions.loadRawContent),
+      ofType(RawContentActions.loadRawContentItem),
       exhaustMap((action) => {
         return rawContentService.find(action.rawContentId).pipe(
           map((rawContent: RawContent) =>
-            RawContentActions.loadRawContentSuccess({ rawContent }),
+            RawContentActions.loadRawContentItemSuccess({ rawContent }),
           ),
           catchError((error) =>
             of(
-              RawContentActions.loadRawContentFailure({
+              RawContentActions.loadRawContentItemFailure({
                 error: error?.message || 'Failed to load rawContent',
               }),
             ),

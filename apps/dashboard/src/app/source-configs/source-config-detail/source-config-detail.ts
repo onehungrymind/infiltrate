@@ -13,7 +13,7 @@ export class SourceConfigDetail {
   currentSourceConfig!: SourceConfig;
   originalTitle = '';
   @Input() set sourceConfig(value: SourceConfig | null) {
-    if (value) this.originalTitle = `${value.title || value.name || 'Item'}`;
+    if (value) this.originalTitle = `${value.name || 'Item'}`;
     this.currentSourceConfig = Object.assign({}, value);
   }
   @Output() saved = new EventEmitter();

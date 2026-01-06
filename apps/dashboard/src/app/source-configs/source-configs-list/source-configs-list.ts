@@ -23,7 +23,7 @@ export class SourceConfigsList {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
         title: 'Delete SourceConfig',
-        message: `"${sourceConfig.title || sourceConfig.name || 'Item'}"`,
+        message: `"${sourceConfig.name || 'Item'}"`,
         confirmText: 'Delete',
         cancelText: 'Cancel',
       },

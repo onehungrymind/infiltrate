@@ -1,6 +1,6 @@
 import { AsyncPipe } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
-import { UserProgress } from '@kasita/common-models';
+import { UserProgress as UserProgressModel } from '@kasita/common-models';
 import { UserProgressFacade } from '@kasita/core-state';
 import { Observable } from 'rxjs';
 import { UserProgressDetail } from './user-progress-detail/user-progress-detail';
@@ -15,9 +15,9 @@ import { UserProgressList } from './user-progress-list/user-progress-list';
 export class UserProgress implements OnInit {
   private userProgressFacade = inject(UserProgressFacade);
 
-  userProgress$: Observable<UserProgress[]> =
+  userProgress$: Observable<UserProgressModel[]> =
     this.userProgressFacade.allUserProgress$;
-  selectedUserProgress$: Observable<UserProgress | null> =
+  selectedUserProgress$: Observable<UserProgressModel | null> =
     this.userProgressFacade.selectedUserProgress$;
   mutations$ = this.userProgressFacade.mutations$;
 
@@ -34,7 +34,7 @@ export class UserProgress implements OnInit {
     this.userProgressFacade.resetSelectedUserProgress();
   }
 
-  selectUserProgress(userProgress: UserProgress) {
+  selectUserProgress(userProgress: UserProgressModel) {
     this.userProgressFacade.selectUserProgress(userProgress.id as string);
   }
 
@@ -42,11 +42,11 @@ export class UserProgress implements OnInit {
     this.userProgressFacade.loadUserProgress();
   }
 
-  saveUserProgress(userProgress: UserProgress) {
+  saveUserProgress(userProgress: UserProgressModel) {
     this.userProgressFacade.saveUserProgress(userProgress);
   }
 
-  deleteUserProgress(userProgress: UserProgress) {
+  deleteUserProgress(userProgress: UserProgressModel) {
     this.userProgressFacade.deleteUserProgress(userProgress);
   }
 

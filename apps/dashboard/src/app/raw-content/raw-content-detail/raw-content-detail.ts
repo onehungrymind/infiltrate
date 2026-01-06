@@ -13,7 +13,7 @@ export class RawContentDetail {
   currentRawContent!: RawContent;
   originalTitle = '';
   @Input() set rawContent(value: RawContent | null) {
-    if (value) this.originalTitle = `${value.title || value.name || 'Item'}`;
+    if (value) this.originalTitle = `${value.title || 'Item'}`;
     this.currentRawContent = Object.assign({}, value);
   }
   @Output() saved = new EventEmitter();

@@ -23,7 +23,7 @@ export class LearningPathsList {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
         title: 'Delete LearningPath',
-        message: `"${learningPath.title || learningPath.name || 'Item'}"`,
+        message: `"${learningPath.name || 'Item'}"`,
         confirmText: 'Delete',
         cancelText: 'Cancel',
       },

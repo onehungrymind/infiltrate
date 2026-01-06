@@ -16,7 +16,7 @@ export const loadUserProgress = createEffect(
       exhaustMap(() =>
         userProgressService.all().pipe(
           map((userProgress: UserProgress[]) =>
-            UserProgressActions.loadUserProgressSuccess({ userProgress }),
+            UserProgressActions.loadUserProgressSuccess({ userProgress: userProgress }),
           ),
           catchError((error) =>
             of(
@@ -32,21 +32,21 @@ export const loadUserProgress = createEffect(
   { functional: true },
 );
 
-export const loadUserProgress = createEffect(
+export const loadUserProgressItem = createEffect(
   (
     actions$ = inject(Actions),
     userProgressService = inject(UserProgressService),
   ) => {
     return actions$.pipe(
-      ofType(UserProgressActions.loadUserProgress),
+      ofType(UserProgressActions.loadUserProgressItem),
       exhaustMap((action) => {
         return userProgressService.find(action.userProgressId).pipe(
           map((userProgress: UserProgress) =>
-            UserProgressActions.loadUserProgressSuccess({ userProgress }),
+            UserProgressActions.loadUserProgressItemSuccess({ userProgress }),
           ),
           catchError((error) =>
             of(
-              UserProgressActions.loadUserProgressFailure({
+              UserProgressActions.loadUserProgressItemFailure({
                 error: error?.message || 'Failed to load userProgress',
               }),
             ),

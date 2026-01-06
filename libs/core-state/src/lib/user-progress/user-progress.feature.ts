@@ -40,9 +40,8 @@ const userProgressReducer = createReducer(
     loaded: false,
     error: null,
   })),
-  on(UserProgressActions.loadUserProgress, (state) => ({
+  on(UserProgressActions.loadUserProgressItem, (state) => ({
     ...state,
-    loaded: false,
     error: null,
   })),
 
@@ -71,10 +70,9 @@ const userProgressReducer = createReducer(
       error: null,
     }),
   ),
-  on(UserProgressActions.loadUserProgressSuccess, (state, { userProgress }) =>
+  on(UserProgressActions.loadUserProgressItemSuccess, (state, { userProgress }) =>
     userProgressAdapter.upsertOne(userProgress, {
       ...state,
-      loaded: true,
       error: null,
     }),
   ),
@@ -97,7 +95,7 @@ const userProgressReducer = createReducer(
   // Failures (deduped)
   on(
     UserProgressActions.loadUserProgressFailure,
-    UserProgressActions.loadUserProgressFailure,
+    UserProgressActions.loadUserProgressItemFailure,
     UserProgressActions.createUserProgressFailure,
     UserProgressActions.updateUserProgressFailure,
     UserProgressActions.deleteUserProgressFailure,

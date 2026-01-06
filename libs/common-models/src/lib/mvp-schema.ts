@@ -197,6 +197,41 @@ export interface BaseEntity {
     cognitiveLevel?: CognitiveLevel;
     status?: UnitStatus;
   }
+
+  export interface UpdateRawContentDto {
+    pathId?: string;
+    sourceType?: string;
+    sourceUrl?: string;
+    title?: string;
+    content?: string;
+    author?: string;
+    publishedDate?: Date;
+    metadata?: Record<string, any>;
+  }
+
+  export interface CreateUserProgressDto {
+    userId: string;
+    unitId: string;
+    masteryLevel: MasteryLevel;
+    confidence: number;
+    easinessFactor: number;
+    interval: number;
+    repetitions: number;
+    nextReviewDate: Date;
+    attempts: number;
+    lastAttemptAt?: Date;
+  }
+
+  export interface UpdateUserProgressDto {
+    masteryLevel?: MasteryLevel;
+    confidence?: number;
+    easinessFactor?: number;
+    interval?: number;
+    repetitions?: number;
+    nextReviewDate?: Date;
+    attempts?: number;
+    lastAttemptAt?: Date;
+  }
   
   export interface RecordAttemptDto {
     userId: string;

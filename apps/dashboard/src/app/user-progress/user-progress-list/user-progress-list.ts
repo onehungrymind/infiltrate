@@ -23,7 +23,7 @@ export class UserProgressList {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
         title: 'Delete UserProgress',
-        message: `"${userProgress.title || userProgress.name || 'Item'}"`,
+        message: `Progress for unit ${userProgress.unitId}`,
         confirmText: 'Delete',
         cancelText: 'Cancel',
       },

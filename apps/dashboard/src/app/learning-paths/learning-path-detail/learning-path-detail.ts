@@ -13,7 +13,7 @@ export class LearningPathDetail {
   currentLearningPath!: LearningPath;
   originalTitle = '';
   @Input() set learningPath(value: LearningPath | null) {
-    if (value) this.originalTitle = `${value.title || value.name || 'Item'}`;
+    if (value) this.originalTitle = `${value.name || 'Item'}`;
     this.currentLearningPath = Object.assign({}, value);
   }
   @Output() saved = new EventEmitter();

@@ -13,7 +13,7 @@ export class UserProgressDetail {
   currentUserProgress!: UserProgress;
   originalTitle = '';
   @Input() set userProgress(value: UserProgress | null) {
-    if (value) this.originalTitle = `${value.title || value.name || 'Item'}`;
+    if (value) this.originalTitle = `Progress: ${value.masteryLevel || 'Item'}`;
     this.currentUserProgress = Object.assign({}, value);
   }
   @Output() saved = new EventEmitter();

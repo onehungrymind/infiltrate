@@ -13,7 +13,7 @@ export class KnowledgeUnitDetail {
   currentKnowledgeUnit!: KnowledgeUnit;
   originalTitle = '';
   @Input() set knowledgeUnit(value: KnowledgeUnit | null) {
-    if (value) this.originalTitle = `${value.title || value.name || 'Item'}`;
+    if (value) this.originalTitle = `${value.concept || 'Item'}`;
     this.currentKnowledgeUnit = Object.assign({}, value);
   }
   @Output() saved = new EventEmitter();

@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { LearningPath } from '@kasita/common-models';
-import { LearningPathService } from '@kasita/core-data';
+import { LearningPathsService } from '@kasita/core-data';
 import { of } from 'rxjs';
 import { catchError, exhaustMap, map } from 'rxjs/operators';
 import { LearningPathsActions } from './learning-paths.actions';
@@ -9,7 +9,7 @@ import { LearningPathsActions } from './learning-paths.actions';
 export const loadLearningPaths = createEffect(
   (
     actions$ = inject(Actions),
-    learningPathsService = inject(LearningPathService),
+    learningPathsService = inject(LearningPathsService),
   ) => {
     return actions$.pipe(
       ofType(LearningPathsActions.loadLearningPaths),
@@ -35,7 +35,7 @@ export const loadLearningPaths = createEffect(
 export const loadLearningPath = createEffect(
   (
     actions$ = inject(Actions),
-    learningPathsService = inject(LearningPathService),
+    learningPathsService = inject(LearningPathsService),
   ) => {
     return actions$.pipe(
       ofType(LearningPathsActions.loadLearningPath),
@@ -61,7 +61,7 @@ export const loadLearningPath = createEffect(
 export const createLearningPath = createEffect(
   (
     actions$ = inject(Actions),
-    learningPathsService = inject(LearningPathService),
+    learningPathsService = inject(LearningPathsService),
   ) => {
     return actions$.pipe(
       ofType(LearningPathsActions.createLearningPath),
@@ -87,7 +87,7 @@ export const createLearningPath = createEffect(
 export const updateLearningPath = createEffect(
   (
     actions$ = inject(Actions),
-    learningPathsService = inject(LearningPathService),
+    learningPathsService = inject(LearningPathsService),
   ) => {
     return actions$.pipe(
       ofType(LearningPathsActions.updateLearningPath),
@@ -113,7 +113,7 @@ export const updateLearningPath = createEffect(
 export const deleteLearningPath = createEffect(
   (
     actions$ = inject(Actions),
-    learningPathsService = inject(LearningPathService),
+    learningPathsService = inject(LearningPathsService),
   ) => {
     return actions$.pipe(
       ofType(LearningPathsActions.deleteLearningPath),

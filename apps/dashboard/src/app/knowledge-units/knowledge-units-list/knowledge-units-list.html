@@ -1,27 +1,26 @@
-<div class="flex flex-col gap-4">
+<div class="list-container">
   <div
     *ngFor="let knowledgeUnit of knowledgeUnits"
-    class="border border-gray-200 rounded-lg p-4 cursor-pointer hover:bg-gray-50 transition-colors"
+    class="list-item"
     (click)="selected.emit(knowledgeUnit)"
   >
-    <div class="flex justify-between items-start">
-      <div class="flex-1">
-        <h3 class="text-lg font-semibold text-gray-900 mb-2">
-          {{ knowledgeUnit.title || knowledgeUnit.name || 'Untitled' }}
+    <div class="list-item-content">
+      <div class="list-item-main">
+        <h3 class="list-item-title">
+          {{ knowledgeUnit.concept || 'Untitled' }}
         </h3>
-        <p class="text-sm text-gray-600" *ngIf="knowledgeUnit.description">
-          {{ knowledgeUnit.description }}
+        <p class="list-item-meta" *ngIf="knowledgeUnit.question">
+          {{ knowledgeUnit.question }}
         </p>
-        <p class="text-xs text-gray-500 mt-2" *ngIf="knowledgeUnit.created_at">
-          Created: {{ knowledgeUnit.created_at | date:'short' }}
+        <p class="list-item-date" *ngIf="knowledgeUnit.createdAt">
+          {{ knowledgeUnit.createdAt | date:'short' }}
         </p>
       </div>
       <button
         *ngIf="!readonly"
-        mat-icon-button
-        color="warn"
+        class="list-item-delete"
         (click)="onDelete(knowledgeUnit); $event.stopPropagation()"
-        class="ml-2"
+        type="button"
       >
         <mat-icon>delete</mat-icon>
       </button>
@@ -30,9 +29,9 @@
 
   <div
     *ngIf="knowledgeUnits.length === 0"
-    class="text-center py-8 text-gray-500"
+    class="list-empty"
   >
-    <mat-icon class="text-4xl mb-2">inbox</mat-icon>
-    <p>No knowledgeUnits found</p>
+    <mat-icon class="list-empty-icon">inbox</mat-icon>
+    <p class="list-empty-text">No knowledge units found</p>
   </div>
 </div>

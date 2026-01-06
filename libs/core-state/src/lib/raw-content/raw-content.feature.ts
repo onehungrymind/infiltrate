@@ -40,9 +40,8 @@ const rawContentReducer = createReducer(
     loaded: false,
     error: null,
   })),
-  on(RawContentActions.loadRawContent, (state) => ({
+  on(RawContentActions.loadRawContentItem, (state) => ({
     ...state,
-    loaded: false,
     error: null,
   })),
 
@@ -67,10 +66,9 @@ const rawContentReducer = createReducer(
       error: null,
     }),
   ),
-  on(RawContentActions.loadRawContentSuccess, (state, { rawContent }) =>
+  on(RawContentActions.loadRawContentItemSuccess, (state, { rawContent }) =>
     rawContentAdapter.upsertOne(rawContent, {
       ...state,
-      loaded: true,
       error: null,
     }),
   ),
@@ -93,7 +91,7 @@ const rawContentReducer = createReducer(
   // Failures (deduped)
   on(
     RawContentActions.loadRawContentFailure,
-    RawContentActions.loadRawContentFailure,
+    RawContentActions.loadRawContentItemFailure,
     RawContentActions.createRawContentFailure,
     RawContentActions.updateRawContentFailure,
     RawContentActions.deleteRawContentFailure,

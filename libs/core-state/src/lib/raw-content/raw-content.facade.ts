@@ -42,8 +42,8 @@ export class RawContentFacade {
     this.dispatch(RawContentActions.loadRawContent());
   }
 
-  loadRawContent(rawContentId: string) {
-    this.dispatch(RawContentActions.loadRawContent({ rawContentId }));
+  loadRawContentItem(rawContentId: string) {
+    this.dispatch(RawContentActions.loadRawContentItem({ rawContentId }));
   }
 
   saveRawContent(rawContent: RawContent) {

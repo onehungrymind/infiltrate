@@ -1,35 +1,34 @@
-<div class="flex flex-col gap-4">
+<div class="list-container">
   <div
     *ngFor="let rawContent of rawContent"
-    class="border border-gray-200 rounded-lg p-4 cursor-pointer hover:bg-gray-50 transition-colors"
+    class="list-item"
     (click)="selected.emit(rawContent)"
   >
-    <div class="flex justify-between items-start">
-      <div class="flex-1">
-        <h3 class="text-lg font-semibold text-gray-900 mb-2">
-          {{ rawContent.title || rawContent.name || 'Untitled' }}
+    <div class="list-item-content">
+      <div class="list-item-main">
+        <h3 class="list-item-title">
+          {{ rawContent.title || 'Untitled' }}
         </h3>
-        <p class="text-sm text-gray-600" *ngIf="rawContent.description">
-          {{ rawContent.description }}
+        <p class="list-item-meta" *ngIf="rawContent.author">
+          {{ rawContent.author }}
         </p>
-        <p class="text-xs text-gray-500 mt-2" *ngIf="rawContent.created_at">
-          Created: {{ rawContent.created_at | date:'short' }}
+        <p class="list-item-date" *ngIf="rawContent.createdAt">
+          {{ rawContent.createdAt | date:'short' }}
         </p>
       </div>
       <button
         *ngIf="!readonly"
-        mat-icon-button
-        color="warn"
+        class="list-item-delete"
         (click)="onDelete(rawContent); $event.stopPropagation()"
-        class="ml-2"
+        type="button"
       >
         <mat-icon>delete</mat-icon>
       </button>
     </div>
   </div>
 
-  <div *ngIf="rawContent.length === 0" class="text-center py-8 text-gray-500">
-    <mat-icon class="text-4xl mb-2">inbox</mat-icon>
-    <p>No rawContent found</p>
+  <div *ngIf="rawContent.length === 0" class="list-empty">
+    <mat-icon class="list-empty-icon">inbox</mat-icon>
+    <p class="list-empty-text">No raw content found</p>
   </div>
 </div>

@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { SourceConfig } from '@kasita/common-models';
-import { SourceConfigService } from '@kasita/core-data';
+import { SourceConfigsService } from '@kasita/core-data';
 import { of } from 'rxjs';
 import { catchError, exhaustMap, map } from 'rxjs/operators';
 import { SourceConfigsActions } from './source-configs.actions';
@@ -9,7 +9,7 @@ import { SourceConfigsActions } from './source-configs.actions';
 export const loadSourceConfigs = createEffect(
   (
     actions$ = inject(Actions),
-    sourceConfigsService = inject(SourceConfigService),
+    sourceConfigsService = inject(SourceConfigsService),
   ) => {
     return actions$.pipe(
       ofType(SourceConfigsActions.loadSourceConfigs),
@@ -35,7 +35,7 @@ export const loadSourceConfigs = createEffect(
 export const loadSourceConfig = createEffect(
   (
     actions$ = inject(Actions),
-    sourceConfigsService = inject(SourceConfigService),
+    sourceConfigsService = inject(SourceConfigsService),
   ) => {
     return actions$.pipe(
       ofType(SourceConfigsActions.loadSourceConfig),
@@ -61,7 +61,7 @@ export const loadSourceConfig = createEffect(
 export const createSourceConfig = createEffect(
   (
     actions$ = inject(Actions),
-    sourceConfigsService = inject(SourceConfigService),
+    sourceConfigsService = inject(SourceConfigsService),
   ) => {
     return actions$.pipe(
       ofType(SourceConfigsActions.createSourceConfig),
@@ -87,7 +87,7 @@ export const createSourceConfig = createEffect(
 export const updateSourceConfig = createEffect(
   (
     actions$ = inject(Actions),
-    sourceConfigsService = inject(SourceConfigService),
+    sourceConfigsService = inject(SourceConfigsService),
   ) => {
     return actions$.pipe(
       ofType(SourceConfigsActions.updateSourceConfig),
@@ -113,7 +113,7 @@ export const updateSourceConfig = createEffect(
 export const deleteSourceConfig = createEffect(
   (
     actions$ = inject(Actions),
-    sourceConfigsService = inject(SourceConfigService),
+    sourceConfigsService = inject(SourceConfigsService),
   ) => {
     return actions$.pipe(
       ofType(SourceConfigsActions.deleteSourceConfig),

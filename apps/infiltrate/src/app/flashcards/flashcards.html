@@ -1,0 +1,49 @@
+<div class="grid-background"></div>
+
+<div class="container">
+  <header>
+    <h1>INFILTRATE</h1>
+    <div class="subtitle">ML/AI Mastery Protocol</div>
+  </header>
+  
+  <div class="progress-bar">
+    <div class="progress-fill" [style.width.%]="progress"></div>
+  </div>
+  
+  <div class="stats">
+    <div class="stat">Card: <span>{{ currentIndex + 1 }}</span> / <span>{{ flashcards.length }}</span></div>
+    <div class="stat">Phase: <span>{{ phase }}</span></div>
+    <div class="stat">Status: <span>{{ status }}</span></div>
+  </div>
+  
+  <div id="cardSection" [style.display]="showCompletion ? 'none' : 'block'">
+    <div class="card-container">
+      <div class="card" [class.flipped]="isFlipped" (click)="flipCard()" (keydown.enter)="flipCard()" (keydown.space)="flipCard()" tabindex="0" role="button" aria-label="Flashcard - click or press space to flip">
+        <div class="card-face card-front">
+          <div class="card-title">{{ currentCard.question }}</div>
+          <div class="card-hint">CLICK TO REVEAL</div>
+        </div>
+        <div class="card-face card-back">
+          <div class="card-content">{{ currentCard.answer }}</div>
+          <div class="card-hint">CLICK TO FLIP BACK</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="controls">
+      <button (click)="previousCard()" [disabled]="currentIndex === 0">◄ PREVIOUS</button>
+      <button (click)="flipCard()">FLIP CARD</button>
+      <button (click)="nextCard()" [disabled]="currentIndex === flashcards.length - 1">NEXT ►</button>
+    </div>
+  </div>
+  
+  <div class="completion-screen" [class.active]="showCompletion">
+    <div class="completion-title">PROTOCOL COMPLETE</div>
+    <div class="completion-message">
+      You have successfully infiltrated the knowledge matrix.<br>
+      All 20 core ML/AI principles have been loaded into your neural network.<br><br>
+      You are now ready to deploy into any technical conversation.
+    </div>
+    <button (click)="resetDeck()">RESTART PROTOCOL</button>
+  </div>
+</div>

@@ -23,7 +23,7 @@ export class RawContentList {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
         title: 'Delete RawContent',
-        message: `"${rawContent.title || rawContent.name || 'Item'}"`,
+        message: `"${rawContent.title || 'Item'}"`,
         confirmText: 'Delete',
         cancelText: 'Cancel',
       },

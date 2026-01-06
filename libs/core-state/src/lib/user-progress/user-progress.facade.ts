@@ -42,8 +42,8 @@ export class UserProgressFacade {
     this.dispatch(UserProgressActions.loadUserProgress());
   }
 
-  loadUserProgress(userProgressId: string) {
-    this.dispatch(UserProgressActions.loadUserProgress({ userProgressId }));
+  loadUserProgressItem(userProgressId: string) {
+    this.dispatch(UserProgressActions.loadUserProgressItem({ userProgressId }));
   }
 
   saveUserProgress(userProgress: UserProgress) {

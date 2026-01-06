@@ -23,7 +23,7 @@ export class KnowledgeUnitsList {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
         title: 'Delete KnowledgeUnit',
-        message: `"${knowledgeUnit.title || knowledgeUnit.name || 'Item'}"`,
+        message: `"${knowledgeUnit.concept || 'Item'}"`,
         confirmText: 'Delete',
         cancelText: 'Cancel',
       },

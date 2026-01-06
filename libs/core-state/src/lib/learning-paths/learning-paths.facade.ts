@@ -13,7 +13,7 @@ import { filter } from 'rxjs';
 @Injectable({
   providedIn: 'root',
 })
-export class LearningPathFacade {
+export class LearningPathsFacade {
   private readonly store = inject(Store);
   private readonly actions$ = inject(ActionsSubject);
 

@@ -3,6 +3,8 @@
 
 /* Configuration */
 export * from './lib/config/api-url.token';
+export * from './lib/services/auth.service';
+export * from './lib/guards/auth.guard';
 
 /* LearningPaths */
 export * from './lib/services/learning-paths/learning-paths.service';

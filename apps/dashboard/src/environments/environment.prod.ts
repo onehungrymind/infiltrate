@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  apiUrl: process.env['API_URL'] || 'https://api.kasita.app/api',
+  apiUrl: 'https://api.kasita.app/api', // Will be replaced by build-time env var
 };
 

@@ -1,14 +1,12 @@
-<div
-  class="grid grid-cols-1 lg:grid-cols-2 h-full pl-4 sm:pl-8 md:pl-8 lg:ml-64 xl:ml-64 pr-4 sm:pr-8 md:pr-8 lg:pr-4 xl:pr-4 gap-6 md:pt-8 lg:pt-0 pt-6"
->
-  <div>
+<div class="master-detail-layout">
+  <div class="master-panel">
     <app-learning-paths-list
       [learningPaths]="(learningPaths$ | async) ?? []"
       (selected)="selectLearningPath($event)"
       (deleted)="deleteLearningPath($event)"
     ></app-learning-paths-list>
   </div>
-  <div>
+  <div class="detail-panel">
     <app-learning-path-detail
       [learningPath]="selectedLearningPath$ | async"
       (saved)="saveLearningPath($event)"

@@ -1,7 +1,7 @@
 import { AsyncPipe } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { SourceConfig } from '@kasita/common-models';
-import { SourceConfigsFacade } from '@kasita/core-state';
+import { SourceConfigFacade } from '@kasita/core-state';
 import { Observable } from 'rxjs';
 import { SourceConfigDetail } from './source-config-detail/source-config-detail';
 import { SourceConfigsList } from './source-configs-list/source-configs-list';
@@ -13,7 +13,7 @@ import { SourceConfigsList } from './source-configs-list/source-configs-list';
   styleUrl: './source-configs.scss',
 })
 export class SourceConfigs implements OnInit {
-  private sourceConfigsFacade = inject(SourceConfigsFacade);
+  private sourceConfigsFacade = inject(SourceConfigFacade);
 
   sourceConfigs$: Observable<SourceConfig[]> =
     this.sourceConfigsFacade.allSourceConfigs$;

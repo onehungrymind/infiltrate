@@ -1,7 +1,7 @@
 import { AsyncPipe } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { KnowledgeUnit } from '@kasita/common-models';
-import { KnowledgeUnitsFacade } from '@kasita/core-state';
+import { KnowledgeUnitFacade } from '@kasita/core-state';
 import { Observable } from 'rxjs';
 import { KnowledgeUnitDetail } from './knowledge-unit-detail/knowledge-unit-detail';
 import { KnowledgeUnitsList } from './knowledge-units-list/knowledge-units-list';
@@ -13,7 +13,7 @@ import { KnowledgeUnitsList } from './knowledge-units-list/knowledge-units-list'
   styleUrl: './knowledge-units.scss',
 })
 export class KnowledgeUnits implements OnInit {
-  private knowledgeUnitsFacade = inject(KnowledgeUnitsFacade);
+  private knowledgeUnitsFacade = inject(KnowledgeUnitFacade);
 
   knowledgeUnits$: Observable<KnowledgeUnit[]> =
     this.knowledgeUnitsFacade.allKnowledgeUnits$;

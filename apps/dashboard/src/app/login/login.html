@@ -1,0 +1,55 @@
+<div class="login-container">
+  <div class="login-card">
+    <h1>Kasita Dashboard</h1>
+    <p class="subtitle">Sign in to continue</p>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input
+          id="email"
+          type="email"
+          formControlName="email"
+          placeholder="demo@kasita.com"
+          [class.error]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
+        />
+        @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
+          <span class="error-message">Valid email is required</span>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input
+          id="password"
+          type="password"
+          formControlName="password"
+          placeholder="Enter any password (demo)"
+          [class.error]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+        />
+        @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
+          <span class="error-message">Password is required (min 3 characters)</span>
+        }
+      </div>
+
+      @if (error) {
+        <div class="error-alert">
+          {{ error }}
+        </div>
+      }
+
+      <button type="submit" [disabled]="loading || loginForm.invalid" class="login-button">
+        @if (loading) {
+          <span>Signing in...</span>
+        } @else {
+          <span>Sign In</span>
+        }
+      </button>
+
+      <p class="demo-note">
+        <small>Demo mode: Any credentials will work</small>
+      </p>
+    </form>
+  </div>
+</div>
+
