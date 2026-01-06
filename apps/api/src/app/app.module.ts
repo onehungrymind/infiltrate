@@ -10,6 +10,7 @@ import { KnowledgeUnitsModule } from '../knowledge-units/knowledge-units.module'
 import { UserProgressModule } from '../user-progress/user-progress.module';
 import { IngestionModule } from '../ingestion/ingestion.module';
 import { ProgressGateway } from '../progress/progress.gateway';
+import { DatabaseModule } from '../database/database.module';
 import { LearningPath } from '../learning-paths/entities/learning-path.entity';
 import { SourceConfig } from '../source-configs/entities/source-config.entity';
 import { RawContent } from '../raw-content/entities/raw-content.entity';
@@ -34,6 +35,7 @@ import { UserProgress } from '../user-progress/entities/user-progress.entity';
     KnowledgeUnitsModule,
     UserProgressModule,
     IngestionModule,
+    DatabaseModule,
   ],
   controllers: [AppController],
   providers: [AppService, ProgressGateway],

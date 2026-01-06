@@ -1,0 +1,197 @@
+// Seed payload for Kasita domain model
+export const seedPayload = {
+  learningPaths: [
+    {
+      userId: 'demo-user-1',
+      name: 'React Server Components',
+      domain: 'Web Development',
+      targetSkill: 'Build production-ready RSC applications',
+      status: 'in-progress' as const,
+    },
+    {
+      userId: 'demo-user-1',
+      name: 'Machine Learning Fundamentals',
+      domain: 'Data Science',
+      targetSkill: 'Understand core ML concepts and algorithms',
+      status: 'not-started' as const,
+    },
+    {
+      userId: 'demo-user-2',
+      name: 'TypeScript Advanced Patterns',
+      domain: 'Web Development',
+      targetSkill: 'Master advanced TypeScript features',
+      status: 'in-progress' as const,
+    },
+  ],
+  knowledgeUnits: [
+    // React Server Components
+    {
+      pathId: 'path-1', // Will be replaced with actual ID
+      concept: 'Server Components',
+      question: 'What are React Server Components and how do they differ from Client Components?',
+      answer: 'Server Components are React components that render exclusively on the server. They differ from Client Components in that they can directly access backend resources like databases and file systems, cannot use browser-only APIs, and cannot maintain client-side state or handle user interactions.',
+      elaboration: 'Server Components are part of React\'s architecture for building applications that leverage both server and client rendering. They enable better performance by reducing JavaScript bundle size and allowing data fetching directly in components.',
+      examples: [
+        'A Server Component that fetches data from a database without exposing API routes',
+        'Using Server Components to render static content that doesn\'t require interactivity',
+        'Composing Server and Client Components together in the same component tree',
+      ],
+      analogies: [
+        'Think of Server Components like a restaurant kitchen - they prepare the meal (render) before it reaches you, while Client Components are like the table service - interactive and present during your meal.',
+      ],
+      commonMistakes: [
+        'Trying to use useState or useEffect in Server Components',
+        'Importing browser-only APIs like window or document',
+        'Passing non-serializable props (functions, class instances) from Server to Client Components',
+      ],
+      difficulty: 'intermediate' as const,
+      cognitiveLevel: 'understand' as const,
+      estimatedTimeSeconds: 300,
+      tags: ['react', 'server-components', 'rendering'],
+      sourceIds: [],
+      status: 'approved' as const,
+    },
+    {
+      pathId: 'path-1',
+      concept: 'Streaming SSR',
+      question: 'How does React Server Components enable streaming and progressive rendering?',
+      answer: 'React Server Components enable streaming by allowing the server to send component output as it renders, rather than waiting for the entire page. This means critical content can appear immediately while non-critical sections load progressively.',
+      elaboration: 'Streaming works by sending a stream of HTML/React instructions that the client can process incrementally. Suspense boundaries define chunks that can be streamed independently.',
+      examples: [
+        'A blog post header streaming immediately while comments load separately',
+        'Product details appearing before reviews finish loading',
+      ],
+      analogies: [
+        'Like watching a video on slow internet - you see the beginning immediately while the rest buffers.',
+      ],
+      commonMistakes: [
+        'Forgetting to wrap async Server Components in Suspense',
+        'Not properly handling loading states',
+      ],
+      difficulty: 'advanced' as const,
+      cognitiveLevel: 'apply' as const,
+      estimatedTimeSeconds: 420,
+      tags: ['react', 'streaming', 'ssr', 'performance'],
+      sourceIds: [],
+      status: 'approved' as const,
+    },
+    // Machine Learning
+    {
+      pathId: 'path-2',
+      concept: 'Gradient Descent',
+      question: 'How does gradient descent optimize machine learning models?',
+      answer: 'Gradient descent is an optimization algorithm that minimizes a cost function by iteratively moving in the direction of the steepest descent (negative gradient). It updates model parameters step by step until reaching a minimum (or convergence).',
+      elaboration: 'There are variants like stochastic gradient descent (SGD) which uses random samples, and batch gradient descent which uses the entire dataset. Learning rate controls step size.',
+      examples: [
+        'Training a linear regression model to fit a line through data points',
+        'Optimizing neural network weights during backpropagation',
+      ],
+      analogies: [
+        'Like walking down a hill blindfolded, always taking a step in the steepest downward direction until you reach the bottom.',
+      ],
+      commonMistakes: [
+        'Setting learning rate too high (overshooting) or too low (too slow)',
+        'Not normalizing features before gradient descent',
+        'Getting stuck in local minima',
+      ],
+      difficulty: 'beginner' as const,
+      cognitiveLevel: 'understand' as const,
+      estimatedTimeSeconds: 600,
+      tags: ['machine-learning', 'optimization', 'gradient-descent'],
+      sourceIds: [],
+      status: 'approved' as const,
+    },
+    // TypeScript
+    {
+      pathId: 'path-3',
+      concept: 'Conditional Types',
+      question: 'What are TypeScript conditional types and when would you use them?',
+      answer: 'Conditional types allow types to be selected based on a condition using the syntax `T extends U ? X : Y`. They enable type-level logic and are useful for creating utility types that transform or filter other types.',
+      elaboration: 'Conditional types are evaluated recursively and can be combined with mapped types and template literal types for powerful type manipulation. They\'re the foundation of many built-in utility types like Exclude, Extract, and NonNullable.',
+      examples: [
+        'Creating a utility type that extracts return types from functions',
+        'Filtering object properties based on their value types',
+        'Building type-safe API client types from endpoint definitions',
+      ],
+      analogies: [
+        'Like a type-level if-else statement that chooses one type or another based on a condition.',
+      ],
+      commonMistakes: [
+        'Creating overly complex conditional type chains that become unreadable',
+        'Not understanding distributivity in conditional types',
+        'Trying to use conditional types at runtime (they\'re compile-time only)',
+      ],
+      difficulty: 'advanced' as const,
+      cognitiveLevel: 'apply' as const,
+      estimatedTimeSeconds: 480,
+      tags: ['typescript', 'types', 'advanced', 'generics'],
+      sourceIds: [],
+      status: 'approved' as const,
+    },
+  ],
+  sourceConfigs: [
+    {
+      pathId: 'path-1',
+      url: 'https://javascriptweekly.com/rss',
+      type: 'rss' as const,
+      name: 'JavaScript Weekly',
+      enabled: true,
+    },
+    {
+      pathId: 'path-1',
+      url: 'https://react.statuscode.com/rss',
+      type: 'rss' as const,
+      name: 'React Status',
+      enabled: true,
+    },
+    {
+      pathId: 'path-2',
+      url: 'https://distill.pub/rss.xml',
+      type: 'rss' as const,
+      name: 'Distill.pub',
+      enabled: true,
+    },
+  ],
+  rawContent: [
+    {
+      pathId: 'path-1',
+      sourceType: 'rss',
+      sourceUrl: 'https://javascriptweekly.com/issues/600',
+      title: 'React Server Components: The Full Guide',
+      content: 'React Server Components represent a paradigm shift in how we think about React applications...',
+      author: 'Dan Abramov',
+      publishedDate: new Date('2024-01-15'),
+      metadata: {
+        feed: 'JavaScript Weekly',
+        category: 'React',
+      },
+    },
+    {
+      pathId: 'path-2',
+      sourceType: 'article',
+      sourceUrl: 'https://example.com/gradient-descent-explained',
+      title: 'Understanding Gradient Descent: A Visual Guide',
+      content: 'Gradient descent is one of the most fundamental optimization algorithms in machine learning...',
+      author: 'ML Expert',
+      publishedDate: new Date('2024-02-01'),
+      metadata: {
+        readingTime: 8,
+        tags: ['machine-learning', 'optimization'],
+      },
+    },
+  ],
+  userProgress: [
+    {
+      userId: 'demo-user-1',
+      unitId: 'unit-1', // Will be replaced with actual ID
+      masteryLevel: 'learning' as const,
+      confidence: 65,
+      easinessFactor: 2.3,
+      interval: 1,
+      repetitions: 2,
+      nextReviewDate: new Date(Date.now() + 24 * 60 * 60 * 1000), // Tomorrow
+      attempts: 3,
+      lastAttemptAt: new Date(),
+    },
+  ],
+};
