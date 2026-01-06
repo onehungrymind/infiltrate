@@ -8,5 +8,6 @@ import { KnowledgeUnit } from './entities/knowledge-unit.entity';
   imports: [TypeOrmModule.forFeature([KnowledgeUnit])],
   controllers: [KnowledgeUnitsController],
   providers: [KnowledgeUnitsService],
+  exports: [KnowledgeUnitsService],
 })
 export class KnowledgeUnitsModule {}

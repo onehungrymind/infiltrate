@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { SourceConfigsService } from './source-configs.service';
 import { CreateSourceConfigDto } from './dto/create-source-config.dto';
 import { UpdateSourceConfigDto } from './dto/update-source-config.dto';
@@ -13,7 +13,10 @@ export class SourceConfigsController {
   }
 
   @Get()
-  findAll() {
+  findAll(@Query('enabled') enabled?: string) {
+    if (enabled === 'true') {
+      return this.sourceConfigsService.findEnabled();
+    }
     return this.sourceConfigsService.findAll();
   }
 

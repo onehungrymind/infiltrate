@@ -1,10 +1,12 @@
 import { Controller, Post, HttpCode, HttpStatus } from '@nestjs/common';
 import { SeederService } from './seeder.service';
+import { Public } from '../auth/decorators/public.decorator';
 
 @Controller('seed')
 export class SeedController {
   constructor(private readonly seederService: SeederService) {}
 
+  @Public()
   @Post()
   @HttpCode(HttpStatus.OK)
   async seedDatabase() {
@@ -26,6 +28,7 @@ export class SeedController {
   }
 
 
+  @Public()
   @Post('clear')
   @HttpCode(HttpStatus.OK)
   async clearDatabase() {

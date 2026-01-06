@@ -24,6 +24,12 @@ export class SourceConfigsService {
     return await this.sourceConfigRepository.find();
   }
 
+  async findEnabled(): Promise<SourceConfig[]> {
+    return await this.sourceConfigRepository.find({
+      where: { enabled: true },
+    });
+  }
+
   async findOne(id: string): Promise<SourceConfig> {
     const sourceConfig = await this.sourceConfigRepository.findOne({ where: { id } });
     if (!sourceConfig) {

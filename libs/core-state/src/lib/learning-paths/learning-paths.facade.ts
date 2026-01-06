@@ -6,6 +6,7 @@ import { LearningPathsActions } from './learning-paths.actions';
 import {
   selectAllLearningPaths,
   selectLearningPathsLoaded,
+  selectLearningPathsError,
   selectSelectedLearningPath,
 } from './learning-paths.feature';
 import { filter } from 'rxjs';
@@ -18,6 +19,7 @@ export class LearningPathsFacade {
   private readonly actions$ = inject(ActionsSubject);
 
   loaded$ = this.store.select(selectLearningPathsLoaded);
+  error$ = this.store.select(selectLearningPathsError);
   allLearningPaths$ = this.store.select(selectAllLearningPaths);
   selectedLearningPath$ = this.store.select(selectSelectedLearningPath);
 

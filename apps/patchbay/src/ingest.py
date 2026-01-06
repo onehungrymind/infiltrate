@@ -2,9 +2,11 @@
 from pathlib import Path
 from typing import Optional
 import logging
+import os
 from models.raw_content import RawContentBatch
 from src.router import AdapterRouter
 from src.normalizer import ContentNormalizer
+from src.api_client import KasitaApiClient
 from python_shared.file_io import DataWriter
 
 
@@ -17,12 +19,16 @@ class Ingestor:
     def __init__(
         self,
         data_dir: str | Path = "data",
-        min_content_length: int = 100
+        min_content_length: int = 100,
+        use_api: bool = True,
+        api_base_url: Optional[str] = None
     ):
         self.router = AdapterRouter()
         self.normalizer = ContentNormalizer()
         self.writer = DataWriter(base_path=data_dir)
         self.min_content_length = min_content_length
+        self.use_api = use_api and os.getenv("API_URL") is not None
+        self.api_client = KasitaApiClient(api_base_url) if self.use_api else None
     
     def ingest(self, url: str, skip_validation: bool = False) -> Optional[RawContentBatch]:
         """
@@ -77,6 +83,29 @@ class Ingestor:
             logger.warning("No items passed validation")
             return None
         
+        # Try to ingest to API if enabled
+        path_id = os.getenv("DEFAULT_PATH_ID")
+        if self.use_api and self.api_client and path_id:
+            try:
+                # Ingest to API (batch if multiple items, single otherwise)
+                if batch.total > 1:
+                    results = self.api_client.ingest_raw_content_batch(
+                        batch.items,
+                        path_id
+                    )
+                    if results:
+                        logger.info(f"Successfully ingested {len(results)} items to API")
+                else:
+                    result = self.api_client.ingest_raw_content(
+                        batch.items[0],
+                        path_id
+                    )
+                    if result:
+                        logger.info(f"Successfully ingested to API: {batch.items[0].title}")
+            except Exception as e:
+                logger.warning(f"API ingestion failed, falling back to file writing: {e}")
+        
+        # Always write to files as backup
         # For JavaScript Weekly issues, write all articles in one file per issue
         # For other sources, write one file per item
         use_per_item = batch.source_type != "javascript_weekly"

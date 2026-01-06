@@ -38,14 +38,25 @@ def main():
     command = sys.argv[1]
     
     if command == "ingest":
-        # Get sources from environment or config file
-        sources_env = os.getenv("RSS_SOURCES", "")
-        if not sources_env:
-            logger.error("No sources configured. Set RSS_SOURCES environment variable.")
-            sys.exit(1)
+        # Try to get sources from API first, fall back to environment
+        sources = []
+        api_url = os.getenv("API_URL")
+        if api_url:
+            from src.api_client import KasitaApiClient
+            api_client = KasitaApiClient(api_url)
+            source_configs = api_client.get_enabled_source_configs()
+            if source_configs:
+                sources = [config["url"] for config in source_configs]
+                logger.info(f"Fetched {len(sources)} sources from API")
         
-        sources = [s.strip() for s in sources_env.split(",")]
-        logger.info(f"Ingesting {len(sources)} sources")
+        # Fall back to environment variable if no API sources
+        if not sources:
+            sources_env = os.getenv("RSS_SOURCES", "")
+            if not sources_env:
+                logger.error("No sources configured. Set RSS_SOURCES environment variable or configure API_URL.")
+                sys.exit(1)
+            sources = [s.strip() for s in sources_env.split(",")]
+            logger.info(f"Using {len(sources)} sources from environment")
         
         results = ingestor.ingest_multiple(sources)
         

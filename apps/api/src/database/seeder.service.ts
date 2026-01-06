@@ -6,7 +6,9 @@ import { KnowledgeUnit } from '../knowledge-units/entities/knowledge-unit.entity
 import { RawContent } from '../raw-content/entities/raw-content.entity';
 import { SourceConfig } from '../source-configs/entities/source-config.entity';
 import { UserProgress } from '../user-progress/entities/user-progress.entity';
+import { User } from '../users/entities/user.entity';
 import { seedPayload } from './seed-payload';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class SeederService {
@@ -23,6 +25,8 @@ export class SeederService {
     private sourceConfigsRepository: Repository<SourceConfig>,
     @InjectRepository(UserProgress)
     private userProgressRepository: Repository<UserProgress>,
+    @InjectRepository(User)
+    private usersRepository: Repository<User>,
   ) {}
 
   async seed(): Promise<void> {
@@ -38,11 +42,15 @@ export class SeederService {
   }
 
   /**
-   * Seeds the database with learning paths, knowledge units, source configs, raw content, and user progress
+   * Seeds the database with users, learning paths, knowledge units, source configs, raw content, and user progress
    */
   private async seedData(): Promise<void> {
-    // 1) Seed Learning Paths first
-    const learningPaths = await this.seedLearningPaths();
+    // 0) Seed Users first
+    const users = await this.seedUsers();
+    this.logger.log(`👤 Seeded ${users.length} users`);
+
+    // 1) Seed Learning Paths (linked to users)
+    const learningPaths = await this.seedLearningPaths(users);
     this.logger.log(`📚 Seeded ${learningPaths.length} learning paths`);
 
     // 2) Seed Source Configs (linked to learning paths)
@@ -57,15 +65,35 @@ export class SeederService {
     const knowledgeUnits = await this.seedKnowledgeUnits(learningPaths);
     this.logger.log(`💡 Seeded ${knowledgeUnits.length} knowledge units`);
 
-    // 5) Seed User Progress (linked to knowledge units)
-    await this.seedUserProgress(knowledgeUnits);
+    // 5) Seed User Progress (linked to knowledge units and users)
+    await this.seedUserProgress(knowledgeUnits, users);
     this.logger.log('📊 Seeded user progress');
   }
 
-  private async seedLearningPaths(): Promise<LearningPath[]> {
+  private async seedUsers(): Promise<User[]> {
+    // Hash password for test user
+    const saltRounds = 12;
+    const hashedPassword = await bcrypt.hash('insecure', saltRounds);
+
+    const testUser = this.usersRepository.create({
+      email: 'test@test.com',
+      password: hashedPassword,
+      name: 'Test User',
+      isActive: true,
+      role: 'user',
+    });
+
+    const savedUser = await this.usersRepository.save(testUser);
+    return [savedUser];
+  }
+
+  private async seedLearningPaths(users: User[]): Promise<LearningPath[]> {
+    const testUserId = users[0]?.id || 'demo-user-1';
+
     const learningPaths = await this.learningPathsRepository.save(
       seedPayload.learningPaths.map(path => ({
         ...path,
+        userId: testUserId, // Use the seeded test user ID
         status: path.status || 'not-started',
       })),
     );
@@ -130,13 +158,16 @@ export class SeederService {
     return savedUnits;
   }
 
-  private async seedUserProgress(knowledgeUnits: KnowledgeUnit[]): Promise<void> {
+  private async seedUserProgress(knowledgeUnits: KnowledgeUnit[], users: User[]): Promise<void> {
+    const testUserId = users[0]?.id || 'demo-user-1';
+
     const progressToSave = seedPayload.userProgress.map(progress => {
       // Find knowledge unit (using first one for demo, or match by index)
       const unitId = knowledgeUnits[0]?.id;
 
       return {
         ...progress,
+        userId: testUserId, // Use the seeded test user ID
         unitId: unitId || knowledgeUnits[0]?.id,
         nextReviewDate: progress.nextReviewDate || new Date(Date.now() + 24 * 60 * 60 * 1000),
         lastAttemptAt: progress.lastAttemptAt || new Date(),
@@ -152,6 +183,7 @@ export class SeederService {
     await this.rawContentRepository.clear();
     await this.sourceConfigsRepository.clear();
     await this.learningPathsRepository.clear();
+    await this.usersRepository.clear();
     this.logger.log('🧹 Cleared existing data');
   }
 }

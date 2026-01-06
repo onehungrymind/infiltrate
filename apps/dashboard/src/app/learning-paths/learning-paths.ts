@@ -2,13 +2,14 @@ import { AsyncPipe } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { LearningPath } from '@kasita/common-models';
 import { LearningPathsFacade } from '@kasita/core-state';
+import { MaterialModule } from '@kasita/material';
 import { Observable } from 'rxjs';
 import { LearningPathDetail } from './learning-path-detail/learning-path-detail';
 import { LearningPathsList } from './learning-paths-list/learning-paths-list';
 
 @Component({
   selector: 'app-learning-paths',
-  imports: [LearningPathsList, LearningPathDetail, AsyncPipe],
+  imports: [LearningPathsList, LearningPathDetail, AsyncPipe, MaterialModule],
   templateUrl: './learning-paths.html',
   styleUrl: './learning-paths.scss',
 })
@@ -19,6 +20,8 @@ export class LearningPaths implements OnInit {
     this.learningPathsFacade.allLearningPaths$;
   selectedLearningPath$: Observable<LearningPath | null> =
     this.learningPathsFacade.selectedLearningPath$;
+  loaded$ = this.learningPathsFacade.loaded$;
+  error$ = this.learningPathsFacade.error$;
   mutations$ = this.learningPathsFacade.mutations$;
 
   constructor() {

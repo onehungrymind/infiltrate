@@ -49,7 +49,7 @@ export class Login implements OnInit {
         },
         error: (err) => {
           this.loading = false;
-          this.error = err.message || 'Login failed';
+          this.error = err.error?.message || err.message || 'Login failed';
         },
       });
     }

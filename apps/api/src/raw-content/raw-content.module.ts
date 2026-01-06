@@ -8,5 +8,6 @@ import { RawContent } from './entities/raw-content.entity';
   imports: [TypeOrmModule.forFeature([RawContent])],
   controllers: [RawContentController],
   providers: [RawContentService],
+  exports: [RawContentService],
 })
 export class RawContentModule {}

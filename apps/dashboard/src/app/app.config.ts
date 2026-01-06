@@ -4,7 +4,7 @@ import {
   isDevMode,
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideStore } from '@ngrx/store';
 import { provideEffects } from '@ngrx/effects';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
@@ -23,12 +23,13 @@ import {
   SourceConfigsEffects,
   UserProgressEffects,
 } from '@kasita/core-state';
+import { authInterceptor } from '@kasita/core-data';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(appRoutes),
-    provideHttpClient(),
+    provideHttpClient(withInterceptors([authInterceptor])),
     { provide: API_URL, useValue: environment.apiUrl },
     // NgRx Store Configuration
     provideStore({
