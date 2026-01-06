@@ -1,4 +1,4 @@
-import { Tree, formatFiles, generateFiles, joinPathFragments, names, readProjectConfiguration } from '@nx/devkit';
+import { Tree, formatFiles, generateFiles, joinPathFragments, names, readProjectConfiguration, readJson } from '@nx/devkit';
 import { NgHttpServiceGeneratorSchema } from './schema';
 
 export async function ngHttpServiceGenerator(
@@ -11,13 +11,18 @@ export async function ngHttpServiceGenerator(
   const projectConfig = readProjectConfiguration(tree, project);
   const projectRoot = projectConfig.root;
   
+  // Extract npm scope from workspace package.json
+  const packageJson = readJson(tree, 'package.json');
+  const npmScope = packageJson.name?.match(/^@([^/]+)/)?.[1] || '';
+  const npmScopePrefix = npmScope ? `@${npmScope}` : '';
+  
   // Generate the service names from the plural name
   const serviceName = names(pluralName).fileName;
   const serviceClassName = names(pluralName).className;
   
-  // Use the provided singular and plural names directly
-  const singularPropertyName = singularName;
-  const pluralPropertyName = pluralName;
+  // Convert names to proper formats for use in code
+  const singularPropertyName = names(singularName).propertyName; // camelCase for parameter names
+  const pluralPropertyName = names(pluralName).propertyName; // camelCase for parameter names
   
   // Automatically set the path to the services directory
   const targetPath = joinPathFragments(projectRoot, 'src', 'lib', 'services', pluralName);
@@ -37,6 +42,7 @@ export async function ngHttpServiceGenerator(
     servicePascalCase: serviceClassName,
     serviceSnakeCase: serviceName.replace(/-/g, '_'),
     serviceScreamingSnakeCase: serviceName.replace(/-/g, '_').toUpperCase(),
+    npmScope: npmScopePrefix, // e.g., '@kasita' or '@articool'
     skipTests,
   };
 
@@ -47,6 +53,12 @@ export async function ngHttpServiceGenerator(
     targetPath,
     templateVariables
   );
+
+  // Remove any .DS_Store files that may have been copied (macOS system files)
+  const dsStorePath = joinPathFragments(targetPath, '.DS_Store');
+  if (tree.exists(dsStorePath)) {
+    tree.delete(dsStorePath);
+  }
 
   // Remove test file if skipTests is true
   if (skipTests) {

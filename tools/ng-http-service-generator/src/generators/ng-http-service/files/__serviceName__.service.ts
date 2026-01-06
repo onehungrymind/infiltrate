@@ -4,15 +4,13 @@ import {
   <%= singularClassName %>,
   Create<%= singularClassName %>Dto,
   Update<%= singularClassName %>Dto,
-} from '@articool/api-interfaces';
+} from '<%= npmScope %>/api-interfaces';
 import {
   extractDtoProperties,
   getDtoKeys,
   ENTITY_DTO_KEYS,
 } from '../../utils/dto.utils';
-
-// TEMPORARY
-const API_URL = 'http://localhost:3100/api';
+import { API_URL } from '../../config/api-url.token';
 
 /**
  * Converts a <%= singularClassName %> to Create<%= singularClassName %>Dto by excluding auto-generated fields
@@ -40,6 +38,7 @@ export class <%= serviceClassName %>Service {
   model = '<%= serviceCamelCase %>';
 
   private http = inject(HttpClient);
+  private apiUrl = inject(API_URL);
 
   all() {
     return this.http.get<<%= singularClassName %>[]>(this.getUrl());
@@ -64,7 +63,7 @@ export class <%= serviceClassName %>Service {
   }
 
   private getUrl() {
-    return `${API_URL}/${this.model}`;
+    return `${this.apiUrl}/${this.model}`;
   }
 
   private getUrlWithId(id: string | undefined | null) {

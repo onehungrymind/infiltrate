@@ -85,8 +85,8 @@ describe('ng-http-service generator', () => {
       
       expect(content).toContain('export class UserProfilesService');
       expect(content).toContain('UserProfile');
-      // Note: singularPropertyName uses singularName directly, so 'user-profile' is used as-is
-      expect(content).toContain('user-profile');
+      // singularPropertyName is converted to camelCase, so 'user-profile' becomes 'userProfile'
+      expect(content).toContain('userProfile');
     });
   });
 
