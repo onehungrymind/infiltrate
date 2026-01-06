@@ -1,4 +1,6 @@
-<app-header></app-header>
-<main class="main-content">
+@if (!isLoginPage()) {
+  <app-header></app-header>
+}
+<main [class.main-content]="!isLoginPage()" [class.login-route]="isLoginPage()">
   <router-outlet></router-outlet>
 </main>
