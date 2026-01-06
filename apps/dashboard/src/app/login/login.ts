@@ -2,7 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
-import { AuthService } from '@kasita/core-data';
+import { AuthService, formatErrorMessage } from '@kasita/core-data';
 
 @Component({
   selector: 'app-login',
@@ -24,7 +24,7 @@ export class Login implements OnInit {
   constructor() {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(3)]],
+      password: ['', [Validators.required, Validators.minLength(8)]],
     });
   }
 
@@ -49,7 +49,7 @@ export class Login implements OnInit {
         },
         error: (err) => {
           this.loading = false;
-          this.error = err.error?.message || err.message || 'Login failed';
+          this.error = formatErrorMessage(err);
         },
       });
     }

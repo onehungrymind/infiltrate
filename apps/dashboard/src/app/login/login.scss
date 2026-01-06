@@ -229,15 +229,4 @@
     }
   }
 
-  .demo-note {
-    margin-top: 20px;
-    text-align: center;
-    color: #9ca3af;
-    font-size: 12px;
-  }
-  
-  :host-context(.dark) .demo-note,
-  .dark .demo-note {
-    color: #6b7280;
-  }
 }

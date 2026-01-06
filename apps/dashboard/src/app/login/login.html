@@ -10,7 +10,7 @@
           id="email"
           type="email"
           formControlName="email"
-          placeholder="demo@kasita.com"
+          placeholder="your.email@example.com"
           [class.error]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
         />
         @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
@@ -24,11 +24,11 @@
           id="password"
           type="password"
           formControlName="password"
-          placeholder="Enter any password (demo)"
+          placeholder="Enter your password"
           [class.error]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
         />
         @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
-          <span class="error-message">Password is required (min 3 characters)</span>
+          <span class="error-message">Password is required (minimum 8 characters)</span>
         }
       </div>
 
@@ -45,10 +45,6 @@
           <span>Sign In</span>
         }
       </button>
-
-      <p class="demo-note">
-        <small>Demo mode: Any credentials will work</small>
-      </p>
     </form>
   </div>
 </div>
