@@ -35,3 +35,39 @@
   overflow-y: auto;
   min-height: calc(100vh - 112px);
 }
+
+.loading-message,
+.error-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 2rem;
+  text-align: center;
+  min-height: 200px;
+}
+
+.loading-message {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.error-message {
+  color: #d32f2f;
+  
+  mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+  }
+}
+
+:host-context(.dark) .loading-message,
+.dark .loading-message {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+:host-context(.dark) .error-message,
+.dark .error-message {
+  color: #f44336;
+}

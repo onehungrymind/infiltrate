@@ -6,6 +6,7 @@ import { RawContentActions } from './raw-content.actions';
 import {
   selectAllRawContent,
   selectRawContentLoaded,
+  selectRawContentError,
   selectSelectedRawContent,
 } from './raw-content.feature';
 import { filter } from 'rxjs';
@@ -18,6 +19,7 @@ export class RawContentFacade {
   private readonly actions$ = inject(ActionsSubject);
 
   loaded$ = this.store.select(selectRawContentLoaded);
+  error$ = this.store.select(selectRawContentError);
   allRawContent$ = this.store.select(selectAllRawContent);
   selectedRawContent$ = this.store.select(selectSelectedRawContent);
 

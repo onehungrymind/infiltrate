@@ -6,6 +6,7 @@ import { UserProgressActions } from './user-progress.actions';
 import {
   selectAllUserProgress,
   selectUserProgressLoaded,
+  selectUserProgressError,
   selectSelectedUserProgress,
 } from './user-progress.feature';
 import { filter } from 'rxjs';
@@ -18,6 +19,7 @@ export class UserProgressFacade {
   private readonly actions$ = inject(ActionsSubject);
 
   loaded$ = this.store.select(selectUserProgressLoaded);
+  error$ = this.store.select(selectUserProgressError);
   allUserProgress$ = this.store.select(selectAllUserProgress);
   selectedUserProgress$ = this.store.select(selectSelectedUserProgress);
 

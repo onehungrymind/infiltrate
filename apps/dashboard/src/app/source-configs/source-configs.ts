@@ -2,13 +2,14 @@ import { AsyncPipe } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { SourceConfig } from '@kasita/common-models';
 import { SourceConfigFacade } from '@kasita/core-state';
+import { MaterialModule } from '@kasita/material';
 import { Observable } from 'rxjs';
 import { SourceConfigDetail } from './source-config-detail/source-config-detail';
 import { SourceConfigsList } from './source-configs-list/source-configs-list';
 
 @Component({
   selector: 'app-source-configs',
-  imports: [SourceConfigsList, SourceConfigDetail, AsyncPipe],
+  imports: [SourceConfigsList, SourceConfigDetail, AsyncPipe, MaterialModule],
   templateUrl: './source-configs.html',
   styleUrl: './source-configs.scss',
 })
@@ -19,6 +20,8 @@ export class SourceConfigs implements OnInit {
     this.sourceConfigsFacade.allSourceConfigs$;
   selectedSourceConfig$: Observable<SourceConfig | null> =
     this.sourceConfigsFacade.selectedSourceConfig$;
+  loaded$ = this.sourceConfigsFacade.loaded$;
+  error$ = this.sourceConfigsFacade.error$;
   mutations$ = this.sourceConfigsFacade.mutations$;
 
   constructor() {

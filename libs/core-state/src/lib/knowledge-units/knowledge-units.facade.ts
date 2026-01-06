@@ -6,6 +6,7 @@ import { KnowledgeUnitsActions } from './knowledge-units.actions';
 import {
   selectAllKnowledgeUnits,
   selectKnowledgeUnitsLoaded,
+  selectKnowledgeUnitsError,
   selectSelectedKnowledgeUnit,
 } from './knowledge-units.feature';
 import { filter } from 'rxjs';
@@ -18,6 +19,7 @@ export class KnowledgeUnitFacade {
   private readonly actions$ = inject(ActionsSubject);
 
   loaded$ = this.store.select(selectKnowledgeUnitsLoaded);
+  error$ = this.store.select(selectKnowledgeUnitsError);
   allKnowledgeUnits$ = this.store.select(selectAllKnowledgeUnits);
   selectedKnowledgeUnit$ = this.store.select(selectSelectedKnowledgeUnit);
 

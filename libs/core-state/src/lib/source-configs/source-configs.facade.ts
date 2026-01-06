@@ -6,6 +6,7 @@ import { SourceConfigsActions } from './source-configs.actions';
 import {
   selectAllSourceConfigs,
   selectSourceConfigsLoaded,
+  selectSourceConfigsError,
   selectSelectedSourceConfig,
 } from './source-configs.feature';
 import { filter } from 'rxjs';
@@ -18,6 +19,7 @@ export class SourceConfigFacade {
   private readonly actions$ = inject(ActionsSubject);
 
   loaded$ = this.store.select(selectSourceConfigsLoaded);
+  error$ = this.store.select(selectSourceConfigsError);
   allSourceConfigs$ = this.store.select(selectAllSourceConfigs);
   selectedSourceConfig$ = this.store.select(selectSelectedSourceConfig);
 

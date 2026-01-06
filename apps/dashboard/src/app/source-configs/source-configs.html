@@ -1,10 +1,22 @@
 <div class="master-detail-layout">
   <div class="master-panel">
-    <app-source-configs-list
-      [sourceConfigs]="(sourceConfigs$ | async) ?? []"
-      (selected)="selectSourceConfig($event)"
-      (deleted)="deleteSourceConfig($event)"
-    ></app-source-configs-list>
+    @if (error$ | async) {
+      <div class="error-message">
+        <mat-icon>error</mat-icon>
+        <span>{{ error$ | async }}</span>
+      </div>
+    } @else if ((loaded$ | async) === false) {
+      <div class="loading-message">
+        <mat-spinner diameter="40"></mat-spinner>
+        <span>Loading source configs...</span>
+      </div>
+    } @else {
+      <app-source-configs-list
+        [sourceConfigs]="(sourceConfigs$ | async) ?? []"
+        (selected)="selectSourceConfig($event)"
+        (deleted)="deleteSourceConfig($event)"
+      ></app-source-configs-list>
+    }
   </div>
   <div class="detail-panel">
     <app-source-config-detail

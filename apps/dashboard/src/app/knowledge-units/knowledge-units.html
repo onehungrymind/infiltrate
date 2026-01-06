@@ -1,10 +1,22 @@
 <div class="master-detail-layout">
   <div class="master-panel">
-    <app-knowledge-units-list
-      [knowledgeUnits]="(knowledgeUnits$ | async) ?? []"
-      (selected)="selectKnowledgeUnit($event)"
-      (deleted)="deleteKnowledgeUnit($event)"
-    ></app-knowledge-units-list>
+    @if (error$ | async) {
+      <div class="error-message">
+        <mat-icon>error</mat-icon>
+        <span>{{ error$ | async }}</span>
+      </div>
+    } @else if ((loaded$ | async) === false) {
+      <div class="loading-message">
+        <mat-spinner diameter="40"></mat-spinner>
+        <span>Loading knowledge units...</span>
+      </div>
+    } @else {
+      <app-knowledge-units-list
+        [knowledgeUnits]="(knowledgeUnits$ | async) ?? []"
+        (selected)="selectKnowledgeUnit($event)"
+        (deleted)="deleteKnowledgeUnit($event)"
+      ></app-knowledge-units-list>
+    }
   </div>
   <div class="detail-panel">
     <app-knowledge-unit-detail
