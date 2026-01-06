@@ -38,6 +38,18 @@ export function getDtoKeys<T extends Record<string, any>>(
  * These are the fields included in Create/Update DTOs (excluding auto-generated fields like id, createdAt, updatedAt, and relationship fields)
  */
 export const ENTITY_DTO_KEYS = {
+  DATA_SOURCES: [
+    'name',
+    'description',
+    'url',
+    'archiveUrl',
+    'type',
+    'tags',
+    'enabled',
+    'parsingMode',
+    'scheduleFrequency',
+    'parsingInstructions',
+  ] as const,
   LEARNING_PATHS: [
     'userId',
     'name',

@@ -24,3 +24,6 @@ export * from './lib/services/source-configs/source-configs.service';
 
 /* UserProgress */
 export * from './lib/services/user-progress/user-progress.service';
+
+/* DataSources */
+export * from './lib/services/data-sources/data-sources.service';

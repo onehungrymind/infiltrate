@@ -36,6 +36,10 @@ export interface BaseEntity {
   
   export type PathStatus = 'not-started' | 'in-progress' | 'completed';
   
+  export type ParsingMode = 'current' | 'archive' | 'both';
+  
+  export type ScheduleFrequency = 'daily' | 'weekly' | 'monthly' | 'manual';
+  
   // ============================================================================
   // CORE ENTITIES
   // ============================================================================
@@ -52,7 +56,7 @@ export interface BaseEntity {
   }
   
   /**
-   * Source configuration for content ingestion
+   * Source configuration for content ingestion (tied to a learning path)
    */
   export interface SourceConfig extends BaseEntity {
     pathId: string;
@@ -60,6 +64,24 @@ export interface BaseEntity {
     type: SourceType;
     name: string;                    // "JavaScript Weekly"
     enabled: boolean;
+  }
+  
+  /**
+   * Data source - global content source that can be used across learning paths
+   * Supports archive parsing and scheduled ingestion
+   */
+  export interface DataSource extends BaseEntity {
+    name: string;                    // "JavaScript Weekly"
+    description?: string;            // "Weekly newsletter about JavaScript"
+    url: string;                     // "https://javascriptweekly.com/rss" or "https://javascriptweekly.com/issues"
+    archiveUrl?: string;              // "https://javascriptweekly.com/issues" (for archive parsing)
+    type: SourceType;
+    tags: string[];                  // ["javascript", "newsletter", "web"]
+    enabled: boolean;
+    parsingMode: ParsingMode;        // 'current' | 'archive' | 'both'
+    scheduleFrequency?: ScheduleFrequency; // 'daily' | 'weekly' | 'monthly' | 'manual'
+    lastIngestedAt?: Date;            // Last successful ingestion
+    parsingInstructions?: Record<string, any>; // Future: custom parsing config
   }
   
   /**
@@ -156,6 +178,32 @@ export interface BaseEntity {
     type?: SourceType;
     name?: string;
     enabled?: boolean;
+  }
+  
+  export interface CreateDataSourceDto {
+    name: string;
+    description?: string;
+    url: string;
+    archiveUrl?: string;
+    type: SourceType;
+    tags?: string[];
+    enabled?: boolean;
+    parsingMode: ParsingMode;
+    scheduleFrequency?: ScheduleFrequency;
+    parsingInstructions?: Record<string, any>;
+  }
+  
+  export interface UpdateDataSourceDto {
+    name?: string;
+    description?: string;
+    url?: string;
+    archiveUrl?: string;
+    type?: SourceType;
+    tags?: string[];
+    enabled?: boolean;
+    parsingMode?: ParsingMode;
+    scheduleFrequency?: ScheduleFrequency;
+    parsingInstructions?: Record<string, any>;
   }
   
   export interface CreateRawContentDto {

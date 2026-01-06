@@ -134,3 +134,30 @@ export {
   updateUserProgress,
   deleteUserProgress,
 };
+
+/* DataSources */
+import * as DataSourcesActions from './lib/data-sources/data-sources.actions';
+import * as DataSourcesFeature from './lib/data-sources/data-sources.feature';
+import * as DataSourcesEffects from './lib/data-sources/data-sources.effects';
+import { DataSourcesFacade } from './lib/data-sources/data-sources.facade';
+import { dataSourcesFeature } from './lib/data-sources/data-sources.feature';
+import {
+  loadDataSources,
+  loadDataSource,
+  createDataSource,
+  updateDataSource,
+  deleteDataSource,
+} from './lib/data-sources/data-sources.effects';
+
+export {
+  dataSourcesFeature,
+  DataSourcesFacade,
+  DataSourcesActions,
+  DataSourcesFeature,
+  DataSourcesEffects,
+  loadDataSources,
+  loadDataSource,
+  createDataSource,
+  updateDataSource,
+  deleteDataSource,
+};

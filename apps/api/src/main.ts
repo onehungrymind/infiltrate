@@ -46,6 +46,7 @@ async function bootstrap() {
     .addTag('learning-paths')
     .addTag('knowledge-units')
     .addTag('user-progress')
+    .addTag('data-sources')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);

@@ -19,6 +19,8 @@ import { UserProgress } from '../user-progress/entities/user-progress.entity';
 import { User } from '../users/entities/user.entity';
 import { AuthModule } from '../auth/auth.module';
 import { UsersModule } from '../users/users.module';
+import { DataSourcesModule } from '../data-sources/data-sources.module';
+import { DataSource } from '../data-sources/entities/data-source.entity';
 
 @Module({
   imports: [
@@ -30,7 +32,7 @@ import { UsersModule } from '../users/users.module';
       database: process.env.DATABASE_URL?.replace('file:', '') || 'kasita.db',
       synchronize: process.env.NODE_ENV !== 'production', // Auto-sync in dev
       logging: process.env.NODE_ENV === 'development',
-      entities: [LearningPath, SourceConfig, RawContent, KnowledgeUnit, UserProgress, User],
+      entities: [LearningPath, SourceConfig, RawContent, KnowledgeUnit, UserProgress, User, DataSource],
     }),
     LearningPathsModule,
     SourceConfigsModule,
@@ -41,6 +43,7 @@ import { UsersModule } from '../users/users.module';
     DatabaseModule,
     AuthModule,
     UsersModule,
+    DataSourcesModule,
   ],
   controllers: [AppController],
   providers: [AppService, ProgressGateway],
