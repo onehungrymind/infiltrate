@@ -3,7 +3,7 @@ import { provideMockStore, MockStore } from '@ngrx/store/testing';
 import { ActionsSubject, Store } from '@ngrx/store';
 import { <%= singularClassName %>Facade } from './<%= featureName %>.facade';
 import { <%= pluralClassName %>Actions } from './<%= featureName %>.actions';
-import { <%= singularClassName %> } from '@articool/api-interfaces';
+import { <%= singularClassName %> } from '<%= npmScope %>/api-interfaces';
 
 describe('<%= singularClassName %>Facade', () => {
   let facade: <%= singularClassName %>Facade;

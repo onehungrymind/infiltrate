@@ -1,9 +1,9 @@
 import { createFeature, createReducer, on, createSelector } from '@ngrx/store';
 import { EntityState, EntityAdapter, createEntityAdapter } from '@ngrx/entity';
-import { <%= singularClassName %> } from '@articool/api-interfaces';
+import { <%= singularClassName %> } from '<%= npmScope %>/api-interfaces';
 import { <%= pluralClassName %>Actions } from './<%= featureName %>.actions';
 
-export const <%= featureConstantName %>_FEATURE_KEY = '<%= pluralPropertyName %>';
+export const <%= featureScreamingSnakeCase %>_FEATURE_KEY = '<%= pluralPropertyName %>';
 
 // --- State & Adapter ---
 export interface <%= pluralClassName %>State extends EntityState<<%= singularClassName %>> {
@@ -89,7 +89,7 @@ const <%= pluralPropertyName %>Reducer = createReducer(
 
 // --- Feature (selectors included) ---
 export const <%= pluralPropertyName %>Feature = createFeature({
-  name: <%= featureConstantName %>_FEATURE_KEY,
+  name: <%= featureScreamingSnakeCase %>_FEATURE_KEY,
   reducer: <%= pluralPropertyName %>Reducer,
   extraSelectors: ({ select<%= pluralClassName %>State }) => {
     const { selectAll, selectEntities, selectIds, selectTotal } =

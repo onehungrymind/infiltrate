@@ -1,0 +1,94 @@
+// Master detail view styles
+.grid {
+  display: grid;
+}
+
+.grid-cols-1 {
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+.lg\:grid-cols-2 {
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.h-full {
+  height: 100%;
+}
+
+.pl-4 {
+  padding-left: 1rem;
+}
+
+.sm\:pl-8 {
+  @media (min-width: 640px) {
+    padding-left: 2rem;
+  }
+}
+
+.md\:pl-8 {
+  @media (min-width: 768px) {
+    padding-left: 2rem;
+  }
+}
+
+.lg\:ml-64 {
+  @media (min-width: 1024px) {
+    margin-left: 16rem;
+  }
+}
+
+.xl\:ml-64 {
+  @media (min-width: 1280px) {
+    margin-left: 16rem;
+  }
+}
+
+.pr-4 {
+  padding-right: 1rem;
+}
+
+.sm\:pr-8 {
+  @media (min-width: 640px) {
+    padding-right: 2rem;
+  }
+}
+
+.md\:pr-8 {
+  @media (min-width: 768px) {
+    padding-right: 2rem;
+  }
+}
+
+.lg\:pr-4 {
+  @media (min-width: 1024px) {
+    padding-right: 1rem;
+  }
+}
+
+.xl\:pr-4 {
+  @media (min-width: 1280px) {
+    padding-right: 1rem;
+  }
+}
+
+.gap-6 {
+  gap: 1.5rem;
+}
+
+.md\:pt-8 {
+  @media (min-width: 768px) {
+    padding-top: 2rem;
+  }
+}
+
+.lg\:pt-0 {
+  @media (min-width: 1024px) {
+    padding-top: 0;
+  }
+}
+
+.pt-6 {
+  padding-top: 1.5rem;
+}

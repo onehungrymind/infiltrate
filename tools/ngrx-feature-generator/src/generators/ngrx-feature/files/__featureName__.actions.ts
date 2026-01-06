@@ -1,5 +1,5 @@
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
-import { <%= singularClassName %> } from '@articool/api-interfaces';
+import { <%= singularClassName %> } from '<%= npmScope %>/api-interfaces';
 
 export const <%= pluralClassName %>Actions = createActionGroup({
   source: '<%= pluralClassName %> API',

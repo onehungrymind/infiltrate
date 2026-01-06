@@ -1,4 +1,4 @@
-import { Tree, formatFiles, generateFiles, joinPathFragments, names, readProjectConfiguration } from '@nx/devkit';
+import { Tree, formatFiles, generateFiles, joinPathFragments, names, readProjectConfiguration, readJson } from '@nx/devkit';
 import { MasterDetailViewGeneratorSchema } from './schema';
 
 export async function masterDetailViewGenerator(
@@ -17,9 +17,14 @@ export async function masterDetailViewGenerator(
   const singularKebabCase = names(singularName).fileName;
   const pluralKebabCase = names(pluralName).fileName;
   
-  // Use the provided singular and plural names directly
-  const singularPropertyName = singularName;
-  const pluralPropertyName = pluralName;
+  // Convert to camelCase for parameter names
+  const singularPropertyName = names(singularName).propertyName;
+  const pluralPropertyName = names(pluralName).propertyName;
+  
+  // Extract npm scope from package.json
+  const packageJson = readJson(tree, 'package.json');
+  const npmScope = packageJson.name?.match(/^@([^/]+)/)?.[1] || '';
+  const npmScopePrefix = npmScope ? `@${npmScope}` : '';
   
   // Automatically set the path to the feature directory
   const targetPath = joinPathFragments(projectRoot, 'src', 'app', pluralName);
@@ -36,6 +41,7 @@ export async function masterDetailViewGenerator(
     singularKebabCase,
     pluralKebabCase,
     skipTests,
+    npmScope: npmScopePrefix,
   };
 
   // Generate the feature files

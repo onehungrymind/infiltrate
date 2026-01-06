@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { <%= singularClassName %> } from '@articool/api-interfaces';
-import { MaterialModule } from '@articool/material';
+import { <%= singularClassName %> } from '<%= npmScope %>/common-models';
+import { MaterialModule } from '<%= npmScope %>/material';
 
 @Component({
   selector: 'app-<%= singularKebabCase %>-detail',

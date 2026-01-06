@@ -3,13 +3,13 @@ import { provideStore } from '@ngrx/store';
 import { provideEffects } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { cold } from 'jasmine-marbles';
-import { <%= singularClassName %> } from '@articool/api-interfaces';
+import { <%= singularClassName %> } from '<%= npmScope %>/api-interfaces';
 import { <%= pluralClassName %>Actions } from './<%= featureName %>.actions';
 import { 
   <%= pluralPropertyName %>Feature,
   initial<%= pluralClassName %>State,
   <%= pluralPropertyName %>Adapter,
-  <%= featureConstantName %>_FEATURE_KEY,
+  <%= featureScreamingSnakeCase %>_FEATURE_KEY,
   selectAll<%= pluralClassName %>,
   select<%= singularClassName %>Entities,
   select<%= singularClassName %>Ids,
@@ -40,7 +40,7 @@ describe('<%= pluralClassName %> Feature', () => {
     TestBed.configureTestingModule({
       providers: [
         provideStore({
-          [<%= featureConstantName %>_FEATURE_KEY]: <%= pluralPropertyName %>Feature.reducer
+          [<%= featureScreamingSnakeCase %>_FEATURE_KEY]: <%= pluralPropertyName %>Feature.reducer
         }),
         provideEffects([])
       ]
@@ -381,7 +381,7 @@ describe('<%= pluralClassName %> Feature', () => {
 
   describe('Feature Integration', () => {
     it('should have correct feature key', () => {
-      expect(<%= pluralPropertyName %>Feature.name).toBe(<%= featureConstantName %>_FEATURE_KEY);
+      expect(<%= pluralPropertyName %>Feature.name).toBe(<%= featureScreamingSnakeCase %>_FEATURE_KEY);
     });
 
     it('should provide reducer', () => {

@@ -1,0 +1,18 @@
+<div
+  class="grid grid-cols-1 lg:grid-cols-2 h-full pl-4 sm:pl-8 md:pl-8 lg:ml-64 xl:ml-64 pr-4 sm:pr-8 md:pr-8 lg:pr-4 xl:pr-4 gap-6 md:pt-8 lg:pt-0 pt-6"
+>
+  <div>
+    <app-source-configs-list
+      [sourceConfigs]="(sourceConfigs$ | async) ?? []"
+      (selected)="selectSourceConfig($event)"
+      (deleted)="deleteSourceConfig($event)"
+    ></app-source-configs-list>
+  </div>
+  <div>
+    <app-source-config-detail
+      [sourceConfig]="selectedSourceConfig$ | async"
+      (saved)="saveSourceConfig($event)"
+      (cancelled)="cancel()"
+    ></app-source-config-detail>
+  </div>
+</div>

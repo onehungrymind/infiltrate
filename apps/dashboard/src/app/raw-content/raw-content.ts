@@ -1,0 +1,55 @@
+import { AsyncPipe } from '@angular/common';
+import { Component, inject, OnInit } from '@angular/core';
+import { RawContent } from '@kasita/common-models';
+import { RawContentFacade } from '@kasita/core-state';
+import { Observable } from 'rxjs';
+import { RawContentDetail } from './raw-content-detail/raw-content-detail';
+import { RawContentList } from './raw-content-list/raw-content-list';
+
+@Component({
+  selector: 'app-raw-content',
+  imports: [RawContentList, RawContentDetail, AsyncPipe],
+  templateUrl: './raw-content.html',
+  styleUrl: './raw-content.scss',
+})
+export class RawContent implements OnInit {
+  private rawContentFacade = inject(RawContentFacade);
+
+  rawContent$: Observable<RawContent[]> = this.rawContentFacade.allRawContent$;
+  selectedRawContent$: Observable<RawContent | null> =
+    this.rawContentFacade.selectedRawContent$;
+  mutations$ = this.rawContentFacade.mutations$;
+
+  constructor() {
+    this.mutations$.subscribe(() => this.reset());
+  }
+
+  ngOnInit(): void {
+    this.reset();
+  }
+
+  reset() {
+    this.loadRawContent();
+    this.rawContentFacade.resetSelectedRawContent();
+  }
+
+  selectRawContent(rawContent: RawContent) {
+    this.rawContentFacade.selectRawContent(rawContent.id as string);
+  }
+
+  loadRawContent() {
+    this.rawContentFacade.loadRawContent();
+  }
+
+  saveRawContent(rawContent: RawContent) {
+    this.rawContentFacade.saveRawContent(rawContent);
+  }
+
+  deleteRawContent(rawContent: RawContent) {
+    this.rawContentFacade.deleteRawContent(rawContent);
+  }
+
+  cancel() {
+    this.rawContentFacade.resetSelectedRawContent();
+  }
+}

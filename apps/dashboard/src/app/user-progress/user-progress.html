@@ -1,0 +1,18 @@
+<div
+  class="grid grid-cols-1 lg:grid-cols-2 h-full pl-4 sm:pl-8 md:pl-8 lg:ml-64 xl:ml-64 pr-4 sm:pr-8 md:pr-8 lg:pr-4 xl:pr-4 gap-6 md:pt-8 lg:pt-0 pt-6"
+>
+  <div>
+    <app-user-progress-list
+      [userProgress]="(userProgress$ | async) ?? []"
+      (selected)="selectUserProgress($event)"
+      (deleted)="deleteUserProgress($event)"
+    ></app-user-progress-list>
+  </div>
+  <div>
+    <app-user-progress-detail
+      [userProgress]="selectedUserProgress$ | async"
+      (saved)="saveUserProgress($event)"
+      (cancelled)="cancel()"
+    ></app-user-progress-detail>
+  </div>
+</div>

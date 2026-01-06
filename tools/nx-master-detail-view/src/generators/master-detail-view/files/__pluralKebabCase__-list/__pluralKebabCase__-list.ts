@@ -1,10 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
-import { <%= singularClassName %> } from '@articool/api-interfaces';
+import { <%= singularClassName %> } from '<%= npmScope %>/common-models';
 import {
   MaterialModule,
   ConfirmationDialogComponent,
-} from '@articool/material';
+} from '<%= npmScope %>/material';
 import { MatDialog } from '@angular/material/dialog';
 
 @Component({

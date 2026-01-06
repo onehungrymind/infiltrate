@@ -1,7 +1,7 @@
 import { AsyncPipe } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
-import { <%= singularClassName %> } from '@articool/api-interfaces';
-import { <%= pluralClassName %>Facade } from '@articool/core-state';
+import { <%= singularClassName %> } from '<%= npmScope %>/common-models';
+import { <%= pluralClassName %>Facade } from '<%= npmScope %>/core-state';
 import { Observable } from 'rxjs';
 import { <%= singularClassName %>Detail } from './<%= singularKebabCase %>-detail/<%= singularKebabCase %>-detail';
 import { <%= pluralClassName %>List } from './<%= pluralKebabCase %>-list/<%= pluralKebabCase %>-list';

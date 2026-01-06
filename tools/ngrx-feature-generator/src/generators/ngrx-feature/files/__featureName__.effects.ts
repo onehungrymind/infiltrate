@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { <%= singularClassName %> } from '@articool/api-interfaces';
-import { <%= singularClassName %>Service } from '@articool/core-data';
+import { <%= singularClassName %> } from '<%= npmScope %>/api-interfaces';
+import { <%= singularClassName %>Service } from '<%= npmScope %>/core-data';
 import { of } from 'rxjs';
 import { catchError, exhaustMap, map } from 'rxjs/operators';
 import { <%= pluralClassName %>Actions } from './<%= featureName %>.actions';

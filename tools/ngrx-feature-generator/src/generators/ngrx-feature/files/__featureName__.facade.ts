@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { <%= singularClassName %> } from '@articool/api-interfaces';
+import { <%= singularClassName %> } from '<%= npmScope %>/api-interfaces';
 import { Action, ActionsSubject, Store } from '@ngrx/store';
 import { <%= pluralClassName %>Actions } from './<%= featureName %>.actions';
 

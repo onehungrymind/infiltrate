@@ -1,0 +1,18 @@
+<div
+  class="grid grid-cols-1 lg:grid-cols-2 h-full pl-4 sm:pl-8 md:pl-8 lg:ml-64 xl:ml-64 pr-4 sm:pr-8 md:pr-8 lg:pr-4 xl:pr-4 gap-6 md:pt-8 lg:pt-0 pt-6"
+>
+  <div>
+    <app-knowledge-units-list
+      [knowledgeUnits]="(knowledgeUnits$ | async) ?? []"
+      (selected)="selectKnowledgeUnit($event)"
+      (deleted)="deleteKnowledgeUnit($event)"
+    ></app-knowledge-units-list>
+  </div>
+  <div>
+    <app-knowledge-unit-detail
+      [knowledgeUnit]="selectedKnowledgeUnit$ | async"
+      (saved)="saveKnowledgeUnit($event)"
+      (cancelled)="cancel()"
+    ></app-knowledge-unit-detail>
+  </div>
+</div>
