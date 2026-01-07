@@ -15,9 +15,14 @@ export class UserProgressList {
   private dialog = inject(MatDialog);
 
   @Input() userProgress: UserProgress[] = [];
+  @Input() selectedUserProgress: UserProgress | null = null;
   @Input() readonly = false;
   @Output() selected = new EventEmitter();
   @Output() deleted = new EventEmitter();
+  
+  isSelected(userProgress: UserProgress): boolean {
+    return this.selectedUserProgress?.id === userProgress.id;
+  }
 
   onDelete(userProgress: UserProgress) {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {

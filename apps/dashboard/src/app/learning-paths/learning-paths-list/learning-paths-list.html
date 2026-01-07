@@ -2,6 +2,7 @@
   <div
     *ngFor="let learningPath of learningPaths"
     class="list-item"
+    [class.active]="isSelected(learningPath)"
     (click)="selected.emit(learningPath)"
   >
     <div class="list-item-content">

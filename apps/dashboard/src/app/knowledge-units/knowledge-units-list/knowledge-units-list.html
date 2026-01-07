@@ -2,6 +2,7 @@
   <div
     *ngFor="let knowledgeUnit of knowledgeUnits"
     class="list-item"
+    [class.active]="isSelected(knowledgeUnit)"
     (click)="selected.emit(knowledgeUnit)"
   >
     <div class="list-item-content">

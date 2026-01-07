@@ -13,6 +13,7 @@
     } @else {
       <app-raw-content-list
         [rawContent]="(rawContent$ | async) ?? []"
+        [selectedRawContent]="selectedRawContent$ | async"
         (selected)="selectRawContent($event)"
         (deleted)="deleteRawContent($event)"
       ></app-raw-content-list>

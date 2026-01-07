@@ -15,9 +15,14 @@ export class KnowledgeUnitsList {
   private dialog = inject(MatDialog);
 
   @Input() knowledgeUnits: KnowledgeUnit[] = [];
+  @Input() selectedKnowledgeUnit: KnowledgeUnit | null = null;
   @Input() readonly = false;
   @Output() selected = new EventEmitter();
   @Output() deleted = new EventEmitter();
+  
+  isSelected(knowledgeUnit: KnowledgeUnit): boolean {
+    return this.selectedKnowledgeUnit?.id === knowledgeUnit.id;
+  }
 
   onDelete(knowledgeUnit: KnowledgeUnit) {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {

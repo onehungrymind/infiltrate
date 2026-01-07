@@ -15,9 +15,14 @@ export class LearningPathsList {
   private dialog = inject(MatDialog);
 
   @Input() learningPaths: LearningPath[] = [];
+  @Input() selectedLearningPath: LearningPath | null = null;
   @Input() readonly = false;
   @Output() selected = new EventEmitter();
   @Output() deleted = new EventEmitter();
+  
+  isSelected(learningPath: LearningPath): boolean {
+    return this.selectedLearningPath?.id === learningPath.id;
+  }
 
   onDelete(learningPath: LearningPath) {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {

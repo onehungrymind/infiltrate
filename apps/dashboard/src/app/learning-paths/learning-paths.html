@@ -13,6 +13,7 @@
     } @else {
       <app-learning-paths-list
         [learningPaths]="(learningPaths$ | async) ?? []"
+        [selectedLearningPath]="selectedLearningPath$ | async"
         (selected)="selectLearningPath($event)"
         (deleted)="deleteLearningPath($event)"
       ></app-learning-paths-list>

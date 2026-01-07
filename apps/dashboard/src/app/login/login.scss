@@ -66,16 +66,25 @@
     border-radius: 16px 16px 0 0;
   }
 
-  h1 {
-    margin: 0 0 8px 0;
-    font-size: 24px;
-    font-weight: 500;
+  .login-logo {
+    margin: 0 auto 8px auto;
+    font-size: 32px;
     background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    text-align: center;
-    letter-spacing: -0.02em;
+    letter-spacing: 0.1em;
+    display: flex;
+    justify-content: center;
+    width: fit-content;
+    
+    .logo-bold {
+      font-weight: 900;
+    }
+    
+    .logo-thin {
+      font-weight: 100;
+    }
   }
 
   .subtitle {
@@ -97,7 +106,7 @@
     background: linear-gradient(90deg, #3b82f6 0%, #8b5cf6 100%);
   }
   
-  h1 {
+  .login-logo {
     background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;

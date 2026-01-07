@@ -2,6 +2,7 @@
   <div
     *ngFor="let rawContent of rawContent"
     class="list-item"
+    [class.active]="isSelected(rawContent)"
     (click)="selected.emit(rawContent)"
   >
     <div class="list-item-content">

@@ -15,9 +15,14 @@ export class RawContentList {
   private dialog = inject(MatDialog);
 
   @Input() rawContent: RawContent[] = [];
+  @Input() selectedRawContent: RawContent | null = null;
   @Input() readonly = false;
   @Output() selected = new EventEmitter();
   @Output() deleted = new EventEmitter();
+  
+  isSelected(rawContent: RawContent): boolean {
+    return this.selectedRawContent?.id === rawContent.id;
+  }
 
   onDelete(rawContent: RawContent) {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {

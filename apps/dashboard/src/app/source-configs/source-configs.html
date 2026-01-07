@@ -13,6 +13,7 @@
     } @else {
       <app-source-configs-list
         [sourceConfigs]="(sourceConfigs$ | async) ?? []"
+        [selectedSourceConfig]="selectedSourceConfig$ | async"
         (selected)="selectSourceConfig($event)"
         (deleted)="deleteSourceConfig($event)"
       ></app-source-configs-list>

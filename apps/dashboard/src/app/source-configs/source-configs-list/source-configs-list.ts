@@ -15,9 +15,14 @@ export class SourceConfigsList {
   private dialog = inject(MatDialog);
 
   @Input() sourceConfigs: SourceConfig[] = [];
+  @Input() selectedSourceConfig: SourceConfig | null = null;
   @Input() readonly = false;
   @Output() selected = new EventEmitter();
   @Output() deleted = new EventEmitter();
+  
+  isSelected(sourceConfig: SourceConfig): boolean {
+    return this.selectedSourceConfig?.id === sourceConfig.id;
+  }
 
   onDelete(sourceConfig: SourceConfig) {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {

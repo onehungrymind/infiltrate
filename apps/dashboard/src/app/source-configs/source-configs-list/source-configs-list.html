@@ -2,6 +2,7 @@
   <div
     *ngFor="let sourceConfig of sourceConfigs"
     class="list-item"
+    [class.active]="isSelected(sourceConfig)"
     (click)="selected.emit(sourceConfig)"
   >
     <div class="list-item-content">

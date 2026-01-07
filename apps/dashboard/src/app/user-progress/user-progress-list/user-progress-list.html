@@ -2,6 +2,7 @@
   <div
     *ngFor="let userProgress of userProgress"
     class="list-item"
+    [class.active]="isSelected(userProgress)"
     (click)="selected.emit(userProgress)"
   >
     <div class="list-item-content">

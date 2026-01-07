@@ -13,6 +13,7 @@
     } @else {
       <app-user-progress-list
         [userProgress]="(userProgress$ | async) ?? []"
+        [selectedUserProgress]="selectedUserProgress$ | async"
         (selected)="selectUserProgress($event)"
         (deleted)="deleteUserProgress($event)"
       ></app-user-progress-list>

@@ -13,6 +13,7 @@
     } @else {
       <app-knowledge-units-list
         [knowledgeUnits]="(knowledgeUnits$ | async) ?? []"
+        [selectedKnowledgeUnit]="selectedKnowledgeUnit$ | async"
         (selected)="selectKnowledgeUnit($event)"
         (deleted)="deleteKnowledgeUnit($event)"
       ></app-knowledge-units-list>
