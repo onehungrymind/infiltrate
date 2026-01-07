@@ -1,7 +1,7 @@
 """Base class for all generators."""
 from abc import ABC, abstractmethod
-from ..models.cluster import ContentCluster
-from ..models.processed_content import ProcessedContent
+from models.cluster import ContentCluster
+from models.processed_content import ProcessedContent
 
 
 class BaseGenerator(ABC):

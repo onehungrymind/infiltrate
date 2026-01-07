@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestj
 import { SourceConfigsService } from './source-configs.service';
 import { CreateSourceConfigDto } from './dto/create-source-config.dto';
 import { UpdateSourceConfigDto } from './dto/update-source-config.dto';
+import { Public } from '../auth/decorators/public.decorator';
 
 @Controller('source-configs')
 export class SourceConfigsController {
@@ -12,6 +13,7 @@ export class SourceConfigsController {
     return this.sourceConfigsService.create(createSourceConfigDto);
   }
 
+  @Public()
   @Get()
   findAll(@Query('enabled') enabled?: string) {
     if (enabled === 'true') {

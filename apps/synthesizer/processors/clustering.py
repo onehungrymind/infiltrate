@@ -3,8 +3,8 @@ import logging
 import numpy as np
 from sklearn.cluster import KMeans
 from typing import Optional
-from ..models.processed_content import ProcessedContent
-from ..models.cluster import ContentCluster, ClusterBatch
+from models.processed_content import ProcessedContent
+from models.cluster import ContentCluster, ClusterBatch
 
 
 logger = logging.getLogger("synthesizer.clustering")

@@ -3,10 +3,10 @@ import logging
 import os
 from anthropic import Anthropic
 from typing import Optional
-from .base_generator import BaseGenerator
-from ..models.cluster import ContentCluster
-from ..models.processed_content import ProcessedContent
-from ..models.synthesis_result import (
+from generators.base_generator import BaseGenerator
+from models.cluster import ContentCluster
+from models.processed_content import ProcessedContent
+from models.synthesis_result import (
     KnowledgeUnit, 
     KnowledgeUnitBatch,
     DifficultyLevel,

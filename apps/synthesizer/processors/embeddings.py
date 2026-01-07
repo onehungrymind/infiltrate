@@ -2,7 +2,7 @@
 import logging
 from sentence_transformers import SentenceTransformer
 from typing import Optional
-from ..models.processed_content import ProcessedContent, ProcessedBatch
+from models.processed_content import ProcessedContent, ProcessedBatch
 from python_shared.utils import generate_id
 
 

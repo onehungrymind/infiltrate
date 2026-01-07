@@ -58,10 +58,24 @@ class SynthesisOrchestrator:
         
         # Step 1: Load raw content
         logger.info("\n[1/4] Loading raw content...")
-        raw_items = self.reader.read_all_raw()
-        if not raw_items:
+        raw_files = self.reader.read_all_raw()
+        if not raw_files:
             logger.error("No raw content found!")
             return {"error": "No raw content available"}
+        
+        # Extract individual items from batches
+        raw_items = []
+        for file_data in raw_files:
+            if 'items' in file_data:
+                # This is a batch file, extract items
+                raw_items.extend(file_data['items'])
+            else:
+                # This is a single item file
+                raw_items.append(file_data)
+        
+        if not raw_items:
+            logger.error("No raw content items found!")
+            return {"error": "No raw content items available"}
         
         logger.info(f"Loaded {len(raw_items)} raw items")
         

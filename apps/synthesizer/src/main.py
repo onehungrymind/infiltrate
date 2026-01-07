@@ -1,15 +1,23 @@
 """Main entry point for Synthesizer."""
 import os
 import sys
+from pathlib import Path
+
+# Add parent directory to path so we can import modules
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 from dotenv import load_dotenv
 from python_shared.logging_config import setup_logging
-from .orchestrator import SynthesisOrchestrator
+from src.orchestrator import SynthesisOrchestrator
 
 
 def main():
     """Main function."""
-    # Load environment variables
-    load_dotenv()
+    # Load environment variables from .env file in synthesizer directory
+    # Get the synthesizer directory (parent of src/)
+    synthesizer_dir = Path(__file__).parent.parent
+    env_path = synthesizer_dir / '.env'
+    load_dotenv(dotenv_path=env_path)
     
     # Setup logging
     log_level = os.getenv("LOG_LEVEL", "INFO")
@@ -22,6 +30,8 @@ def main():
     claude_model = os.getenv("CLAUDE_MODEL", "claude-sonnet-4-20250514")
     min_cluster_size = int(os.getenv("MIN_CLUSTER_SIZE", "3"))
     max_clusters = int(os.getenv("MAX_CLUSTERS", "10"))
+    api_base_url = os.getenv("API_URL")
+    use_api = api_base_url is not None
     
     # Create orchestrator
     orchestrator = SynthesisOrchestrator(
@@ -29,7 +39,9 @@ def main():
         embedding_model=embedding_model,
         claude_model=claude_model,
         min_cluster_size=min_cluster_size,
-        max_clusters=max_clusters
+        max_clusters=max_clusters,
+        use_api=use_api,
+        api_base_url=api_base_url
     )
     
     # Parse command
