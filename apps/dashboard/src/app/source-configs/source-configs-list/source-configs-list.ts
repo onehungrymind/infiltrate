@@ -22,8 +22,8 @@ export class SourceConfigsList {
   onDelete(sourceConfig: SourceConfig) {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        title: 'Delete SourceConfig',
-        message: `"${sourceConfig.name || 'Item'}"`,
+        title: 'Delete Source Config',
+        message: `Are you sure you want to delete "${sourceConfig.name || 'this source config'}"? This action cannot be undone.`,
         confirmText: 'Delete',
         cancelText: 'Cancel',
       },

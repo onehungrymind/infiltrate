@@ -22,8 +22,8 @@ export class RawContentList {
   onDelete(rawContent: RawContent) {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        title: 'Delete RawContent',
-        message: `"${rawContent.title || 'Item'}"`,
+        title: 'Delete Raw Content',
+        message: `Are you sure you want to delete "${rawContent.title || 'this raw content'}"? This action cannot be undone.`,
         confirmText: 'Delete',
         cancelText: 'Cancel',
       },

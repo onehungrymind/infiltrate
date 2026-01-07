@@ -22,8 +22,8 @@ export class KnowledgeUnitsList {
   onDelete(knowledgeUnit: KnowledgeUnit) {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        title: 'Delete KnowledgeUnit',
-        message: `"${knowledgeUnit.concept || 'Item'}"`,
+        title: 'Delete Knowledge Unit',
+        message: `Are you sure you want to delete "${knowledgeUnit.concept || 'this knowledge unit'}"? This action cannot be undone.`,
         confirmText: 'Delete',
         cancelText: 'Cancel',
       },

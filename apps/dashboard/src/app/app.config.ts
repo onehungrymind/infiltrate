@@ -8,6 +8,7 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideStore } from '@ngrx/store';
 import { provideEffects } from '@ngrx/effects';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
+import { provideSignalFormsConfig } from '@angular/forms/signals';
 import { appRoutes } from './app.routes';
 import { API_URL, authInterceptor, errorInterceptor, GlobalErrorHandler } from '@kasita/core-data';
 import { environment } from '../environments/environment';
@@ -30,6 +31,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(appRoutes),
     provideHttpClient(withInterceptors([errorInterceptor, authInterceptor])),
+    provideSignalFormsConfig({}),
     { provide: API_URL, useValue: environment.apiUrl },
     { provide: ErrorHandler, useClass: GlobalErrorHandler },
     // NgRx Store Configuration

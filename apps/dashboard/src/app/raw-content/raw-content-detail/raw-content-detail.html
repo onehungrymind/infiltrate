@@ -1,44 +1,31 @@
 <div class="detail-container">
-  @if (currentRawContent.id) {
-    <div class="detail-header">
-      <h1 class="detail-title">{{ originalTitle | titlecase }}</h1>
-    </div>
-  } @else {
-    <div class="detail-header">
-      <h1 class="detail-title">Select Raw Content</h1>
-    </div>
-  }
+  <div class="detail-header">
+    <h1 class="detail-title">{{ originalTitle() | titlecase }}</h1>
+  </div>
 
-  @if (currentRawContent) {
+  <form (ngSubmit)="onSubmit()" class="detail-form">
     <div class="detail-content">
-      <div class="detail-section">
-        <h2 class="detail-section-title">Raw Data</h2>
-        <pre class="detail-code">{{ currentRawContent | json }}</pre>
-      </div>
+      <app-dynamic-form 
+        [metaInfo]="metaInfo" 
+        [dynamicForm]="dynamicForm"
+      />
     </div>
 
     <div class="detail-actions">
       <button
         type="button"
         class="detail-button detail-button-secondary"
-        (click)="cancelled.emit()"
+        (click)="onCancel()"
       >
         Cancel
       </button>
       <button
-        type="button"
+        type="submit"
         class="detail-button detail-button-primary"
-        (click)="saved.emit(currentRawContent)"
+        [disabled]="!isFormValid()"
       >
-        Save
+        {{ rawContent?.id ? 'Update' : 'Create' }}
       </button>
     </div>
-  }
-
-  @if (!currentRawContent) {
-    <div class="detail-empty">
-      <mat-icon class="detail-empty-icon">info</mat-icon>
-      <p class="detail-empty-text">Select an item from the list to view its details</p>
-    </div>
-  }
+  </form>
 </div>

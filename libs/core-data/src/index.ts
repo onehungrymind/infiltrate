@@ -9,6 +9,11 @@ export * from './lib/interceptors/auth.interceptor';
 export * from './lib/interceptors/error.interceptor';
 export * from './lib/error-handler/global-error-handler';
 export * from './lib/utils/error-messages';
+export * from './lib/forms/field-def';
+export * from './lib/forms/form-schema';
+export * from './lib/forms/field-definitions';
+export * from './lib/forms/form-helpers';
+export { initializeEntity } from './lib/forms/form-helpers';
 
 /* LearningPaths */
 export * from './lib/services/learning-paths/learning-paths.service';

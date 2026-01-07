@@ -219,3 +219,15 @@
   font-size: 13px;
   margin: 0;
 }
+
+.detail-form {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.detail-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}

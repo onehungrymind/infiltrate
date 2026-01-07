@@ -22,8 +22,8 @@ export class LearningPathsList {
   onDelete(learningPath: LearningPath) {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        title: 'Delete LearningPath',
-        message: `"${learningPath.name || 'Item'}"`,
+        title: 'Delete Learning Path',
+        message: `Are you sure you want to delete "${learningPath.name || 'this learning path'}"? This action cannot be undone.`,
         confirmText: 'Delete',
         cancelText: 'Cancel',
       },

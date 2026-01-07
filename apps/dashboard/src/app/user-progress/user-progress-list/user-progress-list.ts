@@ -22,8 +22,8 @@ export class UserProgressList {
   onDelete(userProgress: UserProgress) {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        title: 'Delete UserProgress',
-        message: `Progress for unit ${userProgress.unitId}`,
+        title: 'Delete User Progress',
+        message: `Are you sure you want to delete progress for unit ${userProgress.unitId}? This action cannot be undone.`,
         confirmText: 'Delete',
         cancelText: 'Cancel',
       },

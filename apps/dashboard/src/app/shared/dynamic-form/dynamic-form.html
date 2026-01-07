@@ -1,0 +1,92 @@
+@for (fieldDef of metaInfo(); track fieldDef.name) {
+  @let field = getField(fieldDef.name);
+  
+  @if (field) {
+    @let hasError = hasErrors(field);
+    @let errorMessages = getErrorMessages(field);
+
+    <div class="form-group" [class.has-error]="hasError">
+    <label [for]="fieldDef.name" class="form-label">
+      {{ fieldDef.label }}
+      @if (fieldDef.required) {
+        <span class="required-indicator">*</span>
+      }
+    </label>
+
+    @if (fieldDef.helpText) {
+      <p class="help-text">{{ fieldDef.helpText }}</p>
+    }
+
+    @switch (fieldDef.type || 'text') {
+      @case ('textarea') {
+        <textarea
+          [id]="fieldDef.name"
+          [field]="field!"
+          [placeholder]="fieldDef.placeholder || ''"
+          [rows]="fieldDef.rows || 4"
+          class="form-control"
+          [class.error]="hasError"
+        ></textarea>
+      }
+      @case ('checkbox') {
+        <div class="checkbox-wrapper">
+          <input
+            type="checkbox"
+            [id]="fieldDef.name"
+            [field]="field!"
+            class="form-checkbox"
+          />
+          <label [for]="fieldDef.name" class="checkbox-label">
+            {{ fieldDef.placeholder || fieldDef.label }}
+          </label>
+        </div>
+      }
+      @case ('select') {
+        <select
+          [id]="fieldDef.name"
+          [field]="field!"
+          class="form-control"
+          [class.error]="hasError"
+        >
+          <option value="">-- Select --</option>
+          @for (option of fieldDef.options || []; track option.value) {
+            <option [value]="option.value">{{ option.label }}</option>
+          }
+        </select>
+      }
+      @case ('multiselect') {
+        <select
+          [id]="fieldDef.name"
+          [field]="field!"
+          multiple
+          class="form-control"
+          [class.error]="hasError"
+        >
+          @for (option of fieldDef.options || []; track option.value) {
+            <option [value]="option.value">{{ option.label }}</option>
+          }
+        </select>
+      }
+      @default {
+        <input
+          [type]="fieldDef.type || 'text'"
+          [id]="fieldDef.name"
+          [field]="field!"
+          [placeholder]="fieldDef.placeholder || ''"
+          class="form-control"
+          [class.error]="hasError"
+        />
+      }
+    }
+
+    @if (hasError) {
+      <div class="error-messages">
+        @for (error of errorMessages; track error) {
+          <span class="error-message">{{ error }}</span>
+        }
+      </div>
+    }
+    </div>
+  }
+}
+
