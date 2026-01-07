@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { RouterModule, Router, NavigationEnd } from '@angular/router';
-import { Header } from './components/header/header';
+import { Header } from './shared/header/header';
 import { ThemeService } from './services/theme.service';
 import { filter } from 'rxjs/operators';
 
