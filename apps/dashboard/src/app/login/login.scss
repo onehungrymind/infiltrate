@@ -33,15 +33,6 @@
   }
 }
 
-:host-context(.dark) .login-container,
-.dark .login-container {
-  background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #0f0f1a 100%);
-  background-attachment: fixed;
-  
-  &::before {
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(139, 92, 246, 0.08) 100%);
-  }
-}
 
 .login-card {
   background: rgba(255, 255, 255, 0.85);
@@ -96,27 +87,6 @@
   }
 }
 
-:host-context(.dark) .login-card,
-.dark .login-card {
-  background: rgba(21, 21, 32, 0.85);
-  border-color: rgba(42, 42, 62, 0.3);
-  box-shadow: 0 8px 32px rgba(59, 130, 246, 0.15);
-  
-  &::before {
-    background: linear-gradient(90deg, #3b82f6 0%, #8b5cf6 100%);
-  }
-  
-  .login-logo {
-    background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  
-  .subtitle {
-    color: #a0a0b8;
-  }
-}
 
 .login-form {
   .form-group {
@@ -130,10 +100,6 @@
       font-size: 13px;
     }
     
-    :host-context(.dark) & label,
-    .dark & label {
-      color: #e0e0f0;
-    }
 
     input {
       width: 100%;
@@ -163,22 +129,6 @@
       }
     }
     
-    :host-context(.dark) & input,
-    .dark & input {
-      background: rgba(21, 21, 32, 0.6);
-      border-color: rgba(42, 42, 62, 0.5);
-      color: #e0e0f0;
-      
-      &:focus {
-        border-color: #3b82f6;
-        background: rgba(26, 26, 46, 0.8);
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
-      }
-      
-      &::placeholder {
-        color: #6b7280;
-      }
-    }
 
     .error-message {
       display: block;
@@ -228,14 +178,5 @@
     }
   }
   
-  :host-context(.dark) .login-button,
-  .dark .login-button {
-    background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-    
-    &:hover:not(:disabled) {
-      background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
-      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
-    }
-  }
 
 }

@@ -20,17 +20,9 @@ body {
 }
 
 /* Light theme */
-body.light {
+body {
   color: #1a1a2e;
   background: linear-gradient(135deg, #f8f9ff 0%, #f0f2ff 50%, #fafbff 100%);
-  background-attachment: fixed;
-  min-height: 100vh;
-}
-
-/* Dark theme (primary) */
-body.dark {
-  color: #e0e0f0;
-  background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #0f0f1a 100%);
   background-attachment: fixed;
   min-height: 100vh;
 }

@@ -12,27 +12,38 @@ export class ThemeService {
   theme = signal<Theme>(this.getInitialTheme());
 
   constructor() {
-    // Apply theme on initialization and when it changes
+    // HARDCODED TO LIGHT FOR TESTING
+    // Force light theme immediately
+    this.theme.set('light');
+    this.applyTheme('light');
+    
+    // Remove any dark classes that might be there
+    document.documentElement.classList.remove('dark');
+    document.documentElement.classList.add('light');
+    document.body.classList.remove('dark');
+    document.body.classList.add('light');
+    
+    // Apply theme when it changes (but it won't change since toggleTheme is disabled)
     effect(() => {
       const theme = this.theme();
-      this.applyTheme(theme);
-      localStorage.setItem(this.THEME_KEY, theme);
+      // Always force to light
+      if (theme !== 'light') {
+        this.theme.set('light');
+      }
+      this.applyTheme('light');
     });
   }
 
   private getInitialTheme(): Theme {
-    // Check localStorage first
-    const saved = localStorage.getItem(this.THEME_KEY) as Theme;
-    if (saved === 'light' || saved === 'dark') {
-      return saved;
-    }
-    
-    // Default to dark theme (primary theme)
-    return 'dark';
+    // HARDCODED TO LIGHT FOR TESTING
+    return 'light';
   }
 
   toggleTheme(): void {
-    this.theme.set(this.theme() === 'light' ? 'dark' : 'light');
+    // HARDCODED TO LIGHT FOR TESTING - do nothing
+    // const newTheme = this.theme() === 'light' ? 'dark' : 'light';
+    // this.theme.set(newTheme);
+    // this.applyTheme(newTheme);
   }
 
   setTheme(theme: Theme): void {
@@ -41,18 +52,23 @@ export class ThemeService {
 
   private applyTheme(theme: Theme): void {
     const html = document.documentElement;
-    const body = document.body;
+    
+    // Tailwind's darkMode: 'class' checks for .dark on any ancestor
+    // We only need to modify the html element
+    html.classList.remove('dark', 'light');
     
     if (theme === 'dark') {
       html.classList.add('dark');
-      html.classList.remove('light');
-      body.classList.add('dark');
-      body.classList.remove('light');
     } else {
       html.classList.add('light');
-      html.classList.remove('dark');
-      body.classList.add('light');
-      body.classList.remove('dark');
+    }
+    
+    // Also update body for our custom CSS
+    document.body.classList.remove('dark', 'light');
+    if (theme === 'dark') {
+      document.body.classList.add('dark');
+    } else {
+      document.body.classList.add('light');
     }
   }
 }

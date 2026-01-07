@@ -1,1 +1,4 @@
-<p>logo works!</p>
+<a routerLink="/" class="flex items-center justify-center gap-2 w-full">
+  <span class="logo-bold" [class.text-4xl]="!collapsed" [class.text-2xl]="collapsed">KAS</span>
+  <span *ngIf="!collapsed" class="logo-thin text-4xl">ITA</span>
+</a>

@@ -1,5 +1,5 @@
-<!-- Main Content - Drop into your Angular component template -->
-<main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+<!-- Main Content -->
+<div class="px-4 py-8 sm:px-6 lg:px-8">
     <!-- Hero Section -->
     <div class="mb-12">
         <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
@@ -11,31 +11,31 @@
     </div>
 
     <!-- Current Path Summary Card -->
-    <div class="mb-8 rounded-xl bg-gray-900 border border-gray-800 p-8 shadow-lg">
+    <div class="mb-8 rounded-xl bg-indigo-600 border border-indigo-700 p-8 shadow-lg">
         <div class="flex items-start justify-between">
             <div>
-                <p class="text-sm font-medium text-gray-400 uppercase tracking-wide">Active Learning Path</p>
+                <p class="text-sm font-medium text-indigo-100 uppercase tracking-wide">Active Learning Path</p>
                 <h3 class="mt-2 text-3xl font-bold text-white">{{ currentPath()?.name || 'No active path' }}</h3>
-                <p class="mt-2 text-gray-300">{{ currentPath()?.domain }}</p>
+                <p class="mt-2 text-indigo-100">{{ currentPath()?.domain }}</p>
             </div>
             <div class="text-right">
                 <div class="text-4xl font-bold text-white">{{ overallProgress() }}%</div>
-                <p class="text-sm text-gray-400 mt-1">Overall Progress</p>
+                <p class="text-sm text-indigo-100 mt-1">Overall Progress</p>
             </div>
         </div>
         <div class="mt-6">
-            <div class="h-2.5 w-full overflow-hidden rounded-full bg-gray-800">
+            <div class="h-2.5 w-full overflow-hidden rounded-full bg-indigo-700">
                 <div class="h-full rounded-full bg-white transition-all duration-500" [style.width.%]="overallProgress()">
                 </div>
             </div>
         </div>
         <div class="mt-6 flex gap-3">
             <button (click)="continueLearning()"
-                class="rounded-lg bg-white px-5 py-2.5 text-sm font-semibold text-gray-900 hover:bg-gray-100 transition-colors">
+                class="rounded-lg bg-white px-5 py-2.5 text-sm font-semibold text-indigo-600 hover:bg-indigo-50 transition-colors">
                 Continue Learning
             </button>
             <button (click)="viewAllPaths()"
-                class="rounded-lg border border-gray-700 bg-gray-800/50 px-5 py-2.5 text-sm font-semibold text-white hover:bg-gray-800 hover:border-gray-600 transition-colors">
+                class="rounded-lg border border-indigo-400 bg-indigo-500/50 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-600 hover:border-indigo-300 transition-colors">
                 View All Paths
             </button>
         </div>
@@ -118,8 +118,7 @@
 
                 <div class="grid gap-3 sm:grid-cols-2">
                     <div *ngFor="let source of sources()"
-                        class="rounded-lg border border-gray-200 p-4 hover:border-primary-300 hover:shadow-md transition-all cursor-pointer"
-                        (click)="viewSource()">
+                        class="rounded-lg border border-gray-200 p-4 hover:border-primary-300 hover:shadow-md transition-all cursor-pointer">
                         <div class="flex items-start justify-between">
                             <div class="flex-1">
                                 <div class="flex items-center gap-2 mb-1">
@@ -367,17 +366,17 @@
     </div>
 
     <!-- Call to Action -->
-    <div class="mt-12 rounded-xl bg-gray-900 border border-gray-800 p-8 shadow-lg">
+    <div class="mt-12 rounded-xl bg-indigo-600 border border-indigo-700 p-8 shadow-lg">
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
                 <h3 class="text-xl font-bold text-white">Ready to continue learning?</h3>
-                <p class="mt-1 text-gray-300">You have {{ consumeStats().dueToday }} knowledge units due for review today
+                <p class="mt-1 text-indigo-100">You have {{ consumeStats().dueToday }} knowledge units due for review today
                 </p>
             </div>
             <button (click)="startStudying()"
-                class="rounded-lg bg-white px-6 py-3 font-semibold text-gray-900 hover:bg-gray-100 whitespace-nowrap transition-colors">
+                class="rounded-lg bg-white px-6 py-3 font-semibold text-indigo-600 hover:bg-indigo-50 whitespace-nowrap transition-colors">
                 Start Studying
             </button>
         </div>
     </div>
-</main>
+</div>

@@ -24,11 +24,6 @@
   }
 }
 
-:host-context(.dark) .master-panel,
-.dark .master-panel {
-  background: rgba(21, 21, 32, 0.4);
-  border-right-color: rgba(42, 42, 62, 0.3);
-}
 
 .detail-panel {
   background: transparent;
@@ -62,12 +57,4 @@
   }
 }
 
-:host-context(.dark) .loading-message,
-.dark .loading-message {
-  color: rgba(255, 255, 255, 0.7);
-}
 
-:host-context(.dark) .error-message,
-.dark .error-message {
-  color: #f44336;
-}

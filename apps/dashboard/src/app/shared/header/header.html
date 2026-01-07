@@ -1,35 +1,18 @@
-<header class="app-header">
-  <div class="header-content">
-    <div class="logo">
-      <a routerLink="/">
-        <span class="logo-bold">KAS</span><span class="logo-thin">ITA</span>
-      </a>
-    </div>
-    
-    <nav class="nav-links">
-      <a routerLink="/learning-paths" routerLinkActive="active">Learning Paths</a>
-      <a routerLink="/knowledge-units" routerLinkActive="active">Knowledge Units</a>
-      <a routerLink="/raw-content" routerLinkActive="active">Raw Content</a>
-      <a routerLink="/source-configs" routerLinkActive="active">Source Configs</a>
-      <a routerLink="/user-progress" routerLinkActive="active">User Progress</a>
-    </nav>
-
-    <div class="user-section">
-      <button class="theme-toggle" (click)="toggleTheme()" type="button" [attr.aria-label]="themeService.theme() === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'">
-        @if (themeService.theme() === 'dark') {
-          <svg class="theme-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
-          </svg>
-        } @else {
-          <svg class="theme-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
-          </svg>
-        }
-      </button>
-      @if (currentUser) {
-        <span class="user-name">{{ currentUser.name }}</span>
-        <button class="logout-btn" (click)="logout()">Logout</button>
-      }
-    </div>
+<div class="hidden lg:sticky lg:top-0 lg:z-40 lg:flex lg:h-16 lg:shrink-0 lg:items-center lg:justify-between lg:gap-x-6 lg:border-b border-gray-200 bg-white lg:px-4 xl:px-6 2xl:px-8 lg:shadow-xs">
+  <div class="flex items-center">
+    <!-- Left content can go here -->
   </div>
-</header>
+  <div class="flex items-center gap-4">
+    <!-- Theme toggle hidden - using light theme only -->
+    @if (currentUser) {
+      <span class="text-sm font-semibold text-gray-900">{{ currentUser.name }}</span>
+    }
+    <button
+      (click)="logout()"
+      class="text-sm/6 font-semibold text-gray-900 hover:text-indigo-600"
+    >
+      Log out
+      <span aria-hidden="true">&rarr;</span>
+    </button>
+  </div>
+</div>
