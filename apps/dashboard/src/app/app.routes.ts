@@ -4,7 +4,8 @@ import { authGuard } from '@kasita/core-data';
 export const appRoutes: Route[] = [
   {
     path: '',
-    redirectTo: 'learning-paths',
+    loadComponent: () => import('./home/home').then((m) => m.Home),
+    canActivate: [authGuard],
     pathMatch: 'full',
   },
   {

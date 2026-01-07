@@ -1,1 +1,383 @@
-<p>home works!</p>
+<!-- Main Content - Drop into your Angular component template -->
+<main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <!-- Hero Section -->
+    <div class="mb-12">
+        <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+            Your Learning Journey
+        </h2>
+        <p class="mt-2 text-lg text-gray-600">
+            From outcome to mastery: a complete cycle of learning and creation
+        </p>
+    </div>
+
+    <!-- Current Path Summary Card -->
+    <div class="mb-8 rounded-xl bg-gray-900 border border-gray-800 p-8 shadow-lg">
+        <div class="flex items-start justify-between">
+            <div>
+                <p class="text-sm font-medium text-gray-400 uppercase tracking-wide">Active Learning Path</p>
+                <h3 class="mt-2 text-3xl font-bold text-white">{{ currentPath()?.name || 'No active path' }}</h3>
+                <p class="mt-2 text-gray-300">{{ currentPath()?.domain }}</p>
+            </div>
+            <div class="text-right">
+                <div class="text-4xl font-bold text-white">{{ overallProgress() }}%</div>
+                <p class="text-sm text-gray-400 mt-1">Overall Progress</p>
+            </div>
+        </div>
+        <div class="mt-6">
+            <div class="h-2.5 w-full overflow-hidden rounded-full bg-gray-800">
+                <div class="h-full rounded-full bg-white transition-all duration-500" [style.width.%]="overallProgress()">
+                </div>
+            </div>
+        </div>
+        <div class="mt-6 flex gap-3">
+            <button (click)="continueLearning()"
+                class="rounded-lg bg-white px-5 py-2.5 text-sm font-semibold text-gray-900 hover:bg-gray-100 transition-colors">
+                Continue Learning
+            </button>
+            <button (click)="viewAllPaths()"
+                class="rounded-lg border border-gray-700 bg-gray-800/50 px-5 py-2.5 text-sm font-semibold text-white hover:bg-gray-800 hover:border-gray-600 transition-colors">
+                View All Paths
+            </button>
+        </div>
+    </div>
+
+    <!-- Learning Cycle Phases -->
+    <div class="space-y-8">
+
+        <!-- Phase 1: OUTCOME -->
+        <div class="animate-slide-in opacity-0" style="animation-delay: 0.1s;">
+            <div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-900/5">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-purple-100">
+                            <svg class="h-6 w-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900">1. Outcome</h3>
+                            <p class="text-sm text-gray-600">Define what you want to achieve</p>
+                        </div>
+                    </div>
+                    <span
+                        class="inline-flex items-center rounded-full bg-green-50 px-3 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
+                        {{ outcomePhase().status }}
+                    </span>
+                </div>
+
+                <div class="space-y-3">
+                    <div class="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1">
+                                <p class="font-medium text-gray-900">{{ currentPath()?.targetSkill || 'No target skill defined' }}</p>
+                            </div>
+                            <svg class="h-5 w-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <button (click)="refineOutcome()"
+                    class="mt-4 text-sm font-medium text-primary-600 hover:text-primary-700">
+                    Refine outcome →
+                </button>
+            </div>
+        </div>
+
+        <!-- Phase 2: INPUT -->
+        <div class="animate-slide-in opacity-0" style="animation-delay: 0.2s;">
+            <div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-900/5">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100">
+                            <svg class="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900">2. Input</h3>
+                            <p class="text-sm text-gray-600">AI-curated learning resources</p>
+                        </div>
+                    </div>
+                    <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ring-1 ring-inset"
+                        [ngClass]="getPhaseStatusClass(inputPhase().status)">
+                        {{ inputPhase().status }}
+                    </span>
+                </div>
+
+                <div *ngIf="inputPhase().aiRecommendation" class="mb-4 rounded-lg bg-blue-50 p-4">
+                    <p class="text-sm text-blue-900">
+                        <span class="font-medium">AI Recommendation:</span> {{ inputPhase().aiRecommendation }}
+                    </p>
+                </div>
+
+                <div class="grid gap-3 sm:grid-cols-2">
+                    <div *ngFor="let source of sources()"
+                        class="rounded-lg border border-gray-200 p-4 hover:border-primary-300 hover:shadow-md transition-all cursor-pointer"
+                        (click)="viewSource()">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <svg class="h-4 w-4" [ngClass]="getSourceIconColor(source.type)" fill="currentColor"
+                                        viewBox="0 0 20 20">
+                                        <path *ngIf="source.type === 'rss'"
+                                            d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
+                                        <path *ngIf="source.type === 'article'" fill-rule="evenodd"
+                                            d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                    <p class="text-sm font-medium text-gray-900">{{ source.name }}</p>
+                                </div>
+                                <p class="text-xs text-gray-600">{{ source.url }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button (click)="addSource()"
+                        class="rounded-lg border border-dashed border-gray-300 p-4 hover:border-primary-400 hover:bg-primary-50/50 transition-all">
+                        <div class="flex items-center gap-2 text-gray-600">
+                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 4v16m8-8H4" />
+                            </svg>
+                            <span class="text-sm font-medium">Add source</span>
+                        </div>
+                    </button>
+
+                    <div class="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-900">{{ ingestedCount() }} sources ingested</p>
+                                <p class="text-xs text-gray-600">Ready for synthesis</p>
+                            </div>
+                            <button (click)="synthesize()" [disabled]="!canSynthesize()"
+                                class="rounded-lg bg-primary-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed">
+                                Synthesize
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Phase 3: CONSUME -->
+        <div class="animate-slide-in opacity-0" style="animation-delay: 0.3s;">
+            <div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-900/5">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-100">
+                            <svg class="h-6 w-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900">3. Consume</h3>
+                            <p class="text-sm text-gray-600">Study and internalize concepts</p>
+                        </div>
+                    </div>
+                    <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ring-1 ring-inset"
+                        [ngClass]="getPhaseStatusClass(consumePhase().status)">
+                        {{ consumePhase().status }}
+                    </span>
+                </div>
+
+                <div class="mb-4 grid gap-4 sm:grid-cols-3">
+                    <div class="rounded-lg bg-emerald-50 p-4">
+                        <p class="text-2xl font-bold text-emerald-900">{{ consumeStats().totalUnits }}</p>
+                        <p class="text-sm text-emerald-700">Knowledge Units</p>
+                    </div>
+                    <div class="rounded-lg bg-blue-50 p-4">
+                        <p class="text-2xl font-bold text-blue-900">{{ consumeStats().masteredUnits }}</p>
+                        <p class="text-sm text-blue-700">Mastered</p>
+                    </div>
+                    <div class="rounded-lg bg-orange-50 p-4">
+                        <p class="text-2xl font-bold text-orange-900">{{ consumeStats().dueToday }}</p>
+                        <p class="text-sm text-orange-700">Due Today</p>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <div *ngFor="let unit of dueUnits().slice(0, 2)" class="rounded-lg border p-4" [ngClass]="{
+                   'border-emerald-200 bg-emerald-50': unit.priority === 'high',
+                   'border-gray-200': unit.priority !== 'high'
+                 }">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1">
+                                <p class="font-medium text-gray-900">{{ unit.concept }}</p>
+                                <p class="mt-1 text-sm text-gray-600">{{ unit.question }}</p>
+                                <div class="mt-3 flex items-center gap-4">
+                                    <span class="text-xs text-gray-600">Next review: {{ unit.nextReview }}</span>
+                                    <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium"
+                                        [ngClass]="getUnitStatusClass(unit.masteryLevel)">
+                                        {{ unit.masteryLevel }}
+                                    </span>
+                                </div>
+                            </div>
+                            <button (click)="studyUnit()" *ngIf="unit.priority === 'high'"
+                                class="ml-4 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700">
+                                Study
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                    <button (click)="viewAllUnits()"
+                        class="mt-4 w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50">
+                    View All Units ({{ consumeStats().totalUnits }})
+                </button>
+            </div>
+        </div>
+
+        <!-- Phase 4: DEMONSTRATE -->
+        <div class="animate-slide-in opacity-0" style="animation-delay: 0.4s;">
+            <div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-900/5">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-100">
+                            <svg class="h-6 w-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900">4. Demonstrate</h3>
+                            <p class="text-sm text-gray-600">Apply knowledge in focused exercises</p>
+                        </div>
+                    </div>
+                    <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ring-1 ring-inset"
+                        [ngClass]="getPhaseStatusClass(demonstratePhase().status)">
+                        {{ demonstratePhase().status }}
+                    </span>
+                </div>
+
+                <div *ngIf="!demonstratePhase().unlocked"
+                    class="rounded-lg border border-dashed border-gray-300 bg-gray-50 p-8 text-center">
+                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                    <h3 class="mt-4 text-sm font-medium text-gray-900">Complete {{ demonstratePhase().unlockThreshold }}%
+                        of Consume phase to unlock</h3>
+                    <p class="mt-2 text-sm text-gray-600">Master the fundamentals before moving to practical
+                        demonstrations</p>
+                    <div class="mt-4">
+                        <div class="h-2 w-full overflow-hidden rounded-full bg-gray-200">
+                            <div class="h-full rounded-full bg-amber-500 transition-all duration-500"
+                                [style.width.%]="demonstratePhase().progress || 0"></div>
+                        </div>
+                        <p class="mt-2 text-xs text-gray-500">{{ demonstratePhase().progress || 0 }}% complete • {{
+                            demonstratePhase().unitsRemaining || 0 }} more units to unlock</p>
+                    </div>
+                </div>
+
+                <div *ngIf="demonstratePhase().unlocked" class="space-y-2">
+                    <div class="rounded-lg border border-gray-200 bg-white p-4 text-center text-gray-500">
+                        <p class="text-sm">Exercises coming soon</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Phase 5: OUTPUT -->
+        <div class="animate-slide-in opacity-0" style="animation-delay: 0.5s;">
+            <div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-900/5">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-rose-100">
+                            <svg class="h-6 w-6 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900">5. Output</h3>
+                            <p class="text-sm text-gray-600">Build complete projects</p>
+                        </div>
+                    </div>
+                    <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ring-1 ring-inset"
+                        [ngClass]="getPhaseStatusClass(outputPhase().status)">
+                        {{ outputPhase().status }}
+                    </span>
+                </div>
+
+                <div *ngIf="!outputPhase().unlocked"
+                    class="rounded-lg border border-dashed border-gray-300 bg-gray-50 p-8 text-center">
+                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                    <h3 class="mt-4 text-sm font-medium text-gray-900">Complete Demonstrate phase to unlock</h3>
+                    <p class="mt-2 text-sm text-gray-600">Build full projects that integrate multiple concepts</p>
+                </div>
+
+                <div *ngIf="outputPhase().unlocked" class="space-y-3">
+                    <div class="rounded-lg border border-gray-200 bg-white p-4 text-center text-gray-500">
+                        <p class="text-sm">Projects coming soon</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Phase 6: TRANSFER -->
+        <div class="animate-slide-in opacity-0" style="animation-delay: 0.6s;">
+            <div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-900/5">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-violet-100">
+                            <svg class="h-6 w-6 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900">6. Transfer</h3>
+                            <p class="text-sm text-gray-600">Teach others and contribute back</p>
+                        </div>
+                    </div>
+                    <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ring-1 ring-inset"
+                        [ngClass]="getPhaseStatusClass(transferPhase().status)">
+                        {{ transferPhase().status }}
+                    </span>
+                </div>
+
+                <div *ngIf="!transferPhase().unlocked"
+                    class="rounded-lg border border-dashed border-gray-300 bg-gray-50 p-8 text-center">
+                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                    <h3 class="mt-4 text-sm font-medium text-gray-900">Complete Output phase to unlock</h3>
+                    <p class="mt-2 text-sm text-gray-600">Create teaching materials to help others learn</p>
+                </div>
+
+                <div *ngIf="transferPhase().unlocked" class="space-y-2">
+                    <div class="rounded-lg border border-gray-200 bg-white p-4 text-center text-gray-500">
+                        <p class="text-sm">Transfer activities coming soon</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Call to Action -->
+    <div class="mt-12 rounded-xl bg-gray-900 border border-gray-800 p-8 shadow-lg">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div>
+                <h3 class="text-xl font-bold text-white">Ready to continue learning?</h3>
+                <p class="mt-1 text-gray-300">You have {{ consumeStats().dueToday }} knowledge units due for review today
+                </p>
+            </div>
+            <button (click)="startStudying()"
+                class="rounded-lg bg-white px-6 py-3 font-semibold text-gray-900 hover:bg-gray-100 whitespace-nowrap transition-colors">
+                Start Studying
+            </button>
+        </div>
+    </div>
+</main>
