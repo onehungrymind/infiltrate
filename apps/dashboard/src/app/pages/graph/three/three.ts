@@ -143,7 +143,7 @@ export class GraphThree
       0.1,
       10000
     );
-    this.camera.position.set(0, 0, 500);
+    this.camera.position.set(0, 0, 400); // Closer to see the constrained graph better
 
     // Create renderer
     this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -192,11 +192,12 @@ export class GraphThree
 
       const mesh = new THREE.Mesh(geometry, material);
 
-      // Random position in 3D space
+      // Random position in constrained 3D space
+      // Constrain to a smaller, more manageable area
       mesh.position.set(
-        (Math.random() - 0.5) * 400,
-        (Math.random() - 0.5) * 400,
-        (Math.random() - 0.5) * 400
+        (Math.random() - 0.5) * 200,
+        (Math.random() - 0.5) * 200,
+        (Math.random() - 0.5) * 200
       );
 
       // Create label sprite
@@ -250,11 +251,16 @@ export class GraphThree
   private applyForceLayout(): void {
     if (!this.graphData) return;
     
-    // Simple force-directed layout in 3D
+    // Simple force-directed layout in 3D with boundary constraints
     const iterations = 100;
     const k = Math.sqrt(
       (this.width * this.height) / (this.nodes.length || 1)
     );
+    
+    // Define bounding box - constrain nodes to visible area
+    // Camera is at (0, 0, 500), so we want nodes centered around origin
+    const maxRadius = 150; // Maximum distance from origin in any direction
+    const padding = 20; // Padding from boundary
 
     for (let iter = 0; iter < iterations; iter++) {
       // Repulsion
@@ -290,7 +296,7 @@ export class GraphThree
           const dy = target.mesh.position.y - source.mesh.position.y;
           const dz = target.mesh.position.z - source.mesh.position.z;
           const dist = Math.sqrt(dx * dx + dy * dy + dz * dz) || 1;
-          const force = (dist - 150) * 0.01;
+          const force = (dist - 120) * 0.01; // Reduced from 150 for tighter layout
 
           const fx = (dx / dist) * force;
           const fy = (dy / dist) * force;
@@ -302,6 +308,21 @@ export class GraphThree
           target.mesh.position.x -= fx;
           target.mesh.position.y -= fy;
           target.mesh.position.z -= fz;
+        }
+      });
+      
+      // Apply boundary constraints after each iteration
+      this.nodes.forEach((node) => {
+        const radius = 8 + node.originalData.estimatedHours / 2;
+        const pos = node.mesh.position;
+        const distance = Math.sqrt(pos.x * pos.x + pos.y * pos.y + pos.z * pos.z);
+        
+        // If node is outside the bounding sphere, constrain it
+        if (distance > maxRadius - radius - padding) {
+          const scale = (maxRadius - radius - padding) / distance;
+          pos.x *= scale;
+          pos.y *= scale;
+          pos.z *= scale;
         }
       });
     }

@@ -150,13 +150,13 @@ export class GraphD3
         d3
           .forceLink<D3Node, D3Link>(this.links)
           .id((d) => d.id)
-          .distance(150)
+          .distance(120) // Reduced from 150 for tighter layout
       )
-      .force('charge', d3.forceManyBody().strength(-2000))
+      .force('charge', d3.forceManyBody().strength(-1500)) // Reduced from -2000 for less repulsion
       .force('center', d3.forceCenter(this.width / 2, this.height / 2))
       .force(
         'collision',
-        d3.forceCollide<D3Node>().radius((d) => d.radius + 5)
+        d3.forceCollide<D3Node>().radius((d) => d.radius + 10) // Increased padding for better spacing
       );
 
     // Create links (lines)
@@ -222,8 +222,21 @@ export class GraphD3
       .attr('dy', (d) => d.radius + 15)
       .style('pointer-events', 'none');
 
-    // Update positions on simulation tick
+    // Update positions on simulation tick with boundary constraints
     this.simulation.on('tick', () => {
+      // Constrain nodes to stay within viewport bounds
+      const padding = 50; // Padding from edges
+      this.nodes.forEach((d) => {
+        // Clamp x position
+        if (d.x !== undefined) {
+          d.x = Math.max(padding + d.radius, Math.min(this.width - padding - d.radius, d.x));
+        }
+        // Clamp y position
+        if (d.y !== undefined) {
+          d.y = Math.max(padding + d.radius, Math.min(this.height - padding - d.radius, d.y));
+        }
+      });
+
       link
         .attr('x1', (d) => (d.source as D3Node).x!)
         .attr('y1', (d) => (d.source as D3Node).y!)

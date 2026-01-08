@@ -16,6 +16,11 @@ import {
 import { CommonModule } from '@angular/common';
 import { GraphData, GraphNode } from '../graph.types';
 import cytoscape, { Core, NodeSingular } from 'cytoscape';
+// @ts-expect-error - cytoscape-fcose doesn't have type definitions
+import fcose from 'cytoscape-fcose';
+
+// Register the fcose extension
+cytoscape.use(fcose);
 
 @Component({
   selector: 'app-graph-cytoscape',
@@ -104,6 +109,8 @@ export class GraphCytoscape
     this.cy = cytoscape({
       container: this.containerRef.nativeElement,
       elements,
+      minZoom: 0.1,
+      maxZoom: 3,
       style: [
         {
           selector: 'node',
@@ -111,22 +118,21 @@ export class GraphCytoscape
             'background-color': (ele: NodeSingular) =>
               this.nodeColors[ele.data('type')] || '#666',
             label: 'data(label)',
-            'font-size': '12px',
+            'font-size': '10px',
             'font-family': 'system-ui',
             color: '#1a1a2e',
             'text-valign': 'bottom',
-            'text-margin-y': 10,
-            width: (ele: NodeSingular) => {
-              const node = this.graphData?.nodes.find(
-                (n) => n.id === ele.data('id')
-              );
-              return (8 + (node?.estimatedHours || 0) / 2) * 2;
+            'text-margin-y': 6,
+            'text-halign': 'center',
+            width: () => {
+              // Uniform small size for all nodes - prioritize readability over size variation
+              // All nodes are 25px for consistent, readable display
+              return 25;
             },
-            height: (ele: NodeSingular) => {
-              const node = this.graphData?.nodes.find(
-                (n) => n.id === ele.data('id')
-              );
-              return (8 + (node?.estimatedHours || 0) / 2) * 2;
+            height: () => {
+              // Uniform small size for all nodes - prioritize readability over size variation
+              // All nodes are 25px for consistent, readable display
+              return 25;
             },
             shape: 'ellipse',
             'border-width': 0,
@@ -161,12 +167,47 @@ export class GraphCytoscape
         },
       ],
       layout: {
-        name: 'cose',
-        idealEdgeLength: 150,
-        nodeRepulsion: 2000,
-        gravity: 0.1,
-        numIter: 1000,
-      },
+        name: 'fcose',
+        // Node repulsion (non-nested) - higher = more spacing
+        nodeRepulsion: 8000,
+        // Ideal edge length - higher = more spacing between connected nodes
+        idealEdgeLength: 300,
+        // Edge elasticity - how much edges can stretch
+        edgeElasticity: 0.5,
+        // Nesting factor - for compound graphs
+        nestingFactor: 0.1,
+        // Gravity - pulls nodes toward center (lower = more spread)
+        gravity: 0.25,
+        // Number of iterations
+        numIter: 2500,
+        // Initial temperature for force-directed simulation
+        initialEnergyOnIncremental: 0.5,
+        // Component spacing - spacing between disconnected components
+        componentSpacing: 150,
+        // Whether to fit the viewport to the graph
+        fit: true,
+        // Padding around the graph
+        padding: 80,
+        // Whether to use random initial positions - MUST be true for proper layout
+        randomize: true,
+        // Whether to animate
+        animate: true,
+        // Animation duration
+        animationDuration: 1000,
+        // Animation easing
+        animationEasing: 'ease-out-cubic',
+        // Quality setting for layout
+        quality: 'default',
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any, // fcose layout options may not match base type exactly
+    });
+
+    // Fit the graph to viewport after layout completes
+    this.cy.one('layoutstop', () => {
+      if (this.cy) {
+        // Fit with generous padding to ensure all nodes are visible and readable
+        this.cy.fit(undefined, 80); // 80px padding on all sides for better visibility
+      }
     });
 
     // Handle node click
