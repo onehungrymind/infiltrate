@@ -17,19 +17,50 @@
       <app-logo></app-logo>
     </div>
     <nav class="relative flex flex-1 flex-col">
-      <ul role="list" class="flex flex-1 flex-col gap-y-7">
-        <li>
-          <ul role="list" class="-mx-2 space-y-1">
-            <li *ngFor="let route of routes">
-              <a routerLink="{{route.path}}" routerLinkActive="bg-gray-100 text-indigo-600"
-                [routerLinkActiveOptions]="{exact: route.path === '/'}"
-                (click)="closeMobileSidebar()"
-                class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600">
+      <ul role="list" class="flex flex-1 flex-col gap-y-4">
+        <li *ngFor="let section of sections; let i = index">
+          <!-- Section Header (if title exists) -->
+          <div *ngIf="section.title" 
+               class="flex items-center justify-between px-2 py-2">
+            <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-500">
+              {{ section.title }}
+            </h3>
+            <button 
+              type="button"
+              (click)="toggleSection(i)"
+              class="text-gray-400 hover:text-gray-600">
+              <svg class="h-4 w-4 transition-transform" 
+                   [class.rotate-180]="section.collapsed"
+                   fill="none" 
+                   viewBox="0 0 24 24" 
+                   stroke="currentColor">
+                <path stroke-linecap="round" 
+                      stroke-linejoin="round" 
+                      stroke-width="2" 
+                      d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+          </div>
+          
+          <!-- Section Routes -->
+          <ul *ngIf="!section.collapsed" 
+              role="list" 
+              class="-mx-2 space-y-1">
+            <li *ngFor="let route of section.routes">
+              <a routerLink="{{route.path}}" 
+                 routerLinkActive="bg-gray-100 text-indigo-600"
+                 [routerLinkActiveOptions]="{exact: route.path === '/'}"
+                 (click)="closeMobileSidebar()"
+                 class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600">
                 <span [innerHTML]="getIcon(route.icon)" class="size-5"></span>
                 {{route.label}}
               </a>
             </li>
           </ul>
+          
+          <!-- Separator (except for last section) -->
+          <div *ngIf="i < sections.length - 1" 
+               class="my-4 border-t border-gray-200"></div>
         </li>
       </ul>
     </nav>
@@ -47,21 +78,52 @@
       <app-logo [collapsed]="isSidebarCollapsed"></app-logo>
     </div>
     <nav class="relative flex flex-1 flex-col">
-      <ul role="list" class="flex flex-1 flex-col gap-y-7">
-        <li>
-          <ul role="list" class="-mx-2 space-y-1">
-            <li *ngFor="let route of routes">
-              <a routerLink="{{route.path}}" routerLinkActive="bg-gray-100 text-indigo-600"
-                [routerLinkActiveOptions]="{exact: route.path === '/'}"
-                [class.justify-center]="isSidebarCollapsed"
-                [attr.title]="isSidebarCollapsed ? route.label : null"
-                [attr.aria-label]="isSidebarCollapsed ? route.label : null"
-                class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600">
+      <ul role="list" class="flex flex-1 flex-col gap-y-4">
+        <li *ngFor="let section of sections; let i = index">
+          <!-- Section Header (if title exists) -->
+          <div *ngIf="section.title && !isSidebarCollapsed" 
+               class="flex items-center justify-between px-2 py-2">
+            <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-500">
+              {{ section.title }}
+            </h3>
+            <button 
+              type="button"
+              (click)="toggleSection(i)"
+              class="text-gray-400 hover:text-gray-600">
+              <svg class="h-4 w-4 transition-transform" 
+                   [class.rotate-180]="section.collapsed"
+                   fill="none" 
+                   viewBox="0 0 24 24" 
+                   stroke="currentColor">
+                <path stroke-linecap="round" 
+                      stroke-linejoin="round" 
+                      stroke-width="2" 
+                      d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+          </div>
+          
+          <!-- Section Routes -->
+          <ul *ngIf="!section.collapsed" 
+              role="list" 
+              class="-mx-2 space-y-1">
+            <li *ngFor="let route of section.routes">
+              <a routerLink="{{route.path}}" 
+                 routerLinkActive="bg-gray-100 text-indigo-600"
+                 [routerLinkActiveOptions]="{exact: route.path === '/'}"
+                 [class.justify-center]="isSidebarCollapsed"
+                 [attr.title]="isSidebarCollapsed ? route.label : null"
+                 [attr.aria-label]="isSidebarCollapsed ? route.label : null"
+                 class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600">
                 <span [innerHTML]="getIcon(route.icon)" class="size-5"></span>
                 <span *ngIf="!isSidebarCollapsed">{{route.label}}</span>
               </a>
             </li>
           </ul>
+          
+          <!-- Separator (except for last section) -->
+          <div *ngIf="i < sections.length - 1 && !isSidebarCollapsed" 
+               class="my-4 border-t border-gray-200"></div>
         </li>
       </ul>
     </nav>
@@ -91,4 +153,3 @@
     <span aria-hidden="true">&rarr;</span>
   </button>
 </div>
-

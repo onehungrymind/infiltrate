@@ -13,21 +13,35 @@ export const appRoutes: Route[] = [
     loadComponent: () => import('./login/login').then((m) => m.Login),
   },
   {
+    path: 'content',
+    loadComponent: () => import('./content/content').then((m) => m.Content),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'challenges',
+    loadComponent: () => import('./challenges/challenges').then((m) => m.Challenges),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'schedule',
+    loadComponent: () => import('./schedule/schedule').then((m) => m.Schedule),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'graph',
+    loadComponent: () =>
+      import('./pages/graph/graph').then((m) => m.Graph),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'users',
+    loadComponent: () => import('./users/users').then((m) => m.Users),
+    canActivate: [authGuard],
+  },
+  {
     path: 'learning-paths',
     loadComponent: () =>
       import('./learning-paths/learning-paths').then((m) => m.LearningPaths),
-    canActivate: [authGuard],
-  },
-  {
-    path: 'knowledge-units',
-    loadComponent: () =>
-      import('./knowledge-units/knowledge-units').then((m) => m.KnowledgeUnits),
-    canActivate: [authGuard],
-  },
-  {
-    path: 'raw-content',
-    loadComponent: () =>
-      import('./raw-content/raw-content').then((m) => m.RawContent),
     canActivate: [authGuard],
   },
   {
@@ -37,15 +51,15 @@ export const appRoutes: Route[] = [
     canActivate: [authGuard],
   },
   {
-    path: 'user-progress',
+    path: 'raw-content',
     loadComponent: () =>
-      import('./user-progress/user-progress').then((m) => m.UserProgress),
+      import('./raw-content/raw-content').then((m) => m.RawContent),
     canActivate: [authGuard],
   },
   {
-    path: 'graph',
+    path: 'knowledge-units',
     loadComponent: () =>
-      import('./pages/graph/graph').then((m) => m.Graph),
+      import('./knowledge-units/knowledge-units').then((m) => m.KnowledgeUnits),
     canActivate: [authGuard],
   },
 ];
