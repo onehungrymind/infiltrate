@@ -62,4 +62,22 @@ export const appRoutes: Route[] = [
       import('./knowledge-units/knowledge-units').then((m) => m.KnowledgeUnits),
     canActivate: [authGuard],
   },
+  {
+    path: 'visualization',
+    loadComponent: () =>
+      import('./pages/visualization/visualization').then((m) => m.Visualization),
+    canActivate: [authGuard],
+    children: [
+      {
+        path: 'bfs',
+        loadComponent: () =>
+          import('./pages/visualization/bfs/bfs').then((m) => m.BfsComponent),
+      },
+      {
+        path: '',
+        redirectTo: 'bfs',
+        pathMatch: 'full',
+      },
+    ],
+  },
 ];

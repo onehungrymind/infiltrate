@@ -59,10 +59,12 @@ This methodology draws inspiration from interview preparation but extends beyond
 - Point multipliers and challenge modes
 
 ### 🧠 Knowledge Graph
+- Interactive 3D visualization using Three.js
 - Related concept linking
 - Prerequisite mapping
 - Multiple learning paths to the same knowledge
 - Bloom's taxonomy cognitive level tracking
+- Graph search and exploration
 
 ### 🌐 Web-First Design
 - Study anywhere, any device
@@ -80,41 +82,90 @@ kasita/
 │   ├── dashboard/         # Analytics and progress tracking (Angular)
 │   ├── dashboard-e2e/     # E2E tests for dashboard
 │   ├── api/               # Backend API services (NestJS)
-│   └── api-e2e/           # E2E tests for API
+│   ├── api-e2e/           # E2E tests for API
+│   ├── patchbay/          # Python content ingestion service
+│   └── synthesizer/       # Python content processing service
 ├── libs/
 │   ├── common-models/     # Shared data models and types
 │   ├── core-data/         # HTTP client services
-│   └── core-state/        # NgRx feature slices and state management
-└── docs/                  # Documentation and guides
+│   ├── core-state/        # NgRx feature slices and state management
+│   ├── material/          # Angular Material UI components
+│   └── python-shared/     # Shared Python utilities
+├── tools/                 # Custom Nx generators
+│   ├── ng-http-service-generator/    # HTTP service generator
+│   ├── ngrx-feature-generator/       # NgRx feature generator
+│   └── nx-master-detail-view/        # Master-detail view generator
+├── data/                  # Data storage
+│   ├── raw/               # Ingested raw content
+│   ├── processed/         # Processed content (embeddings, clusters)
+│   └── synthesized/       # Generated knowledge units
+└── guides/                # Documentation and guides
 ```
 
 ## Technology Stack
 
-- **TypeScript** - Type-safe development across the entire stack
+### Frontend
 - **Angular 21** - Component-based UI framework with standalone components
-- **NestJS** - Backend API framework with Express
 - **NgRx** - State management with Store, Effects, and Entity
+- **Angular Material** - UI component library
+- **Tailwind CSS** - Utility-first CSS framework
+- **Three.js** - 3D graphics for knowledge graph visualization
+- **Cytoscape.js** - Graph visualization library
+- **D3.js** - Data visualization library
+
+### Backend
+- **NestJS** - Backend API framework with Express
+- **TypeORM** - ORM for database access
+- **SQLite** - Local development database (via libSQL/Turso)
+- **Passport.js** - Authentication middleware
+- **JWT** - JSON Web Tokens for authentication
+- **Socket.io** - WebSocket support for real-time updates
+
+### Python Services
+- **Python 3.11+** - Content processing services
+- **uv** - Fast Python package manager
+- **sentence-transformers** - Text embeddings
+- **Anthropic Claude API** - LLM for content generation
+
+### Tooling
+- **TypeScript** - Type-safe development across the entire stack
 - **Nx 22** - Monorepo management and build optimization
 - **Vitest** - Unit testing framework
+- **Jest** - Testing framework for API
 - **Playwright** - End-to-end testing
 - **ESLint** - Code linting
 - **Prettier** - Code formatting
 
 ## Data Model
 
-Kasita's data model is built around four core concepts:
+Kasita's data model is built around several core concepts:
 
-### 1. Knowledge Units
+### 1. Users & Authentication
+- User accounts with email/password authentication
+- Role-based access control (guest, user, manager, admin)
+- JWT-based session management
+- User profiles and preferences
+
+### 2. Knowledge Units
 The atomic building blocks of learning - a single concept, question, and answer with supporting context (examples, analogies, common mistakes, sources).
-
-### 2. Learning Activities
-Different ways to engage with knowledge: flashcards, quizzes, games, whiteboard challenges, verbal recitation. Each activity type has custom configuration and tracks progress independently.
 
 ### 3. Learning Paths
 Structured progressions through knowledge with phases, completion criteria, and estimated time commitments. Infiltrate decks are a specialized type of learning path.
 
-### 4. User Progress
-Granular tracking of mastery levels, spaced repetition scheduling, attempt history, and performance analytics.
+### 4. Data Sources
+Global content sources (RSS feeds, articles, newsletters) that can be configured for automatic ingestion. Supports archive parsing and scheduled updates.
+
+### 5. Raw Content
+Ingested content from data sources before processing. Stored with metadata, timestamps, and source references.
+
+### 6. Learning Activities
+Different ways to engage with knowledge: flashcards, quizzes, games, whiteboard challenges, verbal recitation. Each activity type has custom configuration and tracks progress independently.
+
+### 7. User Progress
+Granular tracking of mastery levels, spaced repetition scheduling (SM-2 algorithm), attempt history, and performance analytics.
+
+### 8. Knowledge Graph
+Graph-based representation of knowledge relationships. Tracks prerequisites, related concepts, and learning paths through the knowledge space.
 
 See [`libs/common-models`](./libs/common-models) for the complete TypeScript definitions.
 
@@ -123,7 +174,8 @@ See [`libs/common-models`](./libs/common-models) for the complete TypeScript def
 ### Prerequisites
 - Node.js 18+ 
 - npm or yarn
-- PostgreSQL (for local development)
+- Python 3.11+ (for Patchbay and Synthesizer services)
+- uv (Python package manager) - install via: `curl -LsSf https://astral.sh/uv/install.sh | sh`
 
 ### Installation
 
@@ -178,10 +230,16 @@ npm run serve:api           # Start API server
 The main flashcard application for learning ML/AI concepts. See the [Infiltrate README](./apps/infiltrate/README.md) for detailed documentation.
 
 **Dashboard App:**
-Administration and analytics interface for tracking learning progress, managing knowledge units, and viewing insights.
+Administration and analytics interface for tracking learning progress, managing knowledge units, users, data sources, and viewing interactive knowledge graphs. Features master-detail views for all entities and role-based access control.
 
 **API Server:**
-Backend REST API built with NestJS for managing data, authentication, and serving the frontend applications.
+Backend REST API built with NestJS for managing data, authentication (JWT), and serving the frontend applications. Includes WebSocket support for real-time updates and a knowledge graph service for relationship queries.
+
+**Patchbay (Python):**
+Content ingestion service that fetches content from RSS feeds, articles, and other sources. Stores raw content via API for further processing.
+
+**Synthesizer (Python):**
+Content processing service that generates embeddings, clusters content, and creates knowledge units using LLMs. Transforms raw content into structured learning materials.
 
 **Shared Libraries:**
 - `@kasita/common-models` - Shared data models and types
@@ -204,16 +262,22 @@ Import certification exam topics into Kasita, track mastery levels, and use spac
 
 ## Roadmap
 
-### Current (v0.1)
+### Current (v0.1) ✅
 - [x] Core data model definition (`common-models`)
 - [x] Infiltrate flashcard web application (Angular)
-- [x] Dashboard application (Angular)
-- [x] API server (NestJS)
+- [x] Dashboard application (Angular) with master-detail views
+- [x] API server (NestJS) with full CRUD operations
 - [x] Core data library for HTTP services
 - [x] Core state library for NgRx state management
-- [x] Basic spaced repetition algorithm
-- [ ] User authentication and profiles
-- [ ] PostgreSQL backend implementation
+- [x] User authentication and profiles (JWT)
+- [x] Role-based access control (RBAC)
+- [x] SQLite backend with TypeORM
+- [x] Knowledge graph module and API
+- [x] Graph visualization (Three.js, Cytoscape.js, D3.js)
+- [x] Data sources management
+- [x] Python content ingestion service (Patchbay)
+- [x] Python content processing service (Synthesizer)
+- [x] Custom Nx generators for rapid development
 
 ### Near-term (v0.2)
 - [ ] Complete analytics dashboard implementation
@@ -221,14 +285,16 @@ Import certification exam topics into Kasita, track mastery levels, and use spac
 - [ ] Export to Anki/Quizlet
 - [ ] Mobile-responsive improvements
 - [ ] Whiteboard challenge interface
-- [ ] API endpoints for data persistence
+- [ ] Full ingestion pipeline integration
+- [ ] Real-time progress updates via WebSocket
 
 ### Medium-term (v0.3)
 - [ ] Gamification system
 - [ ] Leaderboards and achievements
 - [ ] Community-contributed knowledge units
-- [ ] AI-assisted knowledge unit generation
+- [ ] Enhanced AI-assisted knowledge unit generation
 - [ ] Voice recording for recitation phase
+- [ ] Advanced graph search and filtering
 
 ### Long-term (v1.0)
 - [ ] Native mobile applications
@@ -236,6 +302,7 @@ Import certification exam topics into Kasita, track mastery levels, and use spac
 - [ ] Integration with Obsidian/Notion
 - [ ] Advanced analytics and ML-powered insights
 - [ ] Marketplace for premium learning paths
+- [ ] PostgreSQL migration for production
 
 ## Philosophy & Design Principles
 

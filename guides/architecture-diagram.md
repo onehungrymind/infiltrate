@@ -54,6 +54,18 @@ graph TB
     %% API Dependencies
     API --> CommonModels
     API --> Database
+    
+    subgraph "API Modules"
+        AuthModule[Auth Module<br/>JWT Authentication]
+        UsersModule[Users Module<br/>User Management]
+        DataSourcesModule[Data Sources<br/>Content Sources]
+        KnowledgeGraphModule[Knowledge Graph<br/>Relationships]
+    end
+    
+    API --> AuthModule
+    API --> UsersModule
+    API --> DataSourcesModule
+    API --> KnowledgeGraphModule
 
     %% Python Services
     Patchbay --> PythonShared
@@ -98,18 +110,18 @@ graph TB
 
 ### Applications
 
-- **Dashboard** - Angular admin dashboard for managing learning paths, knowledge units, and content
+- **Dashboard** - Angular admin dashboard for managing learning paths, knowledge units, users, data sources, and interactive knowledge graph visualization (Three.js, Cytoscape.js, D3.js)
 - **Infiltrate** - Angular flashcard application for spaced repetition learning
-- **API** - NestJS REST API with WebSocket support for real-time updates
+- **API** - NestJS REST API with WebSocket support for real-time updates, JWT authentication, and comprehensive CRUD operations
 - **Patchbay** - Python service for ingesting content from RSS feeds, articles, and PDFs
 - **Synthesizer** - Python service for processing raw content into knowledge units using embeddings and LLMs
 
 ### Libraries
 
-- **common-models** - Shared TypeScript interfaces and types (source of truth for data models)
-- **core-data** - Angular HTTP services for API communication
-- **core-state** - NgRx state management with feature modules for each entity
-- **material** - Angular Material UI components and modules
+- **common-models** - Shared TypeScript interfaces and types (source of truth for data models including User, DataSource, KnowledgeGraph entities)
+- **core-data** - Angular HTTP services for API communication, authentication service, and dynamic form field definitions
+- **core-state** - NgRx state management with feature modules for all entities (including users)
+- **material** - Angular Material UI components and modules (confirmation dialogs, etc.)
 - **python-shared** - Shared Python utilities for file I/O, logging, and common functions
 
 ### Tools
@@ -118,19 +130,28 @@ graph TB
 - **ngrx-feature-generator** - Custom Nx generator for creating NgRx feature modules
 - **nx-master-detail-view** - Custom Nx generator for creating master-detail view components
 
+### API Modules
+
+- **Auth Module** - JWT-based authentication, Passport.js strategies, login/register endpoints
+- **Users Module** - User CRUD operations, role management (guest, user, manager, admin)
+- **Data Sources Module** - Global content source management, scheduling, archive parsing
+- **Knowledge Graph Module** - Relationship queries, graph generation, search functionality
+
 ### Data Flow
 
-1. **Ingestion**: Patchbay fetches content from sources → stores in `data/raw/`
-2. **Processing**: Synthesizer reads raw content → generates embeddings → clusters content
-3. **Synthesis**: Synthesizer generates knowledge units from clusters → stores in `data/synthesized/`
-4. **Storage**: Knowledge units are synced to the SQLite database via API
-5. **Consumption**: Angular apps fetch data through core-data services → update state via NgRx
+1. **Ingestion**: Patchbay fetches content from data sources → stores in `data/raw/` → POSTs to API
+2. **Processing**: Synthesizer reads raw content from API → generates embeddings → clusters content → stores in `data/processed/`
+3. **Synthesis**: Synthesizer generates knowledge units from clusters → stores in `data/synthesized/` → POSTs to API
+4. **Storage**: All data synced to SQLite database via API (users, learning paths, knowledge units, data sources, etc.)
+5. **Graph Building**: Knowledge graph module analyzes relationships and builds graph structure
+6. **Consumption**: Angular apps fetch data through core-data services → update state via NgRx → display in UI/graph visualizations
 
 ## Technology Stack
 
-- **Frontend**: Angular 21, NgRx, Angular Material, TypeScript
-- **Backend**: NestJS, TypeORM, SQLite (Turso/libSQL)
-- **Python**: uv, sentence-transformers, Anthropic Claude API
+- **Frontend**: Angular 21, NgRx, Angular Material, Tailwind CSS, Three.js, Cytoscape.js, D3.js, TypeScript
+- **Backend**: NestJS, TypeORM, SQLite (via sqlite3/libSQL), Passport.js, JWT, Socket.io, Swagger/OpenAPI
+- **Authentication**: JWT tokens, bcrypt password hashing, role-based access control
+- **Python**: uv, sentence-transformers, Anthropic Claude API, Pydantic
 - **Monorepo**: Nx 22
 - **Testing**: Jest, Vitest, Playwright
 

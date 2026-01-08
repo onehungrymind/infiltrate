@@ -2,71 +2,82 @@
 
 Quick reference checklist for getting Kasita to a working demo state.
 
-## Milestone 1: Working Demo with Mock Data ⏱️ 15-21 hours
+## Milestone 1: Working Demo with Mock Data ⏱️ COMPLETED ✅
 
-### Phase 1.1: NgRx Store Configuration (2-3h)
-- [ ] Install `@ngrx/store`, `@ngrx/effects`, `@ngrx/store-devtools` (if not already)
-- [ ] Add `provideStore()` to dashboard `app.config.ts`
-- [ ] Add `provideState()` for each feature:
-  - [ ] `learningPathsFeature`
-  - [ ] `knowledgeUnitsFeature`
-  - [ ] `rawContentFeature`
-  - [ ] `sourceConfigsFeature`
-  - [ ] `userProgressFeature`
-- [ ] Add `provideEffects()` with all effects
-- [ ] Add `StoreDevtoolsModule` for development
-- [ ] Repeat for infiltrate app
-- [ ] Test store connection in a component
+### Phase 1.1: NgRx Store Configuration ✅
+- [x] Install `@ngrx/store`, `@ngrx/effects`, `@ngrx/store-devtools`
+- [x] Add `provideStore()` to dashboard `app.config.ts`
+- [x] Add `provideState()` for each feature:
+  - [x] `learningPathsFeature`
+  - [x] `knowledgeUnitsFeature`
+  - [x] `rawContentFeature`
+  - [x] `sourceConfigsFeature`
+  - [x] `userProgressFeature`
+  - [x] `usersFeature` (added)
+- [x] Add `provideEffects()` with all effects
+- [x] Add `StoreDevtoolsModule` for development
+- [x] Repeat for infiltrate app
+- [x] Test store connection in components
 
-### Phase 1.2: Routing Setup (1-2h)
-- [ ] Create routes in dashboard `app.routes.ts`:
-  - [ ] `/` → home or redirect to learning-paths
-  - [ ] `/learning-paths` → LearningPaths component
-  - [ ] `/knowledge-units` → KnowledgeUnits component
-  - [ ] `/raw-content` → RawContent component
-  - [ ] `/source-configs` → SourceConfigs component
-  - [ ] `/user-progress` → UserProgress component
-- [ ] Create routes in infiltrate `app.routes.ts`
-- [ ] Add `<router-outlet>` to both app templates
-- [ ] Test navigation between routes
+### Phase 1.2: Routing Setup ✅
+- [x] Create routes in dashboard `app.routes.ts`:
+  - [x] `/` → home or redirect to learning-paths
+  - [x] `/learning-paths` → LearningPaths component
+  - [x] `/knowledge-units` → KnowledgeUnits component
+  - [x] `/raw-content` → RawContent component
+  - [x] `/source-configs` → SourceConfigs component
+  - [x] `/user-progress` → UserProgress component
+  - [x] `/users` → Users component (added)
+  - [x] `/login` → Login component (added)
+  - [x] `/graph` → Knowledge graph visualization (added)
+- [x] Create routes in infiltrate `app.routes.ts`
+- [x] Add `<router-outlet>` to both app templates
+- [x] Test navigation between routes
 
-### Phase 1.3: Connect Components to NgRx (4-5h)
-- [ ] Verify all master-detail components inject facades
-- [ ] Ensure `loadAll()` is called in `ngOnInit`
-- [ ] Test that observables receive data
-- [ ] Create temporary mock data service
-- [ ] Test full NgRx flow with mock data
-- [ ] Verify all 5 entities work correctly
+### Phase 1.3: Connect Components to NgRx ✅
+- [x] Verify all master-detail components inject facades
+- [x] Ensure `loadAll()` is called in `ngOnInit`
+- [x] Test that observables receive data
+- [x] Test full NgRx flow with API data
+- [x] Verify all entities work correctly (including users)
 
-### Phase 1.4: Basic Authentication Mock (3-4h)
-- [ ] Create `auth.service.ts` with mock login
-- [ ] Create `auth.guard.ts` to protect routes
-- [ ] Create login component in dashboard
-- [ ] Add login route (`/login`)
-- [ ] Store mock user in service/localStorage
-- [ ] Update all API calls to use `userId`
+### Phase 1.4: Authentication Implementation ✅
+- [x] Create `auth.service.ts` with JWT authentication
+- [x] Create `auth.guard.ts` to protect routes
+- [x] Create login component in dashboard
+- [x] Add login route (`/login`)
+- [x] JWT token storage in localStorage
+- [x] HTTP interceptor for JWT tokens
+- [x] Backend JWT authentication (Passport.js)
 
-### Phase 1.5: Database Seeding and API (2-3h)
-- [ ] Start API server: `nx serve api`
-- [ ] Seed database: `POST http://localhost:3333/api/seed`
-- [ ] Verify data in database file
-- [ ] Test API endpoints in Swagger: `http://localhost:3333/api/docs`
-- [ ] Replace mock service with real HTTP services
-- [ ] Test data loads from API in dashboard
+### Phase 1.5: Database Seeding and API ✅
+- [x] Start API server: `nx serve api`
+- [x] Seed database: `POST http://localhost:3333/api/seed`
+- [x] Verify data in database file
+- [x] Test API endpoints in Swagger: `http://localhost:3333/api/docs`
+- [x] HTTP services connected to API
+- [x] Test data loads from API in dashboard
+- [x] Users API endpoints (CRUD)
+- [x] Data Sources API endpoints (CRUD)
+- [x] Knowledge Graph API endpoints
 
-### Phase 1.6: UI Polish (3-4h)
-- [ ] Create/update header component with navigation
-- [ ] Add loading states to all components
-- [ ] Add error handling
-- [ ] Add basic styling/layout
-- [ ] Test all CRUD operations via UI
+### Phase 1.6: UI Polish ✅
+- [x] Create/update header component with navigation
+- [x] Create sidebar navigation component
+- [x] Add loading states to components
+- [x] Add error handling
+- [x] Add basic styling/layout (Tailwind CSS)
+- [x] Test all CRUD operations via UI
+- [x] Dynamic form components with field definitions
+- [x] Knowledge graph visualization (Three.js, Cytoscape.js, D3.js)
 
 **Milestone 1 Success Criteria:**
-- ✅ Dashboard loads and displays all entities
+- ✅ Dashboard loads and displays all entities (including users, data sources)
 - ✅ Data comes from API
 - ✅ Can navigate between views
-- ✅ Can view/edit details
-- ✅ Mock auth works
+- ✅ Can view/edit details with dynamic forms
+- ✅ Real JWT authentication works
+- ✅ Knowledge graph visualization implemented
 
 ---
 
@@ -97,30 +108,42 @@ Quick reference checklist for getting Kasita to a working demo state.
 - [ ] Verify knowledge units in database/dashboard
 - [ ] Test full pipeline end-to-end
 
-### Phase 2.4: Real Authentication (6-8h)
-- [ ] Install `@nestjs/jwt`, `@nestjs/passport`, `passport-jwt`
-- [ ] Create auth module with login endpoint
-- [ ] Create JWT strategy and guard
-- [ ] Update Angular auth service to use JWT
-- [ ] Create HTTP interceptor for JWT tokens
-- [ ] Protect API endpoints with `@UseGuards(JwtAuthGuard)`
-- [ ] Test authentication flow
-- [ ] Create users table/entity (if needed)
+### Phase 2.4: Real Authentication ✅ COMPLETED
+- [x] Install `@nestjs/jwt`, `@nestjs/passport`, `passport-jwt`
+- [x] Create auth module with login endpoint
+- [x] Create JWT strategy and guard
+- [x] Update Angular auth service to use JWT
+- [x] Create HTTP interceptor for JWT tokens
+- [x] Protect API endpoints with `@UseGuards(JwtAuthGuard)`
+- [x] Test authentication flow
+- [x] Create users table/entity with roles
+- [x] Role-based access control (RBAC)
+- [x] User management UI (CRUD)
 
-### Phase 2.5: Polish and Error Handling (4-5h)
-- [ ] Add global error handler in Angular
-- [ ] Format API error responses
-- [ ] Add user-friendly error messages
-- [ ] Add processing status indicators
+### Phase 2.5: Polish and Error Handling (In Progress)
+- [x] Add global error handler in Angular
+- [x] Format API error responses
+- [x] Add user-friendly error messages
+- [ ] Add processing status indicators (for ingestion pipeline)
 - [ ] Integrate WebSocket for real-time updates (optional)
-- [ ] Update documentation
+- [x] Update documentation
+
+### Phase 2.6: Additional Features Implemented ✅
+- [x] Data Sources module (global content source management)
+- [x] Knowledge Graph module (relationship queries and visualization)
+- [x] Graph visualization with multiple renderers (Three.js, Cytoscape.js, D3.js)
+- [x] User roles and permissions (guest, user, manager, admin)
+- [x] Dynamic form generation from field definitions
+- [x] Master-detail views for all entities
 
 **Milestone 2 Success Criteria:**
-- ✅ Patchbay ingests content → database
-- ✅ Synthesizer processes → knowledge units → database
+- [ ] Patchbay ingests content → database (pending integration)
+- [ ] Synthesizer processes → knowledge units → database (pending integration)
 - ✅ Data visible in dashboard
-- ✅ Full pipeline works end-to-end
+- [ ] Full pipeline works end-to-end (in progress)
 - ✅ Real JWT authentication protects API
+- ✅ Knowledge graph visualization working
+- ✅ User management complete
 
 ---
 

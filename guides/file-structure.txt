@@ -4,20 +4,39 @@ kasita/
 │   │   └── src                    # Source code
 │   │       ├── app
 │   │       ├── assets
+│   │       ├── auth                    # Authentication module
+│   │       │   ├── decorators
+│   │       │   ├── dto
+│   │       │   ├── guards
+│   │       │   └── strategies
+│   │       ├── database
+│   │       │   ├── seed.controller.ts
+│   │       │   └── seeder.service.ts
+│   │       ├── data-sources                    # Data sources module
+│   │       │   ├── dto
+│   │       │   └── entities
 │   │       ├── ingestion
+│   │       ├── knowledge-graph                    # Knowledge graph module
+│   │       │   ├── dto
+│   │       │   ├── entities
+│   │       │   └── prompts
 │   │       ├── knowledge-units                    # NgRx feature module
 │   │       │   ├── dto
 │   │       │   └── entities
 │   │       ├── learning-paths                    # NgRx feature module
 │   │       │   ├── dto
 │   │       │   └── entities
-│   │       ├── progress
+│   │       ├── progress                    # WebSocket gateway
 │   │       ├── raw-content                    # NgRx feature module
 │   │       │   ├── dto
 │   │       │   └── entities
 │   │       ├── source-configs                    # NgRx feature module
 │   │       │   ├── dto
 │   │       │   └── entities
+│   │       ├── users                    # Users module
+│   │       │   ├── dto
+│   │       │   ├── entities
+│   │       │   └── migrations
 │   │       └── user-progress                    # NgRx feature module
 │   │           ├── dto
 │   │           └── entities
@@ -29,11 +48,8 @@ kasita/
 │   │   ├── public
 │   │   └── src                    # Source code
 │   │       ├── app
-│   │       │   ├── components
-│   │       │   │   ├── aside
-│   │       │   │   ├── footer
-│   │       │   │   ├── header
-│   │       │   │   └── logo
+│   │       │   ├── challenges
+│   │       │   ├── content
 │   │       │   ├── home
 │   │       │   ├── knowledge-units                    # NgRx feature module
 │   │       │   │   ├── knowledge-unit-detail
@@ -41,12 +57,31 @@ kasita/
 │   │       │   ├── learning-paths                    # NgRx feature module
 │   │       │   │   ├── learning-path-detail
 │   │       │   │   └── learning-paths-list
+│   │       │   ├── login                    # Login component
+│   │       │   ├── pages
+│   │       │   │   └── graph                    # Knowledge graph visualization
+│   │       │   │       ├── canvas                    # Canvas-based graph
+│   │       │   │       ├── cytoscape                    # Cytoscape.js graph
+│   │       │   │       ├── d3                    # D3.js graph
+│   │       │   │       └── three                    # Three.js 3D graph
 │   │       │   ├── raw-content                    # NgRx feature module
 │   │       │   │   ├── raw-content-detail
 │   │       │   │   └── raw-content-list
+│   │       │   ├── schedule
+│   │       │   ├── services                    # Theme, layout services
+│   │       │   ├── shared                    # Shared components
+│   │       │   │   ├── aside
+│   │       │   │   ├── dynamic-form                    # Dynamic form component
+│   │       │   │   ├── footer
+│   │       │   │   ├── header
+│   │       │   │   ├── logo
+│   │       │   │   └── sidebar
 │   │       │   ├── source-configs                    # NgRx feature module
 │   │       │   │   ├── source-config-detail
 │   │       │   │   └── source-configs-list
+│   │       │   ├── users                    # Users module
+│   │       │   │   ├── user-detail
+│   │       │   │   └── users-list
 │   │       │   └── user-progress                    # NgRx feature module
 │   │       │       ├── user-progress-detail
 │   │       │       └── user-progress-list
@@ -95,7 +130,7 @@ kasita/
 │   │           ├── raw-content                    # NgRx feature module
 │   │           ├── source-configs                    # NgRx feature module
 │   │           └── user-progress                    # NgRx feature module
-│   ├── material                    #  material
+│   ├── material                    #  material - Angular Material components
 │   │   └── src                    # Source code
 │   │       └── lib
 │   │           └── confirmation-dialog
@@ -103,6 +138,10 @@ kasita/
 │       ├── src                    # File I/O, logging, utils
 │       │   └── python_shared
 │       └── tests
+├── data                    # Data storage directory
+│   ├── raw                    # Raw ingested content
+│   ├── processed                    # Processed content (embeddings, clusters)
+│   └── synthesized                    # Generated knowledge units
 ├── tools
 │   ├── ng-http-service-generator                    #  ng-http-service-generator
 │   │   └── src                    # Source code
