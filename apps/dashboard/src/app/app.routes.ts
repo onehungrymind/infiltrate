@@ -42,4 +42,10 @@ export const appRoutes: Route[] = [
       import('./user-progress/user-progress').then((m) => m.UserProgress),
     canActivate: [authGuard],
   },
+  {
+    path: 'graph',
+    loadComponent: () =>
+      import('./pages/graph/graph').then((m) => m.Graph),
+    canActivate: [authGuard],
+  },
 ];

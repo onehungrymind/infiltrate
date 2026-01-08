@@ -16,9 +16,19 @@ main {
 }
 
 main > div {
-  flex: 1 1 auto;
+  flex: 1 1 0%; /* Use 0% instead of auto for explicit sizing */
   display: flex;
   flex-direction: column;
   min-height: 0;
+  height: 100%;
+  overflow: hidden; /* Prevent overflow */
 }
+
+router-outlet {
+  display: block;
+  flex: 1 1 0%;
+  min-height: 0;
+  overflow: hidden;
+}
+
 

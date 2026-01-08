@@ -1,0 +1,77 @@
+<div class="graph-container">
+  @if (isLoading) {
+    <div class="loading">
+      <div>
+        <div class="spinner"></div>
+        <p style="margin-top: 1rem; color: #1a1a2e;">Loading...</p>
+      </div>
+    </div>
+  }
+
+  <div class="header">
+    <input 
+      #topicInput
+      type="text" 
+      [value]="topic" 
+      (input)="onTopicChange($event)"
+      placeholder="Enter a topic...">
+    <button (click)="generateGraph()">Generate Graph</button>
+  </div>
+
+  <div class="canvas-wrapper">
+    <canvas #graphCanvas></canvas>
+    
+    <div class="stats">
+      <div class="stat-row">
+        <span class="stat-label">Nodes:</span>
+        <span class="stat-value">{{ nodeCount }}</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Connections:</span>
+        <span class="stat-value">{{ edgeCount }}</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Est. Hours:</span>
+        <span class="stat-value">{{ totalHours }}</span>
+      </div>
+    </div>
+
+    @if (selectedNode) {
+      <div class="panel">
+        <button class="close-btn" (click)="closePanel()">×</button>
+        <div class="node-details">
+          <h2>{{ selectedNode.label }}</h2>
+          <p>{{ selectedNode.description }}</p>
+          
+          <div class="detail-row">
+            <span class="detail-label">Type</span>
+            <span style="text-transform: capitalize">{{ selectedNode.type }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Difficulty</span>
+            <span class="badge" [ngClass]="getBadgeClass(selectedNode.difficulty)">{{ selectedNode.difficulty }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Est. Time</span>
+            <span>{{ selectedNode.estimatedHours }}h</span>
+          </div>
+          
+          <button (click)="addToPath(selectedNode.id)" style="width: 100%; margin-top: 1rem;">
+            Add to Learning Path
+          </button>
+        </div>
+      </div>
+    }
+    
+    <div class="legend">
+      <h3>Node Types</h3>
+      @for (item of legendItems; track item.type) {
+        <div class="legend-item">
+          <div class="legend-dot" [style.background]="item.color"></div>
+          <span>{{ item.label }}</span>
+        </div>
+      }
+    </div>
+  </div>
+
+</div>
