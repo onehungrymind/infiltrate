@@ -1,0 +1,25 @@
+@import '../../learning-paths/learning-paths-list/learning-paths-list.scss';
+
+.list-item-badges {
+  display: flex;
+  gap: 6px;
+  margin: 4px 0;
+  flex-wrap: wrap;
+}
+
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  background: rgba(37, 99, 235, 0.1);
+  color: #2563eb;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.badge-inactive {
+  background: rgba(107, 114, 128, 0.1);
+  color: #6b7280;
+}

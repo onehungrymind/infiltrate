@@ -106,4 +106,12 @@ export const ENTITY_DTO_KEYS = {
     'attempts',
     'lastAttemptAt',
   ] as const,
+
+  USERS: [
+    'email',
+    'name',
+    'password',
+    'isActive',
+    'role',
+  ] as const,
 } as const;

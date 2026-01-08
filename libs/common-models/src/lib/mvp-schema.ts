@@ -40,9 +40,22 @@ export interface BaseEntity {
   
   export type ScheduleFrequency = 'daily' | 'weekly' | 'monthly' | 'manual';
   
+  export type UserRole = 'guest' | 'user' | 'manager' | 'admin';
+  
   // ============================================================================
   // CORE ENTITIES
   // ============================================================================
+  
+  /**
+   * User entity
+   */
+  export interface User extends BaseEntity {
+    email: string;
+    name: string;
+    password?: string; // Hashed password (included when fetching single user for editing)
+    isActive: boolean;
+    role?: UserRole;
+  }
   
   /**
    * A learning path - user's learning goal
@@ -279,6 +292,22 @@ export interface BaseEntity {
     nextReviewDate?: Date;
     attempts?: number;
     lastAttemptAt?: Date;
+  }
+
+  export interface CreateUserDto {
+    email: string;
+    name: string;
+    password?: string;
+    isActive?: boolean;
+    role?: UserRole;
+  }
+
+  export interface UpdateUserDto {
+    email?: string;
+    name?: string;
+    password?: string;
+    isActive?: boolean;
+    role?: UserRole;
   }
   
   export interface RecordAttemptDto {

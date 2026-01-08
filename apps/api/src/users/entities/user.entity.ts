@@ -23,14 +23,13 @@ export class User {
   @Column({ default: true })
   isActive: boolean;
 
+  @Column({ nullable: true, default: 'user' })
+  role?: string; // 'guest' | 'user' | 'manager' | 'admin'
+
   @CreateDateColumn()
   createdAt: Date;
 
   @UpdateDateColumn()
   updatedAt: Date;
-
-  // Future role-based fields (ready for expansion)
-  @Column({ nullable: true })
-  role?: string; // 'admin', 'user', etc.
 }
 

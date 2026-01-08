@@ -2,6 +2,8 @@ import { Injectable, ConflictException, NotFoundException } from '@nestjs/common
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 import { RegisterDto } from '../auth/dto/register.dto';
 import * as bcrypt from 'bcrypt';
 
@@ -12,36 +14,29 @@ export class UsersService {
     private usersRepository: Repository<User>,
   ) {}
 
-  async create(registerDto: RegisterDto): Promise<User> {
+  async create(createUserDto: CreateUserDto): Promise<User> {
     // Check if user already exists
     const existingUser = await this.usersRepository.findOne({
-      where: { email: registerDto.email },
+      where: { email: createUserDto.email },
     });
 
     if (existingUser) {
       throw new ConflictException('User with this email already exists');
     }
 
-    // Hash password with bcrypt
+    // Hash password (always required for new users)
     const saltRounds = 12;
-    const hashedPassword = await bcrypt.hash(registerDto.password, saltRounds);
+    const hashedPassword = await bcrypt.hash(createUserDto.password, saltRounds);
 
     const user = this.usersRepository.create({
-      email: registerDto.email,
-      name: registerDto.name,
+      email: createUserDto.email,
+      name: createUserDto.name,
       password: hashedPassword,
-      role: registerDto.role,
+      isActive: createUserDto.isActive ?? true,
+      role: createUserDto.role || 'user', // Default to 'user' if no role provided
     });
 
     return this.usersRepository.save(user);
-  }
-
-  async findByEmail(email: string): Promise<User | null> {
-    return this.usersRepository.findOne({ where: { email } });
-  }
-
-  async findById(id: string): Promise<User | null> {
-    return this.usersRepository.findOne({ where: { id } });
   }
 
   async findAll(): Promise<User[]> {
@@ -50,29 +45,87 @@ export class UsersService {
     });
   }
 
-  async update(id: string, updateData: Partial<User>): Promise<User> {
-    const user = await this.findById(id);
+  async findOne(id: string): Promise<User> {
+    // Use query builder to explicitly select all fields including password
+    const user = await this.usersRepository
+      .createQueryBuilder('user')
+      .select([
+        'user.id',
+        'user.email',
+        'user.name',
+        'user.password', // Explicitly select password
+        'user.isActive',
+        'user.role',
+        'user.createdAt',
+        'user.updatedAt',
+      ])
+      .where('user.id = :id', { id })
+      .getOne();
+    
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+    
+    // Return plain object to ensure password is included in JSON response
+    return {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      password: user.password, // Explicitly include password
+      isActive: user.isActive,
+      role: user.role,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    } as User;
+  }
+
+  async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
+    const user = await this.findOne(id);
+
+    // Check if password has changed (compare with existing hash)
+    // If password is the same as the existing hash, don't update it
+    // If password is different, hash the new password
+    if (updateUserDto.password) {
+      if (updateUserDto.password !== user.password) {
+        // Password has changed, hash the new password
+        const saltRounds = 12;
+        updateUserDto.password = await bcrypt.hash(updateUserDto.password, saltRounds);
+      } else {
+        // Password hasn't changed (still the hash), don't update it
+        delete updateUserDto.password;
+      }
     }
 
-    // Hash password if it's being updated
-    if (updateData.password) {
-      const saltRounds = 12;
-      updateData.password = await bcrypt.hash(updateData.password, saltRounds);
+    // Ensure role defaults to 'user' if not provided or empty
+    if (!updateUserDto.role || updateUserDto.role === '') {
+      updateUserDto.role = 'user';
     }
 
-    await this.usersRepository.update(id, updateData);
-    return this.findById(id);
+    Object.assign(user, updateUserDto);
+    return await this.usersRepository.save(user);
   }
 
   async remove(id: string): Promise<void> {
-    const user = await this.findById(id);
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-
+    const user = await this.findOne(id);
     await this.usersRepository.remove(user);
+  }
+
+  // Auth-related methods (kept for backward compatibility)
+  async createFromRegister(registerDto: RegisterDto): Promise<User> {
+    return this.create({
+      email: registerDto.email,
+      name: registerDto.name,
+      password: registerDto.password,
+      role: registerDto.role,
+    });
+  }
+
+  async findByEmail(email: string): Promise<User | null> {
+    return this.usersRepository.findOne({ where: { email } });
+  }
+
+  async findById(id: string): Promise<User | null> {
+    return this.usersRepository.findOne({ where: { id } });
   }
 
   async validatePassword(plainPassword: string, hashedPassword: string): Promise<boolean> {

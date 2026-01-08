@@ -1,0 +1,71 @@
+@import '../../learning-paths/learning-path-detail/learning-path-detail.scss';
+@import '../../shared/dynamic-form/dynamic-form.scss';
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.form-group-half {
+  margin-bottom: 0;
+}
+
+// Custom checkbox styling to match text input size and layout
+.checkbox-wrapper {
+  display: flex;
+  align-items: center;
+  margin-top: 0;
+  // Match the height of text inputs (padding + line height)
+  min-height: calc(0.625rem * 2 + 1.5rem); // Same visual height as text inputs
+}
+
+.form-checkbox {
+  width: 1.75rem;
+  height: 1.75rem;
+  min-width: 1.75rem;
+  min-height: 1.75rem;
+  cursor: pointer;
+  accent-color: #2563eb;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background-color: #ffffff;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  
+  &:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  }
+  
+  &.error {
+    border-color: #ef4444;
+  }
+  
+  &:checked {
+    background-color: #2563eb;
+    border-color: #2563eb;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='white'%3E%3Cpath fill-rule='evenodd' d='M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z' clip-rule='evenodd'/%3E%3C/svg%3E");
+    background-size: 70%;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+  
+  &:hover {
+    border-color: #9ca3af;
+  }
+  
+  &:disabled {
+    background-color: #f3f4f6;
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}

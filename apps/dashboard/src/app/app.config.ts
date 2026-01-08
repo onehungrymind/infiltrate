@@ -19,12 +19,14 @@ import {
   sourceConfigsFeature,
   userProgressFeature,
   dataSourcesFeature,
+  usersFeature,
   LearningPathsEffects,
   KnowledgeUnitsEffects,
   RawContentEffects,
   SourceConfigsEffects,
   UserProgressEffects,
   DataSourcesEffects,
+  UsersEffects,
 } from '@kasita/core-state';
 
 export const appConfig: ApplicationConfig = {
@@ -42,6 +44,7 @@ export const appConfig: ApplicationConfig = {
       sourceConfigs: sourceConfigsFeature.reducer,
       userProgress: userProgressFeature.reducer,
       dataSources: dataSourcesFeature.reducer,
+      users: usersFeature.reducer,
     }),
     provideEffects(
       LearningPathsEffects,
@@ -50,6 +53,7 @@ export const appConfig: ApplicationConfig = {
       SourceConfigsEffects,
       UserProgressEffects,
       DataSourcesEffects,
+      UsersEffects,
     ),
     provideStoreDevtools({
       maxAge: 25,

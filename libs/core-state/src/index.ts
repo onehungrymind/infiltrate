@@ -161,3 +161,30 @@ export {
   updateDataSource,
   deleteDataSource,
 };
+
+/* Users */
+import * as UsersActions from './lib/users/users.actions';
+import * as UsersFeature from './lib/users/users.feature';
+import * as UsersEffects from './lib/users/users.effects';
+import { UsersFacade } from './lib/users/users.facade';
+import { usersFeature } from './lib/users/users.feature';
+import {
+  loadUsers,
+  loadUser,
+  createUser,
+  updateUser,
+  deleteUser,
+} from './lib/users/users.effects';
+
+export {
+  usersFeature,
+  UsersFacade,
+  UsersActions,
+  UsersFeature,
+  UsersEffects,
+  loadUsers,
+  loadUser,
+  createUser,
+  updateUser,
+  deleteUser,
+};

@@ -341,6 +341,60 @@ export const rawContentFields: FieldDef[] = [
  * Field definitions for UserProgress entity
  * Note: userId and unitId are handled separately, not in form
  */
+/**
+ * Field definitions for User entity
+ */
+export const userFields: FieldDef[] = [
+  {
+    name: 'name',
+    label: 'Name',
+    type: 'text',
+    required: true,
+    minLength: 1,
+    maxLength: 200,
+    placeholder: 'John Doe',
+  },
+  {
+    name: 'email',
+    label: 'Email',
+    type: 'email',
+    required: true,
+    minLength: 1,
+    maxLength: 255,
+    placeholder: 'user@example.com',
+  },
+  {
+    name: 'password',
+    label: 'Password',
+    type: 'password',
+    required: true,
+    minLength: 8,
+    maxLength: 200,
+    placeholder: 'Enter password',
+    helpText: 'Password is required. When editing, the field is pre-filled with the hashed password.',
+  },
+  {
+    name: 'role',
+    label: 'Role',
+    type: 'select',
+    required: false,
+    options: [
+      { value: 'guest', label: 'Guest' },
+      { value: 'user', label: 'User' },
+      { value: 'manager', label: 'Manager' },
+      { value: 'admin', label: 'Admin' },
+    ],
+    helpText: 'User role determines access level and permissions',
+  },
+  {
+    name: 'isActive',
+    label: 'Active',
+    type: 'checkbox',
+    required: false,
+    helpText: 'Whether the user account is active',
+  },
+];
+
 export const userProgressFields: FieldDef[] = [
   {
     name: 'masteryLevel',
