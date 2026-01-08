@@ -32,3 +32,6 @@ export * from './lib/services/user-progress/user-progress.service';
 
 /* DataSources */
 export * from './lib/services/data-sources/data-sources.service';
+
+/* KnowledgeGraph */
+export * from './lib/services/knowledge-graph/knowledge-graph.service';

@@ -14,12 +14,57 @@
       type="text" 
       [value]="topic" 
       (input)="onTopicChange($event)"
+      (keyup.enter)="generateGraph()"
+      [disabled]="isLoading"
       placeholder="Enter a topic...">
-    <button (click)="generateGraph()">Generate Graph</button>
+    <select 
+      [value]="selectedImplementation()" 
+      (change)="onImplementationChange($event)"
+      class="implementation-selector"
+      [disabled]="isLoading">
+      @for (impl of implementations; track impl.value) {
+        <option [value]="impl.value">{{ impl.label }}</option>
+      }
+    </select>
+    <button (click)="generateGraph()" [disabled]="isLoading">
+      {{ isLoading ? 'Generating...' : 'Generate Graph' }}
+    </button>
   </div>
 
+  @if (error) {
+    <div class="error-message">
+      <p>{{ error }}</p>
+      <button (click)="error = null" class="close-error">×</button>
+    </div>
+  }
+
   <div class="canvas-wrapper">
-    <canvas #graphCanvas></canvas>
+    @switch (selectedImplementation()) {
+      @case ('canvas') {
+        <app-graph-canvas 
+          [graphData]="graphData()"
+          (nodeSelected)="onNodeSelected($event)">
+        </app-graph-canvas>
+      }
+      @case ('d3') {
+        <app-graph-d3 
+          [graphData]="graphData()"
+          (nodeSelected)="onNodeSelected($event)">
+        </app-graph-d3>
+      }
+      @case ('cytoscape') {
+        <app-graph-cytoscape 
+          [graphData]="graphData()"
+          (nodeSelected)="onNodeSelected($event)">
+        </app-graph-cytoscape>
+      }
+      @case ('three') {
+        <app-graph-three 
+          [graphData]="graphData()"
+          (nodeSelected)="onNodeSelected($event)">
+        </app-graph-three>
+      }
+    }
     
     <div class="stats">
       <div class="stat-row">

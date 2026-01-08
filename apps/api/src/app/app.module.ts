@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
+import { join } from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { LearningPathsModule } from '../learning-paths/learning-paths.module';
@@ -21,18 +22,25 @@ import { AuthModule } from '../auth/auth.module';
 import { UsersModule } from '../users/users.module';
 import { DataSourcesModule } from '../data-sources/data-sources.module';
 import { DataSource } from '../data-sources/entities/data-source.entity';
+import { KnowledgeGraphModule } from '../knowledge-graph/knowledge-graph.module';
+import { GraphSearch } from '../knowledge-graph/entities/graph-search.entity';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: [
+        join(process.cwd(), 'apps/api/.env'), // Workspace root relative
+        join(process.cwd(), '.env'), // Workspace root .env
+        '.env', // fallback to process.cwd()
+      ],
     }),
     TypeOrmModule.forRoot({
       type: 'sqlite',
       database: process.env.DATABASE_URL?.replace('file:', '') || 'kasita.db',
       synchronize: process.env.NODE_ENV !== 'production', // Auto-sync in dev
       logging: process.env.NODE_ENV === 'development',
-      entities: [LearningPath, SourceConfig, RawContent, KnowledgeUnit, UserProgress, User, DataSource],
+      entities: [LearningPath, SourceConfig, RawContent, KnowledgeUnit, UserProgress, User, DataSource, GraphSearch],
     }),
     LearningPathsModule,
     SourceConfigsModule,
@@ -44,6 +52,7 @@ import { DataSource } from '../data-sources/entities/data-source.entity';
     AuthModule,
     UsersModule,
     DataSourcesModule,
+    KnowledgeGraphModule,
   ],
   controllers: [AppController],
   providers: [AppService, ProgressGateway],
