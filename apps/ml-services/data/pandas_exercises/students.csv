@@ -1,0 +1,11 @@
+student_id,name,age,email,major,gpa,enrollment_year
+1,Alice Johnson,20,alice.johnson@university.edu,Computer Science,3.8,2022
+2,Bob Smith,21,bob.smith@university.edu,Mathematics,3.6,2021
+3,Charlie Brown,19,charlie.brown@university.edu,Physics,3.9,2023
+4,Diana Prince,22,diana.prince@university.edu,Computer Science,3.7,2020
+5,Edward Norton,20,edward.norton@university.edu,Mathematics,3.5,2022
+6,Fiona Apple,21,fiona.apple@university.edu,Physics,3.8,2021
+7,George Washington,19,george.washington@university.edu,Computer Science,3.9,2023
+8,Hannah Montana,20,hannah.montana@university.edu,Mathematics,3.4,2022
+9,Ian Fleming,22,ian.fleming@university.edu,Physics,3.6,2020
+10,Julia Roberts,21,julia.roberts@university.edu,Computer Science,3.7,2021

@@ -1,0 +1,51 @@
+{
+  "name": "ml-services",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/ml-services",
+  "projectType": "application",
+  "targets": {
+    "install": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "uv sync",
+        "cwd": "apps/ml-services"
+      },
+      "inputs": [
+        "{projectRoot}/pyproject.toml"
+      ]
+    },
+    "notebook:dev": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "uv run marimo edit notebooks/pandas_exercises.py --port 2718 --watch",
+        "cwd": "apps/ml-services"
+      },
+      "dependsOn": ["install"]
+    },
+    "notebook:serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "uv run marimo run notebooks/pandas_exercises.py --port 2718",
+        "cwd": "apps/ml-services"
+      },
+      "dependsOn": ["install"]
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "uv run ruff check notebooks/ src/",
+        "cwd": "apps/ml-services"
+      },
+      "dependsOn": ["install"]
+    },
+    "format": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "uv run black notebooks/ src/",
+        "cwd": "apps/ml-services"
+      },
+      "dependsOn": ["install"]
+    }
+  },
+  "tags": ["python", "app", "ml-services", "notebooks"]
+}

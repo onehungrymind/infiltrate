@@ -38,3 +38,6 @@ export * from './lib/services/knowledge-graph/knowledge-graph.service';
 
 /* Users */
 export * from './lib/services/users/users.service';
+
+/* Notebooks */
+export * from './lib/services/notebooks.service';

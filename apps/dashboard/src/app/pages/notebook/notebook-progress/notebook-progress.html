@@ -1,0 +1,61 @@
+<div class="notebook-progress-container">
+  <h1>Notebook Progress</h1>
+
+  <div *ngIf="loading()" class="loading">
+    <mat-spinner></mat-spinner>
+    <p>Loading progress...</p>
+  </div>
+
+  <div *ngIf="error()" class="error">
+    <mat-card>
+      <mat-card-content>
+        <mat-icon>error</mat-icon>
+        {{ error() }}
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <div *ngIf="!loading() && !error() && progressList().length === 0" class="empty-state">
+    <mat-card>
+      <mat-card-content>
+        <p>No notebook progress found. Start working on a notebook to see your progress here!</p>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <div *ngIf="!loading() && progressList().length > 0" class="progress-list">
+    <mat-card *ngFor="let progress of progressList()" class="progress-card">
+      <mat-card-header>
+        <mat-card-title>{{ progress.notebookId }}</mat-card-title>
+        <mat-card-subtitle>
+          Completion: {{ (progress.completionRate * 100).toFixed(0) }}%
+        </mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="exercises">
+          <h3>Exercise Status</h3>
+          <div class="exercise-list">
+            <div
+              *ngFor="let exerciseNum of [1, 2, 3, 4, 5]"
+              class="exercise-item"
+              [class]="'exercise-' + getExerciseStatus(progress, exerciseNum)"
+            >
+              <mat-icon [color]="getStatusColor(getExerciseStatus(progress, exerciseNum))">
+                {{ getStatusIcon(getExerciseStatus(progress, exerciseNum)) }}
+              </mat-icon>
+              <span>Exercise {{ exerciseNum }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="metadata">
+          <p *ngIf="progress.lastSubmittedAt">
+            <strong>Last Submitted:</strong> {{ progress.lastSubmittedAt | date:'short' }}
+          </p>
+          <p>
+            <strong>Updated:</strong> {{ progress.updatedAt | date:'short' }}
+          </p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

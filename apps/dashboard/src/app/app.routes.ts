@@ -80,4 +80,9 @@ export const appRoutes: Route[] = [
       },
     ],
   },
+  {
+    path: 'notebook',
+    loadComponent: () => import('./pages/notebook/notebook').then((m) => m.NotebookComponent),
+    canActivate: [authGuard],
+  },
 ];

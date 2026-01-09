@@ -1,0 +1,43 @@
+/* Hide the file path in Marimo's title bar */
+/* 
+ * To find the exact selector:
+ * 1. Open the notebook in browser (http://localhost:2718)
+ * 2. Right-click on the file path text (e.g., /Users/.../pandas_exercises.py)
+ * 3. Select "Inspect Element" or "Inspect"
+ * 4. Look at the HTML element - note its class name, id, or data attributes
+ * 5. Add that selector below
+ */
+
+/* Common Marimo selectors - try these first */
+[class*="file-path"],
+[class*="filePath"],
+[class*="file_path"],
+[data-file-path],
+.file-path,
+.filePath,
+.file_path {
+  display: none !important;
+}
+
+/* Title bar area selectors */
+header [class*="path"],
+header [class*="file"],
+.marimo-app-header [class*="path"],
+.marimo-app-header [class*="file"],
+nav [class*="path"],
+nav [class*="file"],
+[role="banner"] [class*="path"],
+[role="banner"] [class*="file"] {
+  display: none !important;
+}
+
+/* Hide based on attribute content */
+[title*="/Users/"],
+[title*="pandas_exercises.py"],
+[aria-label*="/Users/"],
+[aria-label*="pandas_exercises.py"] {
+  display: none !important;
+}
+
+/* If the above don't work, inspect the element and add the specific selector here */
+/* Example: .some-specific-class { display: none !important; } */

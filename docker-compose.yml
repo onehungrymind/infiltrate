@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  marimo:
+    build:
+      context: .
+      dockerfile: apps/ml-services/Dockerfile
+    container_name: kasita-marimo
+    ports:
+      - "2718:2718"
+    volumes:
+      - ./apps/ml-services/notebooks:/app/notebooks
+      - ./apps/ml-services/data:/app/data:ro
+    environment:
+      - MARIMO_PORT=2718
+      - MARIMO_HOST=0.0.0.0
+    command: marimo edit notebooks/pandas_exercises.py --port 2718 --host 0.0.0.0 --watch
+    restart: unless-stopped
+    networks:
+      - kasita-network
+
+networks:
+  kasita-network:
+    driver: bridge

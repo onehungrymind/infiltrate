@@ -47,7 +47,11 @@
     "e2e:ui:dashboard": "nx e2e dashboard-e2e --ui",
     "e2e:ui:api": "nx e2e api-e2e --ui",
     "graph": "nx graph",
-    "clean": "nx reset"
+    "clean": "nx reset",
+    "notebook:dev": "nx notebook:dev ml-services",
+    "notebook:serve": "nx notebook:serve ml-services",
+    "notebook:docker": "docker-compose up marimo",
+    "notebook:docker:build": "docker-compose build marimo"
   },
   "private": true,
   "dependencies": {
@@ -82,8 +86,6 @@
     "bcrypt": "^6.0.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.3",
-    "cytoscape": "^3.33.1",
-    "cytoscape-fcose": "^2.2.0",
     "d3": "^7.9.0",
     "libsql": "^0.5.22",
     "passport": "^0.7.0",
@@ -93,7 +95,9 @@
     "socket.io": "^4.8.3",
     "sqlite3": "^5.1.7",
     "three": "^0.182.0",
-    "typeorm": "^0.3.28"
+    "typeorm": "^0.3.28",
+    "cytoscape": "^3.33.1",
+    "cytoscape-fcose": "^2.2.0"
   },
   "devDependencies": {
     "@angular-devkit/core": "~21.0.0",
