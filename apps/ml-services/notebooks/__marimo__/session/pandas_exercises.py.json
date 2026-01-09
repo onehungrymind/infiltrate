@@ -5,20 +5,7 @@
   },
   "cells": [
     {
-      "id": "TRpd",
-      "code_hash": "1d0db38904205bec4d6f6f6a1f6cec3e",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/plain": ""
-          }
-        }
-      ],
-      "console": []
-    },
-    {
-      "id": "aqbW",
+      "id": "MJUe",
       "code_hash": "9c98ce6ce985389701df1c7793c66640",
       "outputs": [
         {
@@ -31,46 +18,7 @@
       "console": []
     },
     {
-      "id": "Hbol",
-      "code_hash": "c7d123105af9a921166d27658ccfcb77",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/plain": ""
-          }
-        }
-      ],
-      "console": []
-    },
-    {
-      "id": "MJUe",
-      "code_hash": "1914e1c3e9f81363bb4bf69e7f952c93",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/plain": ""
-          }
-        }
-      ],
-      "console": []
-    },
-    {
-      "id": "vblA",
-      "code_hash": "c6edc2f31d0851e3270a25b08506f2b8",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/plain": ""
-          }
-        }
-      ],
-      "console": []
-    },
-    {
-      "id": "bkHC",
+      "id": "PKri",
       "code_hash": "0dc41a2f281f7532da9a19511d275b55",
       "outputs": [
         {
@@ -83,66 +31,7 @@
       "console": []
     },
     {
-      "id": "lEQa",
-      "code_hash": "ea551300ee3de2ca615d71768f9e8b1c",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/html": "<marimo-ui-element object-id='lEQa-0' random-id='825c5fda-99c5-a919-9f84-ae5061ac75a3'><marimo-table data-initial-value='[]' data-label='null' data-data='&quot;[{&#92;&quot;student_id&#92;&quot;:1,&#92;&quot;name&#92;&quot;:&#92;&quot;Alice Johnson&#92;&quot;,&#92;&quot;age&#92;&quot;:20,&#92;&quot;email&#92;&quot;:&#92;&quot;alice.johnson@university.edu&#92;&quot;,&#92;&quot;major&#92;&quot;:&#92;&quot;Computer Science&#92;&quot;,&#92;&quot;gpa&#92;&quot;:3.8,&#92;&quot;enrollment_year&#92;&quot;:2022},{&#92;&quot;student_id&#92;&quot;:2,&#92;&quot;name&#92;&quot;:&#92;&quot;Bob Smith&#92;&quot;,&#92;&quot;age&#92;&quot;:21,&#92;&quot;email&#92;&quot;:&#92;&quot;bob.smith@university.edu&#92;&quot;,&#92;&quot;major&#92;&quot;:&#92;&quot;Mathematics&#92;&quot;,&#92;&quot;gpa&#92;&quot;:3.6,&#92;&quot;enrollment_year&#92;&quot;:2021},{&#92;&quot;student_id&#92;&quot;:3,&#92;&quot;name&#92;&quot;:&#92;&quot;Charlie Brown&#92;&quot;,&#92;&quot;age&#92;&quot;:19,&#92;&quot;email&#92;&quot;:&#92;&quot;charlie.brown@university.edu&#92;&quot;,&#92;&quot;major&#92;&quot;:&#92;&quot;Physics&#92;&quot;,&#92;&quot;gpa&#92;&quot;:3.9,&#92;&quot;enrollment_year&#92;&quot;:2023},{&#92;&quot;student_id&#92;&quot;:4,&#92;&quot;name&#92;&quot;:&#92;&quot;Diana Prince&#92;&quot;,&#92;&quot;age&#92;&quot;:22,&#92;&quot;email&#92;&quot;:&#92;&quot;diana.prince@university.edu&#92;&quot;,&#92;&quot;major&#92;&quot;:&#92;&quot;Computer Science&#92;&quot;,&#92;&quot;gpa&#92;&quot;:3.7,&#92;&quot;enrollment_year&#92;&quot;:2020},{&#92;&quot;student_id&#92;&quot;:5,&#92;&quot;name&#92;&quot;:&#92;&quot;Edward Norton&#92;&quot;,&#92;&quot;age&#92;&quot;:20,&#92;&quot;email&#92;&quot;:&#92;&quot;edward.norton@university.edu&#92;&quot;,&#92;&quot;major&#92;&quot;:&#92;&quot;Mathematics&#92;&quot;,&#92;&quot;gpa&#92;&quot;:3.5,&#92;&quot;enrollment_year&#92;&quot;:2022}]&quot;' data-total-rows='5' data-total-columns='7' data-max-columns='50' data-banner-text='&quot;&quot;' data-pagination='true' data-page-size='10' data-field-types='[[&quot;student_id&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;name&quot;,[&quot;string&quot;,&quot;object&quot;]],[&quot;age&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;email&quot;,[&quot;string&quot;,&quot;object&quot;]],[&quot;major&quot;,[&quot;string&quot;,&quot;object&quot;]],[&quot;gpa&quot;,[&quot;number&quot;,&quot;float64&quot;]],[&quot;enrollment_year&quot;,[&quot;integer&quot;,&quot;int64&quot;]]]' data-show-filters='true' data-show-download='true' data-show-column-summaries='false' data-show-data-types='true' data-show-page-size-selector='false' data-show-column-explorer='true' data-show-chart-builder='true' data-row-headers='[]' data-has-stable-row-id='false' data-lazy='false' data-preload='false'></marimo-table></marimo-ui-element>"
-          }
-        }
-      ],
-      "console": []
-    },
-    {
-      "id": "PKri",
-      "code_hash": "39dc83957b0a1bc53549468577861ee6",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/plain": ""
-          }
-        }
-      ],
-      "console": [
-        {
-          "type": "stream",
-          "name": "stdout",
-          "text": "<class 'pandas.core.frame.DataFrame'>\nRangeIndex: 10 entries, 0 to 9\nData columns (total 7 columns):\n #   Column           Non-Null Count  Dtype  \n---  ------           --------------  -----  \n 0   student_id       10 non-null     int64  \n 1   name             10 non-null     object \n 2   age              10 non-null     int64  \n 3   email            10 non-null     object \n 4   major            10 non-null     object \n 5   gpa              10 non-null     float64\n 6   enrollment_year  10 non-null     int64  \ndtypes: float64(1), int64(3), object(3)\nmemory usage: 692.0+ bytes\n",
-          "mimetype": "text/plain"
-        }
-      ]
-    },
-    {
-      "id": "Xref",
-      "code_hash": "e671c6af1bd3a8e28374d70fee8f6dec",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/html": "<marimo-ui-element object-id='Xref-0' random-id='0cd456a9-e48a-2565-8dda-2c18c2ae2104'><marimo-table data-initial-value='[]' data-label='null' data-data='&quot;[{&#92;&quot;&#92;&quot;:&#92;&quot;count&#92;&quot;,&#92;&quot;student_id&#92;&quot;:10.0,&#92;&quot;age&#92;&quot;:10.0,&#92;&quot;gpa&#92;&quot;:10.0,&#92;&quot;enrollment_year&#92;&quot;:10.0},{&#92;&quot;&#92;&quot;:&#92;&quot;mean&#92;&quot;,&#92;&quot;student_id&#92;&quot;:5.5,&#92;&quot;age&#92;&quot;:20.5,&#92;&quot;gpa&#92;&quot;:3.6900000000000004,&#92;&quot;enrollment_year&#92;&quot;:2021.5},{&#92;&quot;&#92;&quot;:&#92;&quot;std&#92;&quot;,&#92;&quot;student_id&#92;&quot;:3.0276503540974917,&#92;&quot;age&#92;&quot;:1.0801234497346435,&#92;&quot;gpa&#92;&quot;:0.16633299933166193,&#92;&quot;enrollment_year&#92;&quot;:1.0801234497346435},{&#92;&quot;&#92;&quot;:&#92;&quot;min&#92;&quot;,&#92;&quot;student_id&#92;&quot;:1.0,&#92;&quot;age&#92;&quot;:19.0,&#92;&quot;gpa&#92;&quot;:3.4,&#92;&quot;enrollment_year&#92;&quot;:2020.0},{&#92;&quot;&#92;&quot;:&#92;&quot;25%&#92;&quot;,&#92;&quot;student_id&#92;&quot;:3.25,&#92;&quot;age&#92;&quot;:20.0,&#92;&quot;gpa&#92;&quot;:3.6,&#92;&quot;enrollment_year&#92;&quot;:2021.0},{&#92;&quot;&#92;&quot;:&#92;&quot;50%&#92;&quot;,&#92;&quot;student_id&#92;&quot;:5.5,&#92;&quot;age&#92;&quot;:20.5,&#92;&quot;gpa&#92;&quot;:3.7,&#92;&quot;enrollment_year&#92;&quot;:2021.5},{&#92;&quot;&#92;&quot;:&#92;&quot;75%&#92;&quot;,&#92;&quot;student_id&#92;&quot;:7.75,&#92;&quot;age&#92;&quot;:21.0,&#92;&quot;gpa&#92;&quot;:3.8,&#92;&quot;enrollment_year&#92;&quot;:2022.0},{&#92;&quot;&#92;&quot;:&#92;&quot;max&#92;&quot;,&#92;&quot;student_id&#92;&quot;:10.0,&#92;&quot;age&#92;&quot;:22.0,&#92;&quot;gpa&#92;&quot;:3.9,&#92;&quot;enrollment_year&#92;&quot;:2023.0}]&quot;' data-total-rows='8' data-total-columns='4' data-max-columns='50' data-banner-text='&quot;&quot;' data-pagination='true' data-page-size='10' data-field-types='[[&quot;student_id&quot;,[&quot;number&quot;,&quot;float64&quot;]],[&quot;age&quot;,[&quot;number&quot;,&quot;float64&quot;]],[&quot;gpa&quot;,[&quot;number&quot;,&quot;float64&quot;]],[&quot;enrollment_year&quot;,[&quot;number&quot;,&quot;float64&quot;]]]' data-show-filters='true' data-show-download='true' data-show-column-summaries='false' data-show-data-types='true' data-show-page-size-selector='true' data-show-column-explorer='true' data-show-chart-builder='true' data-row-headers='[[&quot;&quot;,[&quot;string&quot;,&quot;object&quot;]]]' data-has-stable-row-id='false' data-lazy='false' data-preload='false'></marimo-table></marimo-ui-element>"
-          }
-        }
-      ],
-      "console": []
-    },
-    {
-      "id": "SFPL",
-      "code_hash": "1fc5d2dc937405c49a6cb1278ff233c1",
-      "outputs": [
-        {
-          "type": "error",
-          "ename": "exception",
-          "evalue": "The variable 'error' was defined by another cell",
-          "traceback": []
-        }
-      ],
-      "console": []
-    },
-    {
-      "id": "BYtC",
+      "id": "Kclp",
       "code_hash": "d284e72c16a12ddd3750df0d9e7dc8c3",
       "outputs": [
         {
@@ -155,143 +44,13 @@
       "console": []
     },
     {
-      "id": "RGSE",
-      "code_hash": "25f94792b69922d149f31af5db5be275",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/html": "<marimo-ui-element object-id='RGSE-0' random-id='04cdcdb0-f6db-977d-2076-b38f984130e2'><marimo-table data-initial-value='[]' data-label='null' data-data='&quot;[{&#92;&quot;&#92;&quot;:0,&#92;&quot;student_id&#92;&quot;:1,&#92;&quot;name&#92;&quot;:&#92;&quot;Alice Johnson&#92;&quot;,&#92;&quot;age&#92;&quot;:20,&#92;&quot;email&#92;&quot;:&#92;&quot;alice.johnson@university.edu&#92;&quot;,&#92;&quot;major&#92;&quot;:&#92;&quot;Computer Science&#92;&quot;,&#92;&quot;gpa&#92;&quot;:3.8,&#92;&quot;enrollment_year&#92;&quot;:2022},{&#92;&quot;&#92;&quot;:2,&#92;&quot;student_id&#92;&quot;:3,&#92;&quot;name&#92;&quot;:&#92;&quot;Charlie Brown&#92;&quot;,&#92;&quot;age&#92;&quot;:19,&#92;&quot;email&#92;&quot;:&#92;&quot;charlie.brown@university.edu&#92;&quot;,&#92;&quot;major&#92;&quot;:&#92;&quot;Physics&#92;&quot;,&#92;&quot;gpa&#92;&quot;:3.9,&#92;&quot;enrollment_year&#92;&quot;:2023},{&#92;&quot;&#92;&quot;:3,&#92;&quot;student_id&#92;&quot;:4,&#92;&quot;name&#92;&quot;:&#92;&quot;Diana Prince&#92;&quot;,&#92;&quot;age&#92;&quot;:22,&#92;&quot;email&#92;&quot;:&#92;&quot;diana.prince@university.edu&#92;&quot;,&#92;&quot;major&#92;&quot;:&#92;&quot;Computer Science&#92;&quot;,&#92;&quot;gpa&#92;&quot;:3.7,&#92;&quot;enrollment_year&#92;&quot;:2020},{&#92;&quot;&#92;&quot;:5,&#92;&quot;student_id&#92;&quot;:6,&#92;&quot;name&#92;&quot;:&#92;&quot;Fiona Apple&#92;&quot;,&#92;&quot;age&#92;&quot;:21,&#92;&quot;email&#92;&quot;:&#92;&quot;fiona.apple@university.edu&#92;&quot;,&#92;&quot;major&#92;&quot;:&#92;&quot;Physics&#92;&quot;,&#92;&quot;gpa&#92;&quot;:3.8,&#92;&quot;enrollment_year&#92;&quot;:2021},{&#92;&quot;&#92;&quot;:6,&#92;&quot;student_id&#92;&quot;:7,&#92;&quot;name&#92;&quot;:&#92;&quot;George Washington&#92;&quot;,&#92;&quot;age&#92;&quot;:19,&#92;&quot;email&#92;&quot;:&#92;&quot;george.washington@university.edu&#92;&quot;,&#92;&quot;major&#92;&quot;:&#92;&quot;Computer Science&#92;&quot;,&#92;&quot;gpa&#92;&quot;:3.9,&#92;&quot;enrollment_year&#92;&quot;:2023},{&#92;&quot;&#92;&quot;:9,&#92;&quot;student_id&#92;&quot;:10,&#92;&quot;name&#92;&quot;:&#92;&quot;Julia Roberts&#92;&quot;,&#92;&quot;age&#92;&quot;:21,&#92;&quot;email&#92;&quot;:&#92;&quot;julia.roberts@university.edu&#92;&quot;,&#92;&quot;major&#92;&quot;:&#92;&quot;Computer Science&#92;&quot;,&#92;&quot;gpa&#92;&quot;:3.7,&#92;&quot;enrollment_year&#92;&quot;:2021}]&quot;' data-total-rows='6' data-total-columns='7' data-max-columns='50' data-banner-text='&quot;&quot;' data-pagination='true' data-page-size='10' data-field-types='[[&quot;student_id&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;name&quot;,[&quot;string&quot;,&quot;object&quot;]],[&quot;age&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;email&quot;,[&quot;string&quot;,&quot;object&quot;]],[&quot;major&quot;,[&quot;string&quot;,&quot;object&quot;]],[&quot;gpa&quot;,[&quot;number&quot;,&quot;float64&quot;]],[&quot;enrollment_year&quot;,[&quot;integer&quot;,&quot;int64&quot;]]]' data-show-filters='true' data-show-download='true' data-show-column-summaries='false' data-show-data-types='true' data-show-page-size-selector='true' data-show-column-explorer='true' data-show-chart-builder='true' data-row-headers='[[&quot;&quot;,[&quot;integer&quot;,&quot;int64&quot;]]]' data-has-stable-row-id='false' data-lazy='false' data-preload='false'></marimo-table></marimo-ui-element>"
-          }
-        }
-      ],
-      "console": []
-    },
-    {
-      "id": "Kclp",
-      "code_hash": "ec94805c039c878bbfdf2a07dc2ef1aa",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/html": "<marimo-ui-element object-id='Kclp-0' random-id='de802b22-9e68-1932-9e6f-cee58eb6c2fe'><marimo-table data-initial-value='[]' data-label='null' data-data='&quot;[{&#92;&quot;&#92;&quot;:0,&#92;&quot;name&#92;&quot;:&#92;&quot;Alice Johnson&#92;&quot;,&#92;&quot;gpa&#92;&quot;:3.8},{&#92;&quot;&#92;&quot;:3,&#92;&quot;name&#92;&quot;:&#92;&quot;Diana Prince&#92;&quot;,&#92;&quot;gpa&#92;&quot;:3.7},{&#92;&quot;&#92;&quot;:6,&#92;&quot;name&#92;&quot;:&#92;&quot;George Washington&#92;&quot;,&#92;&quot;gpa&#92;&quot;:3.9},{&#92;&quot;&#92;&quot;:9,&#92;&quot;name&#92;&quot;:&#92;&quot;Julia Roberts&#92;&quot;,&#92;&quot;gpa&#92;&quot;:3.7}]&quot;' data-total-rows='4' data-total-columns='2' data-max-columns='50' data-banner-text='&quot;&quot;' data-pagination='true' data-page-size='10' data-field-types='[[&quot;name&quot;,[&quot;string&quot;,&quot;object&quot;]],[&quot;gpa&quot;,[&quot;number&quot;,&quot;float64&quot;]]]' data-show-filters='true' data-show-download='true' data-show-column-summaries='false' data-show-data-types='true' data-show-page-size-selector='false' data-show-column-explorer='true' data-show-chart-builder='true' data-row-headers='[[&quot;&quot;,[&quot;integer&quot;,&quot;int64&quot;]]]' data-has-stable-row-id='false' data-lazy='false' data-preload='false'></marimo-table></marimo-ui-element>"
-          }
-        }
-      ],
-      "console": []
-    },
-    {
-      "id": "emfo",
-      "code_hash": "e81917155a0e68241662017a8eeb4b18",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/html": "<marimo-ui-element object-id='emfo-0' random-id='3a25c93a-40cd-aa87-e8ad-8443e72def22'><marimo-table data-initial-value='[]' data-label='null' data-data='&quot;[{&#92;&quot;&#92;&quot;:0,&#92;&quot;student_id&#92;&quot;:1,&#92;&quot;name&#92;&quot;:&#92;&quot;Alice Johnson&#92;&quot;,&#92;&quot;age&#92;&quot;:20,&#92;&quot;email&#92;&quot;:&#92;&quot;alice.johnson@university.edu&#92;&quot;,&#92;&quot;major&#92;&quot;:&#92;&quot;Computer Science&#92;&quot;,&#92;&quot;gpa&#92;&quot;:3.8,&#92;&quot;enrollment_year&#92;&quot;:2022},{&#92;&quot;&#92;&quot;:2,&#92;&quot;student_id&#92;&quot;:3,&#92;&quot;name&#92;&quot;:&#92;&quot;Charlie Brown&#92;&quot;,&#92;&quot;age&#92;&quot;:19,&#92;&quot;email&#92;&quot;:&#92;&quot;charlie.brown@university.edu&#92;&quot;,&#92;&quot;major&#92;&quot;:&#92;&quot;Physics&#92;&quot;,&#92;&quot;gpa&#92;&quot;:3.9,&#92;&quot;enrollment_year&#92;&quot;:2023},{&#92;&quot;&#92;&quot;:4,&#92;&quot;student_id&#92;&quot;:5,&#92;&quot;name&#92;&quot;:&#92;&quot;Edward Norton&#92;&quot;,&#92;&quot;age&#92;&quot;:20,&#92;&quot;email&#92;&quot;:&#92;&quot;edward.norton@university.edu&#92;&quot;,&#92;&quot;major&#92;&quot;:&#92;&quot;Mathematics&#92;&quot;,&#92;&quot;gpa&#92;&quot;:3.5,&#92;&quot;enrollment_year&#92;&quot;:2022}]&quot;' data-total-rows='3' data-total-columns='7' data-max-columns='50' data-banner-text='&quot;&quot;' data-pagination='true' data-page-size='10' data-field-types='[[&quot;student_id&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;name&quot;,[&quot;string&quot;,&quot;object&quot;]],[&quot;age&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;email&quot;,[&quot;string&quot;,&quot;object&quot;]],[&quot;major&quot;,[&quot;string&quot;,&quot;object&quot;]],[&quot;gpa&quot;,[&quot;number&quot;,&quot;float64&quot;]],[&quot;enrollment_year&quot;,[&quot;integer&quot;,&quot;int64&quot;]]]' data-show-filters='true' data-show-download='true' data-show-column-summaries='false' data-show-data-types='true' data-show-page-size-selector='false' data-show-column-explorer='true' data-show-chart-builder='true' data-row-headers='[[&quot;&quot;,[&quot;integer&quot;,&quot;int64&quot;]]]' data-has-stable-row-id='false' data-lazy='false' data-preload='false'></marimo-table></marimo-ui-element>"
-          }
-        }
-      ],
-      "console": []
-    },
-    {
-      "id": "Hstk",
-      "code_hash": "5e2dfb55e87e5510ef27aaa0aaf6dbec",
-      "outputs": [
-        {
-          "type": "error",
-          "ename": "exception",
-          "evalue": "The variable 'error' was defined by another cell",
-          "traceback": []
-        }
-      ],
-      "console": []
-    },
-    {
-      "id": "nWHF",
-      "code_hash": "bb59c46dccef5fc0aa8a660ab92f5b98",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/html": "<pre class='text-xs'>&quot;\\n## Exercise 3: Data Transformation\\n\\n**Objective**: Learn to create new columns and transform data.\\n\\n**Tasks**:\\n1. Add a new column &#x27;gpa_category&#x27; that categorizes GPA as &#x27;High&#x27; (&gt;=3.7), &#x27;Medium&#x27; (3.0-3.6), &#x27;Low&#x27; (&lt;3.0)\\n2. Create a column &#x27;years_enrolled&#x27; = current_year - enrollment_year (use 2024 as current_year)\\n3. Use `apply()` to create a column &#x27;email_domain&#x27; extracting the domain from email\\n\\n**Starter Code**:\\n```python\\n# TODO: Add gpa_category column\\n# df1[&#x27;gpa_category&#x27;] = ...\\n\\n# TODO: Add years_enrolled column\\n# df1[&#x27;years_enrolled&#x27;] = ...\\n\\n# TODO: Add email_domain column using apply\\n# df1[&#x27;email_domain&#x27;] = df1[&#x27;email&#x27;].apply(...)\\n```\\n&quot;</pre>"
-          }
-        }
-      ],
-      "console": []
-    },
-    {
-      "id": "iLit",
-      "code_hash": "0e29b8f14855826943ae68533c5a7393",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/html": "<marimo-ui-element object-id='iLit-0' random-id='62f441b6-5530-d307-92a4-3e369f905e8b'><marimo-table data-initial-value='[]' data-label='null' data-data='&quot;[{&#92;&quot;name&#92;&quot;:&#92;&quot;Alice Johnson&#92;&quot;,&#92;&quot;gpa&#92;&quot;:3.8,&#92;&quot;gpa_category&#92;&quot;:&#92;&quot;High&#92;&quot;},{&#92;&quot;name&#92;&quot;:&#92;&quot;Bob Smith&#92;&quot;,&#92;&quot;gpa&#92;&quot;:3.6,&#92;&quot;gpa_category&#92;&quot;:&#92;&quot;Medium&#92;&quot;},{&#92;&quot;name&#92;&quot;:&#92;&quot;Charlie Brown&#92;&quot;,&#92;&quot;gpa&#92;&quot;:3.9,&#92;&quot;gpa_category&#92;&quot;:&#92;&quot;High&#92;&quot;},{&#92;&quot;name&#92;&quot;:&#92;&quot;Diana Prince&#92;&quot;,&#92;&quot;gpa&#92;&quot;:3.7,&#92;&quot;gpa_category&#92;&quot;:&#92;&quot;High&#92;&quot;},{&#92;&quot;name&#92;&quot;:&#92;&quot;Edward Norton&#92;&quot;,&#92;&quot;gpa&#92;&quot;:3.5,&#92;&quot;gpa_category&#92;&quot;:&#92;&quot;Medium&#92;&quot;},{&#92;&quot;name&#92;&quot;:&#92;&quot;Fiona Apple&#92;&quot;,&#92;&quot;gpa&#92;&quot;:3.8,&#92;&quot;gpa_category&#92;&quot;:&#92;&quot;High&#92;&quot;},{&#92;&quot;name&#92;&quot;:&#92;&quot;George Washington&#92;&quot;,&#92;&quot;gpa&#92;&quot;:3.9,&#92;&quot;gpa_category&#92;&quot;:&#92;&quot;High&#92;&quot;},{&#92;&quot;name&#92;&quot;:&#92;&quot;Hannah Montana&#92;&quot;,&#92;&quot;gpa&#92;&quot;:3.4,&#92;&quot;gpa_category&#92;&quot;:&#92;&quot;Medium&#92;&quot;},{&#92;&quot;name&#92;&quot;:&#92;&quot;Ian Fleming&#92;&quot;,&#92;&quot;gpa&#92;&quot;:3.6,&#92;&quot;gpa_category&#92;&quot;:&#92;&quot;Medium&#92;&quot;},{&#92;&quot;name&#92;&quot;:&#92;&quot;Julia Roberts&#92;&quot;,&#92;&quot;gpa&#92;&quot;:3.7,&#92;&quot;gpa_category&#92;&quot;:&#92;&quot;High&#92;&quot;}]&quot;' data-total-rows='10' data-total-columns='3' data-max-columns='50' data-banner-text='&quot;&quot;' data-pagination='true' data-page-size='10' data-field-types='[[&quot;name&quot;,[&quot;string&quot;,&quot;object&quot;]],[&quot;gpa&quot;,[&quot;number&quot;,&quot;float64&quot;]],[&quot;gpa_category&quot;,[&quot;string&quot;,&quot;object&quot;]]]' data-show-filters='true' data-show-download='true' data-show-column-summaries='false' data-show-data-types='true' data-show-page-size-selector='true' data-show-column-explorer='true' data-show-chart-builder='true' data-row-headers='[]' data-has-stable-row-id='false' data-lazy='false' data-preload='false'></marimo-table></marimo-ui-element>"
-          }
-        }
-      ],
-      "console": []
-    },
-    {
       "id": "ZHCJ",
-      "code_hash": "c7fc3b47645f6c5bdef5d764f872b5ab",
+      "code_hash": "cb9099deca9f4c5c3a16feb3950ef469",
       "outputs": [
         {
           "type": "data",
           "data": {
-            "text/html": "<marimo-ui-element object-id='ZHCJ-0' random-id='7406c488-96bf-51aa-d1ff-f6750be8d116'><marimo-table data-initial-value='[]' data-label='null' data-data='&quot;[{&#92;&quot;name&#92;&quot;:&#92;&quot;Alice Johnson&#92;&quot;,&#92;&quot;enrollment_year&#92;&quot;:2022,&#92;&quot;years_enrolled&#92;&quot;:2},{&#92;&quot;name&#92;&quot;:&#92;&quot;Bob Smith&#92;&quot;,&#92;&quot;enrollment_year&#92;&quot;:2021,&#92;&quot;years_enrolled&#92;&quot;:3},{&#92;&quot;name&#92;&quot;:&#92;&quot;Charlie Brown&#92;&quot;,&#92;&quot;enrollment_year&#92;&quot;:2023,&#92;&quot;years_enrolled&#92;&quot;:1},{&#92;&quot;name&#92;&quot;:&#92;&quot;Diana Prince&#92;&quot;,&#92;&quot;enrollment_year&#92;&quot;:2020,&#92;&quot;years_enrolled&#92;&quot;:4},{&#92;&quot;name&#92;&quot;:&#92;&quot;Edward Norton&#92;&quot;,&#92;&quot;enrollment_year&#92;&quot;:2022,&#92;&quot;years_enrolled&#92;&quot;:2},{&#92;&quot;name&#92;&quot;:&#92;&quot;Fiona Apple&#92;&quot;,&#92;&quot;enrollment_year&#92;&quot;:2021,&#92;&quot;years_enrolled&#92;&quot;:3},{&#92;&quot;name&#92;&quot;:&#92;&quot;George Washington&#92;&quot;,&#92;&quot;enrollment_year&#92;&quot;:2023,&#92;&quot;years_enrolled&#92;&quot;:1},{&#92;&quot;name&#92;&quot;:&#92;&quot;Hannah Montana&#92;&quot;,&#92;&quot;enrollment_year&#92;&quot;:2022,&#92;&quot;years_enrolled&#92;&quot;:2},{&#92;&quot;name&#92;&quot;:&#92;&quot;Ian Fleming&#92;&quot;,&#92;&quot;enrollment_year&#92;&quot;:2020,&#92;&quot;years_enrolled&#92;&quot;:4},{&#92;&quot;name&#92;&quot;:&#92;&quot;Julia Roberts&#92;&quot;,&#92;&quot;enrollment_year&#92;&quot;:2021,&#92;&quot;years_enrolled&#92;&quot;:3}]&quot;' data-total-rows='10' data-total-columns='3' data-max-columns='50' data-banner-text='&quot;&quot;' data-pagination='true' data-page-size='10' data-field-types='[[&quot;name&quot;,[&quot;string&quot;,&quot;object&quot;]],[&quot;enrollment_year&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;years_enrolled&quot;,[&quot;integer&quot;,&quot;int64&quot;]]]' data-show-filters='true' data-show-download='true' data-show-column-summaries='false' data-show-data-types='true' data-show-page-size-selector='true' data-show-column-explorer='true' data-show-chart-builder='true' data-row-headers='[]' data-has-stable-row-id='false' data-lazy='false' data-preload='false'></marimo-table></marimo-ui-element>"
-          }
-        }
-      ],
-      "console": []
-    },
-    {
-      "id": "ROlb",
-      "code_hash": "eb1c2c11bc2b1f18fe86b04cd96a553c",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/html": "<marimo-ui-element object-id='ROlb-0' random-id='08930e5c-8e23-289b-f270-42034ca7fd12'><marimo-table data-initial-value='[]' data-label='null' data-data='&quot;[{&#92;&quot;name&#92;&quot;:&#92;&quot;Alice Johnson&#92;&quot;,&#92;&quot;email&#92;&quot;:&#92;&quot;alice.johnson@university.edu&#92;&quot;,&#92;&quot;email_domain&#92;&quot;:&#92;&quot;university.edu&#92;&quot;},{&#92;&quot;name&#92;&quot;:&#92;&quot;Bob Smith&#92;&quot;,&#92;&quot;email&#92;&quot;:&#92;&quot;bob.smith@university.edu&#92;&quot;,&#92;&quot;email_domain&#92;&quot;:&#92;&quot;university.edu&#92;&quot;},{&#92;&quot;name&#92;&quot;:&#92;&quot;Charlie Brown&#92;&quot;,&#92;&quot;email&#92;&quot;:&#92;&quot;charlie.brown@university.edu&#92;&quot;,&#92;&quot;email_domain&#92;&quot;:&#92;&quot;university.edu&#92;&quot;},{&#92;&quot;name&#92;&quot;:&#92;&quot;Diana Prince&#92;&quot;,&#92;&quot;email&#92;&quot;:&#92;&quot;diana.prince@university.edu&#92;&quot;,&#92;&quot;email_domain&#92;&quot;:&#92;&quot;university.edu&#92;&quot;},{&#92;&quot;name&#92;&quot;:&#92;&quot;Edward Norton&#92;&quot;,&#92;&quot;email&#92;&quot;:&#92;&quot;edward.norton@university.edu&#92;&quot;,&#92;&quot;email_domain&#92;&quot;:&#92;&quot;university.edu&#92;&quot;},{&#92;&quot;name&#92;&quot;:&#92;&quot;Fiona Apple&#92;&quot;,&#92;&quot;email&#92;&quot;:&#92;&quot;fiona.apple@university.edu&#92;&quot;,&#92;&quot;email_domain&#92;&quot;:&#92;&quot;university.edu&#92;&quot;},{&#92;&quot;name&#92;&quot;:&#92;&quot;George Washington&#92;&quot;,&#92;&quot;email&#92;&quot;:&#92;&quot;george.washington@university.edu&#92;&quot;,&#92;&quot;email_domain&#92;&quot;:&#92;&quot;university.edu&#92;&quot;},{&#92;&quot;name&#92;&quot;:&#92;&quot;Hannah Montana&#92;&quot;,&#92;&quot;email&#92;&quot;:&#92;&quot;hannah.montana@university.edu&#92;&quot;,&#92;&quot;email_domain&#92;&quot;:&#92;&quot;university.edu&#92;&quot;},{&#92;&quot;name&#92;&quot;:&#92;&quot;Ian Fleming&#92;&quot;,&#92;&quot;email&#92;&quot;:&#92;&quot;ian.fleming@university.edu&#92;&quot;,&#92;&quot;email_domain&#92;&quot;:&#92;&quot;university.edu&#92;&quot;},{&#92;&quot;name&#92;&quot;:&#92;&quot;Julia Roberts&#92;&quot;,&#92;&quot;email&#92;&quot;:&#92;&quot;julia.roberts@university.edu&#92;&quot;,&#92;&quot;email_domain&#92;&quot;:&#92;&quot;university.edu&#92;&quot;}]&quot;' data-total-rows='10' data-total-columns='3' data-max-columns='50' data-banner-text='&quot;&quot;' data-pagination='true' data-page-size='10' data-field-types='[[&quot;name&quot;,[&quot;string&quot;,&quot;object&quot;]],[&quot;email&quot;,[&quot;string&quot;,&quot;object&quot;]],[&quot;email_domain&quot;,[&quot;string&quot;,&quot;object&quot;]]]' data-show-filters='true' data-show-download='true' data-show-column-summaries='false' data-show-data-types='true' data-show-page-size-selector='true' data-show-column-explorer='true' data-show-chart-builder='true' data-row-headers='[]' data-has-stable-row-id='false' data-lazy='false' data-preload='false'></marimo-table></marimo-ui-element>"
-          }
-        }
-      ],
-      "console": []
-    },
-    {
-      "id": "qnkX",
-      "code_hash": "870bea9ae2f89433a7678c5b21db5096",
-      "outputs": [
-        {
-          "type": "error",
-          "ename": "exception",
-          "evalue": "The variable 'error' was defined by another cell",
-          "traceback": []
-        }
-      ],
-      "console": []
-    },
-    {
-      "id": "TqIu",
-      "code_hash": "7cf1a8f54ee718c80a3cf905571092aa",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/html": "<pre class='text-xs'>&quot;\\n## Exercise 4: Grouping and Aggregation\\n\\n**Objective**: Learn groupby operations and aggregations.\\n\\n**Tasks**:\\n1. Group students by &#x27;major&#x27; and calculate average GPA for each major\\n2. Group enrollments by &#x27;course_id&#x27; and count the number of students per course\\n3. Create a pivot table showing average GPA by major and enrollment_year\\n\\n**Starter Code**:\\n```python\\n# TODO: Average GPA by major\\n# avg_gpa_by_major = ...\\n\\n# TODO: Count students per course\\n# students_per_course = ...\\n\\n# TODO: Pivot table: average GPA by major and enrollment_year\\n# gpa_pivot = ...\\n```\\n&quot;</pre>"
-          }
-        }
-      ],
-      "console": []
-    },
-    {
-      "id": "Vxnm",
-      "code_hash": "05c3b4673bddd9b3bbc085d2772939cc",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/html": "<marimo-ui-element object-id='Vxnm-0' random-id='070f9912-89a6-bcf2-8b39-785c4be03826'><marimo-table data-initial-value='[]' data-label='null' data-data='&quot;[{&#92;&quot;major&#92;&quot;:&#92;&quot;Computer Science&#92;&quot;,&#92;&quot;gpa&#92;&quot;:3.775},{&#92;&quot;major&#92;&quot;:&#92;&quot;Mathematics&#92;&quot;,&#92;&quot;gpa&#92;&quot;:3.5},{&#92;&quot;major&#92;&quot;:&#92;&quot;Physics&#92;&quot;,&#92;&quot;gpa&#92;&quot;:3.766666666666667}]&quot;' data-total-rows='3' data-total-columns='1' data-max-columns='50' data-banner-text='&quot;&quot;' data-pagination='true' data-page-size='10' data-field-types='[[&quot;gpa&quot;,[&quot;number&quot;,&quot;float64&quot;]]]' data-show-filters='true' data-show-download='true' data-show-column-summaries='false' data-show-data-types='true' data-show-page-size-selector='false' data-show-column-explorer='true' data-show-chart-builder='true' data-row-headers='[[&quot;major&quot;,[&quot;string&quot;,&quot;object&quot;]]]' data-has-stable-row-id='false' data-lazy='false' data-preload='false'></marimo-table></marimo-ui-element>"
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><hr />\n<h2 id=\"exercise-3-data-transformation\">\ud83d\udd04 Exercise 3: Data Transformation</h2>\n<span class=\"paragraph\"><strong>Objective</strong>: Learn to create new columns and transform data.</span>\n<span class=\"paragraph\"><strong>Tasks</strong>:</span>\n<ol>\n<li>Add a new column 'gpa_category' that categorizes GPA as 'High' (&gt;=3.7), 'Medium' (3.0-3.6), 'Low' (&lt;3.0)</li>\n<li>Create a column 'years_enrolled' = current_year - enrollment_year (use 2024 as current_year)</li>\n<li>Use <code>apply()</code> to create a column 'email_domain' extracting the domain from email</li>\n</ol>\n<span class=\"paragraph\"><strong>Starter Code</strong>:\n<div class=\"language-python codehilite\"><pre><span></span><code><span class=\"c1\"># TODO: Add gpa_category column</span>\n<span class=\"c1\"># df1[&#39;gpa_category&#39;] = ...</span>\n\n<span class=\"c1\"># TODO: Add years_enrolled column</span>\n<span class=\"c1\"># df1[&#39;years_enrolled&#39;] = ...</span>\n\n<span class=\"c1\"># TODO: Add email_domain column using apply</span>\n<span class=\"c1\"># df1[&#39;email_domain&#39;] = df1[&#39;email&#39;].apply(...)</span>\n</code></pre></div></span></span>"
           }
         }
       ],
@@ -299,71 +58,12 @@
     },
     {
       "id": "DnEU",
-      "code_hash": "793d68b1a259e9b4313af91984e6cbbe",
+      "code_hash": "d0e284b75c97f98590b567aa6ee39509",
       "outputs": [
         {
           "type": "data",
           "data": {
-            "text/html": "<marimo-ui-element object-id='DnEU-0' random-id='b727eede-f865-9114-2490-f0a91e60157e'><marimo-table data-initial-value='[]' data-label='null' data-data='&quot;[{&#92;&quot;course_id&#92;&quot;:101,&#92;&quot;value&#92;&quot;:4},{&#92;&quot;course_id&#92;&quot;:102,&#92;&quot;value&#92;&quot;:2},{&#92;&quot;course_id&#92;&quot;:103,&#92;&quot;value&#92;&quot;:3},{&#92;&quot;course_id&#92;&quot;:104,&#92;&quot;value&#92;&quot;:2},{&#92;&quot;course_id&#92;&quot;:105,&#92;&quot;value&#92;&quot;:3},{&#92;&quot;course_id&#92;&quot;:106,&#92;&quot;value&#92;&quot;:2},{&#92;&quot;course_id&#92;&quot;:201,&#92;&quot;value&#92;&quot;:1},{&#92;&quot;course_id&#92;&quot;:202,&#92;&quot;value&#92;&quot;:1},{&#92;&quot;course_id&#92;&quot;:203,&#92;&quot;value&#92;&quot;:1},{&#92;&quot;course_id&#92;&quot;:204,&#92;&quot;value&#92;&quot;:1}]&quot;' data-total-rows='10' data-total-columns='1' data-max-columns='50' data-banner-text='&quot;&quot;' data-pagination='true' data-page-size='10' data-field-types='[[&quot;value&quot;,[&quot;integer&quot;,&quot;int64&quot;]]]' data-show-filters='true' data-show-download='true' data-show-column-summaries='false' data-show-data-types='true' data-show-page-size-selector='true' data-show-column-explorer='true' data-show-chart-builder='true' data-row-headers='[[&quot;course_id&quot;,[&quot;integer&quot;,&quot;int64&quot;]]]' data-has-stable-row-id='false' data-lazy='false' data-preload='false'></marimo-table></marimo-ui-element>"
-          }
-        }
-      ],
-      "console": []
-    },
-    {
-      "id": "ulZA",
-      "code_hash": "c601a8fc3ac5b868dc643ed37fc1d108",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/html": "<marimo-ui-element object-id='ulZA-0' random-id='0ce48565-faea-1811-4f54-9e8135c2af94'><marimo-table data-initial-value='[]' data-label='null' data-data='&quot;[{&#92;&quot;major&#92;&quot;:&#92;&quot;Computer Science&#92;&quot;,&#92;&quot;2020&#92;&quot;:3.7,&#92;&quot;2021&#92;&quot;:3.7,&#92;&quot;2022&#92;&quot;:3.8,&#92;&quot;2023&#92;&quot;:3.9},{&#92;&quot;major&#92;&quot;:&#92;&quot;Mathematics&#92;&quot;,&#92;&quot;2020&#92;&quot;:NaN,&#92;&quot;2021&#92;&quot;:3.6,&#92;&quot;2022&#92;&quot;:3.45,&#92;&quot;2023&#92;&quot;:NaN},{&#92;&quot;major&#92;&quot;:&#92;&quot;Physics&#92;&quot;,&#92;&quot;2020&#92;&quot;:3.6,&#92;&quot;2021&#92;&quot;:3.8,&#92;&quot;2022&#92;&quot;:NaN,&#92;&quot;2023&#92;&quot;:3.9}]&quot;' data-total-rows='3' data-total-columns='4' data-max-columns='50' data-banner-text='&quot;&quot;' data-pagination='true' data-page-size='10' data-field-types='[[&quot;2020&quot;,[&quot;number&quot;,&quot;float64&quot;]],[&quot;2021&quot;,[&quot;number&quot;,&quot;float64&quot;]],[&quot;2022&quot;,[&quot;number&quot;,&quot;float64&quot;]],[&quot;2023&quot;,[&quot;number&quot;,&quot;float64&quot;]]]' data-show-filters='true' data-show-download='true' data-show-column-summaries='false' data-show-data-types='true' data-show-page-size-selector='false' data-show-column-explorer='true' data-show-chart-builder='true' data-row-headers='[[&quot;major&quot;,[&quot;string&quot;,&quot;object&quot;]]]' data-has-stable-row-id='false' data-lazy='false' data-preload='false'></marimo-table></marimo-ui-element>"
-          }
-        }
-      ],
-      "console": [
-        {
-          "type": "stream",
-          "name": "stderr",
-          "text": "/Users/lruebbelke/Projects/kasita/apps/ml-services/.venv/lib/python3.14/site-packages/marimo/_output/formatters/pandas_formatters.py:36: UserWarning: DataFrame has integer column names. This is not supported and can lead to bugs. Please use strings for column names.\n  return table(df, selection=None, pagination=True)._mime_()\n",
-          "mimetype": "text/plain"
-        }
-      ]
-    },
-    {
-      "id": "ecfG",
-      "code_hash": "316c34878617d5d27ad5f645b987cc5e",
-      "outputs": [
-        {
-          "type": "error",
-          "ename": "exception",
-          "evalue": "The variable 'error' was defined by another cell",
-          "traceback": []
-        }
-      ],
-      "console": []
-    },
-    {
-      "id": "Pvdt",
-      "code_hash": "71c0d08b4d9a14fbad1798a5e9aa2bfb",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/html": "<pre class='text-xs'>&quot;\\n## Exercise 5: Merging Datasets\\n\\n**Objective**: Learn to combine multiple DataFrames.\\n\\n**Tasks**:\\n1. Merge students_df and enrollments_df on &#x27;student_id&#x27; (inner join)\\n2. Merge the result with courses_df on &#x27;course_id&#x27; to get full student-course info\\n3. Use concat to combine students_df with a new row (append a new student)\\n\\n**Starter Code**:\\n```python\\n# TODO: Merge students and enrollments\\n# student_enrollments = ...\\n\\n# TODO: Merge with courses\\n# full_info = ...\\n\\n# TODO: Concatenate with new student\\n# new_student = pd.DataFrame({...})\\n# all_students = ...\\n```\\n&quot;</pre>"
-          }
-        }
-      ],
-      "console": []
-    },
-    {
-      "id": "ZBYS",
-      "code_hash": "55a429e019fe2d30e8a205194cbd6cd8",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/html": "<marimo-ui-element object-id='ZBYS-0' random-id='c4741c0e-98e6-cab8-8c2f-f8a605ac37bb'><marimo-table data-initial-value='[]' data-label='null' data-data='&quot;[{&#92;&quot;student_id&#92;&quot;:1,&#92;&quot;name&#92;&quot;:&#92;&quot;Alice Johnson&#92;&quot;,&#92;&quot;age&#92;&quot;:20,&#92;&quot;email&#92;&quot;:&#92;&quot;alice.johnson@university.edu&#92;&quot;,&#92;&quot;major&#92;&quot;:&#92;&quot;Computer Science&#92;&quot;,&#92;&quot;gpa&#92;&quot;:3.8,&#92;&quot;enrollment_year&#92;&quot;:2022,&#92;&quot;enrollment_id&#92;&quot;:1,&#92;&quot;course_id&#92;&quot;:101,&#92;&quot;grade&#92;&quot;:&#92;&quot;A&#92;&quot;,&#92;&quot;semester&#92;&quot;:&#92;&quot;Spring&#92;&quot;,&#92;&quot;year&#92;&quot;:2024},{&#92;&quot;student_id&#92;&quot;:1,&#92;&quot;name&#92;&quot;:&#92;&quot;Alice Johnson&#92;&quot;,&#92;&quot;age&#92;&quot;:20,&#92;&quot;email&#92;&quot;:&#92;&quot;alice.johnson@university.edu&#92;&quot;,&#92;&quot;major&#92;&quot;:&#92;&quot;Computer Science&#92;&quot;,&#92;&quot;gpa&#92;&quot;:3.8,&#92;&quot;enrollment_year&#92;&quot;:2022,&#92;&quot;enrollment_id&#92;&quot;:2,&#92;&quot;course_id&#92;&quot;:102,&#92;&quot;grade&#92;&quot;:&#92;&quot;A&#92;&quot;,&#92;&quot;semester&#92;&quot;:&#92;&quot;Spring&#92;&quot;,&#92;&quot;year&#92;&quot;:2024},{&#92;&quot;student_id&#92;&quot;:2,&#92;&quot;name&#92;&quot;:&#92;&quot;Bob Smith&#92;&quot;,&#92;&quot;age&#92;&quot;:21,&#92;&quot;email&#92;&quot;:&#92;&quot;bob.smith@university.edu&#92;&quot;,&#92;&quot;major&#92;&quot;:&#92;&quot;Mathematics&#92;&quot;,&#92;&quot;gpa&#92;&quot;:3.6,&#92;&quot;enrollment_year&#92;&quot;:2021,&#92;&quot;enrollment_id&#92;&quot;:3,&#92;&quot;course_id&#92;&quot;:103,&#92;&quot;grade&#92;&quot;:&#92;&quot;B&#92;&quot;,&#92;&quot;semester&#92;&quot;:&#92;&quot;Spring&#92;&quot;,&#92;&quot;year&#92;&quot;:2024},{&#92;&quot;student_id&#92;&quot;:2,&#92;&quot;name&#92;&quot;:&#92;&quot;Bob Smith&#92;&quot;,&#92;&quot;age&#92;&quot;:21,&#92;&quot;email&#92;&quot;:&#92;&quot;bob.smith@university.edu&#92;&quot;,&#92;&quot;major&#92;&quot;:&#92;&quot;Mathematics&#92;&quot;,&#92;&quot;gpa&#92;&quot;:3.6,&#92;&quot;enrollment_year&#92;&quot;:2021,&#92;&quot;enrollment_id&#92;&quot;:4,&#92;&quot;course_id&#92;&quot;:104,&#92;&quot;grade&#92;&quot;:&#92;&quot;B+&#92;&quot;,&#92;&quot;semester&#92;&quot;:&#92;&quot;Spring&#92;&quot;,&#92;&quot;year&#92;&quot;:2024},{&#92;&quot;student_id&#92;&quot;:3,&#92;&quot;name&#92;&quot;:&#92;&quot;Charlie Brown&#92;&quot;,&#92;&quot;age&#92;&quot;:19,&#92;&quot;email&#92;&quot;:&#92;&quot;charlie.brown@university.edu&#92;&quot;,&#92;&quot;major&#92;&quot;:&#92;&quot;Physics&#92;&quot;,&#92;&quot;gpa&#92;&quot;:3.9,&#92;&quot;enrollment_year&#92;&quot;:2023,&#92;&quot;enrollment_id&#92;&quot;:5,&#92;&quot;course_id&#92;&quot;:105,&#92;&quot;grade&#92;&quot;:&#92;&quot;A&#92;&quot;,&#92;&quot;semester&#92;&quot;:&#92;&quot;Spring&#92;&quot;,&#92;&quot;year&#92;&quot;:2024}]&quot;' data-total-rows='5' data-total-columns='12' data-max-columns='50' data-banner-text='&quot;&quot;' data-pagination='true' data-page-size='10' data-field-types='[[&quot;student_id&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;name&quot;,[&quot;string&quot;,&quot;object&quot;]],[&quot;age&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;email&quot;,[&quot;string&quot;,&quot;object&quot;]],[&quot;major&quot;,[&quot;string&quot;,&quot;object&quot;]],[&quot;gpa&quot;,[&quot;number&quot;,&quot;float64&quot;]],[&quot;enrollment_year&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;enrollment_id&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;course_id&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;grade&quot;,[&quot;string&quot;,&quot;object&quot;]],[&quot;semester&quot;,[&quot;string&quot;,&quot;object&quot;]],[&quot;year&quot;,[&quot;integer&quot;,&quot;int64&quot;]]]' data-show-filters='true' data-show-download='true' data-show-column-summaries='false' data-show-data-types='true' data-show-page-size-selector='false' data-show-column-explorer='true' data-show-chart-builder='true' data-row-headers='[]' data-has-stable-row-id='false' data-lazy='false' data-preload='false'></marimo-table></marimo-ui-element>"
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><hr />\n<h2 id=\"exercise-4-grouping-and-aggregation\">\ud83d\udcc8 Exercise 4: Grouping and Aggregation</h2>\n<span class=\"paragraph\"><strong>Objective</strong>: Learn groupby operations and aggregations.</span>\n<span class=\"paragraph\"><strong>Tasks</strong>:</span>\n<ol>\n<li>Group students by 'major' and calculate average GPA for each major</li>\n<li>Group enrollments by 'course_id' and count the number of students per course</li>\n<li>Create a pivot table showing average GPA by major and enrollment_year</li>\n</ol>\n<span class=\"paragraph\"><strong>Starter Code</strong>:\n<div class=\"language-python codehilite\"><pre><span></span><code><span class=\"c1\"># TODO: Average GPA by major</span>\n<span class=\"c1\"># avg_gpa_by_major = ...</span>\n\n<span class=\"c1\"># TODO: Count students per course</span>\n<span class=\"c1\"># students_per_course = ...</span>\n\n<span class=\"c1\"># TODO: Pivot table: average GPA by major and enrollment_year</span>\n<span class=\"c1\"># gpa_pivot = ...</span>\n</code></pre></div></span></span>"
           }
         }
       ],
@@ -371,88 +71,185 @@
     },
     {
       "id": "aLJB",
-      "code_hash": "71f88bd883e154c4540e9e5e6f4bbab2",
+      "code_hash": "0b6496482ecc3520060169e45edf6357",
       "outputs": [
         {
           "type": "data",
           "data": {
-            "text/html": "<marimo-ui-element object-id='aLJB-0' random-id='4b5d8e69-d0ee-c2db-f214-79849dc9501d'><marimo-table data-initial-value='[]' data-label='null' data-data='&quot;[{&#92;&quot;student_id&#92;&quot;:1,&#92;&quot;name&#92;&quot;:&#92;&quot;Alice Johnson&#92;&quot;,&#92;&quot;age&#92;&quot;:20,&#92;&quot;email&#92;&quot;:&#92;&quot;alice.johnson@university.edu&#92;&quot;,&#92;&quot;major&#92;&quot;:&#92;&quot;Computer Science&#92;&quot;,&#92;&quot;gpa&#92;&quot;:3.8,&#92;&quot;enrollment_year&#92;&quot;:2022,&#92;&quot;enrollment_id&#92;&quot;:1,&#92;&quot;course_id&#92;&quot;:101,&#92;&quot;grade&#92;&quot;:&#92;&quot;A&#92;&quot;,&#92;&quot;semester&#92;&quot;:&#92;&quot;Spring&#92;&quot;,&#92;&quot;year&#92;&quot;:2024,&#92;&quot;course_name&#92;&quot;:&#92;&quot;Introduction to Programming&#92;&quot;,&#92;&quot;department&#92;&quot;:&#92;&quot;Computer Science&#92;&quot;,&#92;&quot;credits&#92;&quot;:3,&#92;&quot;instructor&#92;&quot;:&#92;&quot;Dr. Smith&#92;&quot;,&#92;&quot;enrollment_cap&#92;&quot;:30},{&#92;&quot;student_id&#92;&quot;:1,&#92;&quot;name&#92;&quot;:&#92;&quot;Alice Johnson&#92;&quot;,&#92;&quot;age&#92;&quot;:20,&#92;&quot;email&#92;&quot;:&#92;&quot;alice.johnson@university.edu&#92;&quot;,&#92;&quot;major&#92;&quot;:&#92;&quot;Computer Science&#92;&quot;,&#92;&quot;gpa&#92;&quot;:3.8,&#92;&quot;enrollment_year&#92;&quot;:2022,&#92;&quot;enrollment_id&#92;&quot;:2,&#92;&quot;course_id&#92;&quot;:102,&#92;&quot;grade&#92;&quot;:&#92;&quot;A&#92;&quot;,&#92;&quot;semester&#92;&quot;:&#92;&quot;Spring&#92;&quot;,&#92;&quot;year&#92;&quot;:2024,&#92;&quot;course_name&#92;&quot;:&#92;&quot;Data Structures&#92;&quot;,&#92;&quot;department&#92;&quot;:&#92;&quot;Computer Science&#92;&quot;,&#92;&quot;credits&#92;&quot;:4,&#92;&quot;instructor&#92;&quot;:&#92;&quot;Dr. Johnson&#92;&quot;,&#92;&quot;enrollment_cap&#92;&quot;:25},{&#92;&quot;student_id&#92;&quot;:2,&#92;&quot;name&#92;&quot;:&#92;&quot;Bob Smith&#92;&quot;,&#92;&quot;age&#92;&quot;:21,&#92;&quot;email&#92;&quot;:&#92;&quot;bob.smith@university.edu&#92;&quot;,&#92;&quot;major&#92;&quot;:&#92;&quot;Mathematics&#92;&quot;,&#92;&quot;gpa&#92;&quot;:3.6,&#92;&quot;enrollment_year&#92;&quot;:2021,&#92;&quot;enrollment_id&#92;&quot;:3,&#92;&quot;course_id&#92;&quot;:103,&#92;&quot;grade&#92;&quot;:&#92;&quot;B&#92;&quot;,&#92;&quot;semester&#92;&quot;:&#92;&quot;Spring&#92;&quot;,&#92;&quot;year&#92;&quot;:2024,&#92;&quot;course_name&#92;&quot;:&#92;&quot;Calculus I&#92;&quot;,&#92;&quot;department&#92;&quot;:&#92;&quot;Mathematics&#92;&quot;,&#92;&quot;credits&#92;&quot;:4,&#92;&quot;instructor&#92;&quot;:&#92;&quot;Dr. Williams&#92;&quot;,&#92;&quot;enrollment_cap&#92;&quot;:40},{&#92;&quot;student_id&#92;&quot;:2,&#92;&quot;name&#92;&quot;:&#92;&quot;Bob Smith&#92;&quot;,&#92;&quot;age&#92;&quot;:21,&#92;&quot;email&#92;&quot;:&#92;&quot;bob.smith@university.edu&#92;&quot;,&#92;&quot;major&#92;&quot;:&#92;&quot;Mathematics&#92;&quot;,&#92;&quot;gpa&#92;&quot;:3.6,&#92;&quot;enrollment_year&#92;&quot;:2021,&#92;&quot;enrollment_id&#92;&quot;:4,&#92;&quot;course_id&#92;&quot;:104,&#92;&quot;grade&#92;&quot;:&#92;&quot;B+&#92;&quot;,&#92;&quot;semester&#92;&quot;:&#92;&quot;Spring&#92;&quot;,&#92;&quot;year&#92;&quot;:2024,&#92;&quot;course_name&#92;&quot;:&#92;&quot;Linear Algebra&#92;&quot;,&#92;&quot;department&#92;&quot;:&#92;&quot;Mathematics&#92;&quot;,&#92;&quot;credits&#92;&quot;:3,&#92;&quot;instructor&#92;&quot;:&#92;&quot;Dr. Brown&#92;&quot;,&#92;&quot;enrollment_cap&#92;&quot;:35},{&#92;&quot;student_id&#92;&quot;:3,&#92;&quot;name&#92;&quot;:&#92;&quot;Charlie Brown&#92;&quot;,&#92;&quot;age&#92;&quot;:19,&#92;&quot;email&#92;&quot;:&#92;&quot;charlie.brown@university.edu&#92;&quot;,&#92;&quot;major&#92;&quot;:&#92;&quot;Physics&#92;&quot;,&#92;&quot;gpa&#92;&quot;:3.9,&#92;&quot;enrollment_year&#92;&quot;:2023,&#92;&quot;enrollment_id&#92;&quot;:5,&#92;&quot;course_id&#92;&quot;:105,&#92;&quot;grade&#92;&quot;:&#92;&quot;A&#92;&quot;,&#92;&quot;semester&#92;&quot;:&#92;&quot;Spring&#92;&quot;,&#92;&quot;year&#92;&quot;:2024,&#92;&quot;course_name&#92;&quot;:&#92;&quot;Mechanics&#92;&quot;,&#92;&quot;department&#92;&quot;:&#92;&quot;Physics&#92;&quot;,&#92;&quot;credits&#92;&quot;:4,&#92;&quot;instructor&#92;&quot;:&#92;&quot;Dr. Davis&#92;&quot;,&#92;&quot;enrollment_cap&#92;&quot;:30}]&quot;' data-total-rows='5' data-total-columns='17' data-max-columns='50' data-banner-text='&quot;&quot;' data-pagination='true' data-page-size='10' data-field-types='[[&quot;student_id&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;name&quot;,[&quot;string&quot;,&quot;object&quot;]],[&quot;age&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;email&quot;,[&quot;string&quot;,&quot;object&quot;]],[&quot;major&quot;,[&quot;string&quot;,&quot;object&quot;]],[&quot;gpa&quot;,[&quot;number&quot;,&quot;float64&quot;]],[&quot;enrollment_year&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;enrollment_id&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;course_id&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;grade&quot;,[&quot;string&quot;,&quot;object&quot;]],[&quot;semester&quot;,[&quot;string&quot;,&quot;object&quot;]],[&quot;year&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;course_name&quot;,[&quot;string&quot;,&quot;object&quot;]],[&quot;department&quot;,[&quot;string&quot;,&quot;object&quot;]],[&quot;credits&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;instructor&quot;,[&quot;string&quot;,&quot;object&quot;]],[&quot;enrollment_cap&quot;,[&quot;integer&quot;,&quot;int64&quot;]]]' data-show-filters='true' data-show-download='true' data-show-column-summaries='false' data-show-data-types='true' data-show-page-size-selector='false' data-show-column-explorer='true' data-show-chart-builder='true' data-row-headers='[]' data-has-stable-row-id='false' data-lazy='false' data-preload='false'></marimo-table></marimo-ui-element>"
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><hr />\n<h2 id=\"exercise-5-merging-datasets\">\ud83d\udd17 Exercise 5: Merging Datasets</h2>\n<span class=\"paragraph\"><strong>Objective</strong>: Learn to combine multiple DataFrames.</span>\n<span class=\"paragraph\"><strong>Tasks</strong>:</span>\n<ol>\n<li>Merge students_df and enrollments_df on 'student_id' (inner join)</li>\n<li>Merge the result with courses_df on 'course_id' to get full student-course info</li>\n<li>Use concat to combine students_df with a new row (append a new student)</li>\n</ol>\n<span class=\"paragraph\"><strong>Starter Code</strong>:\n<div class=\"language-python codehilite\"><pre><span></span><code><span class=\"c1\"># TODO: Merge students and enrollments</span>\n<span class=\"c1\"># student_enrollments = ...</span>\n\n<span class=\"c1\"># TODO: Merge with courses</span>\n<span class=\"c1\"># full_info = ...</span>\n\n<span class=\"c1\"># TODO: Concatenate with new student</span>\n<span class=\"c1\"># new_student = pd.DataFrame({...})</span>\n<span class=\"c1\"># all_students = ...</span>\n</code></pre></div></span></span>"
           }
-        }
-      ],
-      "console": []
-    },
-    {
-      "id": "nHfw",
-      "code_hash": "9b8e8bef4801b81026e00d3de15768e4",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/html": "<marimo-ui-element object-id='nHfw-0' random-id='7a3e4c44-c609-c0d0-d5e2-a4a1af6212c7'><marimo-table data-initial-value='[]' data-label='null' data-data='&quot;[{&#92;&quot;student_id&#92;&quot;:7,&#92;&quot;name&#92;&quot;:&#92;&quot;George Washington&#92;&quot;,&#92;&quot;age&#92;&quot;:19,&#92;&quot;email&#92;&quot;:&#92;&quot;george.washington@university.edu&#92;&quot;,&#92;&quot;major&#92;&quot;:&#92;&quot;Computer Science&#92;&quot;,&#92;&quot;gpa&#92;&quot;:3.9,&#92;&quot;enrollment_year&#92;&quot;:2023},{&#92;&quot;student_id&#92;&quot;:8,&#92;&quot;name&#92;&quot;:&#92;&quot;Hannah Montana&#92;&quot;,&#92;&quot;age&#92;&quot;:20,&#92;&quot;email&#92;&quot;:&#92;&quot;hannah.montana@university.edu&#92;&quot;,&#92;&quot;major&#92;&quot;:&#92;&quot;Mathematics&#92;&quot;,&#92;&quot;gpa&#92;&quot;:3.4,&#92;&quot;enrollment_year&#92;&quot;:2022},{&#92;&quot;student_id&#92;&quot;:9,&#92;&quot;name&#92;&quot;:&#92;&quot;Ian Fleming&#92;&quot;,&#92;&quot;age&#92;&quot;:22,&#92;&quot;email&#92;&quot;:&#92;&quot;ian.fleming@university.edu&#92;&quot;,&#92;&quot;major&#92;&quot;:&#92;&quot;Physics&#92;&quot;,&#92;&quot;gpa&#92;&quot;:3.6,&#92;&quot;enrollment_year&#92;&quot;:2020},{&#92;&quot;student_id&#92;&quot;:10,&#92;&quot;name&#92;&quot;:&#92;&quot;Julia Roberts&#92;&quot;,&#92;&quot;age&#92;&quot;:21,&#92;&quot;email&#92;&quot;:&#92;&quot;julia.roberts@university.edu&#92;&quot;,&#92;&quot;major&#92;&quot;:&#92;&quot;Computer Science&#92;&quot;,&#92;&quot;gpa&#92;&quot;:3.7,&#92;&quot;enrollment_year&#92;&quot;:2021},{&#92;&quot;student_id&#92;&quot;:11,&#92;&quot;name&#92;&quot;:&#92;&quot;Kevin Spacey&#92;&quot;,&#92;&quot;age&#92;&quot;:23,&#92;&quot;email&#92;&quot;:&#92;&quot;kevin.spacey@university.edu&#92;&quot;,&#92;&quot;major&#92;&quot;:&#92;&quot;Computer Science&#92;&quot;,&#92;&quot;gpa&#92;&quot;:3.6,&#92;&quot;enrollment_year&#92;&quot;:2021}]&quot;' data-total-rows='5' data-total-columns='7' data-max-columns='50' data-banner-text='&quot;&quot;' data-pagination='true' data-page-size='10' data-field-types='[[&quot;student_id&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;name&quot;,[&quot;string&quot;,&quot;object&quot;]],[&quot;age&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;email&quot;,[&quot;string&quot;,&quot;object&quot;]],[&quot;major&quot;,[&quot;string&quot;,&quot;object&quot;]],[&quot;gpa&quot;,[&quot;number&quot;,&quot;float64&quot;]],[&quot;enrollment_year&quot;,[&quot;integer&quot;,&quot;int64&quot;]]]' data-show-filters='true' data-show-download='true' data-show-column-summaries='false' data-show-data-types='true' data-show-page-size-selector='false' data-show-column-explorer='true' data-show-chart-builder='true' data-row-headers='[]' data-has-stable-row-id='false' data-lazy='false' data-preload='false'></marimo-table></marimo-ui-element>"
-          }
-        }
-      ],
-      "console": []
-    },
-    {
-      "id": "xXTn",
-      "code_hash": "ef8929c3d26ca78acab218c24e2b1c72",
-      "outputs": [
-        {
-          "type": "error",
-          "ename": "exception",
-          "evalue": "The variable 'error' was defined by another cell",
-          "traceback": []
-        }
-      ],
-      "console": []
-    },
-    {
-      "id": "AjVT",
-      "code_hash": "c0c54eacd58ce8bc63f64e45bc647d97",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/html": "<pre class='text-xs'>&#x27;\\n## Progress Summary\\n\\nYour completion status for all exercises:\\n&#x27;</pre>"
-          }
-        }
-      ],
-      "console": []
-    },
-    {
-      "id": "pHFh",
-      "code_hash": "352887db768f2c1468e9fa726dfd94b6",
-      "outputs": [
-        {
-          "type": "error",
-          "ename": "exception",
-          "evalue": "The variable 'error' was defined by another cell",
-          "traceback": []
         }
       ],
       "console": []
     },
     {
       "id": "NCOB",
-      "code_hash": "3e4e54c4a3260b7d2a5d20f97eed03b8",
+      "code_hash": "3c03fc8b24bad2139aee433bc3bb691a",
       "outputs": [
         {
           "type": "data",
           "data": {
-            "text/plain": ""
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><hr />\n<h2 id=\"progress-summary\">\ud83d\udcca Progress Summary</h2>\n<span class=\"paragraph\">Your completion status for all exercises:</span></span>"
           }
         }
       ],
-      "console": [
-        {
-          "type": "stream",
-          "name": "stdout",
-          "text": "Submission JSON (copy this for API submission):\n{\n  \"notebookId\": \"pandas_exercises\",\n  \"completedExercises\": [],\n  \"totalExercises\": 5,\n  \"completionRate\": 0.0,\n  \"validationResults\": {\n    \"exercise_1\": {\n      \"completed\": false,\n      \"errors\": []\n    },\n    \"exercise_2\": {\n      \"completed\": false,\n      \"errors\": []\n    },\n    \"exercise_3\": {\n      \"completed\": false,\n      \"errors\": []\n    },\n    \"exercise_4\": {\n      \"completed\": false,\n      \"errors\": []\n    },\n    \"exercise_5\": {\n      \"completed\": false,\n      \"errors\": []\n    }\n  },\n  \"timestamp\": \"2026-01-08T14:17:49.636701\"\n}\n",
-          "mimetype": "text/plain"
-        }
-      ]
+      "console": []
+    },
+    {
+      "id": "Hbol",
+      "code_hash": "1d0db38904205bec4d6f6f6a1f6cec3e",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "vblA",
+      "code_hash": "c7d123105af9a921166d27658ccfcb77",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "bkHC",
+      "code_hash": "f540ca6d22a303733d74744fbdf24a1e",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "lEQa",
+      "code_hash": "d4e2afa9c8d9afb86ee2e0a795fbef20",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "Xref",
+      "code_hash": "ea551300ee3de2ca615d71768f9e8b1c",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "SFPL",
+      "code_hash": "39dc83957b0a1bc53549468577861ee6",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "BYtC",
+      "code_hash": "e671c6af1bd3a8e28374d70fee8f6dec",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "RGSE",
+      "code_hash": "36e51d0126f026375988e6669cf10469",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "emfo",
+      "code_hash": "25f94792b69922d149f31af5db5be275",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "Hstk",
+      "code_hash": "ec94805c039c878bbfdf2a07dc2ef1aa",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "nWHF",
+      "code_hash": "e81917155a0e68241662017a8eeb4b18",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "iLit",
+      "code_hash": "d00aff6c7eef034561521f944f590d69",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "ROlb",
+      "code_hash": "0e29b8f14855826943ae68533c5a7393",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "qnkX",
+      "code_hash": "c7fc3b47645f6c5bdef5d764f872b5ab",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "TqIu",
+      "code_hash": "eb1c2c11bc2b1f18fe86b04cd96a553c",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "Vxnm",
+      "code_hash": "53db908a0130456a3f3f1c3e709b7d4a",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "ulZA",
+      "code_hash": "05c3b4673bddd9b3bbc085d2772939cc",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "ecfG",
+      "code_hash": "793d68b1a259e9b4313af91984e6cbbe",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "Pvdt",
+      "code_hash": "c601a8fc3ac5b868dc643ed37fc1d108",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "ZBYS",
+      "code_hash": "c8cdf8428fc3315cce88ac78718a9996",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "nHfw",
+      "code_hash": "55a429e019fe2d30e8a205194cbd6cd8",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "xXTn",
+      "code_hash": "71f88bd883e154c4540e9e5e6f4bbab2",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "AjVT",
+      "code_hash": "9b8e8bef4801b81026e00d3de15768e4",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "pHFh",
+      "code_hash": "9ab3c7e09e856aacce6a2339c2d4b9a0",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "aqbW",
+      "code_hash": "2796385ab3d17906f15b0d8236862ec6",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "TRpd",
+      "code_hash": "e1c1b122e7fecc0a4548296481b7d97f",
+      "outputs": [],
+      "console": []
     }
   ]
 }

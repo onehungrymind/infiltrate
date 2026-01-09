@@ -7,3 +7,6 @@ export * from './lib/mvp-schema';
 
 // Flashcard model (legacy, may be used by infiltrate)
 export * from './lib/flashcard.model';
+
+// Learning Map types
+export * from './lib/learning-map.types';

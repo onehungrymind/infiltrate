@@ -85,4 +85,9 @@ export const appRoutes: Route[] = [
     loadComponent: () => import('./pages/notebook/notebook').then((m) => m.NotebookComponent),
     canActivate: [authGuard],
   },
+  {
+    path: 'learning-map',
+    loadComponent: () => import('./pages/learning-map/learning-map.component').then((m) => m.LearningMapComponent),
+    canActivate: [authGuard],
+  },
 ];
