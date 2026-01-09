@@ -26,6 +26,7 @@ import { KnowledgeGraphModule } from '../knowledge-graph/knowledge-graph.module'
 import { GraphSearch } from '../knowledge-graph/entities/graph-search.entity';
 import { NotebooksModule } from '../notebooks/notebooks.module';
 import { NotebookProgress } from '../notebooks/entities/notebook-progress.entity';
+import { LearningMapModule } from '../learning-map/learning-map.module';
 
 @Module({
   imports: [
@@ -56,6 +57,7 @@ import { NotebookProgress } from '../notebooks/entities/notebook-progress.entity
     DataSourcesModule,
     KnowledgeGraphModule,
     NotebooksModule,
+    LearningMapModule,
   ],
   controllers: [AppController],
   providers: [AppService, ProgressGateway],

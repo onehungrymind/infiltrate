@@ -58,6 +58,14 @@ const visualizationIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" v
   <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
 </svg>`;
 
+const notebookIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+</svg>`;
+
+const learningMapIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z" />
+</svg>`;
+
 interface NavSection {
   title?: string;
   routes: NavRoute[];
@@ -100,6 +108,8 @@ export class Sidebar implements OnInit, OnDestroy {
       routes: [
         { label: 'Knowledge Graph', path: '/graph', icon: 'graph' },
         { label: 'Visualization', path: '/visualization/bfs', icon: 'visualization' },
+        { label: 'Notebooks', path: '/notebook', icon: 'notebook' },
+        { label: 'Learning Map', path: '/learning-map', icon: 'learning-map' },
       ],
       collapsed: false,
     },
@@ -171,6 +181,12 @@ export class Sidebar implements OnInit, OnDestroy {
         break;
       case 'visualization':
         iconHtml = visualizationIcon;
+        break;
+      case 'notebook':
+        iconHtml = notebookIcon;
+        break;
+      case 'learning-map':
+        iconHtml = learningMapIcon;
         break;
       default:
         iconHtml = '';

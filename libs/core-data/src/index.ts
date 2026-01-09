@@ -41,3 +41,6 @@ export * from './lib/services/users/users.service';
 
 /* Notebooks */
 export * from './lib/services/notebooks.service';
+
+/* Learning Map */
+export * from './lib/services/learning-map.service';

@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* React Flow styles */
+@import "@xyflow/react/dist/style.css";
+
 /* Global styles for blue/purple gradient theme */
 * {
   box-sizing: border-box;

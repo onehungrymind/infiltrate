@@ -1,0 +1,413 @@
+import {
+  Component,
+  inject,
+  OnInit,
+  OnDestroy,
+  signal,
+  computed,
+  ViewChild,
+  ElementRef,
+  AfterViewInit,
+  effect,
+} from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { trigger, transition, style, animate } from '@angular/animations';
+import { MaterialModule } from '@kasita/material';
+import { AuthService } from '@kasita/core-data';
+import { LearningMapService } from '@kasita/core-data';
+import {
+  LearningPathMap,
+  LearningMapNode,
+  NodeStatus,
+} from '@kasita/common-models';
+import { ReactFlowWrapperComponent } from './react-flow-wrapper.component';
+import { convertToReactFlowFormat, ReactFlowNode, ReactFlowEdge } from './react-flow-utils';
+
+@Component({
+  selector: 'app-learning-map',
+  standalone: true,
+  imports: [CommonModule, FormsModule, MaterialModule, ReactFlowWrapperComponent],
+  templateUrl: './learning-map.component.html',
+  styleUrl: './learning-map.component.scss',
+  animations: [
+    trigger('fadeIn', [
+      transition(':enter', [
+        style({ 
+          opacity: 0, 
+          transform: 'scale(0.85) translateY(-20px)',
+        }),
+        animate('300ms cubic-bezier(0.34, 1.56, 0.64, 1)', 
+          style({ 
+            opacity: 1, 
+            transform: 'scale(1) translateY(0)',
+          })
+        )
+      ]),
+      transition(':leave', [
+        animate('200ms ease-in', 
+          style({ 
+            opacity: 0, 
+            transform: 'scale(0.9) translateY(-10px)',
+          })
+        )
+      ])
+    ])
+  ],
+})
+export class LearningMapComponent implements OnInit, OnDestroy {
+
+  private learningMapService = inject(LearningMapService);
+  private authService = inject(AuthService);
+  private router = inject(Router);
+
+  // State
+  loading = signal(false);
+  error = signal<string | null>(null);
+  learningPath = signal<LearningPathMap | null>(null);
+  selectedNode = signal<LearningMapNode | null>(null);
+  clickPosition = signal<{ x: number; y: number } | null>(null);
+
+  // Computed values
+  nodes = computed(() => this.learningPath()?.nodes || []);
+  edges = computed(() => this.learningPath()?.edges || []);
+  progress = computed(() => this.learningPath()?.metadata.progress || 0);
+
+  // React Flow data
+  reactFlowNodes = computed(() => {
+    const path = this.learningPath();
+    if (!path) return [];
+    const { nodes } = convertToReactFlowFormat(path);
+    return nodes;
+  });
+
+  reactFlowEdges = computed(() => {
+    const path = this.learningPath();
+    if (!path) return [];
+    const { edges } = convertToReactFlowFormat(path);
+    return edges;
+  });
+
+  // View controls - minimap is controlled by React Flow wrapper
+
+  ngOnInit(): void {
+    this.loadLearningPath();
+  }
+
+  ngOnDestroy(): void {
+    // Cleanup handled by React Flow wrapper
+  }
+
+  // React Flow event handlers
+  onReactFlowNodeClick(node: ReactFlowNode, event?: MouseEvent): void {
+    const learningNode = this.nodes().find((n) => n.id === node.id);
+    if (learningNode) {
+      // Store click position for panel positioning
+      if (event) {
+        this.clickPosition.set({ x: event.clientX, y: event.clientY });
+      } else {
+        // Fallback: use node position converted to screen coordinates
+        // This is approximate since we'd need viewport transform
+        this.clickPosition.set({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
+      }
+      this.onNodeClick(learningNode);
+    }
+  }
+
+  onReactFlowNodeDoubleClick(node: ReactFlowNode): void {
+    const learningNode = this.nodes().find((n) => n.id === node.id);
+    if (learningNode) {
+      this.navigateToNode(learningNode);
+    }
+  }
+
+  onPaneClick(): void {
+    this.selectedNode.set(null);
+    this.clickPosition.set(null);
+  }
+
+  loadLearningPath(): void {
+    const user = this.authService.getCurrentUser();
+    if (!user) {
+      this.error.set('User not authenticated');
+      return;
+    }
+
+    const outcomeId = 'ml-engineer-transition';
+
+    this.loading.set(true);
+    this.error.set(null);
+
+    (this.learningMapService as any).getLearningPath(user.id, outcomeId).subscribe({
+      next: (path: LearningPathMap | null) => {
+        if (path) {
+          this.learningPath.set(path);
+        } else {
+          this.loadMockData();
+        }
+        this.loading.set(false);
+      },
+      error: () => {
+        this.loadMockData();
+        this.loading.set(false);
+      },
+    });
+  }
+
+  onNodeClick(node: LearningMapNode): void {
+    this.selectedNode.set(node);
+    // Position will be set by onReactFlowNodeClick if available
+  }
+
+  navigateToNode(node: LearningMapNode): void {
+    switch (node.type) {
+      case 'exercise':
+        if ('notebookId' in node.data && node.data.notebookId) {
+          this.router.navigate(['/notebook']);
+        }
+        break;
+      case 'module':
+        this.router.navigate(['/content'], { queryParams: { moduleId: node.id } });
+        break;
+      case 'checkpoint':
+        this.router.navigate(['/challenges'], { queryParams: { checkpointId: node.id } });
+        break;
+    }
+  }
+
+  getNodeDescription(): string {
+    const node = this.selectedNode();
+    if (!node) return '';
+
+    if (node.type === 'outcome') {
+      return ((node.data as unknown as Record<string, unknown>)['description'] as string) || '';
+    } else if (node.type === 'module') {
+      return ((node.data as unknown as Record<string, unknown>)['description'] as string) || '';
+    }
+    return node.label;
+  }
+
+  getPanelPosition(): { left: number; top: number } {
+    const clickPos = this.clickPosition();
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    const panelWidth = 340; // Panel width from CSS
+    const panelHeight = 300; // Estimated panel height
+    const offset = 20; // Offset from click position
+    
+    if (clickPos) {
+      // Position panel offset from click, ensuring it stays within viewport
+      let left = clickPos.x + offset;
+      let top = clickPos.y + offset;
+      
+      // Adjust if panel would go off-screen
+      if (left + panelWidth > viewportWidth) {
+        left = clickPos.x - panelWidth - offset; // Show to the left instead
+      }
+      if (top + panelHeight > viewportHeight) {
+        top = clickPos.y - panelHeight - offset; // Show above instead
+      }
+      
+      // Ensure minimum margins
+      left = Math.max(20, Math.min(left, viewportWidth - panelWidth - 20));
+      top = Math.max(20, Math.min(top, viewportHeight - panelHeight - 20));
+      
+      return { left, top };
+    }
+    
+    // Fallback: center if no click position
+    return {
+      left: (viewportWidth - panelWidth) / 2,
+      top: (viewportHeight - panelHeight) / 2,
+    };
+  }
+
+  updateNodeStatus(nodeId: string, status: NodeStatus): void {
+    const user = this.authService.getCurrentUser();
+    if (!user) return;
+
+    ((this.learningMapService as any).updateNodeStatus(nodeId, status) as any).subscribe({
+      next: () => {
+        this.loadLearningPath();
+      },
+      error: (err: unknown) => {
+        const error = err as { error?: { message?: string } };
+        this.error.set(error.error?.message || 'Failed to update node status');
+      },
+    });
+  }
+
+  // Mock data for demo
+  private loadMockData(): void {
+    const mockPath: LearningPathMap = {
+      id: 'ml-engineer-path',
+      outcomeId: 'ml-engineer-transition',
+      nodes: [
+        {
+          id: 'outcome-1',
+          type: 'outcome',
+          label: 'Production ML Engineering',
+          status: 'in-progress',
+          position: { x: 400, y: 50 },
+          data: {
+            title: 'Production ML Engineering Capability',
+            description: 'Deploy and maintain production ML systems',
+            measurableMetrics: [
+              'Deploy 3 production ML systems',
+              'Pass system design interviews',
+              'Contribute to ML platform',
+            ],
+            completionCriteria: [
+              'All systems in production',
+              'Performance metrics met',
+              'Code reviews passed',
+            ],
+            estimatedTime: 200,
+          },
+        },
+        {
+          id: 'module-1',
+          type: 'module',
+          label: 'ML Fundamentals',
+          status: 'completed',
+          position: { x: 200, y: 200 },
+          data: {
+            title: 'ML Fundamentals',
+            description: 'Core machine learning concepts and engineering practices',
+            contentType: 'book-chapter',
+            duration: 40,
+            prerequisites: [],
+            progress: 100,
+          },
+        },
+        {
+          id: 'exercise-1',
+          type: 'exercise',
+          label: 'Build Linear Regression',
+          status: 'completed',
+          position: { x: 100, y: 300 },
+          data: {
+            title: 'Build Simple Linear Regression',
+            difficulty: 'beginner',
+            type: 'coding-exercise',
+            attempts: 1,
+            bestScore: 100,
+          },
+        },
+        {
+          id: 'checkpoint-1',
+          type: 'checkpoint',
+          label: 'ML Fundamentals Quiz',
+          status: 'passed',
+          position: { x: 300, y: 300 },
+          data: {
+            title: 'ML Fundamentals Quiz',
+            requiredScore: 80,
+            userScore: 92,
+            assessmentType: 'quiz',
+            passed: true,
+          },
+        },
+        {
+          id: 'module-2',
+          type: 'module',
+          label: 'LLM Deep Dive',
+          status: 'in-progress',
+          position: { x: 600, y: 200 },
+          data: {
+            title: 'LLM Deep Dive',
+            description: 'Large Language Models and their applications',
+            contentType: 'book-chapter',
+            duration: 30,
+            prerequisites: ['module-1'],
+            progress: 60,
+          },
+        },
+        {
+          id: 'exercise-2',
+          type: 'exercise',
+          label: 'Pandas Exercises',
+          status: 'in-progress',
+          position: { x: 500, y: 350 },
+          data: {
+            title: 'Marimo Pandas Exercises',
+            difficulty: 'beginner',
+            type: 'coding-exercise',
+            attempts: 0,
+            notebookId: 'pandas_exercises',
+          },
+        },
+        {
+          id: 'module-3',
+          type: 'module',
+          label: 'Pandas & Data Processing',
+          status: 'available',
+          position: { x: 400, y: 200 },
+          data: {
+            title: 'Pandas & Data Processing',
+            description: 'Data manipulation and analysis with Pandas',
+            contentType: 'interactive-tutorial',
+            duration: 20,
+            prerequisites: ['module-1'],
+            progress: 0,
+          },
+        },
+        {
+          id: 'module-4',
+          type: 'module',
+          label: 'MLOps & Deployment',
+          status: 'locked',
+          position: { x: 800, y: 200 },
+          data: {
+            title: 'MLOps & Deployment',
+            description: 'CI/CD, monitoring, and production deployment',
+            contentType: 'article',
+            duration: 50,
+            prerequisites: ['module-1', 'module-2'],
+            progress: 0,
+          },
+        },
+        {
+          id: 'demo-1',
+          type: 'demonstration',
+          label: 'Kasita Platform',
+          status: 'available',
+          position: { x: 400, y: 400 },
+          data: {
+            title: 'Kasita Platform',
+            requirements: [
+              'Content processing pipeline',
+              'Knowledge graph implementation',
+              'Progress tracking system',
+            ],
+            submitted: false,
+            validated: false,
+          },
+        },
+      ],
+      edges: [
+        { id: 'e1', source: 'outcome-1', target: 'module-1', type: 'prerequisite' },
+        { id: 'e2', source: 'outcome-1', target: 'module-2', type: 'prerequisite' },
+        { id: 'e3', source: 'outcome-1', target: 'module-3', type: 'prerequisite' },
+        { id: 'e4', source: 'outcome-1', target: 'module-4', type: 'prerequisite' },
+        { id: 'e5', source: 'module-1', target: 'exercise-1', type: 'recommended' },
+        { id: 'e6', source: 'module-1', target: 'checkpoint-1', type: 'prerequisite' },
+        { id: 'e7', source: 'module-3', target: 'exercise-2', type: 'recommended' },
+        { id: 'e8', source: 'module-1', target: 'module-2', type: 'dependency' },
+        { id: 'e9', source: 'module-1', target: 'module-3', type: 'dependency' },
+        { id: 'e10', source: 'module-2', target: 'module-4', type: 'prerequisite' },
+        { id: 'e11', source: 'module-1', target: 'module-4', type: 'prerequisite' },
+        { id: 'e12', source: 'module-4', target: 'demo-1', type: 'prerequisite' },
+      ],
+      metadata: {
+        totalNodes: 9,
+        completedNodes: 3,
+        estimatedTime: 200,
+        progress: 33,
+      },
+    };
+
+    this.learningPath.set(mockPath);
+  }
+}
