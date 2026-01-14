@@ -1,14 +1,16 @@
 .flashcards-container {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  min-height: 100%;
   max-width: 800px;
   margin: 0 auto;
+  padding-bottom: 40px;
 }
 
 // Filters
 .filters {
   display: flex;
+  align-items: flex-end;
   gap: 24px;
   margin-bottom: 24px;
   flex-wrap: wrap;
@@ -29,14 +31,15 @@
 }
 
 .filter-select {
-  padding: 8px 12px;
+  padding: 10px 12px;
   font-size: 14px;
   border: 1px solid #e2e8f0;
-  border-radius: 6px;
+  border-radius: 8px;
   background: white;
   color: #334155;
   min-width: 200px;
   cursor: pointer;
+  height: 40px;
 
   &:focus {
     outline: none;
@@ -52,12 +55,23 @@
   font-size: 14px;
   color: #334155;
   cursor: pointer;
-  padding-top: 22px;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: white;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: #cbd5e1;
+    background: #f8fafc;
+  }
 
   input[type='checkbox'] {
     width: 16px;
     height: 16px;
     cursor: pointer;
+    accent-color: #2563eb;
   }
 }
 

@@ -9,24 +9,26 @@
     <!-- Learning Path Selector -->
     <div class="path-selector">
       @if (hasAvailablePaths()) {
-      <mat-form-field appearance="outline" class="path-select">
-        <mat-label>Learning Path</mat-label>
-        <mat-select
-          [value]="selectedPathId()"
-          (selectionChange)="selectPath($event.value)">
+      <div class="filter-group">
+        <label for="pathSelect" class="filter-label">Learning Path</label>
+        <select
+          id="pathSelect"
+          [ngModel]="selectedPathId()"
+          (ngModelChange)="selectPath($event)"
+          class="filter-select">
           @for (path of availablePaths(); track path.id) {
-          <mat-option [value]="path.id">
+          <option [ngValue]="path.id">
             {{ path.name }} ({{ path.principleCount }} principles)
-          </mat-option>
+          </option>
           }
-        </mat-select>
-      </mat-form-field>
+        </select>
+      </div>
       }
       <button
-        mat-stroked-button
+        type="button"
         [class.active]="viewMode() === 'mock'"
         (click)="showMockData()"
-        class="mock-data-button">
+        class="demo-button">
         Demo View
       </button>
     </div>
