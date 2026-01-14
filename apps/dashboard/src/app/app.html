@@ -1,10 +1,10 @@
 <app-sidebar *ngIf="!isLoginPage()"></app-sidebar>
 
-<main class="h-full transition-all duration-300 ease-in-out"
+<main class="transition-all duration-300 ease-in-out"
       [class.lg:pl-72]="!isSidebarCollapsed"
       [class.lg:pl-20]="isSidebarCollapsed">
   <app-header *ngIf="!isLoginPage()"></app-header>
-  <div class="h-full">
+  <div>
     <router-outlet></router-outlet>
   </div>
 </main>

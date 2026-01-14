@@ -1,7 +1,8 @@
 :host {
   display: flex;
-  min-height: 100vh;
+  height: 100vh;
   width: 100%;
+  overflow: hidden;
 }
 
 app-sidebar {
@@ -16,12 +17,11 @@ main {
 }
 
 main > div {
-  flex: 1 1 0%; /* Use 0% instead of auto for explicit sizing */
+  flex: 1 1 0%;
   display: flex;
   flex-direction: column;
   min-height: 0;
-  height: 100%;
-  overflow: hidden; /* Prevent overflow */
+  overflow: hidden;
 }
 
 router-outlet {
