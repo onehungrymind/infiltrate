@@ -83,6 +83,12 @@
 
 .checkbox-group {
   margin-top: 24px;
+
+  // Remove the default label styling for checkbox group
+  > label {
+    display: block;
+    margin-bottom: 0;
+  }
 }
 
 .checkbox-label {
@@ -90,6 +96,15 @@
   align-items: center;
   gap: 12px;
   cursor: pointer;
+  padding: 12px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  background: white;
+  transition: border-color 0.2s, box-shadow 0.2s;
+
+  &:hover {
+    border-color: #d1d5db;
+  }
 
   input[type="checkbox"] {
     width: 20px;
