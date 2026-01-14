@@ -25,11 +25,12 @@ main > div {
 }
 
 router-outlet {
-  display: none; // router-outlet itself takes no space
+  display: none;
 }
 
 // The routed component is inserted as a sibling AFTER router-outlet
-router-outlet + * {
+// ::ng-deep is needed to pierce Angular's view encapsulation
+:host ::ng-deep router-outlet + * {
   flex: 1 1 0%;
   display: flex;
   flex-direction: column;

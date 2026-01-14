@@ -74,12 +74,14 @@
   display: flex;
   flex-direction: column;
   overflow: auto;
+}
 
+// Must be at :host level with ::ng-deep to pierce view encapsulation
+:host ::ng-deep .study-content {
   router-outlet {
     display: none;
   }
 
-  // Routed component fills available space
   router-outlet + * {
     flex: 1;
     display: flex;
