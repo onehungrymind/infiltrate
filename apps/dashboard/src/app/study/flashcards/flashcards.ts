@@ -1,11 +1,11 @@
-import { Component, OnInit, OnDestroy, inject, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, HostListener, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { KnowledgeUnit, LearningPath, UserProgress } from '@kasita/common-models';
 import { KnowledgeUnitFacade, LearningPathsFacade, UserProgressFacade } from '@kasita/core-state';
 import { AuthService } from '@kasita/core-data';
 import { Subject, combineLatest } from 'rxjs';
-import { takeUntil, map } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 
 interface StudyCard {
   knowledgeUnit: KnowledgeUnit;
@@ -24,6 +24,7 @@ export class StudyFlashcards implements OnInit, OnDestroy {
   private learningPathsFacade = inject(LearningPathsFacade);
   private userProgressFacade = inject(UserProgressFacade);
   private authService = inject(AuthService);
+  private cdr = inject(ChangeDetectorRef);
   private destroy$ = new Subject<void>();
 
   learningPaths: LearningPath[] = [];
@@ -92,6 +93,7 @@ export class StudyFlashcards implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe((paths) => {
         this.learningPaths = paths;
+        this.cdr.markForCheck();
       });
 
     // Load knowledge units
@@ -114,6 +116,7 @@ export class StudyFlashcards implements OnInit, OnDestroy {
         this.allProgress = progress;
         this.buildCards();
         this.isLoading = false;
+        this.cdr.markForCheck();
       });
   }
 
