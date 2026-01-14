@@ -1,19 +1,19 @@
 <div class="master-detail-layout">
   <div class="master-panel">
-    @if (error$ | async) {
+    @if (error()) {
       <div class="error-message">
         <mat-icon>error</mat-icon>
-        <span>{{ error$ | async }}</span>
+        <span>{{ error() }}</span>
       </div>
-    } @else if ((loaded$ | async) === false) {
+    } @else if (!loaded()) {
       <div class="loading-message">
         <mat-spinner diameter="40"></mat-spinner>
         <span>Loading learning paths...</span>
       </div>
     } @else {
       <app-learning-paths-list
-        [learningPaths]="(learningPaths$ | async) ?? []"
-        [selectedLearningPath]="selectedLearningPath$ | async"
+        [learningPaths]="learningPaths()"
+        [selectedLearningPath]="selectedLearningPath()"
         (selected)="selectLearningPath($event)"
         (deleted)="deleteLearningPath($event)"
       ></app-learning-paths-list>
@@ -21,7 +21,7 @@
   </div>
   <div class="detail-panel">
     <app-learning-path-detail
-      [learningPath]="selectedLearningPath$ | async"
+      [learningPath]="selectedLearningPath()"
       (saved)="saveLearningPath($event)"
       (cancelled)="cancel()"
     ></app-learning-path-detail>
