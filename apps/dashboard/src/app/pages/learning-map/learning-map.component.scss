@@ -53,24 +53,77 @@
   .path-selector {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 16px;
 
     .path-select {
-      min-width: 280px;
+      min-width: 300px;
 
-      ::ng-deep .mat-mdc-form-field-subscript-wrapper {
-        display: none;
+      ::ng-deep {
+        .mat-mdc-form-field-subscript-wrapper {
+          display: none;
+        }
+
+        .mat-mdc-text-field-wrapper {
+          background: #f8fafc;
+          border-radius: 10px;
+        }
+
+        .mat-mdc-form-field-flex {
+          height: 44px;
+          align-items: center;
+        }
+
+        .mdc-notched-outline__leading,
+        .mdc-notched-outline__notch,
+        .mdc-notched-outline__trailing {
+          border-color: #e2e8f0;
+        }
+
+        .mat-mdc-form-field:hover .mdc-notched-outline__leading,
+        .mat-mdc-form-field:hover .mdc-notched-outline__notch,
+        .mat-mdc-form-field:hover .mdc-notched-outline__trailing {
+          border-color: #cbd5e1;
+        }
+
+        .mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
+        .mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
+        .mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing {
+          border-color: #2563eb;
+        }
+
+        .mat-mdc-select-trigger {
+          font-size: 14px;
+          color: #1f2937;
+        }
+
+        .mat-mdc-floating-label {
+          font-size: 14px;
+        }
       }
     }
 
     .mock-data-button {
-      height: 40px;
-      font-size: 13px;
+      height: 44px;
+      padding: 0 20px;
+      font-size: 14px;
+      font-weight: 500;
+      border-radius: 10px;
+      border: 1px solid #e2e8f0;
+      background: #f8fafc;
+      color: #64748b;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: #f1f5f9;
+        border-color: #cbd5e1;
+        color: #475569;
+      }
 
       &.active {
-        background: rgba(37, 99, 235, 0.1);
+        background: linear-gradient(135deg, rgba(37, 99, 235, 0.1) 0%, rgba(124, 58, 237, 0.1) 100%);
         border-color: #2563eb;
         color: #2563eb;
+        font-weight: 600;
       }
     }
   }
