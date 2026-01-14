@@ -96,7 +96,7 @@
   align-items: center;
   gap: 12px;
   cursor: pointer;
-  padding: 12px 16px;
+  padding: 14px 16px;
   border: 2px solid #e5e7eb;
   border-radius: 10px;
   background: white;
@@ -108,9 +108,10 @@
 
   input[type="checkbox"] {
     flex-shrink: 0;
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
     margin: 0;
+    vertical-align: middle;
     accent-color: #667eea;
     cursor: pointer;
   }
@@ -118,7 +119,7 @@
   .checkbox-text {
     font-size: 15px;
     color: #4b5563;
-    line-height: 20px;
+    line-height: 1;
   }
 }
 
