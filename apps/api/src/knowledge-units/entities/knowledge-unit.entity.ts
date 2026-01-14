@@ -1,5 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany } from 'typeorm';
 import { LearningPath } from '../../learning-paths/entities/learning-path.entity';
+import { Principle } from '../../principles/entities/principle.entity';
 import { UserProgress } from '../../user-progress/entities/user-progress.entity';
 
 @Entity('knowledge_units')
@@ -12,6 +13,12 @@ export class KnowledgeUnit {
 
   @ManyToOne(() => LearningPath, path => path.knowledgeUnits)
   learningPath: LearningPath;
+
+  @Column({ nullable: true })
+  principleId: string;
+
+  @ManyToOne(() => Principle, principle => principle.knowledgeUnits, { nullable: true })
+  principle: Principle;
 
   @Column()
   concept: string;

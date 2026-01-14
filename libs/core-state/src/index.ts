@@ -54,6 +54,35 @@ export {
   deleteKnowledgeUnit,
 };
 
+/* Principles */
+import * as PrinciplesActions from './lib/principles/principles.actions';
+import * as PrinciplesFeature from './lib/principles/principles.feature';
+import * as PrinciplesEffects from './lib/principles/principles.effects';
+import { PrincipleFacade } from './lib/principles/principles.facade';
+import { principlesFeature } from './lib/principles/principles.feature';
+import {
+  loadPrinciples,
+  loadPrinciple,
+  loadPrinciplesByPath,
+  createPrinciple,
+  updatePrinciple,
+  deletePrinciple,
+} from './lib/principles/principles.effects';
+
+export {
+  principlesFeature,
+  PrincipleFacade,
+  PrinciplesActions,
+  PrinciplesFeature,
+  PrinciplesEffects,
+  loadPrinciples,
+  loadPrinciple,
+  loadPrinciplesByPath,
+  createPrinciple,
+  updatePrinciple,
+  deletePrinciple,
+};
+
 /* RawContent */
 import * as RawContentActions from './lib/raw-content/raw-content.actions';
 import * as RawContentFeature from './lib/raw-content/raw-content.feature';

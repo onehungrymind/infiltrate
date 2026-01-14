@@ -28,6 +28,28 @@ export const appRoutes: Route[] = [
     canActivate: [authGuard],
   },
   {
+    path: 'study',
+    loadComponent: () => import('./study/study').then((m) => m.Study),
+    canActivate: [authGuard],
+    children: [
+      {
+        path: '',
+        redirectTo: 'flashcards',
+        pathMatch: 'full',
+      },
+      {
+        path: 'flashcards',
+        loadComponent: () =>
+          import('./study/flashcards/flashcards').then((m) => m.StudyFlashcards),
+      },
+      {
+        path: 'quiz',
+        loadComponent: () =>
+          import('./study/quiz/quiz').then((m) => m.StudyQuiz),
+      },
+    ],
+  },
+  {
     path: 'graph',
     loadComponent: () =>
       import('./pages/graph/graph').then((m) => m.Graph),
@@ -42,6 +64,12 @@ export const appRoutes: Route[] = [
     path: 'learning-paths',
     loadComponent: () =>
       import('./learning-paths/learning-paths').then((m) => m.LearningPaths),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'principles',
+    loadComponent: () =>
+      import('./principles/principles').then((m) => m.Principles),
     canActivate: [authGuard],
   },
   {

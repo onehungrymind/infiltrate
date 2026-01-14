@@ -66,6 +66,14 @@ const learningMapIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" vie
   <path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z" />
 </svg>`;
 
+const studyIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />
+</svg>`;
+
+const principlesIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
+</svg>`;
+
 interface NavSection {
   title?: string;
   routes: NavRoute[];
@@ -97,6 +105,7 @@ export class Sidebar implements OnInit, OnDestroy {
     {
       routes: [
         { label: 'Home', path: '/', icon: 'home' },
+        { label: 'Study', path: '/study', icon: 'study' },
         { label: 'Content', path: '/content', icon: 'content' },
         { label: 'Challenges', path: '/challenges', icon: 'challenges' },
         { label: 'Schedule', path: '/schedule', icon: 'schedule' },
@@ -118,6 +127,7 @@ export class Sidebar implements OnInit, OnDestroy {
       routes: [
         { label: 'Users', path: '/users', icon: 'users' },
         { label: 'Learning Paths', path: '/learning-paths', icon: 'learning-path' },
+        { label: 'Principles', path: '/principles', icon: 'principles' },
         { label: 'Source Configs', path: '/source-configs', icon: 'source-config' },
         { label: 'Raw Content', path: '/raw-content', icon: 'raw-content' },
         { label: 'Knowledge Units', path: '/knowledge-units', icon: 'knowledge-unit' },
@@ -187,6 +197,12 @@ export class Sidebar implements OnInit, OnDestroy {
         break;
       case 'learning-map':
         iconHtml = learningMapIcon;
+        break;
+      case 'study':
+        iconHtml = studyIcon;
+        break;
+      case 'principles':
+        iconHtml = principlesIcon;
         break;
       default:
         iconHtml = '';

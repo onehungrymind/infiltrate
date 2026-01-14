@@ -7,6 +7,11 @@ export class CreateKnowledgeUnitDto {
   @IsNotEmpty()
   pathId: string;
 
+  @ApiProperty({ required: false })
+  @IsString()
+  @IsOptional()
+  principleId?: string;
+
   @ApiProperty()
   @IsString()
   @IsNotEmpty()

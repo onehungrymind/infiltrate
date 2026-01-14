@@ -1,5 +1,5 @@
 import { FieldDef } from './field-def';
-import { DifficultyLevel, CognitiveLevel, PathStatus, SourceType, ParsingMode, ScheduleFrequency } from '@kasita/common-models';
+import { DifficultyLevel, CognitiveLevel, PathStatus, SourceType, ParsingMode, ScheduleFrequency, PrincipleDifficulty, PrincipleStatus } from '@kasita/common-models';
 
 /**
  * Field definitions for LearningPath entity
@@ -42,6 +42,83 @@ export const learningPathFields: FieldDef[] = [
       { value: 'not-started', label: 'Not Started' },
       { value: 'in-progress', label: 'In Progress' },
       { value: 'completed', label: 'Completed' },
+    ],
+  },
+];
+
+/**
+ * Field definitions for Principle entity
+ * Note: pathId is handled separately, not in form
+ */
+export const principleFields: FieldDef[] = [
+  {
+    name: 'name',
+    label: 'Name',
+    type: 'text',
+    required: true,
+    minLength: 1,
+    maxLength: 200,
+    placeholder: 'e.g., Server Components',
+  },
+  {
+    name: 'description',
+    label: 'Description',
+    type: 'textarea',
+    required: true,
+    minLength: 1,
+    maxLength: 2000,
+    rows: 4,
+    placeholder: 'Brief description of this principle',
+  },
+  {
+    name: 'estimatedHours',
+    label: 'Estimated Hours',
+    type: 'number',
+    required: false,
+    min: 0.5,
+    max: 100,
+    placeholder: '1',
+    helpText: 'Estimated time to master this principle',
+  },
+  {
+    name: 'difficulty',
+    label: 'Difficulty',
+    type: 'select',
+    required: true,
+    options: [
+      { value: 'foundational', label: 'Foundational' },
+      { value: 'intermediate', label: 'Intermediate' },
+      { value: 'advanced', label: 'Advanced' },
+    ],
+  },
+  {
+    name: 'prerequisites',
+    label: 'Prerequisites',
+    type: 'textarea',
+    required: false,
+    rows: 2,
+    placeholder: 'One principle ID per line',
+    helpText: 'Enter prerequisite principle IDs, one per line',
+  },
+  {
+    name: 'order',
+    label: 'Order',
+    type: 'number',
+    required: false,
+    min: 0,
+    max: 1000,
+    placeholder: '0',
+    helpText: 'Display order in the learning map',
+  },
+  {
+    name: 'status',
+    label: 'Status',
+    type: 'select',
+    required: true,
+    options: [
+      { value: 'pending', label: 'Pending' },
+      { value: 'in_progress', label: 'In Progress' },
+      { value: 'mastered', label: 'Mastered' },
     ],
   },
 ];

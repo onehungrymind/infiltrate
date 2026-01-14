@@ -60,6 +60,7 @@ export const ENTITY_DTO_KEYS = {
 
   KNOWLEDGE_UNITS: [
     'pathId',
+    'principleId',
     'concept',
     'question',
     'answer',
@@ -113,5 +114,16 @@ export const ENTITY_DTO_KEYS = {
     'password',
     'isActive',
     'role',
+  ] as const,
+
+  PRINCIPLES: [
+    'pathId',
+    'name',
+    'description',
+    'estimatedHours',
+    'difficulty',
+    'prerequisites',
+    'order',
+    'status',
   ] as const,
 } as const;

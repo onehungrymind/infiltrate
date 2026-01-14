@@ -1,0 +1,39 @@
+import { IsString, IsNotEmpty, IsNumber, IsArray, IsOptional, IsEnum } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+
+export class CreatePrincipleDto {
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  pathId: string;
+
+  @ApiProperty({ example: 'Server Components' })
+  @IsString()
+  @IsNotEmpty()
+  name: string;
+
+  @ApiProperty({ example: 'Components that render on the server and stream to the client' })
+  @IsString()
+  @IsNotEmpty()
+  description: string;
+
+  @ApiProperty({ required: false, default: 1 })
+  @IsNumber()
+  @IsOptional()
+  estimatedHours?: number;
+
+  @ApiProperty({ enum: ['foundational', 'intermediate', 'advanced'], required: false, default: 'foundational' })
+  @IsEnum(['foundational', 'intermediate', 'advanced'])
+  @IsOptional()
+  difficulty?: string;
+
+  @ApiProperty({ type: [String], required: false })
+  @IsArray()
+  @IsOptional()
+  prerequisites?: string[];
+
+  @ApiProperty({ required: false, default: 0 })
+  @IsNumber()
+  @IsOptional()
+  order?: number;
+}

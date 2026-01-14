@@ -27,6 +27,8 @@ import { GraphSearch } from '../knowledge-graph/entities/graph-search.entity';
 import { NotebooksModule } from '../notebooks/notebooks.module';
 import { NotebookProgress } from '../notebooks/entities/notebook-progress.entity';
 import { LearningMapModule } from '../learning-map/learning-map.module';
+import { PrinciplesModule } from '../principles/principles.module';
+import { Principle } from '../principles/entities/principle.entity';
 
 @Module({
   imports: [
@@ -43,7 +45,7 @@ import { LearningMapModule } from '../learning-map/learning-map.module';
       database: process.env.DATABASE_URL?.replace('file:', '') || 'kasita.db',
       synchronize: process.env.NODE_ENV !== 'production', // Auto-sync in dev
       logging: process.env.NODE_ENV === 'development',
-      entities: [LearningPath, SourceConfig, RawContent, KnowledgeUnit, UserProgress, User, DataSource, GraphSearch, NotebookProgress],
+      entities: [LearningPath, SourceConfig, RawContent, KnowledgeUnit, UserProgress, User, DataSource, GraphSearch, NotebookProgress, Principle],
     }),
     LearningPathsModule,
     SourceConfigsModule,
@@ -58,6 +60,7 @@ import { LearningMapModule } from '../learning-map/learning-map.module';
     KnowledgeGraphModule,
     NotebooksModule,
     LearningMapModule,
+    PrinciplesModule,
   ],
   controllers: [AppController],
   providers: [AppService, ProgressGateway],

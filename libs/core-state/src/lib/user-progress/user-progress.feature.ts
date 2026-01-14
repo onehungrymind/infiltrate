@@ -1,6 +1,6 @@
 import { createFeature, createReducer, on, createSelector } from '@ngrx/store';
 import { EntityState, EntityAdapter, createEntityAdapter } from '@ngrx/entity';
-import { UserProgress } from '@kasita/common-models';
+import { UserProgress, StudyStats } from '@kasita/common-models';
 import { UserProgressActions } from './user-progress.actions';
 
 export const USER_PROGRESS_FEATURE_KEY = 'userProgress';
@@ -10,6 +10,10 @@ export interface UserProgressState extends EntityState<UserProgress> {
   selectedId: string | null;
   error: string | null;
   loaded: boolean;
+  // Study-related state
+  dueForReview: UserProgress[];
+  studyStats: StudyStats | null;
+  studyLoading: boolean;
 }
 
 export const userProgressAdapter: EntityAdapter<UserProgress> =
@@ -20,6 +24,9 @@ export const initialUserProgressState: UserProgressState =
     selectedId: null,
     error: null,
     loaded: false,
+    dueForReview: [],
+    studyStats: null,
+    studyLoading: false,
   });
 
 // --- Helper Functions ---
@@ -92,6 +99,56 @@ const userProgressReducer = createReducer(
     }),
   ),
 
+  // Study actions
+  on(UserProgressActions.recordAttempt, (state) => ({
+    ...state,
+    studyLoading: true,
+    error: null,
+  })),
+  on(UserProgressActions.recordAttemptSuccess, (state, { userProgress }) =>
+    userProgressAdapter.upsertOne(userProgress, {
+      ...state,
+      studyLoading: false,
+      error: null,
+      // Update dueForReview list - remove this item if it was due
+      dueForReview: state.dueForReview.filter((p) => p.id !== userProgress.id),
+    }),
+  ),
+  on(UserProgressActions.loadDueForReview, (state) => ({
+    ...state,
+    studyLoading: true,
+    error: null,
+  })),
+  on(UserProgressActions.loadDueForReviewSuccess, (state, { userProgress }) => ({
+    ...state,
+    dueForReview: userProgress,
+    studyLoading: false,
+    error: null,
+  })),
+  on(UserProgressActions.loadStudyStats, (state) => ({
+    ...state,
+    studyLoading: true,
+    error: null,
+  })),
+  on(UserProgressActions.loadStudyStatsSuccess, (state, { stats }) => ({
+    ...state,
+    studyStats: stats,
+    studyLoading: false,
+    error: null,
+  })),
+  on(UserProgressActions.loadUserProgressByUser, (state) => ({
+    ...state,
+    loaded: false,
+    error: null,
+  })),
+  on(UserProgressActions.loadUserProgressByUserSuccess, (state, { userProgress }) =>
+    userProgressAdapter.setAll(userProgress, {
+      ...state,
+      loaded: true,
+      error: null,
+    }),
+  ),
+
   // Failures (deduped)
   on(
     UserProgressActions.loadUserProgressFailure,
@@ -99,6 +156,10 @@ const userProgressReducer = createReducer(
     UserProgressActions.createUserProgressFailure,
     UserProgressActions.updateUserProgressFailure,
     UserProgressActions.deleteUserProgressFailure,
+    UserProgressActions.recordAttemptFailure,
+    UserProgressActions.loadDueForReviewFailure,
+    UserProgressActions.loadStudyStatsFailure,
+    UserProgressActions.loadUserProgressByUserFailure,
     onFailure,
   ),
 );
@@ -140,6 +201,20 @@ export const userProgressFeature = createFeature({
       ),
       selectSelectedId,
       selectSelectedUserProgress,
+
+      // Study selectors
+      selectDueForReview: createSelector(
+        selectUserProgressState,
+        (s) => s.dueForReview,
+      ),
+      selectStudyStats: createSelector(
+        selectUserProgressState,
+        (s) => s.studyStats,
+      ),
+      selectStudyLoading: createSelector(
+        selectUserProgressState,
+        (s) => s.studyLoading,
+      ),
     };
   },
 });
@@ -154,4 +229,7 @@ export const {
   selectUserProgressError,
   selectSelectedId,
   selectSelectedUserProgress,
+  selectDueForReview,
+  selectStudyStats,
+  selectStudyLoading,
 } = userProgressFeature;

@@ -1,0 +1,45 @@
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany } from 'typeorm';
+import { LearningPath } from '../../learning-paths/entities/learning-path.entity';
+import { KnowledgeUnit } from '../../knowledge-units/entities/knowledge-unit.entity';
+
+@Entity('principles')
+export class Principle {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
+  @Column()
+  pathId: string;
+
+  @ManyToOne(() => LearningPath, path => path.principles)
+  learningPath: LearningPath;
+
+  @Column()
+  name: string;
+
+  @Column('text')
+  description: string;
+
+  @Column({ type: 'float', default: 1 })
+  estimatedHours: number;
+
+  @Column({ default: 'foundational' })
+  difficulty: string; // 'foundational' | 'intermediate' | 'advanced'
+
+  @Column('simple-array')
+  prerequisites: string[];
+
+  @Column({ default: 0 })
+  order: number;
+
+  @Column({ default: 'pending' })
+  status: string; // 'pending' | 'in_progress' | 'mastered'
+
+  @OneToMany(() => KnowledgeUnit, unit => unit.principle)
+  knowledgeUnits: KnowledgeUnit[];
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
+}

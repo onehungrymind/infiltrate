@@ -1,0 +1,29 @@
+<div class="master-detail-layout">
+  <div class="master-panel">
+    @if (error$ | async) {
+      <div class="error-message">
+        <mat-icon>error</mat-icon>
+        <span>{{ error$ | async }}</span>
+      </div>
+    } @else if ((loaded$ | async) === false) {
+      <div class="loading-message">
+        <mat-spinner diameter="40"></mat-spinner>
+        <span>Loading principles...</span>
+      </div>
+    } @else {
+      <app-principles-list
+        [principles]="(principles$ | async) ?? []"
+        [selectedPrinciple]="selectedPrinciple$ | async"
+        (selected)="selectPrinciple($event)"
+        (deleted)="deletePrinciple($event)"
+      ></app-principles-list>
+    }
+  </div>
+  <div class="detail-panel">
+    <app-principle-detail
+      [principle]="selectedPrinciple$ | async"
+      (saved)="savePrinciple($event)"
+      (cancelled)="cancel()"
+    ></app-principle-detail>
+  </div>
+</div>

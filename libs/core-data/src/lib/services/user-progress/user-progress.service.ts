@@ -4,6 +4,8 @@ import {
   UserProgress,
   CreateUserProgressDto,
   UpdateUserProgressDto,
+  RecordAttemptDto,
+  StudyStats,
 } from '@kasita/common-models';
 import {
   extractDtoProperties,
@@ -71,6 +73,38 @@ export class UserProgressService {
 
   delete(userProgress: UserProgress) {
     return this.http.delete(this.getUrlWithId(userProgress.id));
+  }
+
+  /**
+   * Record a study attempt using SM-2 algorithm
+   */
+  recordAttempt(dto: RecordAttemptDto) {
+    return this.http.post<UserProgress>(`${this.getUrl()}/record-attempt`, dto);
+  }
+
+  /**
+   * Get all progress records due for review for a user
+   */
+  getDueForReview(userId: string) {
+    return this.http.get<UserProgress[]>(`${this.getUrl()}/due-for-review`, {
+      params: { userId },
+    });
+  }
+
+  /**
+   * Get study statistics for a user
+   */
+  getStudyStats(userId: string) {
+    return this.http.get<StudyStats>(`${this.getUrl()}/stats`, {
+      params: { userId },
+    });
+  }
+
+  /**
+   * Get all progress records for a user
+   */
+  getByUser(userId: string) {
+    return this.http.get<UserProgress[]>(`${this.getUrl()}/user/${userId}`);
   }
 
   private getUrl() {

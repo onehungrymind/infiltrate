@@ -41,7 +41,11 @@ export interface BaseEntity {
   export type ScheduleFrequency = 'daily' | 'weekly' | 'monthly' | 'manual';
   
   export type UserRole = 'guest' | 'user' | 'manager' | 'admin';
-  
+
+  export type PrincipleDifficulty = 'foundational' | 'intermediate' | 'advanced';
+
+  export type PrincipleStatus = 'pending' | 'in_progress' | 'mastered';
+
   // ============================================================================
   // CORE ENTITIES
   // ============================================================================
@@ -67,7 +71,21 @@ export interface BaseEntity {
     targetSkill: string;             // "Build production RSC app"
     status: PathStatus;
   }
-  
+
+  /**
+   * A principle - core concept within a learning path
+   */
+  export interface Principle extends BaseEntity {
+    pathId: string;                  // Links to LearningPath
+    name: string;                    // "Server Components"
+    description: string;             // Brief explanation
+    estimatedHours: number;          // Time to master
+    difficulty: PrincipleDifficulty; // 'foundational' | 'intermediate' | 'advanced'
+    prerequisites: string[];         // IDs of prerequisite principles
+    order: number;                   // Display order in learning map
+    status: PrincipleStatus;         // 'pending' | 'in_progress' | 'mastered'
+  }
+
   /**
    * Source configuration for content ingestion (tied to a learning path)
    */
@@ -116,7 +134,8 @@ export interface BaseEntity {
    */
   export interface KnowledgeUnit extends BaseEntity {
     pathId: string;
-    
+    principleId?: string;            // Optional link to Principle
+
     // Core content
     concept: string;                 // "Server Components"
     question: string;                // "What are Server Components?"
@@ -178,7 +197,27 @@ export interface BaseEntity {
     targetSkill?: string;
     status?: PathStatus;
   }
-  
+
+  export interface CreatePrincipleDto {
+    pathId: string;
+    name: string;
+    description: string;
+    estimatedHours?: number;
+    difficulty?: PrincipleDifficulty;
+    prerequisites?: string[];
+    order?: number;
+  }
+
+  export interface UpdatePrincipleDto {
+    name?: string;
+    description?: string;
+    estimatedHours?: number;
+    difficulty?: PrincipleDifficulty;
+    prerequisites?: string[];
+    order?: number;
+    status?: PrincipleStatus;
+  }
+
   export interface CreateSourceConfigDto {
     pathId: string;
     url: string;
@@ -232,6 +271,7 @@ export interface BaseEntity {
   
   export interface CreateKnowledgeUnitDto {
     pathId: string;
+    principleId?: string;
     concept: string;
     question: string;
     answer: string;
@@ -247,6 +287,7 @@ export interface BaseEntity {
   }
   
   export interface UpdateKnowledgeUnitDto {
+    principleId?: string;
     concept?: string;
     question?: string;
     answer?: string;
@@ -315,7 +356,16 @@ export interface BaseEntity {
     unitId: string;
     quality: number;                 // 0-5 for SM-2 algorithm
   }
-  
+
+  export interface StudyStats {
+    totalUnits: number;
+    dueForReview: number;
+    mastered: number;
+    learning: number;
+    reviewing: number;
+    averageConfidence: number;
+  }
+
   export interface BulkCreateKnowledgeUnitsDto {
     pathId: string;
     units: CreateKnowledgeUnitDto[];

@@ -1,6 +1,6 @@
 import { inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { UserProgress } from '@kasita/common-models';
+import { UserProgress, StudyStats } from '@kasita/common-models';
 import { UserProgressService } from '@kasita/core-data';
 import { of } from 'rxjs';
 import { catchError, exhaustMap, map } from 'rxjs/operators';
@@ -126,6 +126,112 @@ export const deleteUserProgress = createEffect(
             of(
               UserProgressActions.deleteUserProgressFailure({
                 error: error?.message || 'Failed to delete userProgress',
+              }),
+            ),
+          ),
+        );
+      }),
+    );
+  },
+  { functional: true },
+);
+
+// Study effects
+
+export const recordAttempt = createEffect(
+  (
+    actions$ = inject(Actions),
+    userProgressService = inject(UserProgressService),
+  ) => {
+    return actions$.pipe(
+      ofType(UserProgressActions.recordAttempt),
+      exhaustMap((action) => {
+        return userProgressService.recordAttempt(action.attempt).pipe(
+          map((userProgress: UserProgress) =>
+            UserProgressActions.recordAttemptSuccess({ userProgress }),
+          ),
+          catchError((error) =>
+            of(
+              UserProgressActions.recordAttemptFailure({
+                error: error?.message || 'Failed to record attempt',
+              }),
+            ),
+          ),
+        );
+      }),
+    );
+  },
+  { functional: true },
+);
+
+export const loadDueForReview = createEffect(
+  (
+    actions$ = inject(Actions),
+    userProgressService = inject(UserProgressService),
+  ) => {
+    return actions$.pipe(
+      ofType(UserProgressActions.loadDueForReview),
+      exhaustMap((action) => {
+        return userProgressService.getDueForReview(action.userId).pipe(
+          map((userProgress: UserProgress[]) =>
+            UserProgressActions.loadDueForReviewSuccess({ userProgress }),
+          ),
+          catchError((error) =>
+            of(
+              UserProgressActions.loadDueForReviewFailure({
+                error: error?.message || 'Failed to load due for review',
+              }),
+            ),
+          ),
+        );
+      }),
+    );
+  },
+  { functional: true },
+);
+
+export const loadStudyStats = createEffect(
+  (
+    actions$ = inject(Actions),
+    userProgressService = inject(UserProgressService),
+  ) => {
+    return actions$.pipe(
+      ofType(UserProgressActions.loadStudyStats),
+      exhaustMap((action) => {
+        return userProgressService.getStudyStats(action.userId).pipe(
+          map((stats: StudyStats) =>
+            UserProgressActions.loadStudyStatsSuccess({ stats }),
+          ),
+          catchError((error) =>
+            of(
+              UserProgressActions.loadStudyStatsFailure({
+                error: error?.message || 'Failed to load study stats',
+              }),
+            ),
+          ),
+        );
+      }),
+    );
+  },
+  { functional: true },
+);
+
+export const loadUserProgressByUser = createEffect(
+  (
+    actions$ = inject(Actions),
+    userProgressService = inject(UserProgressService),
+  ) => {
+    return actions$.pipe(
+      ofType(UserProgressActions.loadUserProgressByUser),
+      exhaustMap((action) => {
+        return userProgressService.getByUser(action.userId).pipe(
+          map((userProgress: UserProgress[]) =>
+            UserProgressActions.loadUserProgressByUserSuccess({ userProgress }),
+          ),
+          catchError((error) =>
+            of(
+              UserProgressActions.loadUserProgressByUserFailure({
+                error: error?.message || 'Failed to load user progress',
               }),
             ),
           ),

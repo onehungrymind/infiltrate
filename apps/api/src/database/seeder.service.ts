@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { LearningPath } from '../learning-paths/entities/learning-path.entity';
 import { KnowledgeUnit } from '../knowledge-units/entities/knowledge-unit.entity';
+import { Principle } from '../principles/entities/principle.entity';
 import { RawContent } from '../raw-content/entities/raw-content.entity';
 import { SourceConfig } from '../source-configs/entities/source-config.entity';
 import { UserProgress } from '../user-progress/entities/user-progress.entity';
@@ -19,6 +20,8 @@ export class SeederService {
     private learningPathsRepository: Repository<LearningPath>,
     @InjectRepository(KnowledgeUnit)
     private knowledgeUnitsRepository: Repository<KnowledgeUnit>,
+    @InjectRepository(Principle)
+    private principlesRepository: Repository<Principle>,
     @InjectRepository(RawContent)
     private rawContentRepository: Repository<RawContent>,
     @InjectRepository(SourceConfig)
@@ -53,19 +56,23 @@ export class SeederService {
     const learningPaths = await this.seedLearningPaths(users);
     this.logger.log(`📚 Seeded ${learningPaths.length} learning paths`);
 
-    // 2) Seed Source Configs (linked to learning paths)
+    // 2) Seed Principles (linked to learning paths)
+    const principles = await this.seedPrinciples(learningPaths);
+    this.logger.log(`🎯 Seeded ${principles.length} principles`);
+
+    // 3) Seed Source Configs (linked to learning paths)
     await this.seedSourceConfigs(learningPaths);
     this.logger.log('📡 Seeded source configurations');
 
-    // 3) Seed Raw Content (linked to learning paths)
+    // 4) Seed Raw Content (linked to learning paths)
     await this.seedRawContent(learningPaths);
     this.logger.log('📄 Seeded raw content');
 
-    // 4) Seed Knowledge Units (linked to learning paths)
-    const knowledgeUnits = await this.seedKnowledgeUnits(learningPaths);
+    // 5) Seed Knowledge Units (linked to learning paths and principles)
+    const knowledgeUnits = await this.seedKnowledgeUnits(learningPaths, principles);
     this.logger.log(`💡 Seeded ${knowledgeUnits.length} knowledge units`);
 
-    // 5) Seed User Progress (linked to knowledge units and users)
+    // 6) Seed User Progress (linked to knowledge units and users)
     await this.seedUserProgress(knowledgeUnits, users);
     this.logger.log('📊 Seeded user progress');
   }
@@ -99,6 +106,26 @@ export class SeederService {
     );
 
     return learningPaths;
+  }
+
+  private async seedPrinciples(learningPaths: LearningPath[]): Promise<Principle[]> {
+    const principlesToSave = seedPayload.principles.map(principle => {
+      const pathId = learningPaths.find(
+        (_, index) => `path-${index + 1}` === principle.pathId,
+      )?.id || learningPaths[0]?.id;
+
+      return {
+        ...principle,
+        pathId: pathId || learningPaths[0]?.id,
+        prerequisites: principle.prerequisites || [],
+        estimatedHours: principle.estimatedHours || 1,
+        order: principle.order || 0,
+        status: principle.status || 'pending',
+      };
+    });
+
+    const savedPrinciples = await this.principlesRepository.save(principlesToSave);
+    return savedPrinciples;
   }
 
   private async seedSourceConfigs(learningPaths: LearningPath[]): Promise<void> {
@@ -135,15 +162,22 @@ export class SeederService {
     await this.rawContentRepository.save(rawContentToSave);
   }
 
-  private async seedKnowledgeUnits(learningPaths: LearningPath[]): Promise<KnowledgeUnit[]> {
-    const knowledgeUnitsToSave = seedPayload.knowledgeUnits.map(unit => {
+  private async seedKnowledgeUnits(learningPaths: LearningPath[], principles: Principle[]): Promise<KnowledgeUnit[]> {
+    const knowledgeUnitsToSave = seedPayload.knowledgeUnits.map((unit, index) => {
       const pathId = learningPaths.find(
-        (_, index) => `path-${index + 1}` === unit.pathId,
+        (_, idx) => `path-${idx + 1}` === unit.pathId,
       )?.id || learningPaths[0]?.id;
+
+      // Find a principle for this path to link (optional)
+      const matchingPrinciples = principles.filter(p => p.pathId === pathId);
+      const principleId = matchingPrinciples.length > 0
+        ? matchingPrinciples[index % matchingPrinciples.length]?.id
+        : undefined;
 
       return {
         ...unit,
         pathId: pathId || learningPaths[0]?.id,
+        principleId: principleId,
         examples: unit.examples || [],
         analogies: unit.analogies || [],
         commonMistakes: unit.commonMistakes || [],
@@ -180,6 +214,7 @@ export class SeederService {
   async clearDatabase(): Promise<void> {
     await this.userProgressRepository.clear();
     await this.knowledgeUnitsRepository.clear();
+    await this.principlesRepository.clear();
     await this.rawContentRepository.clear();
     await this.sourceConfigsRepository.clear();
     await this.learningPathsRepository.clear();

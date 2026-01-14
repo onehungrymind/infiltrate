@@ -1,28 +1,38 @@
-a {
+.logo-icon {
+  width: 4.4rem;
+  height: 4.4rem;
+  flex-shrink: 0;
+  transition: width 0.3s ease, height 0.3s ease;
+  // Blue filter to match text gradient start color (#2563eb)
+  filter: brightness(0) saturate(100%) invert(30%) sepia(98%) saturate(1497%) hue-rotate(212deg) brightness(97%) contrast(93%);
+}
+
+.logo-icon-small {
+  width: 3.5rem;
+  height: 3.5rem;
+}
+
+.logo-text {
   background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  letter-spacing: 0.05em;
+}
+
+.logo-bold {
+  font-weight: 900;
+}
+
+.logo-thin {
+  font-weight: 100;
+}
+
+a {
   text-decoration: none;
-  letter-spacing: 0.1em;
   transition: opacity 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  width: 100%;
-  
+
   &:hover {
     opacity: 0.8;
   }
-  
-  .logo-bold {
-    font-weight: 900;
-  }
-  
-  .logo-thin {
-    font-weight: 100;
-  }
 }
-
-

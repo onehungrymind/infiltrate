@@ -16,6 +16,7 @@ import { environment } from '../environments/environment';
 import {
   learningPathsFeature,
   knowledgeUnitsFeature,
+  principlesFeature,
   rawContentFeature,
   sourceConfigsFeature,
   userProgressFeature,
@@ -23,6 +24,7 @@ import {
   usersFeature,
   LearningPathsEffects,
   KnowledgeUnitsEffects,
+  PrinciplesEffects,
   RawContentEffects,
   SourceConfigsEffects,
   UserProgressEffects,
@@ -42,6 +44,7 @@ export const appConfig: ApplicationConfig = {
     provideStore({
       learningPaths: learningPathsFeature.reducer,
       knowledgeUnits: knowledgeUnitsFeature.reducer,
+      principles: principlesFeature.reducer,
       rawContent: rawContentFeature.reducer,
       sourceConfigs: sourceConfigsFeature.reducer,
       userProgress: userProgressFeature.reducer,
@@ -51,6 +54,7 @@ export const appConfig: ApplicationConfig = {
     provideEffects(
       LearningPathsEffects,
       KnowledgeUnitsEffects,
+      PrinciplesEffects,
       RawContentEffects,
       SourceConfigsEffects,
       UserProgressEffects,

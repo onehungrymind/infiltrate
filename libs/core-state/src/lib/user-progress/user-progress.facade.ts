@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { UserProgress } from '@kasita/common-models';
+import { UserProgress, RecordAttemptDto } from '@kasita/common-models';
 import { Action, ActionsSubject, Store } from '@ngrx/store';
 import { UserProgressActions } from './user-progress.actions';
 
@@ -8,6 +8,9 @@ import {
   selectUserProgressLoaded,
   selectUserProgressError,
   selectSelectedUserProgress,
+  selectDueForReview,
+  selectStudyStats,
+  selectStudyLoading,
 } from './user-progress.feature';
 import { filter } from 'rxjs';
 
@@ -22,6 +25,11 @@ export class UserProgressFacade {
   error$ = this.store.select(selectUserProgressError);
   allUserProgress$ = this.store.select(selectAllUserProgress);
   selectedUserProgress$ = this.store.select(selectSelectedUserProgress);
+
+  // Study selectors
+  dueForReview$ = this.store.select(selectDueForReview);
+  studyStats$ = this.store.select(selectStudyStats);
+  studyLoading$ = this.store.select(selectStudyLoading);
 
   mutations$ = this.actions$.pipe(
     filter(
@@ -66,6 +74,23 @@ export class UserProgressFacade {
 
   deleteUserProgress(userProgress: UserProgress) {
     this.dispatch(UserProgressActions.deleteUserProgress({ userProgress }));
+  }
+
+  // Study methods
+  recordAttempt(attempt: RecordAttemptDto) {
+    this.dispatch(UserProgressActions.recordAttempt({ attempt }));
+  }
+
+  loadDueForReview(userId: string) {
+    this.dispatch(UserProgressActions.loadDueForReview({ userId }));
+  }
+
+  loadStudyStats(userId: string) {
+    this.dispatch(UserProgressActions.loadStudyStats({ userId }));
+  }
+
+  loadUserProgressByUser(userId: string) {
+    this.dispatch(UserProgressActions.loadUserProgressByUser({ userId }));
   }
 
   dispatch(action: Action) {

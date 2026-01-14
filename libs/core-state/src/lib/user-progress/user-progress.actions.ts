@@ -1,5 +1,5 @@
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
-import { UserProgress } from '@kasita/common-models';
+import { UserProgress, RecordAttemptDto, StudyStats } from '@kasita/common-models';
 
 export const UserProgressActions = createActionGroup({
   source: 'UserProgress API',
@@ -26,5 +26,18 @@ export const UserProgressActions = createActionGroup({
     'Upsert UserProgress': props<{ userProgress: UserProgress }>(),
     'Upsert UserProgress Success': props<{ userProgress: UserProgress }>(),
     'Upsert UserProgress Failure': props<{ error: string | null }>(),
+    // Study actions
+    'Record Attempt': props<{ attempt: RecordAttemptDto }>(),
+    'Record Attempt Success': props<{ userProgress: UserProgress }>(),
+    'Record Attempt Failure': props<{ error: string | null }>(),
+    'Load Due For Review': props<{ userId: string }>(),
+    'Load Due For Review Success': props<{ userProgress: UserProgress[] }>(),
+    'Load Due For Review Failure': props<{ error: string | null }>(),
+    'Load Study Stats': props<{ userId: string }>(),
+    'Load Study Stats Success': props<{ stats: StudyStats }>(),
+    'Load Study Stats Failure': props<{ error: string | null }>(),
+    'Load User Progress By User': props<{ userId: string }>(),
+    'Load User Progress By User Success': props<{ userProgress: UserProgress[] }>(),
+    'Load User Progress By User Failure': props<{ error: string | null }>(),
   },
 });
