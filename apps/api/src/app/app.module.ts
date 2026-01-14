@@ -44,7 +44,7 @@ import { Principle } from '../principles/entities/principle.entity';
       type: 'sqlite',
       database: process.env.DATABASE_URL?.replace('file:', '') || 'kasita.db',
       synchronize: process.env.NODE_ENV !== 'production', // Auto-sync in dev
-      logging: process.env.NODE_ENV === 'development',
+      logging: false, // Disable SQL logging for better performance
       entities: [LearningPath, SourceConfig, RawContent, KnowledgeUnit, UserProgress, User, DataSource, GraphSearch, NotebookProgress, Principle],
     }),
     LearningPathsModule,
