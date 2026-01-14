@@ -118,4 +118,9 @@ export const appRoutes: Route[] = [
     loadComponent: () => import('./pages/learning-map/learning-map.component').then((m) => m.LearningMapComponent),
     canActivate: [authGuard],
   },
+  {
+    path: 'completion-assessment',
+    loadComponent: () => import('./pages/completion-assessment/completion-assessment').then((m) => m.CompletionAssessment),
+    canActivate: [authGuard],
+  },
 ];
