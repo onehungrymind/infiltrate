@@ -2,6 +2,7 @@ import {
   ApplicationConfig,
   ErrorHandler,
   isDevMode,
+  provideZoneChangeDetection,
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
@@ -75,6 +76,7 @@ import {
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    provideZoneChangeDetection({ eventCoalescing: true }),
     provideAnimations(), // Enable Angular animations (deprecated but still required for @ animations)
     provideRouter(appRoutes),
     provideHttpClient(withInterceptors([errorInterceptor, authInterceptor])),
@@ -146,7 +148,7 @@ export const appConfig: ApplicationConfig = {
     provideStoreDevtools({
       maxAge: 25,
       logOnly: !isDevMode(),
-      autoPause: true,
+      autoPause: false, // Disabled to prevent issues with browser devtools open
       trace: false,
       traceLimit: 75,
     }),
