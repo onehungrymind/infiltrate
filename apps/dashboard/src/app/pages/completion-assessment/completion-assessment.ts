@@ -28,10 +28,10 @@ interface CriticalPathItem {
 })
 export class CompletionAssessment {
   lastUpdated = signal('January 14, 2026');
-  overallCompletion = signal(55);
+  overallCompletion = signal(58);
 
   epics = signal<Epic[]>([
-    { name: 'Epic 1: Learning Objective & Map Generation', progress: 30, status: 'partial', color: '#f59e0b' },
+    { name: 'Epic 1: Learning Objective & Map Generation', progress: 45, status: 'partial', color: '#f59e0b' },
     { name: 'Epic 2: Content Sourcing & Ingestion', progress: 70, status: 'mostly-complete', color: '#3b82f6' },
     { name: 'Epic 3: Content Synthesis & Knowledge Units', progress: 65, status: 'mostly-complete', color: '#3b82f6' },
     { name: 'Epic 4: Adaptive Content Presentation', progress: 50, status: 'partial', color: '#f59e0b' },
@@ -42,7 +42,7 @@ export class CompletionAssessment {
 
   criticalPathItems = signal<CriticalPathItem[]>([
     { name: 'SM-2 spaced repetition algorithm', status: 'complete', blocking: 'Progress tracking' },
-    { name: 'Principle entity', status: 'not-started', blocking: 'Learning map structure' },
+    { name: 'Principle entity', status: 'complete', blocking: 'Learning map structure' },
     { name: 'AI learning map generation', status: 'not-started', blocking: 'Core user flow' },
     { name: 'Quiz Runner', status: 'complete', blocking: 'Learning variety' },
     { name: 'Challenge submission system', status: 'not-started', blocking: 'Feedback loop' },
@@ -60,7 +60,7 @@ export class CompletionAssessment {
     { name: 'Ingestion endpoints', status: 'complete' },
     { name: 'Knowledge Graph generation', status: 'complete' },
     { name: 'SM-2 algorithm', status: 'complete' },
-    { name: 'Principle CRUD', status: 'not-started' },
+    { name: 'Principle CRUD', status: 'complete' },
     { name: 'Submission CRUD', status: 'not-started' },
     { name: 'Feedback CRUD', status: 'not-started' },
     { name: 'AI map generation', status: 'not-started' },
@@ -69,6 +69,7 @@ export class CompletionAssessment {
   dashboardComponents = signal<ComponentStatus[]>([
     { name: 'User management', status: 'complete' },
     { name: 'Learning paths CRUD', status: 'complete' },
+    { name: 'Principles CRUD', status: 'complete' },
     { name: 'Knowledge units CRUD', status: 'complete' },
     { name: 'Source configs CRUD', status: 'complete' },
     { name: 'Raw content CRUD', status: 'complete' },
@@ -76,6 +77,7 @@ export class CompletionAssessment {
     { name: 'React Flow learning map', status: 'complete' },
     { name: 'Home dashboard', status: 'complete' },
     { name: 'Login/auth', status: 'complete' },
+    { name: 'Completion Assessment', status: 'complete' },
     { name: 'Approval workflow UI', status: 'not-started' },
     { name: 'Ingestion trigger button', status: 'not-started' },
     { name: 'Synthesis trigger button', status: 'not-started' },
