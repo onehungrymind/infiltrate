@@ -1,10 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output, signal, computed, inject } from '@angular/core';
-import { LearningPath } from '@kasita/common-models';
+import { LearningPath, Principle } from '@kasita/common-models';
 import { MaterialModule } from '@kasita/material';
 import { form } from '@angular/forms/signals';
 import { DynamicForm } from '../../shared/dynamic-form/dynamic-form';
-import { learningPathFields, toSchema, AuthService, initializeEntity } from '@kasita/core-data';
+import { learningPathFields, toSchema, AuthService, initializeEntity, LearningMapService } from '@kasita/core-data';
 
 @Component({
   selector: 'app-learning-path-detail',
@@ -14,8 +14,14 @@ import { learningPathFields, toSchema, AuthService, initializeEntity } from '@ka
 })
 export class LearningPathDetail {
   private authService = inject(AuthService);
+  private learningMapService = inject(LearningMapService);
   private _learningPath = signal<LearningPath | null>(null);
   originalTitle = signal('');
+
+  // AI generation state
+  isGenerating = signal(false);
+  generationMessage = signal<{ type: 'success' | 'error'; text: string } | null>(null);
+  generatedPrinciples = signal<Principle[]>([]);
   
   // Field definitions for the form
   metaInfo = signal(learningPathFields);
@@ -30,6 +36,12 @@ export class LearningPathDetail {
 
   @Input() set learningPath(value: LearningPath | null) {
     this._learningPath.set(value);
+
+    // Reset AI generation state when learning path changes
+    this.isGenerating.set(false);
+    this.generationMessage.set(null);
+    this.generatedPrinciples.set([]);
+
     if (value && value.id) {
       // Update mode: fill form with existing entity data
       this.originalTitle.set(value.name || 'Learning Path');
@@ -113,4 +125,37 @@ export class LearningPathDetail {
     }
     return true;
   });
+
+  // Check if we can generate principles (must have ID and not already generating)
+  canGenerate = computed(() => {
+    return !!this._learningPath()?.id && !this.isGenerating();
+  });
+
+  generatePrinciples() {
+    const pathId = this._learningPath()?.id;
+    if (!pathId) return;
+
+    this.isGenerating.set(true);
+    this.generationMessage.set(null);
+    this.generatedPrinciples.set([]);
+
+    this.learningMapService.generatePrinciples(pathId).subscribe({
+      next: (result) => {
+        this.isGenerating.set(false);
+        this.generatedPrinciples.set(result.principles);
+        this.generationMessage.set({
+          type: 'success',
+          text: result.message,
+        });
+      },
+      error: (err) => {
+        this.isGenerating.set(false);
+        const errorMessage = err.error?.message || err.message || 'Failed to generate principles';
+        this.generationMessage.set({
+          type: 'error',
+          text: errorMessage,
+        });
+      },
+    });
+  }
 }

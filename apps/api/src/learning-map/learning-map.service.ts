@@ -1,6 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ConfigService } from '@nestjs/config';
 import { Repository } from 'typeorm';
+import Anthropic from '@anthropic-ai/sdk';
+import { GENERATE_PRINCIPLES_PROMPT } from './prompts/generate-principles.prompt';
 import {
   LearningPathMap,
   LearningMapProgress,
@@ -18,6 +21,8 @@ import { KnowledgeUnit } from '../knowledge-units/entities/knowledge-unit.entity
 
 @Injectable()
 export class LearningMapService {
+  private anthropic: Anthropic;
+
   constructor(
     @InjectRepository(LearningPath)
     private readonly learningPathRepository: Repository<LearningPath>,
@@ -27,7 +32,13 @@ export class LearningMapService {
     private readonly principleRepository: Repository<Principle>,
     @InjectRepository(KnowledgeUnit)
     private readonly knowledgeUnitRepository: Repository<KnowledgeUnit>,
-  ) {}
+    private readonly configService: ConfigService,
+  ) {
+    const apiKey = this.configService.get<string>('ANTHROPIC_API_KEY');
+    if (apiKey) {
+      this.anthropic = new Anthropic({ apiKey });
+    }
+  }
 
   /**
    * Get learning path map structure
@@ -320,6 +331,164 @@ export class LearningMapService {
       }
 
       currentY += verticalSpacing;
+    }
+  }
+
+  /**
+   * Generate principles for a learning path using AI
+   * @param pathId - The learning path ID to generate principles for
+   * @param force - If true, delete existing principles before generating new ones
+   * @returns The generated principles and updated learning path map
+   */
+  async generatePrinciplesWithAI(pathId: string, force = false): Promise<{
+    principles: Principle[];
+    message: string;
+  }> {
+    if (!this.anthropic) {
+      throw new BadRequestException(
+        'AI generation is not available. Please configure ANTHROPIC_API_KEY in .env'
+      );
+    }
+
+    // Fetch the learning path
+    const learningPath = await this.learningPathRepository.findOne({
+      where: { id: pathId },
+    });
+
+    if (!learningPath) {
+      throw new NotFoundException(`Learning path ${pathId} not found`);
+    }
+
+    // Check if principles already exist
+    const existingPrinciples = await this.principleRepository.find({
+      where: { pathId },
+    });
+
+    if (existingPrinciples.length > 0) {
+      if (force) {
+        // First, unlink any knowledge units from these principles
+        const principleIds = existingPrinciples.map(p => p.id);
+        await this.knowledgeUnitRepository
+          .createQueryBuilder()
+          .update()
+          .set({ principleId: null })
+          .where('principleId IN (:...ids)', { ids: principleIds })
+          .execute();
+
+        // Then delete existing principles
+        await this.principleRepository.remove(existingPrinciples);
+      } else {
+        throw new BadRequestException(
+          `Learning path already has ${existingPrinciples.length} principles. Delete them first to regenerate.`
+        );
+      }
+    }
+
+    // Generate principles using Claude
+    const generatedData = await this.generatePrinciplesFromClaude(
+      learningPath.name,
+      learningPath.domain,
+      learningPath.targetSkill
+    );
+
+    // Create a map of temporary IDs to real UUIDs
+    const idMap = new Map<string, string>();
+
+    // First pass: create all principles to get their UUIDs
+    const savedPrinciples: Principle[] = [];
+
+    for (const principleData of generatedData.principles) {
+      const principle = this.principleRepository.create({
+        pathId,
+        name: principleData.name,
+        description: principleData.description,
+        difficulty: principleData.difficulty,
+        estimatedHours: principleData.estimatedHours || 1,
+        prerequisites: [], // Will update in second pass
+        order: principleData.order || 0,
+        status: 'pending',
+      });
+
+      const saved = await this.principleRepository.save(principle);
+      savedPrinciples.push(saved);
+      idMap.set(principleData.id, saved.id);
+    }
+
+    // Second pass: update prerequisites with real UUIDs
+    for (let i = 0; i < generatedData.principles.length; i++) {
+      const principleData = generatedData.principles[i];
+      const savedPrinciple = savedPrinciples[i];
+
+      if (principleData.prerequisites && principleData.prerequisites.length > 0) {
+        const realPrerequisites = principleData.prerequisites
+          .map((prereqId: string) => idMap.get(prereqId))
+          .filter((id: string | undefined): id is string => id !== undefined);
+
+        savedPrinciple.prerequisites = realPrerequisites;
+        await this.principleRepository.save(savedPrinciple);
+      }
+    }
+
+    // Reload all principles with updated prerequisites
+    const finalPrinciples = await this.principleRepository.find({
+      where: { pathId },
+      order: { order: 'ASC' },
+    });
+
+    return {
+      principles: finalPrinciples,
+      message: `Successfully generated ${finalPrinciples.length} principles for "${learningPath.name}"`,
+    };
+  }
+
+  /**
+   * Call Claude API to generate principles
+   */
+  private async generatePrinciplesFromClaude(
+    name: string,
+    domain: string,
+    targetSkill: string
+  ): Promise<{ principles: Array<{
+    id: string;
+    name: string;
+    description: string;
+    difficulty: string;
+    estimatedHours: number;
+    prerequisites: string[];
+    order: number;
+  }> }> {
+    const prompt = GENERATE_PRINCIPLES_PROMPT
+      .replace('{name}', name)
+      .replace('{domain}', domain)
+      .replace('{targetSkill}', targetSkill);
+
+    const response = await this.anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 4096,
+      messages: [{ role: 'user', content: prompt }],
+    });
+
+    const content = response.content[0];
+    if (content.type !== 'text') {
+      throw new BadRequestException('Unexpected response type from Claude API');
+    }
+
+    // Parse JSON (handle potential markdown wrapping)
+    let jsonText = content.text.trim();
+    if (jsonText.startsWith('```')) {
+      jsonText = jsonText.replace(/```json\n?|\n?```/g, '');
+    }
+
+    try {
+      const data = JSON.parse(jsonText);
+      if (!data.principles || !Array.isArray(data.principles)) {
+        throw new Error('Invalid response structure');
+      }
+      return data;
+    } catch (error) {
+      throw new BadRequestException(
+        `Failed to parse AI response: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
   }
 }

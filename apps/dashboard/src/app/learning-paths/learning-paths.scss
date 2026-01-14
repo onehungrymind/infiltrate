@@ -49,9 +49,8 @@
 
 .error-message {
   color: #d32f2f;
-  
-  mat-icon {
-    font-size: 48px;
+
+  .error-icon {
     width: 48px;
     height: 48px;
   }

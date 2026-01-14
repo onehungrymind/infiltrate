@@ -28,10 +28,10 @@ interface CriticalPathItem {
 })
 export class CompletionAssessment {
   lastUpdated = signal('January 14, 2026');
-  overallCompletion = signal(58);
+  overallCompletion = signal(62);
 
   epics = signal<Epic[]>([
-    { name: 'Epic 1: Learning Objective & Map Generation', progress: 45, status: 'partial', color: '#f59e0b' },
+    { name: 'Epic 1: Learning Objective & Map Generation', progress: 60, status: 'mostly-complete', color: '#3b82f6' },
     { name: 'Epic 2: Content Sourcing & Ingestion', progress: 70, status: 'mostly-complete', color: '#3b82f6' },
     { name: 'Epic 3: Content Synthesis & Knowledge Units', progress: 65, status: 'mostly-complete', color: '#3b82f6' },
     { name: 'Epic 4: Adaptive Content Presentation', progress: 50, status: 'partial', color: '#f59e0b' },
@@ -43,7 +43,7 @@ export class CompletionAssessment {
   criticalPathItems = signal<CriticalPathItem[]>([
     { name: 'SM-2 spaced repetition algorithm', status: 'complete', blocking: 'Progress tracking' },
     { name: 'Principle entity', status: 'complete', blocking: 'Learning map structure' },
-    { name: 'AI learning map generation', status: 'not-started', blocking: 'Core user flow' },
+    { name: 'AI learning map generation', status: 'complete', blocking: 'Core user flow' },
     { name: 'Quiz Runner', status: 'complete', blocking: 'Learning variety' },
     { name: 'Challenge submission system', status: 'not-started', blocking: 'Feedback loop' },
     { name: 'Flashcard-API integration', status: 'complete', blocking: 'Progress tracking' },
@@ -63,7 +63,7 @@ export class CompletionAssessment {
     { name: 'Principle CRUD', status: 'complete' },
     { name: 'Submission CRUD', status: 'not-started' },
     { name: 'Feedback CRUD', status: 'not-started' },
-    { name: 'AI map generation', status: 'not-started' },
+    { name: 'AI map generation', status: 'complete' },
   ]);
 
   dashboardComponents = signal<ComponentStatus[]>([
@@ -82,6 +82,7 @@ export class CompletionAssessment {
     { name: 'Ingestion trigger button', status: 'not-started' },
     { name: 'Synthesis trigger button', status: 'not-started' },
     { name: 'Learning path wizard', status: 'not-started' },
+    { name: 'AI principle generation button', status: 'complete' },
   ]);
 
   patchbayComponents = signal<ComponentStatus[]>([

@@ -1,0 +1,871 @@
+# Cursor Rules - Python
+
+## Core Philosophy
+
+This Python project follows PEP 8, clean code principles, and modern Python practices. All code must be maintainable, testable, and leverage type hints throughout.
+
+### Guiding Principles
+
+1. **Single Responsibility**: Each function, class, and module has one job
+2. **Fine-Grained Units**: Small, focused functions that are easy to test in isolation
+3. **Type Everything**: Type hints on all function signatures and class attributes
+4. **Explicit Over Implicit**: Prefer clarity over cleverness
+5. **Fail Fast**: Validate inputs early with clear error messages
+
+---
+
+## Code Style
+
+### Type Hints (Required)
+
+```python
+# ❌ Never write untyped code
+def process(data):
+    return data.get('value')
+
+# ✅ Always use type hints
+def process(data: dict[str, Any]) -> str | None:
+    return data.get('value')
+
+# Function with multiple return types
+def find_user(user_id: str) -> User | None:
+    ...
+
+# Generic types
+def first(items: list[T]) -> T | None:
+    return items[0] if items else None
+
+# Callable types
+def apply(func: Callable[[int, int], int], a: int, b: int) -> int:
+    return func(a, b)
+
+# TypedDict for structured dictionaries
+class UserDict(TypedDict):
+    id: str
+    name: str
+    email: str
+    age: NotRequired[int]  # Optional key
+```
+
+### Modern Python Syntax
+
+```python
+# Use | for union types (Python 3.10+)
+def get_value(key: str) -> str | None:  # Not Optional[str]
+    ...
+
+# Use built-in generics (Python 3.9+)
+def process(items: list[str]) -> dict[str, int]:  # Not List[str], Dict[str, int]
+    ...
+
+# Use match statements (Python 3.10+)
+def handle_status(status: str) -> str:
+    match status:
+        case "active":
+            return "User is active"
+        case "pending":
+            return "User is pending"
+        case "inactive":
+            return "User is inactive"
+        case _:
+            return "Unknown status"
+```
+
+### Naming Conventions
+
+```python
+# Modules and packages: lowercase with underscores
+# user_service.py, data_processing/
+
+# Classes: PascalCase
+class UserService:
+    pass
+
+# Functions and variables: snake_case
+def calculate_total_price(items: list[Item]) -> Decimal:
+    total_price = Decimal("0")
+    ...
+
+# Constants: SCREAMING_SNAKE_CASE
+MAX_RETRY_ATTEMPTS = 3
+DEFAULT_TIMEOUT_SECONDS = 30
+
+# Private: leading underscore
+def _internal_helper() -> None:
+    ...
+
+class User:
+    def __init__(self) -> None:
+        self._cached_value: str | None = None  # Private attribute
+```
+
+---
+
+## Function Design
+
+### Single Responsibility
+
+```python
+# ❌ Function doing too much
+def handle_user_registration(data: dict) -> User:
+    # Validate
+    if not data.get('email'):
+        raise ValueError("Email required")
+    # Hash password
+    hashed = bcrypt.hash(data['password'])
+    # Save to database
+    user = db.save(User(...))
+    # Send email
+    send_welcome_email(user)
+    # Log event
+    logger.info(f"User registered: {user.id}")
+    return user
+
+# ✅ Separate concerns
+def validate_registration(data: RegistrationData) -> None:
+    """Validate registration data, raise ValueError if invalid."""
+    if not data.email:
+        raise ValueError("Email is required")
+    if len(data.password) < 8:
+        raise ValueError("Password must be at least 8 characters")
+
+def create_user(data: RegistrationData) -> User:
+    """Create a new user from registration data."""
+    hashed_password = hash_password(data.password)
+    return User(
+        email=data.email,
+        password_hash=hashed_password,
+        name=data.name,
+    )
+
+async def register_user(data: RegistrationData) -> User:
+    """Orchestrate user registration."""
+    validate_registration(data)
+    user = create_user(data)
+    await user_repository.save(user)
+    await email_service.send_welcome(user)
+    return user
+```
+
+### Function Size Guidelines
+
+- Keep functions under 20 lines when possible
+- If a function has more than 3-4 parameters, consider using a dataclass
+- Extract complex conditionals into well-named functions
+
+```python
+# ❌ Complex inline condition
+def can_access(user: User, resource: Resource) -> bool:
+    return (
+        user.is_active and
+        user.role in ('admin', 'editor') and
+        resource.owner_id == user.id or user.role == 'admin' and
+        not resource.is_archived
+    )
+
+# ✅ Extract to readable functions
+def is_resource_owner(user: User, resource: Resource) -> bool:
+    return resource.owner_id == user.id
+
+def is_admin(user: User) -> bool:
+    return user.role == 'admin'
+
+def can_access(user: User, resource: Resource) -> bool:
+    if not user.is_active:
+        return False
+    if resource.is_archived:
+        return False
+    if is_admin(user):
+        return True
+    return is_resource_owner(user, resource)
+```
+
+---
+
+## Data Classes and Models
+
+### Dataclasses
+
+```python
+from dataclasses import dataclass, field
+from datetime import datetime
+from typing import Self
+
+@dataclass
+class User:
+    id: str
+    email: str
+    name: str
+    created_at: datetime = field(default_factory=datetime.utcnow)
+    is_active: bool = True
+    roles: list[str] = field(default_factory=list)
+
+    def has_role(self, role: str) -> bool:
+        return role in self.roles
+
+    @classmethod
+    def create(cls, email: str, name: str) -> Self:
+        return cls(
+            id=str(uuid.uuid4()),
+            email=email,
+            name=name,
+        )
+
+# Immutable dataclass
+@dataclass(frozen=True)
+class Coordinates:
+    latitude: float
+    longitude: float
+```
+
+### Pydantic Models
+
+```python
+from pydantic import BaseModel, Field, EmailStr, field_validator
+from datetime import datetime
+
+class CreateUserRequest(BaseModel):
+    """Request model for user creation."""
+    
+    email: EmailStr
+    name: str = Field(min_length=2, max_length=100)
+    password: str = Field(min_length=8)
+    
+    @field_validator('name')
+    @classmethod
+    def name_must_not_be_empty(cls, v: str) -> str:
+        if not v.strip():
+            raise ValueError('Name cannot be empty')
+        return v.strip()
+
+class UserResponse(BaseModel):
+    """Response model for user data."""
+    
+    id: str
+    email: str
+    name: str
+    created_at: datetime
+    
+    model_config = {
+        'from_attributes': True,  # Allow ORM mode
+    }
+
+# Domain model separate from API models
+class User:
+    """Domain user entity."""
+    
+    def __init__(
+        self,
+        id: str,
+        email: str,
+        name: str,
+        password_hash: str,
+    ) -> None:
+        self.id = id
+        self.email = email
+        self.name = name
+        self.password_hash = password_hash
+```
+
+---
+
+## Error Handling
+
+### Custom Exceptions
+
+```python
+class AppError(Exception):
+    """Base exception for application errors."""
+    
+    def __init__(self, message: str, code: str | None = None) -> None:
+        self.message = message
+        self.code = code
+        super().__init__(message)
+
+class NotFoundError(AppError):
+    """Raised when a resource is not found."""
+    
+    def __init__(self, resource: str, id: str) -> None:
+        super().__init__(
+            message=f"{resource} with id '{id}' not found",
+            code="NOT_FOUND",
+        )
+
+class ValidationError(AppError):
+    """Raised when validation fails."""
+    
+    def __init__(self, errors: dict[str, list[str]]) -> None:
+        self.errors = errors
+        super().__init__(
+            message="Validation failed",
+            code="VALIDATION_ERROR",
+        )
+```
+
+### Error Handling Patterns
+
+```python
+# ❌ Catching all exceptions
+def get_user(user_id: str) -> User:
+    try:
+        return db.find_user(user_id)
+    except:
+        return None
+
+# ✅ Specific exception handling
+def get_user(user_id: str) -> User:
+    """Get user by ID. Raises NotFoundError if not found."""
+    user = db.find_user(user_id)
+    if user is None:
+        raise NotFoundError("User", user_id)
+    return user
+
+# ✅ Result type pattern for expected failures
+@dataclass
+class Result(Generic[T]):
+    value: T | None
+    error: str | None
+    
+    @property
+    def is_ok(self) -> bool:
+        return self.error is None
+    
+    @classmethod
+    def ok(cls, value: T) -> "Result[T]":
+        return cls(value=value, error=None)
+    
+    @classmethod
+    def err(cls, error: str) -> "Result[T]":
+        return cls(value=None, error=error)
+
+def parse_config(path: str) -> Result[Config]:
+    try:
+        data = json.load(open(path))
+        return Result.ok(Config(**data))
+    except FileNotFoundError:
+        return Result.err(f"Config file not found: {path}")
+    except json.JSONDecodeError as e:
+        return Result.err(f"Invalid JSON: {e}")
+```
+
+---
+
+## Async Programming
+
+### Async Functions
+
+```python
+import asyncio
+from typing import AsyncIterator
+
+async def fetch_user(user_id: str) -> User:
+    """Fetch user from database."""
+    async with get_db_session() as session:
+        result = await session.execute(
+            select(UserModel).where(UserModel.id == user_id)
+        )
+        user_model = result.scalar_one_or_none()
+        if user_model is None:
+            raise NotFoundError("User", user_id)
+        return User.from_orm(user_model)
+
+async def fetch_users(user_ids: list[str]) -> list[User]:
+    """Fetch multiple users concurrently."""
+    tasks = [fetch_user(uid) for uid in user_ids]
+    return await asyncio.gather(*tasks)
+
+# Async context manager
+class DatabaseSession:
+    async def __aenter__(self) -> "DatabaseSession":
+        self.connection = await create_connection()
+        return self
+    
+    async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
+        await self.connection.close()
+
+# Async iterator
+async def stream_users() -> AsyncIterator[User]:
+    async with get_db_session() as session:
+        result = await session.stream(select(UserModel))
+        async for row in result:
+            yield User.from_orm(row)
+```
+
+---
+
+## Project Structure
+
+### Application Layout
+
+```
+src/
+├── __init__.py
+├── main.py                    # Entry point
+├── config.py                  # Configuration
+├── domain/                    # Business logic
+│   ├── __init__.py
+│   ├── models/
+│   │   ├── __init__.py
+│   │   ├── user.py
+│   │   └── order.py
+│   ├── services/
+│   │   ├── __init__.py
+│   │   ├── user_service.py
+│   │   └── order_service.py
+│   └── exceptions.py
+├── infrastructure/            # External interfaces
+│   ├── __init__.py
+│   ├── database/
+│   │   ├── __init__.py
+│   │   ├── models.py
+│   │   └── repositories.py
+│   └── external/
+│       ├── __init__.py
+│       └── email_client.py
+├── api/                       # HTTP layer (FastAPI/Flask)
+│   ├── __init__.py
+│   ├── routes/
+│   │   ├── __init__.py
+│   │   ├── users.py
+│   │   └── orders.py
+│   ├── schemas/
+│   │   ├── __init__.py
+│   │   └── user_schemas.py
+│   └── dependencies.py
+└── tests/
+    ├── __init__.py
+    ├── conftest.py
+    ├── unit/
+    │   ├── __init__.py
+    │   └── test_user_service.py
+    └── integration/
+        ├── __init__.py
+        └── test_user_api.py
+```
+
+### Module Imports
+
+```python
+# ✅ Absolute imports preferred
+from src.domain.models.user import User
+from src.domain.services.user_service import UserService
+
+# ✅ Relative imports within a package
+from .models import User
+from ..exceptions import NotFoundError
+
+# ❌ Avoid wildcard imports
+from src.domain.models import *
+```
+
+---
+
+## Testing with pytest
+
+### Test Structure
+
+```python
+# tests/unit/test_user_service.py
+import pytest
+from unittest.mock import Mock, AsyncMock
+from src.domain.services.user_service import UserService
+from src.domain.models.user import User
+from src.domain.exceptions import NotFoundError
+
+class TestUserService:
+    """Tests for UserService."""
+
+    @pytest.fixture
+    def mock_repository(self) -> Mock:
+        return Mock()
+
+    @pytest.fixture
+    def service(self, mock_repository: Mock) -> UserService:
+        return UserService(repository=mock_repository)
+
+    def test_get_user_returns_user_when_found(
+        self,
+        service: UserService,
+        mock_repository: Mock,
+    ) -> None:
+        # Arrange
+        expected_user = User(id="1", email="test@example.com", name="Test")
+        mock_repository.find_by_id.return_value = expected_user
+
+        # Act
+        result = service.get_user("1")
+
+        # Assert
+        assert result == expected_user
+        mock_repository.find_by_id.assert_called_once_with("1")
+
+    def test_get_user_raises_not_found_when_missing(
+        self,
+        service: UserService,
+        mock_repository: Mock,
+    ) -> None:
+        # Arrange
+        mock_repository.find_by_id.return_value = None
+
+        # Act & Assert
+        with pytest.raises(NotFoundError) as exc_info:
+            service.get_user("999")
+        
+        assert "not found" in str(exc_info.value)
+```
+
+### Async Testing
+
+```python
+import pytest
+
+@pytest.mark.asyncio
+async def test_fetch_user_returns_user(
+    user_service: UserService,
+    mock_db_session: AsyncMock,
+) -> None:
+    # Arrange
+    mock_db_session.execute.return_value.scalar_one_or_none.return_value = UserModel(
+        id="1", email="test@example.com"
+    )
+
+    # Act
+    result = await user_service.fetch_user("1")
+
+    # Assert
+    assert result.id == "1"
+```
+
+### Fixtures
+
+```python
+# tests/conftest.py
+import pytest
+from unittest.mock import Mock, AsyncMock
+from typing import Callable, AsyncIterator
+
+@pytest.fixture
+def mock_db() -> Mock:
+    """Create a mock database session."""
+    return Mock()
+
+@pytest.fixture
+def user_factory() -> Callable[..., User]:
+    """Factory for creating test users."""
+    def _create(
+        id: str = "test-id",
+        email: str = "test@example.com",
+        name: str = "Test User",
+        **kwargs,
+    ) -> User:
+        return User(id=id, email=email, name=name, **kwargs)
+    return _create
+
+@pytest.fixture
+async def db_session() -> AsyncIterator[AsyncSession]:
+    """Create a test database session."""
+    async with TestingSessionLocal() as session:
+        yield session
+        await session.rollback()
+```
+
+### Parametrized Tests
+
+```python
+@pytest.mark.parametrize(
+    "email,expected_valid",
+    [
+        ("user@example.com", True),
+        ("user.name@example.com", True),
+        ("user+tag@example.com", True),
+        ("invalid-email", False),
+        ("@example.com", False),
+        ("user@", False),
+        ("", False),
+    ],
+)
+def test_validate_email(email: str, expected_valid: bool) -> None:
+    result = validate_email(email)
+    assert result == expected_valid
+```
+
+---
+
+## FastAPI Patterns
+
+### Router Organization
+
+```python
+# api/routes/users.py
+from fastapi import APIRouter, Depends, HTTPException, status
+from src.api.schemas.user_schemas import CreateUserRequest, UserResponse
+from src.api.dependencies import get_user_service
+from src.domain.services.user_service import UserService
+from src.domain.exceptions import NotFoundError
+
+router = APIRouter(prefix="/users", tags=["users"])
+
+@router.get("/{user_id}", response_model=UserResponse)
+async def get_user(
+    user_id: str,
+    service: UserService = Depends(get_user_service),
+) -> UserResponse:
+    """Get user by ID."""
+    try:
+        user = await service.get_user(user_id)
+        return UserResponse.model_validate(user)
+    except NotFoundError:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"User {user_id} not found",
+        )
+
+@router.post("/", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
+async def create_user(
+    request: CreateUserRequest,
+    service: UserService = Depends(get_user_service),
+) -> UserResponse:
+    """Create a new user."""
+    user = await service.create_user(
+        email=request.email,
+        name=request.name,
+        password=request.password,
+    )
+    return UserResponse.model_validate(user)
+```
+
+### Dependency Injection
+
+```python
+# api/dependencies.py
+from functools import lru_cache
+from typing import AsyncIterator
+from fastapi import Depends
+from sqlalchemy.ext.asyncio import AsyncSession
+from src.infrastructure.database import get_session
+from src.domain.services.user_service import UserService
+from src.infrastructure.database.repositories import UserRepository
+
+@lru_cache
+def get_settings() -> Settings:
+    return Settings()
+
+async def get_db_session() -> AsyncIterator[AsyncSession]:
+    async with AsyncSessionLocal() as session:
+        yield session
+
+def get_user_repository(
+    session: AsyncSession = Depends(get_db_session),
+) -> UserRepository:
+    return UserRepository(session)
+
+def get_user_service(
+    repository: UserRepository = Depends(get_user_repository),
+) -> UserService:
+    return UserService(repository)
+```
+
+---
+
+## Common Patterns
+
+### Repository Pattern
+
+```python
+from abc import ABC, abstractmethod
+from typing import Generic, TypeVar
+
+T = TypeVar("T")
+
+class Repository(ABC, Generic[T]):
+    """Abstract repository interface."""
+
+    @abstractmethod
+    async def get(self, id: str) -> T | None:
+        ...
+
+    @abstractmethod
+    async def save(self, entity: T) -> T:
+        ...
+
+    @abstractmethod
+    async def delete(self, id: str) -> None:
+        ...
+
+class UserRepository(Repository[User]):
+    """User repository implementation."""
+
+    def __init__(self, session: AsyncSession) -> None:
+        self.session = session
+
+    async def get(self, id: str) -> User | None:
+        result = await self.session.execute(
+            select(UserModel).where(UserModel.id == id)
+        )
+        model = result.scalar_one_or_none()
+        return User.from_orm(model) if model else None
+
+    async def save(self, user: User) -> User:
+        model = UserModel(**user.__dict__)
+        self.session.add(model)
+        await self.session.commit()
+        return user
+
+    async def delete(self, id: str) -> None:
+        await self.session.execute(
+            delete(UserModel).where(UserModel.id == id)
+        )
+        await self.session.commit()
+```
+
+### Service Layer
+
+```python
+class UserService:
+    """User domain service."""
+
+    def __init__(
+        self,
+        repository: UserRepository,
+        email_service: EmailService,
+    ) -> None:
+        self.repository = repository
+        self.email_service = email_service
+
+    async def create_user(
+        self,
+        email: str,
+        name: str,
+        password: str,
+    ) -> User:
+        """Create a new user."""
+        # Validate
+        existing = await self.repository.find_by_email(email)
+        if existing:
+            raise ValidationError({"email": ["Email already exists"]})
+
+        # Create
+        user = User.create(
+            email=email,
+            name=name,
+            password_hash=hash_password(password),
+        )
+
+        # Persist
+        await self.repository.save(user)
+
+        # Side effects
+        await self.email_service.send_welcome(user)
+
+        return user
+```
+
+---
+
+## Logging
+
+### Structured Logging
+
+```python
+import logging
+import structlog
+
+# Configure structlog
+structlog.configure(
+    processors=[
+        structlog.contextvars.merge_contextvars,
+        structlog.processors.add_log_level,
+        structlog.processors.TimeStamper(fmt="iso"),
+        structlog.processors.JSONRenderer(),
+    ],
+    logger_factory=structlog.PrintLoggerFactory(),
+)
+
+logger = structlog.get_logger()
+
+# Usage
+async def create_user(email: str) -> User:
+    log = logger.bind(email=email)
+    log.info("creating_user")
+    
+    try:
+        user = await repository.save(User(email=email))
+        log.info("user_created", user_id=user.id)
+        return user
+    except Exception as e:
+        log.error("user_creation_failed", error=str(e))
+        raise
+```
+
+---
+
+## Configuration
+
+### Environment-Based Config
+
+```python
+from pydantic_settings import BaseSettings
+from functools import lru_cache
+
+class Settings(BaseSettings):
+    """Application settings from environment variables."""
+    
+    # App
+    app_name: str = "MyApp"
+    debug: bool = False
+    
+    # Database
+    database_url: str
+    database_pool_size: int = 5
+    
+    # Redis
+    redis_url: str = "redis://localhost:6379"
+    
+    # External services
+    email_api_key: str
+    
+    model_config = {
+        "env_file": ".env",
+        "env_file_encoding": "utf-8",
+    }
+
+@lru_cache
+def get_settings() -> Settings:
+    return Settings()
+
+# Usage
+settings = get_settings()
+print(settings.database_url)
+```
+
+---
+
+## Common Mistakes to Avoid
+
+1. **Missing type hints** - Always annotate function signatures
+2. **Mutable default arguments** - Use `field(default_factory=list)` not `[]`
+3. **Bare except clauses** - Always specify exception types
+4. **Not using context managers** - Use `with`/`async with` for resources
+5. **Global state** - Use dependency injection instead
+6. **Long functions** - Keep under 20 lines, extract helpers
+7. **Not validating input** - Use Pydantic models for external data
+8. **Ignoring async/await** - Don't mix sync and async incorrectly
+9. **Hardcoded configuration** - Use environment variables
+10. **Not testing edge cases** - Test error paths and boundaries
+
+---
+
+## Code Review Checklist
+
+Before submitting code, verify:
+
+- [ ] All functions have type hints
+- [ ] Functions are small and focused (< 20 lines)
+- [ ] Custom exceptions used for domain errors
+- [ ] No bare `except:` clauses
+- [ ] Context managers used for resources
+- [ ] Tests cover happy path and error cases
+- [ ] Pydantic models validate external input
+- [ ] No mutable default arguments
+- [ ] Logging includes relevant context
+- [ ] Configuration loaded from environment

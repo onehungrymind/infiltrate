@@ -1,0 +1,683 @@
+# Cursor Rules - Angular
+
+## Core Philosophy
+
+This Angular project follows clean code principles, the official Angular style guide, and leverages the latest framework features. All code must be maintainable, testable, and idiomatic.
+
+### Guiding Principles
+
+1. **Single Responsibility**: Every component, service, and function has one reason to change
+2. **Fine-Grained Units**: Decompose into small, focused units easy to test in isolation
+3. **Signals First**: Use signals for all reactive state management
+4. **Standalone Everything**: No NgModules for new code
+5. **Composition Over Inheritance**: Build complex behavior from simple, composable pieces
+
+---
+
+## Angular Version Requirements
+
+This project uses Angular 17+ features. Always use:
+
+- Standalone components (no NgModules)
+- Signal-based inputs, outputs, and state
+- New control flow syntax (`@if`, `@for`, `@switch`, `@defer`)
+- `inject()` function for dependency injection
+- `ChangeDetectionStrategy.OnPush` by default
+
+---
+
+## Component Architecture
+
+### Signal-Based Components
+
+```typescript
+// ✅ Modern Angular component
+@Component({
+  selector: 'app-user-card',
+  standalone: true,
+  imports: [DatePipe],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
+    @if (user(); as u) {
+      <div class="user-card">
+        <h2>{{ fullName() }}</h2>
+        <p>{{ u.email }}</p>
+        <button (click)="onSelect()">Select</button>
+      </div>
+    } @else {
+      <div class="skeleton"></div>
+    }
+  `,
+})
+export class UserCardComponent {
+  // Inputs as signals
+  user = input.required<User>();
+  showEmail = input(true);
+
+  // Outputs
+  selected = output<User>();
+
+  // Computed values derived from signals
+  fullName = computed(() => {
+    const u = this.user();
+    return `${u.firstName} ${u.lastName}`;
+  });
+
+  // Methods for template events
+  onSelect(): void {
+    this.selected.emit(this.user());
+  }
+}
+```
+
+### Component Guidelines
+
+- Keep components under 100 lines
+- Extract business logic to services
+- Use `computed()` for derived state, not getters
+- Use `effect()` sparingly—only for side effects like logging or sync
+- Prefer template expressions over component methods for simple transforms
+
+### Input/Output Patterns
+
+```typescript
+// Required input
+userId = input.required<string>();
+
+// Optional input with default
+pageSize = input(10);
+
+// Aliased input
+@Input({ alias: 'item' }) 
+_item = input.required<Item>();
+
+// Transform input
+disabled = input(false, { transform: booleanAttribute });
+count = input(0, { transform: numberAttribute });
+
+// Output
+saved = output<User>();
+deleted = output<void>();
+
+// Two-way binding (signal model)
+value = model<string>('');
+// Parent uses: <child [(value)]="parentValue" />
+```
+
+---
+
+## Control Flow Syntax
+
+### Always Use New Syntax
+
+```typescript
+// ❌ Legacy - never use
+<div *ngIf="condition">...</div>
+<div *ngFor="let item of items">...</div>
+<div [ngSwitch]="value">...</div>
+
+// ✅ Modern control flow
+@if (condition) {
+  <div>...</div>
+}
+
+@for (item of items; track item.id) {
+  <div>{{ item.name }}</div>
+} @empty {
+  <div>No items found</div>
+}
+
+@switch (status) {
+  @case ('active') { <span class="active">Active</span> }
+  @case ('pending') { <span class="pending">Pending</span> }
+  @default { <span>Unknown</span> }
+}
+```
+
+### Track Expressions
+
+Always provide a track expression for `@for`:
+
+```typescript
+// ✅ Track by unique identifier
+@for (user of users(); track user.id) { }
+
+// ✅ Track by index when items lack IDs
+@for (item of items(); track $index) { }
+
+// ❌ Never omit track
+@for (item of items()) { }
+```
+
+### Deferred Loading
+
+Use `@defer` for lazy loading heavy components:
+
+```typescript
+@defer (on viewport) {
+  <app-heavy-chart [data]="chartData()" />
+} @placeholder {
+  <div class="chart-placeholder"></div>
+} @loading (minimum 200ms) {
+  <app-spinner />
+} @error {
+  <p>Failed to load chart</p>
+}
+
+// Trigger options
+@defer (on viewport)           // When enters viewport
+@defer (on idle)               // When browser is idle
+@defer (on interaction)        // On user interaction with placeholder
+@defer (on hover)              // On hover
+@defer (on timer(500ms))       // After delay
+@defer (when condition())      // When expression is true
+```
+
+---
+
+## Services and Dependency Injection
+
+### Service Design
+
+```typescript
+@Injectable({ providedIn: 'root' })
+export class UserService {
+  private readonly http = inject(HttpClient);
+  private readonly config = inject(APP_CONFIG);
+
+  // Use signals for cached state
+  private readonly usersCache = signal<User[]>([]);
+  readonly users = this.usersCache.asReadonly();
+
+  // Methods return Observables for async operations
+  getUser(id: string): Observable<User> {
+    return this.http.get<User>(`${this.config.apiUrl}/users/${id}`);
+  }
+
+  // Or use async/await with toSignal for simpler cases
+  async loadUsers(): Promise<void> {
+    const users = await firstValueFrom(
+      this.http.get<User[]>(`${this.config.apiUrl}/users`)
+    );
+    this.usersCache.set(users);
+  }
+}
+```
+
+### Inject Function
+
+Always use `inject()` over constructor injection:
+
+```typescript
+// ❌ Legacy constructor injection
+export class UserComponent {
+  constructor(
+    private userService: UserService,
+    private router: Router,
+  ) {}
+}
+
+// ✅ Modern inject function
+export class UserComponent {
+  private readonly userService = inject(UserService);
+  private readonly router = inject(Router);
+}
+```
+
+### Injection Tokens
+
+```typescript
+// Define token
+export const APP_CONFIG = new InjectionToken<AppConfig>('app.config');
+
+// Provide in app.config.ts
+export const appConfig: ApplicationConfig = {
+  providers: [
+    { provide: APP_CONFIG, useValue: environment },
+  ],
+};
+
+// Inject
+private readonly config = inject(APP_CONFIG);
+```
+
+---
+
+## State Management with Signals
+
+### Component State
+
+```typescript
+export class SearchComponent {
+  // Writable signals for local state
+  private readonly searchTerm = signal('');
+  private readonly isLoading = signal(false);
+  private readonly results = signal<SearchResult[]>([]);
+
+  // Computed for derived state
+  readonly hasResults = computed(() => this.results().length > 0);
+  readonly resultCount = computed(() => this.results().length);
+
+  // Expose read-only versions to template
+  readonly loading = this.isLoading.asReadonly();
+
+  async search(): Promise<void> {
+    this.isLoading.set(true);
+    try {
+      const data = await this.searchService.search(this.searchTerm());
+      this.results.set(data);
+    } finally {
+      this.isLoading.set(false);
+    }
+  }
+}
+```
+
+### Signal Store (NgRx Signals)
+
+For complex state, use `@ngrx/signals`:
+
+```typescript
+export const UsersStore = signalStore(
+  { providedIn: 'root' },
+  withState<UsersState>({
+    users: [],
+    loading: false,
+    error: null,
+  }),
+  withComputed((store) => ({
+    activeUsers: computed(() => store.users().filter(u => u.active)),
+    userCount: computed(() => store.users().length),
+  })),
+  withMethods((store, usersService = inject(UsersService)) => ({
+    async loadUsers(): Promise<void> {
+      patchState(store, { loading: true });
+      try {
+        const users = await firstValueFrom(usersService.getAll());
+        patchState(store, { users, loading: false });
+      } catch (error) {
+        patchState(store, { error: error as Error, loading: false });
+      }
+    },
+    addUser(user: User): void {
+      patchState(store, { users: [...store.users(), user] });
+    },
+  })),
+);
+
+// Usage in component
+export class UsersComponent {
+  readonly store = inject(UsersStore);
+
+  constructor() {
+    this.store.loadUsers();
+  }
+}
+```
+
+### RxJS Interop
+
+```typescript
+// Convert Observable to Signal
+private readonly route = inject(ActivatedRoute);
+readonly userId = toSignal(this.route.params.pipe(map(p => p['id'])));
+
+// Convert Signal to Observable
+readonly searchTerm = signal('');
+readonly searchTerm$ = toObservable(this.searchTerm);
+
+// Use in effects
+constructor() {
+  effect(() => {
+    // Runs when userId changes
+    const id = this.userId();
+    if (id) {
+      this.loadUserDetails(id);
+    }
+  });
+}
+```
+
+---
+
+## Forms
+
+### Reactive Forms with Signals
+
+```typescript
+export class UserFormComponent {
+  private readonly fb = inject(NonNullableFormBuilder);
+
+  readonly form = this.fb.group({
+    name: ['', [Validators.required, Validators.minLength(2)]],
+    email: ['', [Validators.required, Validators.email]],
+    role: ['user' as UserRole],
+  });
+
+  // Type-safe form value
+  private getFormValue(): CreateUserDto {
+    return this.form.getRawValue();
+  }
+
+  onSubmit(): void {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+    this.userService.create(this.getFormValue());
+  }
+}
+```
+
+### Form Validation Display
+
+```typescript
+// Template
+@if (form.controls.email.errors && form.controls.email.touched) {
+  <div class="error">
+    @if (form.controls.email.errors['required']) {
+      Email is required
+    } @else if (form.controls.email.errors['email']) {
+      Please enter a valid email
+    }
+  </div>
+}
+```
+
+---
+
+## HTTP and API Communication
+
+### HTTP Service Pattern
+
+```typescript
+@Injectable({ providedIn: 'root' })
+export class ApiService {
+  private readonly http = inject(HttpClient);
+  private readonly baseUrl = inject(API_BASE_URL);
+
+  get<T>(path: string, params?: HttpParams): Observable<T> {
+    return this.http.get<T>(`${this.baseUrl}${path}`, { params });
+  }
+
+  post<T>(path: string, body: unknown): Observable<T> {
+    return this.http.post<T>(`${this.baseUrl}${path}`, body);
+  }
+
+  put<T>(path: string, body: unknown): Observable<T> {
+    return this.http.put<T>(`${this.baseUrl}${path}`, body);
+  }
+
+  delete<T>(path: string): Observable<T> {
+    return this.http.delete<T>(`${this.baseUrl}${path}`);
+  }
+}
+
+// Domain service uses ApiService
+@Injectable({ providedIn: 'root' })
+export class UserService {
+  private readonly api = inject(ApiService);
+
+  getUsers(): Observable<User[]> {
+    return this.api.get<User[]>('/users');
+  }
+
+  createUser(dto: CreateUserDto): Observable<User> {
+    return this.api.post<User>('/users', dto);
+  }
+}
+```
+
+### HTTP Interceptors
+
+```typescript
+// Functional interceptor (modern approach)
+export const authInterceptor: HttpInterceptorFn = (req, next) => {
+  const authService = inject(AuthService);
+  const token = authService.token();
+
+  if (token) {
+    req = req.clone({
+      setHeaders: { Authorization: `Bearer ${token}` },
+    });
+  }
+
+  return next(req);
+};
+
+// Register in app.config.ts
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideHttpClient(withInterceptors([authInterceptor])),
+  ],
+};
+```
+
+---
+
+## Routing
+
+### Route Configuration
+
+```typescript
+// app.routes.ts
+export const routes: Routes = [
+  { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+  { path: 'dashboard', loadComponent: () => import('./dashboard/dashboard.component') },
+  {
+    path: 'users',
+    loadChildren: () => import('./users/users.routes'),
+    canActivate: [authGuard],
+  },
+  { path: '**', loadComponent: () => import('./not-found/not-found.component') },
+];
+
+// users/users.routes.ts
+export default [
+  { path: '', loadComponent: () => import('./user-list/user-list.component') },
+  { path: ':id', loadComponent: () => import('./user-detail/user-detail.component') },
+] satisfies Routes;
+```
+
+### Functional Guards
+
+```typescript
+export const authGuard: CanActivateFn = (route, state) => {
+  const authService = inject(AuthService);
+  const router = inject(Router);
+
+  if (authService.isAuthenticated()) {
+    return true;
+  }
+
+  return router.createUrlTree(['/login'], {
+    queryParams: { returnUrl: state.url },
+  });
+};
+```
+
+### Route Resolvers with Signals
+
+```typescript
+export const userResolver: ResolveFn<User> = (route) => {
+  const userService = inject(UserService);
+  const id = route.paramMap.get('id')!;
+  return userService.getUser(id);
+};
+
+// In component
+export class UserDetailComponent {
+  private readonly route = inject(ActivatedRoute);
+  readonly user = toSignal(this.route.data.pipe(map(d => d['user'] as User)));
+}
+```
+
+---
+
+## Testing
+
+### Component Testing
+
+```typescript
+describe('UserCardComponent', () => {
+  it('displays user full name', async () => {
+    await render(UserCardComponent, {
+      componentInputs: {
+        user: { id: '1', firstName: 'John', lastName: 'Doe', email: 'john@test.com' },
+      },
+    });
+
+    expect(screen.getByText('John Doe')).toBeInTheDocument();
+  });
+
+  it('emits selected event when button clicked', async () => {
+    const selectedSpy = jest.fn();
+    const user = { id: '1', firstName: 'John', lastName: 'Doe', email: 'john@test.com' };
+
+    await render(UserCardComponent, {
+      componentInputs: { user },
+      componentOutputs: { selected: { emit: selectedSpy } as any },
+    });
+
+    await userEvent.click(screen.getByRole('button', { name: /select/i }));
+    expect(selectedSpy).toHaveBeenCalledWith(user);
+  });
+});
+```
+
+### Service Testing
+
+```typescript
+describe('UserService', () => {
+  let service: UserService;
+  let httpMock: HttpTestingController;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
+    });
+
+    service = TestBed.inject(UserService);
+    httpMock = TestBed.inject(HttpTestingController);
+  });
+
+  it('fetches users from API', () => {
+    const mockUsers: User[] = [{ id: '1', name: 'John' }];
+
+    service.getUsers().subscribe(users => {
+      expect(users).toEqual(mockUsers);
+    });
+
+    const req = httpMock.expectOne('/api/users');
+    expect(req.request.method).toBe('GET');
+    req.flush(mockUsers);
+  });
+});
+```
+
+### Testing Signals
+
+```typescript
+describe('SearchComponent', () => {
+  it('computes hasResults correctly', () => {
+    const component = new SearchComponent();
+
+    // Initially no results
+    expect(component.hasResults()).toBe(false);
+
+    // After setting results
+    component['results'].set([{ id: '1', title: 'Result' }]);
+    expect(component.hasResults()).toBe(true);
+  });
+});
+```
+
+---
+
+## File Organization
+
+```
+src/
+├── app/
+│   ├── core/                     # Singleton services, guards, interceptors
+│   │   ├── auth/
+│   │   │   ├── auth.service.ts
+│   │   │   ├── auth.guard.ts
+│   │   │   └── auth.interceptor.ts
+│   │   └── api/
+│   │       └── api.service.ts
+│   ├── shared/                   # Reusable components, directives, pipes
+│   │   ├── components/
+│   │   │   ├── button/
+│   │   │   └── modal/
+│   │   ├── directives/
+│   │   └── pipes/
+│   ├── features/                 # Feature modules (lazy-loaded)
+│   │   ├── dashboard/
+│   │   │   ├── dashboard.component.ts
+│   │   │   ├── dashboard.component.html
+│   │   │   ├── dashboard.component.scss
+│   │   │   ├── dashboard.component.spec.ts
+│   │   │   └── components/       # Feature-specific components
+│   │   └── users/
+│   │       ├── users.routes.ts
+│   │       ├── user-list/
+│   │       ├── user-detail/
+│   │       ├── services/
+│   │       └── models/
+│   ├── app.component.ts
+│   ├── app.config.ts
+│   └── app.routes.ts
+├── environments/
+└── styles/
+```
+
+---
+
+## Performance Optimization
+
+### OnPush Change Detection
+
+Always use OnPush:
+
+```typescript
+@Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  // ...
+})
+```
+
+### Lazy Loading
+
+- Lazy load all feature routes
+- Use `@defer` for below-fold content
+- Preload critical routes with `PreloadAllModules` or custom strategy
+
+### Signal Best Practices
+
+```typescript
+// ❌ Avoid recomputing in template
+<div>{{ items().filter(i => i.active).length }}</div>
+
+// ✅ Use computed signals
+activeCount = computed(() => this.items().filter(i => i.active).length);
+<div>{{ activeCount() }}</div>
+```
+
+---
+
+## Common Mistakes to Avoid
+
+1. **Using NgModules for new components** - Always standalone
+2. **Using `*ngIf`/`*ngFor`** - Use `@if`/`@for`
+3. **Constructor injection** - Use `inject()`
+4. **Mutable state in services** - Use signals
+5. **Complex logic in templates** - Use computed signals
+6. **Missing track in `@for`** - Always provide track expression
+7. **Default change detection** - Always use OnPush
+8. **Subscribing in components** - Prefer `toSignal()` or `async` pipe
+9. **Fat components** - Extract logic to services
+10. **Testing implementation** - Test behavior, not internals

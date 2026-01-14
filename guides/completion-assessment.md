@@ -1,7 +1,7 @@
 # Kasita MVP Completion Assessment
 
 **Last Updated**: January 14, 2026
-**Overall Completion**: 58%
+**Overall Completion**: 62%
 
 ---
 
@@ -9,7 +9,7 @@
 
 | Epic | Progress | Status |
 |------|----------|--------|
-| Epic 1: Learning Objective & Map Generation | 45% | :yellow_circle: Partial |
+| Epic 1: Learning Objective & Map Generation | 60% | :large_blue_circle: Mostly Complete |
 | Epic 2: Content Sourcing & Ingestion | 70% | :large_blue_circle: Mostly Complete |
 | Epic 3: Content Synthesis & Knowledge Units | 65% | :large_blue_circle: Mostly Complete |
 | Epic 4: Adaptive Content Presentation | 50% | :yellow_circle: Partial |
@@ -19,20 +19,22 @@
 
 ---
 
-## Epic 1: Learning Objective & Map Generation (45%)
+## Epic 1: Learning Objective & Map Generation (60%)
 
 ### Completed
 - [x] LM-03: Visual hierarchy showing dependencies (React Flow)
 - [x] LM-07: Save and revisit multiple learning paths (CRUD)
 - [x] Principle entity with full CRUD (API + Dashboard)
+- [x] LM-02: AI-generated learning map with principles
+  - Claude-powered principle generation from learning path objectives
+  - Dashboard UI with "Generate Principles with AI" button
+  - Generated principles saved to database with prerequisites
 
 ### Partial
 - [ ] LM-01: Create learning path via natural language objective
-  - CRUD exists, no AI generation from natural language
-- [ ] LM-02: AI-generated learning map with principles
-  - Knowledge graph exists but standalone, not integrated
+  - CRUD exists, AI generates principles but not path itself
 - [ ] LM-04: Edit/add/remove principles from map
-  - Principle CRUD exists, not integrated with learning map UI
+  - Principle CRUD exists, generation preview exists, not fully integrated with React Flow
 
 ### Not Started
 - [ ] LM-05: Set target timeline (field exists, no UI)
@@ -40,7 +42,7 @@
 
 ### Blockers
 - ~~No "Principle" entity exists~~ (Resolved)
-- Knowledge graph not connected to learning paths
+- ~~AI generation not available~~ (Resolved)
 
 ---
 
@@ -179,7 +181,7 @@ These must be completed for a functional MVP:
 |------|--------|----------|
 | SM-2 spaced repetition algorithm | :white_check_mark: Complete | ~~Progress tracking~~ |
 | Principle entity | :white_check_mark: Complete | ~~Learning map structure~~ |
-| AI learning map generation | :red_circle: Not Started | Core user flow |
+| AI learning map generation | :white_check_mark: Complete | ~~Core user flow~~ |
 | Quiz Runner | :white_check_mark: Complete | ~~Learning variety~~ |
 | Challenge submission system | :red_circle: Not Started | Feedback loop |
 | Flashcard-API integration | :white_check_mark: Complete | ~~Progress tracking~~ |
@@ -204,7 +206,7 @@ These must be completed for a functional MVP:
 | Submission CRUD | :red_circle: Not Started |
 | Feedback CRUD | :red_circle: Not Started |
 | SM-2 algorithm | :white_check_mark: Complete |
-| AI map generation | :red_circle: Not Started |
+| AI map generation | :white_check_mark: Complete |
 
 ### Dashboard (Angular)
 | Component | Status |
@@ -224,6 +226,7 @@ These must be completed for a functional MVP:
 | Ingestion trigger button | :red_circle: Not Started |
 | Synthesis trigger button | :red_circle: Not Started |
 | Learning path wizard | :red_circle: Not Started |
+| AI principle generation button | :white_check_mark: Complete |
 
 ### Patchbay (Python)
 | Component | Status |
@@ -257,6 +260,29 @@ These must be completed for a functional MVP:
 ---
 
 ## Recent Changes
+
+### January 14, 2026 (Update 7)
+- Enhanced AI learning map generation:
+  - Added `force` parameter to regenerate principles (auto-deletes existing)
+  - Fixed foreign key constraint by unlinking knowledge units before deletion
+  - Added `onDelete: 'SET NULL'` to KnowledgeUnit-Principle relationship
+  - State resets when switching learning paths in MDV
+- Fixed SVG icons throughout dashboard:
+  - Replaced mat-icon with inline SVGs (project uses SVG icons, not Material Icons font)
+  - Added wizard sparkles icon from Nodal project for AI generation button
+  - Fixed error icon in learning paths list
+- Overall completion remains at 62%
+
+### January 14, 2026 (Update 6)
+- Implemented AI learning map generation feature:
+  - Added Claude-powered principle generation to LearningMapService
+  - Created prompt template for structured learning map generation
+  - Added POST `/learning-map/generate/:pathId` endpoint
+  - Added "Generate Principles with AI" button to learning path detail
+  - Shows loading state, success/error feedback, and generated principles preview
+  - Generated principles include name, description, difficulty, estimated hours, prerequisites
+- Overall completion increased from 58% to 62%
+- Epic 1 progress increased from 45% to 60%
 
 ### January 14, 2026 (Update 5)
 - Verified Principle entity implementation is complete
@@ -313,8 +339,8 @@ These must be completed for a functional MVP:
 - [x] Study Flashcards with SM-2 integration
 - [x] Quiz implementation with SM-2 integration
 - [x] Principle entity and CRUD
-- [ ] AI learning map generation
-- [ ] Dashboard trigger buttons
+- [x] AI learning map generation
+- [ ] Dashboard trigger buttons (Ingestion, Synthesis)
 
 ---
 
@@ -322,6 +348,8 @@ These must be completed for a functional MVP:
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.6 | 2026-01-14 | Force regeneration, FK constraint fix, SVG icon fixes |
+| 1.5 | 2026-01-14 | AI learning map generation with Claude, dashboard trigger button |
 | 1.4 | 2026-01-14 | Principle entity complete, Completion Assessment dashboard added |
 | 1.3 | 2026-01-14 | Quiz feature with multiple choice, true/false, and SM-2 integration |
 | 1.2 | 2026-01-13 | Study feature with flashcards and SM-2 integration |

@@ -1,0 +1,767 @@
+# Cursor Rules - Nx Monorepo
+
+## Core Philosophy
+
+This Nx monorepo follows clean architecture principles, enforces module boundaries, and maintains clear separation between applications and libraries. All code must be maintainable, testable, and respect the dependency graph.
+
+### Guiding Principles
+
+1. **Single Responsibility**: Each library has one clear purpose
+2. **Module Boundaries**: Enforce strict import rules between libraries
+3. **Shared Code in Libraries**: Applications are thin shells; logic lives in libs
+4. **Fine-Grained Libraries**: Prefer many small libraries over few large ones
+5. **Explicit Dependencies**: All dependencies must be declared and visible
+
+---
+
+## Project Structure
+
+### Standard Layout
+
+```
+my-workspace/
+├── apps/
+│   ├── web/                    # Angular/React frontend
+│   │   ├── src/
+│   │   ├── project.json
+│   │   └── tsconfig.json
+│   ├── api/                    # Nest.js backend
+│   │   ├── src/
+│   │   ├── project.json
+│   │   └── tsconfig.json
+│   └── web-e2e/                # E2E tests
+├── libs/
+│   ├── shared/                 # Cross-cutting concerns
+│   │   ├── util/               # Pure utilities
+│   │   ├── ui/                 # Shared UI components
+│   │   └── types/              # Shared TypeScript types
+│   ├── feature-*/              # Feature libraries
+│   │   ├── feature-users/
+│   │   ├── feature-orders/
+│   │   └── feature-dashboard/
+│   ├── data-access/            # API/state management
+│   │   ├── data-access-users/
+│   │   └── data-access-orders/
+│   └── domain/                 # Business logic
+│       ├── domain-users/
+│       └── domain-orders/
+├── tools/                      # Workspace tools/scripts
+├── nx.json
+├── tsconfig.base.json
+└── package.json
+```
+
+### Library Types
+
+| Type | Purpose | Naming | Can Import |
+|------|---------|--------|------------|
+| **feature** | Smart components, pages | `feature-*` | data-access, ui, util, domain |
+| **ui** | Presentational components | `ui-*` or `shared-ui` | util only |
+| **data-access** | State management, API | `data-access-*` | util, domain |
+| **util** | Pure functions, helpers | `util-*` or `shared-util` | Nothing (leaf) |
+| **domain** | Business logic, entities | `domain-*` | util only |
+
+---
+
+## Module Boundaries
+
+### Enforce with Tags
+
+```json
+// nx.json
+{
+  "targetDefaults": { ... },
+  "namedInputs": { ... },
+  "plugins": ["@nx/eslint-plugin"],
+  "defaultProject": "web"
+}
+
+// .eslintrc.json (root)
+{
+  "root": true,
+  "plugins": ["@nx"],
+  "overrides": [
+    {
+      "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
+      "rules": {
+        "@nx/enforce-module-boundaries": [
+          "error",
+          {
+            "enforceBuildableLibDependency": true,
+            "allow": [],
+            "depConstraints": [
+              {
+                "sourceTag": "type:app",
+                "onlyDependOnLibsWithTags": ["type:feature", "type:ui", "type:util"]
+              },
+              {
+                "sourceTag": "type:feature",
+                "onlyDependOnLibsWithTags": ["type:data-access", "type:ui", "type:util", "type:domain"]
+              },
+              {
+                "sourceTag": "type:data-access",
+                "onlyDependOnLibsWithTags": ["type:util", "type:domain"]
+              },
+              {
+                "sourceTag": "type:ui",
+                "onlyDependOnLibsWithTags": ["type:util"]
+              },
+              {
+                "sourceTag": "type:domain",
+                "onlyDependOnLibsWithTags": ["type:util"]
+              },
+              {
+                "sourceTag": "type:util",
+                "onlyDependOnLibsWithTags": []
+              },
+              {
+                "sourceTag": "scope:shared",
+                "onlyDependOnLibsWithTags": ["scope:shared"]
+              },
+              {
+                "sourceTag": "scope:users",
+                "onlyDependOnLibsWithTags": ["scope:users", "scope:shared"]
+              },
+              {
+                "sourceTag": "scope:orders",
+                "onlyDependOnLibsWithTags": ["scope:orders", "scope:shared"]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+
+### Project Tags
+
+```json
+// libs/feature-users/project.json
+{
+  "name": "feature-users",
+  "tags": ["type:feature", "scope:users"]
+}
+
+// libs/shared/ui/project.json
+{
+  "name": "shared-ui",
+  "tags": ["type:ui", "scope:shared"]
+}
+
+// libs/data-access-users/project.json
+{
+  "name": "data-access-users",
+  "tags": ["type:data-access", "scope:users"]
+}
+```
+
+---
+
+## Library Generation
+
+### Creating Libraries
+
+```bash
+# Feature library (Angular)
+nx g @nx/angular:library feature-users \
+  --directory=libs/feature-users \
+  --tags="type:feature,scope:users" \
+  --standalone \
+  --changeDetection=OnPush
+
+# Feature library (React)
+nx g @nx/react:library feature-users \
+  --directory=libs/feature-users \
+  --tags="type:feature,scope:users"
+
+# Data access library
+nx g @nx/angular:library data-access-users \
+  --directory=libs/data-access-users \
+  --tags="type:data-access,scope:users" \
+  --standalone
+
+# UI library
+nx g @nx/angular:library ui-buttons \
+  --directory=libs/shared/ui-buttons \
+  --tags="type:ui,scope:shared" \
+  --standalone
+
+# Util library
+nx g @nx/js:library util-format \
+  --directory=libs/shared/util-format \
+  --tags="type:util,scope:shared"
+
+# Nest.js library
+nx g @nx/nest:library domain-users \
+  --directory=libs/domain-users \
+  --tags="type:domain,scope:users"
+```
+
+### Library Structure
+
+```
+libs/feature-users/
+├── src/
+│   ├── index.ts                    # Public API (barrel export)
+│   ├── lib/
+│   │   ├── feature-users.module.ts # (if using modules)
+│   │   ├── user-list/
+│   │   │   ├── user-list.component.ts
+│   │   │   ├── user-list.component.html
+│   │   │   ├── user-list.component.scss
+│   │   │   └── user-list.component.spec.ts
+│   │   └── user-detail/
+│   │       └── ...
+│   └── lib.routes.ts               # Feature routes
+├── project.json
+├── tsconfig.json
+├── tsconfig.lib.json
+├── tsconfig.spec.json
+├── jest.config.ts
+└── README.md
+```
+
+---
+
+## Import Paths
+
+### TypeScript Path Mapping
+
+```json
+// tsconfig.base.json
+{
+  "compilerOptions": {
+    "paths": {
+      "@myorg/feature-users": ["libs/feature-users/src/index.ts"],
+      "@myorg/data-access-users": ["libs/data-access-users/src/index.ts"],
+      "@myorg/shared-ui": ["libs/shared/ui/src/index.ts"],
+      "@myorg/shared-util": ["libs/shared/util/src/index.ts"],
+      "@myorg/domain-users": ["libs/domain-users/src/index.ts"]
+    }
+  }
+}
+```
+
+### Barrel Exports
+
+```typescript
+// libs/feature-users/src/index.ts
+// Only export public API - hide internal implementation
+
+// ✅ Export components that should be used externally
+export { UserListComponent } from './lib/user-list/user-list.component';
+export { UserDetailComponent } from './lib/user-detail/user-detail.component';
+export { userRoutes } from './lib/lib.routes';
+
+// ❌ Don't export internal helpers or private components
+// export { formatUserName } from './lib/utils/format';
+// export { UserItemComponent } from './lib/user-list/user-item.component';
+```
+
+### Import Rules
+
+```typescript
+// ✅ Always use path aliases
+import { UserListComponent } from '@myorg/feature-users';
+import { UserService } from '@myorg/data-access-users';
+import { ButtonComponent } from '@myorg/shared-ui';
+
+// ❌ Never use relative imports across library boundaries
+import { UserListComponent } from '../../../feature-users/src/lib/user-list.component';
+
+// ❌ Never import from deep paths
+import { UserListComponent } from '@myorg/feature-users/src/lib/user-list/user-list.component';
+```
+
+---
+
+## Application Setup
+
+### Thin Applications
+
+Applications should be thin orchestration layers:
+
+```typescript
+// apps/web/src/app/app.routes.ts
+import { Routes } from '@angular/router';
+
+export const appRoutes: Routes = [
+  {
+    path: '',
+    redirectTo: 'dashboard',
+    pathMatch: 'full',
+  },
+  {
+    path: 'dashboard',
+    loadChildren: () => import('@myorg/feature-dashboard').then(m => m.dashboardRoutes),
+  },
+  {
+    path: 'users',
+    loadChildren: () => import('@myorg/feature-users').then(m => m.userRoutes),
+  },
+  {
+    path: 'orders',
+    loadChildren: () => import('@myorg/feature-orders').then(m => m.orderRoutes),
+  },
+];
+```
+
+```typescript
+// apps/web/src/app/app.component.ts
+import { Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
+import { HeaderComponent } from '@myorg/shared-ui';
+
+@Component({
+  selector: 'app-root',
+  standalone: true,
+  imports: [RouterOutlet, HeaderComponent],
+  template: `
+    <myorg-header />
+    <main>
+      <router-outlet />
+    </main>
+  `,
+})
+export class AppComponent {}
+```
+
+### App Configuration
+
+```typescript
+// apps/web/src/app/app.config.ts
+import { ApplicationConfig } from '@angular/core';
+import { provideRouter } from '@angular/router';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { appRoutes } from './app.routes';
+import { authInterceptor } from '@myorg/shared-util-auth';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideRouter(appRoutes),
+    provideHttpClient(withInterceptors([authInterceptor])),
+  ],
+};
+```
+
+---
+
+## Feature Libraries
+
+### Feature Library Pattern
+
+```typescript
+// libs/feature-users/src/lib/lib.routes.ts
+import { Routes } from '@angular/router';
+
+export const userRoutes: Routes = [
+  {
+    path: '',
+    loadComponent: () =>
+      import('./user-list/user-list.component').then(m => m.UserListComponent),
+  },
+  {
+    path: ':id',
+    loadComponent: () =>
+      import('./user-detail/user-detail.component').then(m => m.UserDetailComponent),
+  },
+  {
+    path: ':id/edit',
+    loadComponent: () =>
+      import('./user-edit/user-edit.component').then(m => m.UserEditComponent),
+  },
+];
+```
+
+```typescript
+// libs/feature-users/src/lib/user-list/user-list.component.ts
+import { Component, inject } from '@angular/core';
+import { UserStore } from '@myorg/data-access-users';
+import { UserCardComponent } from '@myorg/shared-ui';
+
+@Component({
+  selector: 'myorg-user-list',
+  standalone: true,
+  imports: [UserCardComponent],
+  template: `
+    @if (store.loading()) {
+      <p>Loading...</p>
+    } @else {
+      @for (user of store.users(); track user.id) {
+        <myorg-user-card [user]="user" />
+      }
+    }
+  `,
+})
+export class UserListComponent {
+  protected readonly store = inject(UserStore);
+
+  constructor() {
+    this.store.loadUsers();
+  }
+}
+```
+
+---
+
+## Data Access Libraries
+
+### State Management
+
+```typescript
+// libs/data-access-users/src/lib/user.store.ts
+import { Injectable, inject } from '@angular/core';
+import { signalStore, withState, withMethods, withComputed, patchState } from '@ngrx/signals';
+import { UserService } from './user.service';
+import { User } from '@myorg/domain-users';
+
+interface UserState {
+  users: User[];
+  selectedUserId: string | null;
+  loading: boolean;
+  error: string | null;
+}
+
+const initialState: UserState = {
+  users: [],
+  selectedUserId: null,
+  loading: false,
+  error: null,
+};
+
+export const UserStore = signalStore(
+  { providedIn: 'root' },
+  withState(initialState),
+  withComputed((store) => ({
+    selectedUser: computed(() => {
+      const id = store.selectedUserId();
+      return store.users().find(u => u.id === id) ?? null;
+    }),
+  })),
+  withMethods((store, userService = inject(UserService)) => ({
+    async loadUsers(): Promise<void> {
+      patchState(store, { loading: true, error: null });
+      try {
+        const users = await firstValueFrom(userService.getAll());
+        patchState(store, { users, loading: false });
+      } catch (error) {
+        patchState(store, { error: (error as Error).message, loading: false });
+      }
+    },
+    selectUser(id: string): void {
+      patchState(store, { selectedUserId: id });
+    },
+  })),
+);
+```
+
+### API Service
+
+```typescript
+// libs/data-access-users/src/lib/user.service.ts
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { User, CreateUserDto, UpdateUserDto } from '@myorg/domain-users';
+import { API_BASE_URL } from '@myorg/shared-util-config';
+
+@Injectable({ providedIn: 'root' })
+export class UserService {
+  private readonly http = inject(HttpClient);
+  private readonly baseUrl = inject(API_BASE_URL);
+
+  getAll(): Observable<User[]> {
+    return this.http.get<User[]>(`${this.baseUrl}/users`);
+  }
+
+  getById(id: string): Observable<User> {
+    return this.http.get<User>(`${this.baseUrl}/users/${id}`);
+  }
+
+  create(dto: CreateUserDto): Observable<User> {
+    return this.http.post<User>(`${this.baseUrl}/users`, dto);
+  }
+
+  update(id: string, dto: UpdateUserDto): Observable<User> {
+    return this.http.put<User>(`${this.baseUrl}/users/${id}`, dto);
+  }
+
+  delete(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/users/${id}`);
+  }
+}
+```
+
+---
+
+## Shared Libraries
+
+### UI Library
+
+```typescript
+// libs/shared/ui/src/lib/button/button.component.ts
+import { Component, input, output } from '@angular/core';
+
+type ButtonVariant = 'primary' | 'secondary' | 'danger';
+
+@Component({
+  selector: 'myorg-button',
+  standalone: true,
+  template: `
+    <button
+      [class]="variant()"
+      [disabled]="disabled()"
+      [type]="type()"
+      (click)="clicked.emit()"
+    >
+      <ng-content />
+    </button>
+  `,
+  styleUrl: './button.component.scss',
+})
+export class ButtonComponent {
+  variant = input<ButtonVariant>('primary');
+  disabled = input(false);
+  type = input<'button' | 'submit'>('button');
+  clicked = output<void>();
+}
+```
+
+### Util Library
+
+```typescript
+// libs/shared/util/src/lib/format.ts
+
+/**
+ * Format a date to locale string
+ */
+export function formatDate(date: Date, locale = 'en-US'): string {
+  return date.toLocaleDateString(locale, {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+}
+
+/**
+ * Format currency
+ */
+export function formatCurrency(
+  amount: number,
+  currency = 'USD',
+  locale = 'en-US',
+): string {
+  return new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency,
+  }).format(amount);
+}
+
+/**
+ * Truncate string with ellipsis
+ */
+export function truncate(str: string, maxLength: number): string {
+  if (str.length <= maxLength) return str;
+  return `${str.slice(0, maxLength - 3)}...`;
+}
+```
+
+---
+
+## Domain Libraries
+
+### Entity Definitions
+
+```typescript
+// libs/domain-users/src/lib/user.model.ts
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  role: UserRole;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export enum UserRole {
+  Admin = 'admin',
+  User = 'user',
+  Guest = 'guest',
+}
+
+export interface CreateUserDto {
+  email: string;
+  name: string;
+  password: string;
+  role?: UserRole;
+}
+
+export interface UpdateUserDto {
+  email?: string;
+  name?: string;
+  role?: UserRole;
+}
+```
+
+### Business Logic
+
+```typescript
+// libs/domain-users/src/lib/user.utils.ts
+import { User, UserRole } from './user.model';
+
+export function canEditUser(currentUser: User, targetUser: User): boolean {
+  if (currentUser.role === UserRole.Admin) return true;
+  return currentUser.id === targetUser.id;
+}
+
+export function canDeleteUser(currentUser: User, targetUser: User): boolean {
+  if (currentUser.id === targetUser.id) return false;
+  return currentUser.role === UserRole.Admin;
+}
+
+export function getDisplayName(user: User): string {
+  return user.name || user.email.split('@')[0];
+}
+```
+
+---
+
+## Nx Commands
+
+### Common Commands
+
+```bash
+# Run affected tests
+nx affected -t test
+
+# Run affected lint
+nx affected -t lint
+
+# Build affected apps
+nx affected -t build
+
+# Run specific target
+nx run feature-users:test
+nx run web:build:production
+
+# Generate dependency graph
+nx graph
+
+# Show affected projects
+nx show projects --affected
+
+# Run multiple targets
+nx run-many -t test,lint
+
+# Reset Nx cache
+nx reset
+```
+
+### Task Pipelines
+
+```json
+// nx.json
+{
+  "targetDefaults": {
+    "build": {
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production"],
+      "cache": true
+    },
+    "test": {
+      "inputs": ["default", "^production"],
+      "cache": true
+    },
+    "lint": {
+      "inputs": ["default", "{workspaceRoot}/.eslintrc.json"],
+      "cache": true
+    }
+  },
+  "namedInputs": {
+    "default": ["{projectRoot}/**/*", "sharedGlobals"],
+    "production": ["default", "!{projectRoot}/**/*.spec.ts"],
+    "sharedGlobals": ["{workspaceRoot}/tsconfig.base.json"]
+  }
+}
+```
+
+---
+
+## Testing Strategy
+
+### Test Organization
+
+```bash
+# Run all tests
+nx run-many -t test
+
+# Run tests for affected projects
+nx affected -t test
+
+# Run tests for specific library
+nx test feature-users
+
+# Run tests with coverage
+nx test feature-users --coverage
+
+# Run e2e tests
+nx e2e web-e2e
+```
+
+### Test Configuration
+
+```typescript
+// libs/feature-users/jest.config.ts
+export default {
+  displayName: 'feature-users',
+  preset: '../../jest.preset.js',
+  setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
+  coverageDirectory: '../../coverage/libs/feature-users',
+  transform: {
+    '^.+\\.(ts|mjs|js|html)$': [
+      'jest-preset-angular',
+      {
+        tsconfig: '<rootDir>/tsconfig.spec.json',
+        stringifyContentPathRegex: '\\.(html|svg)$',
+      },
+    ],
+  },
+  transformIgnorePatterns: ['node_modules/(?!.*\\.mjs$)'],
+  snapshotSerializers: [
+    'jest-preset-angular/build/serializers/no-ng-attributes',
+    'jest-preset-angular/build/serializers/ng-snapshot',
+    'jest-preset-angular/build/serializers/html-comment',
+  ],
+};
+```
+
+---
+
+## Common Mistakes to Avoid
+
+1. **Circular dependencies** - Use the dependency graph to detect cycles
+2. **Deep imports** - Only import from barrel exports
+3. **Wrong library type** - Match library purpose to type
+4. **Missing tags** - Always tag libraries for boundary enforcement
+5. **Fat applications** - Keep apps thin, logic in libs
+6. **Shared state in utils** - Utils must be pure functions
+7. **UI with business logic** - UI components should be presentational
+8. **Not using affected** - Always use affected for CI/CD
+9. **Ignoring the graph** - Check `nx graph` before major changes
+10. **Breaking barrel exports** - Don't expose internal implementation
+
+---
+
+## Migration Checklist
+
+When adding new code:
+
+- [ ] Created in appropriate library type
+- [ ] Tags assigned in project.json
+- [ ] Exports added to barrel (index.ts)
+- [ ] Module boundaries respected
+- [ ] Tests colocated with code
+- [ ] Dependency graph is acyclic
+- [ ] Affected commands still work

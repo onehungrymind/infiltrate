@@ -17,7 +17,7 @@ export class KnowledgeUnit {
   @Column({ nullable: true })
   principleId: string;
 
-  @ManyToOne(() => Principle, principle => principle.knowledgeUnits, { nullable: true })
+  @ManyToOne(() => Principle, principle => principle.knowledgeUnits, { nullable: true, onDelete: 'SET NULL' })
   principle: Principle;
 
   @Column()

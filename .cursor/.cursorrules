@@ -1,0 +1,494 @@
+# Cursor Rules - AI Code Generation Guidelines
+
+## Core Philosophy
+
+This project follows clean code principles and first principles thinking. All generated code must be maintainable, testable, and idiomatic to the framework in use.
+
+### Guiding Principles
+
+1. **Single Responsibility**: Every function, class, and module should have one reason to change
+2. **Fine-Grained Units**: Code should be decomposed into small, focused units that are easy to test in isolation
+3. **Explicit Over Implicit**: Prefer clear, readable code over clever abstractions
+4. **Fail Fast**: Validate inputs early and surface errors immediately
+5. **Composition Over Inheritance**: Build complex behavior from simple, composable pieces
+
+---
+
+## Code Quality Standards
+
+### Naming Conventions
+
+- Use descriptive, intention-revealing names
+- Avoid abbreviations unless they are universally understood (e.g., `id`, `url`)
+- Functions should be verbs or verb phrases: `calculateTotal`, `fetchUser`, `validateInput`
+- Booleans should read as questions: `isActive`, `hasPermission`, `canEdit`
+- Avoid generic names like `data`, `info`, `item`, `temp`, `result` without context
+
+### Function Design
+
+- Functions should do one thing and do it well
+- Keep functions under 20 lines when possible
+- Limit function parameters to 3 or fewer; use an options object for more
+- Pure functions are preferred—avoid side effects when possible
+- Extract complex conditionals into well-named functions
+
+```typescript
+// ❌ Avoid
+function process(data: any) {
+  if (data.type === 'A' && data.status === 'active' && data.role === 'admin') {
+    // ...
+  }
+}
+
+// ✅ Prefer
+function isActiveAdmin(user: User): boolean {
+  return user.type === 'A' && user.status === 'active' && user.role === 'admin';
+}
+
+function processUser(user: User) {
+  if (isActiveAdmin(user)) {
+    // ...
+  }
+}
+```
+
+### Error Handling
+
+- Use typed errors or error classes, not generic Error with string messages
+- Handle errors at the appropriate level—don't swallow exceptions
+- Provide actionable error messages that help debugging
+- Use Result types or Either patterns for expected failure cases
+
+---
+
+## Testing Requirements
+
+### Test Structure
+
+All code must be written with testability as a primary concern:
+
+- Each public function should be independently testable
+- Dependencies must be injectable (no hardcoded instantiation)
+- Side effects should be isolated and mockable
+- Use factories or builders for complex test data
+
+### Test Naming
+
+Use descriptive test names that document behavior:
+
+```typescript
+// ❌ Avoid
+it('should work')
+it('test calculateTotal')
+
+// ✅ Prefer
+it('returns zero when cart is empty')
+it('applies discount when coupon is valid and not expired')
+it('throws InsufficientFundsError when balance is below withdrawal amount')
+```
+
+### Test Coverage Expectations
+
+- All business logic must have unit tests
+- Edge cases and error paths must be tested
+- Integration tests for module boundaries
+- Prefer many small, focused tests over few large tests
+
+---
+
+## Framework-Specific Guidelines
+
+### Angular
+
+Follow the official Angular style guide and leverage modern features:
+
+**Signals (Required for new code)**
+```typescript
+// ❌ Legacy approach
+@Input() name: string;
+@Output() nameChange = new EventEmitter<string>();
+
+// ✅ Modern approach with signals
+name = input.required<string>();
+nameChange = output<string>();
+
+// Computed values
+fullName = computed(() => `${this.firstName()} ${this.lastName()}`);
+
+// Effects for side effects
+constructor() {
+  effect(() => {
+    console.log('Name changed:', this.name());
+  });
+}
+```
+
+**Component Architecture**
+- Use standalone components (no NgModules for new components)
+- Prefer `inject()` function over constructor injection
+- Use `ChangeDetectionStrategy.OnPush` by default
+- Keep components small—extract logic into services
+
+**File Organization**
+```
+feature/
+├── feature.component.ts
+├── feature.component.html
+├── feature.component.scss
+├── feature.component.spec.ts
+├── feature.service.ts
+├── feature.service.spec.ts
+└── models/
+    └── feature.model.ts
+```
+
+**Template Best Practices**
+- Use `@if`, `@for`, `@switch` control flow (not `*ngIf`, `*ngFor`)
+- Use `@defer` for lazy loading heavy components
+- Avoid logic in templates—use computed signals instead
+
+### React
+
+Follow React best practices with modern patterns:
+
+**Hooks and State**
+```typescript
+// ❌ Avoid large components with mixed concerns
+function UserProfile() {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(false);
+  // ... 200 lines of mixed logic
+}
+
+// ✅ Prefer custom hooks for logic extraction
+function useUser(userId: string) {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+  
+  useEffect(() => {
+    // fetch logic
+  }, [userId]);
+  
+  return { user, loading, error };
+}
+
+function UserProfile({ userId }: { userId: string }) {
+  const { user, loading, error } = useUser(userId);
+  // ... focused render logic
+}
+```
+
+**Component Patterns**
+- Use function components exclusively
+- Extract reusable logic into custom hooks
+- Prefer composition over prop drilling
+- Use React.memo() only when profiling shows benefit
+- Keep components under 100 lines
+
+**State Management**
+- Start with useState/useReducer for local state
+- Use Context sparingly—prefer prop passing for 1-2 levels
+- Consider Zustand or Jotai for complex global state
+- Avoid Redux unless the app genuinely requires it
+
+### Nest.js
+
+Follow Nest.js conventions and clean architecture:
+
+**Module Organization**
+```
+modules/
+└── users/
+    ├── users.module.ts
+    ├── users.controller.ts
+    ├── users.controller.spec.ts
+    ├── users.service.ts
+    ├── users.service.spec.ts
+    ├── dto/
+    │   ├── create-user.dto.ts
+    │   └── update-user.dto.ts
+    ├── entities/
+    │   └── user.entity.ts
+    └── interfaces/
+        └── user.interface.ts
+```
+
+**Controller Design**
+```typescript
+// ❌ Avoid business logic in controllers
+@Post()
+async create(@Body() dto: CreateUserDto) {
+  const hashedPassword = await bcrypt.hash(dto.password, 10);
+  return this.userRepository.save({ ...dto, password: hashedPassword });
+}
+
+// ✅ Controllers should only handle HTTP concerns
+@Post()
+@HttpCode(HttpStatus.CREATED)
+async create(@Body() dto: CreateUserDto): Promise<UserResponseDto> {
+  const user = await this.usersService.create(dto);
+  return this.mapper.toResponse(user);
+}
+```
+
+**Service Design**
+- Services contain business logic
+- One service per domain concept
+- Use interfaces for repository abstractions
+- Inject dependencies via constructor
+
+**DTOs and Validation**
+- Use class-validator decorators for input validation
+- Create separate DTOs for create, update, and response
+- Never expose entities directly—map to DTOs
+
+### Python
+
+Follow PEP 8 and modern Python practices:
+
+**Type Hints (Required)**
+```python
+# ❌ Avoid untyped code
+def process(data):
+    return data.get('value')
+
+# ✅ Always use type hints
+def process(data: dict[str, Any]) -> str | None:
+    return data.get('value')
+```
+
+**Function Design**
+```python
+# ❌ Avoid functions that do too much
+def handle_user_registration(data):
+    # validate
+    # hash password
+    # save to db
+    # send email
+    # log event
+    pass
+
+# ✅ Single responsibility functions
+def validate_registration(data: RegistrationData) -> ValidationResult:
+    ...
+
+def create_user(data: RegistrationData) -> User:
+    ...
+
+def send_welcome_email(user: User) -> None:
+    ...
+```
+
+**Project Structure**
+```
+src/
+├── domain/
+│   ├── models/
+│   └── services/
+├── infrastructure/
+│   ├── repositories/
+│   └── external/
+├── api/
+│   ├── routes/
+│   └── schemas/
+└── tests/
+    ├── unit/
+    └── integration/
+```
+
+**Testing with pytest**
+- Use fixtures for test setup
+- Parametrize tests for multiple scenarios
+- Use factories (factory_boy) for test data
+- Mock external dependencies
+
+### Next.js
+
+Follow Next.js App Router conventions:
+
+**File Structure**
+```
+app/
+├── layout.tsx
+├── page.tsx
+├── loading.tsx
+├── error.tsx
+└── users/
+    ├── page.tsx
+    ├── [id]/
+    │   └── page.tsx
+    └── actions.ts
+```
+
+**Server Components vs Client Components**
+```typescript
+// Server Component (default) - for data fetching and static content
+async function UserList() {
+  const users = await fetchUsers(); // Direct async/await
+  return <ul>{users.map(u => <li key={u.id}>{u.name}</li>)}</ul>;
+}
+
+// Client Component - for interactivity
+'use client';
+function Counter() {
+  const [count, setCount] = useState(0);
+  return <button onClick={() => setCount(c => c + 1)}>{count}</button>;
+}
+```
+
+**Server Actions**
+```typescript
+// app/users/actions.ts
+'use server';
+
+export async function createUser(formData: FormData) {
+  const name = formData.get('name');
+  // Validate and save
+  revalidatePath('/users');
+}
+```
+
+**Data Fetching**
+- Use Server Components for initial data
+- Use `fetch` with caching options
+- Implement proper loading and error states
+- Use React Suspense for streaming
+
+---
+
+## Code Organization Patterns
+
+### Dependency Injection
+
+Always design for testability through dependency injection:
+
+```typescript
+// ❌ Hard to test
+class OrderService {
+  private emailService = new EmailService();
+  private paymentGateway = new StripeGateway();
+}
+
+// ✅ Injectable dependencies
+class OrderService {
+  constructor(
+    private readonly emailService: EmailService,
+    private readonly paymentGateway: PaymentGateway,
+  ) {}
+}
+```
+
+### Repository Pattern
+
+Abstract data access behind interfaces:
+
+```typescript
+interface UserRepository {
+  findById(id: string): Promise<User | null>;
+  save(user: User): Promise<User>;
+  delete(id: string): Promise<void>;
+}
+
+class PostgresUserRepository implements UserRepository {
+  // Implementation
+}
+
+class InMemoryUserRepository implements UserRepository {
+  // For testing
+}
+```
+
+### Service Layer
+
+Keep business logic in dedicated service classes:
+
+```typescript
+// Services are stateless and focused
+class OrderService {
+  async placeOrder(cart: Cart, customer: Customer): Promise<Order> {
+    this.validateCart(cart);
+    const order = this.createOrder(cart, customer);
+    await this.processPayment(order);
+    await this.notifyCustomer(order);
+    return order;
+  }
+
+  private validateCart(cart: Cart): void { /* ... */ }
+  private createOrder(cart: Cart, customer: Customer): Order { /* ... */ }
+  // Each method is small and testable
+}
+```
+
+---
+
+## What to Avoid
+
+### Anti-Patterns
+
+- **God Objects**: Classes that know or do too much
+- **Primitive Obsession**: Using primitives instead of domain types
+- **Feature Envy**: Methods that use other objects' data more than their own
+- **Shotgun Surgery**: Changes requiring edits across many files
+- **Copy-Paste Programming**: Duplicated code instead of abstractions
+
+### Code Smells
+
+- Functions longer than 20-30 lines
+- More than 3 levels of nesting
+- Boolean parameters (use separate functions or enums)
+- Comments explaining what code does (the code should be self-documenting)
+- Catching generic exceptions without handling
+- Magic numbers and strings (use named constants)
+
+---
+
+## Documentation Standards
+
+### Code Comments
+
+- Don't comment what—the code should be readable
+- Do comment why—explain non-obvious decisions
+- Use JSDoc/TSDoc for public APIs
+
+```typescript
+/**
+ * Calculates the discount based on customer tier and cart total.
+ * 
+ * @param customer - The customer placing the order
+ * @param cartTotal - The pre-discount total in cents
+ * @returns The discount amount in cents
+ * 
+ * @example
+ * const discount = calculateDiscount(goldCustomer, 10000);
+ * // Returns 1000 (10% for gold tier)
+ */
+function calculateDiscount(customer: Customer, cartTotal: number): number {
+  // ...
+}
+```
+
+### README Requirements
+
+Every module/feature should have documentation covering:
+- Purpose and responsibilities
+- Public API surface
+- Usage examples
+- Configuration options
+
+---
+
+## Review Checklist
+
+Before submitting code, verify:
+
+- [ ] Single responsibility is maintained
+- [ ] Functions are small and focused (< 20 lines preferred)
+- [ ] All public functions have tests
+- [ ] Error cases are handled appropriately
+- [ ] Dependencies are injectable
+- [ ] No hardcoded values—use configuration
+- [ ] Naming is clear and consistent
+- [ ] Framework best practices are followed
+- [ ] No unnecessary comments or dead code
+- [ ] Types are explicit (no `any` unless absolutely necessary)

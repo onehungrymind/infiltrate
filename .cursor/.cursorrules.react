@@ -1,0 +1,858 @@
+# Cursor Rules - React / Next.js
+
+## Core Philosophy
+
+This project follows clean code principles with React best practices and Next.js conventions. All code must be maintainable, testable, and leverage modern React patterns.
+
+### Guiding Principles
+
+1. **Single Responsibility**: Each component and hook has one job
+2. **Fine-Grained Units**: Small, focused components and hooks that are easy to test
+3. **Composition Over Configuration**: Build complex UIs from simple, composable pieces
+4. **Server-First**: Default to Server Components, opt into Client when needed
+5. **Colocation**: Keep related code together
+
+---
+
+## React Fundamentals
+
+### Function Components Only
+
+```typescript
+// ✅ Always use function components
+export function UserCard({ user }: UserCardProps) {
+  return (
+    <div className="user-card">
+      <h2>{user.name}</h2>
+    </div>
+  );
+}
+
+// ✅ Arrow functions also acceptable
+export const UserCard = ({ user }: UserCardProps) => (
+  <div className="user-card">
+    <h2>{user.name}</h2>
+  </div>
+);
+
+// ❌ Never use class components
+class UserCard extends React.Component { }
+```
+
+### Component Size Guidelines
+
+- Keep components under 100 lines
+- If a component has more than 3-4 pieces of state, consider splitting
+- Extract custom hooks when logic is reusable or complex
+- One component per file (except small, tightly coupled components)
+
+---
+
+## Hooks
+
+### useState
+
+```typescript
+// Simple state
+const [count, setCount] = useState(0);
+
+// Complex state - prefer multiple useState over one object
+const [name, setName] = useState('');
+const [email, setEmail] = useState('');
+const [isLoading, setIsLoading] = useState(false);
+
+// ❌ Avoid large state objects
+const [form, setForm] = useState({ name: '', email: '', phone: '', ... });
+
+// Lazy initialization for expensive computations
+const [data, setData] = useState(() => computeExpensiveInitialValue());
+
+// Functional updates when depending on previous state
+setCount(prev => prev + 1);
+```
+
+### useEffect
+
+```typescript
+// ✅ Single responsibility - one effect per concern
+useEffect(() => {
+  document.title = `${count} items`;
+}, [count]);
+
+useEffect(() => {
+  const subscription = api.subscribe(handleUpdate);
+  return () => subscription.unsubscribe();
+}, []);
+
+// ❌ Avoid multiple concerns in one effect
+useEffect(() => {
+  document.title = `${count} items`;
+  const subscription = api.subscribe(handleUpdate);
+  trackAnalytics(count);
+  return () => subscription.unsubscribe();
+}, [count]);
+```
+
+### Custom Hooks
+
+Extract reusable logic into custom hooks:
+
+```typescript
+// ✅ Custom hook for data fetching
+function useUser(userId: string) {
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function fetchUser() {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const data = await api.getUser(userId);
+        if (!cancelled) {
+          setUser(data);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError(err as Error);
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
+      }
+    }
+
+    fetchUser();
+    return () => { cancelled = true; };
+  }, [userId]);
+
+  return { user, isLoading, error };
+}
+
+// Usage
+function UserProfile({ userId }: { userId: string }) {
+  const { user, isLoading, error } = useUser(userId);
+
+  if (isLoading) return <Spinner />;
+  if (error) return <ErrorMessage error={error} />;
+  if (!user) return null;
+
+  return <UserCard user={user} />;
+}
+```
+
+### useMemo and useCallback
+
+Use sparingly—only when there's a measurable performance benefit:
+
+```typescript
+// ✅ Memoize expensive calculations
+const sortedItems = useMemo(
+  () => items.sort((a, b) => a.name.localeCompare(b.name)),
+  [items]
+);
+
+// ✅ Memoize callbacks passed to optimized children
+const handleClick = useCallback((id: string) => {
+  onSelect(id);
+}, [onSelect]);
+
+// ❌ Don't memoize everything by default
+const doubled = useMemo(() => count * 2, [count]); // Unnecessary
+```
+
+### useReducer
+
+For complex state logic:
+
+```typescript
+type State = {
+  items: Item[];
+  isLoading: boolean;
+  error: Error | null;
+};
+
+type Action =
+  | { type: 'FETCH_START' }
+  | { type: 'FETCH_SUCCESS'; payload: Item[] }
+  | { type: 'FETCH_ERROR'; payload: Error }
+  | { type: 'ADD_ITEM'; payload: Item }
+  | { type: 'REMOVE_ITEM'; payload: string };
+
+function reducer(state: State, action: Action): State {
+  switch (action.type) {
+    case 'FETCH_START':
+      return { ...state, isLoading: true, error: null };
+    case 'FETCH_SUCCESS':
+      return { ...state, isLoading: false, items: action.payload };
+    case 'FETCH_ERROR':
+      return { ...state, isLoading: false, error: action.payload };
+    case 'ADD_ITEM':
+      return { ...state, items: [...state.items, action.payload] };
+    case 'REMOVE_ITEM':
+      return { ...state, items: state.items.filter(i => i.id !== action.payload) };
+    default:
+      return state;
+  }
+}
+```
+
+---
+
+## Next.js App Router
+
+### File Structure
+
+```
+app/
+├── layout.tsx              # Root layout (required)
+├── page.tsx                # Home page (/)
+├── loading.tsx             # Loading UI
+├── error.tsx               # Error UI
+├── not-found.tsx           # 404 UI
+├── globals.css
+├── (auth)/                 # Route group (no URL impact)
+│   ├── login/
+│   │   └── page.tsx
+│   └── register/
+│       └── page.tsx
+├── dashboard/
+│   ├── layout.tsx          # Nested layout
+│   ├── page.tsx
+│   └── settings/
+│       └── page.tsx
+├── users/
+│   ├── page.tsx            # /users
+│   ├── [id]/               # Dynamic segment
+│   │   ├── page.tsx        # /users/123
+│   │   └── edit/
+│   │       └── page.tsx    # /users/123/edit
+│   └── [...slug]/          # Catch-all
+│       └── page.tsx        # /users/a/b/c
+└── api/                    # API routes
+    └── users/
+        └── route.ts
+```
+
+### Server Components (Default)
+
+Server Components are the default—use them for data fetching and static content:
+
+```typescript
+// app/users/page.tsx - Server Component (no 'use client')
+import { getUsers } from '@/lib/api';
+
+export default async function UsersPage() {
+  const users = await getUsers(); // Direct async/await
+
+  return (
+    <div>
+      <h1>Users</h1>
+      <ul>
+        {users.map(user => (
+          <li key={user.id}>{user.name}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+```
+
+### Client Components
+
+Add `'use client'` only when you need interactivity:
+
+```typescript
+'use client';
+
+import { useState } from 'react';
+
+export function Counter() {
+  const [count, setCount] = useState(0);
+
+  return (
+    <button onClick={() => setCount(c => c + 1)}>
+      Count: {count}
+    </button>
+  );
+}
+```
+
+**Use Client Components for:**
+- useState, useEffect, useReducer, etc.
+- Event handlers (onClick, onChange, etc.)
+- Browser-only APIs (localStorage, window, etc.)
+- Custom hooks that use state or effects
+
+**Keep as Server Components:**
+- Data fetching
+- Accessing backend resources directly
+- Keeping sensitive info on server (API keys, etc.)
+- Large dependencies (keeps bundle small)
+
+### Server Actions
+
+```typescript
+// app/users/actions.ts
+'use server';
+
+import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
+import { z } from 'zod';
+
+const CreateUserSchema = z.object({
+  name: z.string().min(2),
+  email: z.string().email(),
+});
+
+export async function createUser(formData: FormData) {
+  const rawData = {
+    name: formData.get('name'),
+    email: formData.get('email'),
+  };
+
+  const validated = CreateUserSchema.safeParse(rawData);
+
+  if (!validated.success) {
+    return { error: validated.error.flatten().fieldErrors };
+  }
+
+  await db.user.create({ data: validated.data });
+
+  revalidatePath('/users');
+  redirect('/users');
+}
+
+// Using in a form
+export function CreateUserForm() {
+  return (
+    <form action={createUser}>
+      <input name="name" required />
+      <input name="email" type="email" required />
+      <button type="submit">Create</button>
+    </form>
+  );
+}
+```
+
+### Data Fetching Patterns
+
+```typescript
+// Fetch with caching (default)
+async function getUser(id: string) {
+  const res = await fetch(`https://api.example.com/users/${id}`);
+  return res.json();
+}
+
+// Revalidate every 60 seconds
+async function getUsers() {
+  const res = await fetch('https://api.example.com/users', {
+    next: { revalidate: 60 },
+  });
+  return res.json();
+}
+
+// No caching
+async function getLatestData() {
+  const res = await fetch('https://api.example.com/data', {
+    cache: 'no-store',
+  });
+  return res.json();
+}
+
+// Parallel data fetching
+async function Dashboard() {
+  const [users, posts, stats] = await Promise.all([
+    getUsers(),
+    getPosts(),
+    getStats(),
+  ]);
+
+  return <DashboardView users={users} posts={posts} stats={stats} />;
+}
+```
+
+### Loading and Error States
+
+```typescript
+// app/users/loading.tsx
+export default function Loading() {
+  return <UserListSkeleton />;
+}
+
+// app/users/error.tsx
+'use client';
+
+export default function Error({
+  error,
+  reset,
+}: {
+  error: Error & { digest?: string };
+  reset: () => void;
+}) {
+  return (
+    <div>
+      <h2>Something went wrong!</h2>
+      <button onClick={reset}>Try again</button>
+    </div>
+  );
+}
+```
+
+### Suspense Boundaries
+
+```typescript
+import { Suspense } from 'react';
+
+export default function Page() {
+  return (
+    <div>
+      <h1>Dashboard</h1>
+      
+      {/* Each Suspense boundary can load independently */}
+      <Suspense fallback={<StatsSkeleton />}>
+        <Stats />
+      </Suspense>
+
+      <Suspense fallback={<ChartSkeleton />}>
+        <RevenueChart />
+      </Suspense>
+
+      <Suspense fallback={<TableSkeleton />}>
+        <RecentOrders />
+      </Suspense>
+    </div>
+  );
+}
+```
+
+---
+
+## State Management
+
+### When to Use What
+
+| Scope | Solution |
+|-------|----------|
+| Component | useState, useReducer |
+| Few components | Props, composition |
+| Feature/subtree | Context + useReducer |
+| Global (simple) | Zustand |
+| Global (complex) | Zustand with slices |
+| Server state | React Query / SWR |
+
+### Zustand (Recommended for Global State)
+
+```typescript
+// stores/user-store.ts
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+
+interface UserState {
+  user: User | null;
+  isAuthenticated: boolean;
+  login: (user: User) => void;
+  logout: () => void;
+}
+
+export const useUserStore = create<UserState>()(
+  persist(
+    (set) => ({
+      user: null,
+      isAuthenticated: false,
+      login: (user) => set({ user, isAuthenticated: true }),
+      logout: () => set({ user: null, isAuthenticated: false }),
+    }),
+    { name: 'user-storage' }
+  )
+);
+
+// Usage
+function Header() {
+  const { user, logout } = useUserStore();
+  // ...
+}
+```
+
+### React Query for Server State
+
+```typescript
+// hooks/use-users.ts
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+
+export function useUsers() {
+  return useQuery({
+    queryKey: ['users'],
+    queryFn: () => api.getUsers(),
+  });
+}
+
+export function useUser(id: string) {
+  return useQuery({
+    queryKey: ['users', id],
+    queryFn: () => api.getUser(id),
+    enabled: !!id,
+  });
+}
+
+export function useCreateUser() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: CreateUserDto) => api.createUser(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+    },
+  });
+}
+
+// Usage
+function UserList() {
+  const { data: users, isLoading, error } = useUsers();
+  const createUser = useCreateUser();
+
+  if (isLoading) return <Spinner />;
+  if (error) return <ErrorMessage error={error} />;
+
+  return (
+    <div>
+      {users?.map(user => <UserCard key={user.id} user={user} />)}
+      <button onClick={() => createUser.mutate({ name: 'New User' })}>
+        Add User
+      </button>
+    </div>
+  );
+}
+```
+
+---
+
+## Component Patterns
+
+### Composition
+
+```typescript
+// ✅ Composition with children
+function Card({ children }: { children: React.ReactNode }) {
+  return <div className="card">{children}</div>;
+}
+
+function CardHeader({ children }: { children: React.ReactNode }) {
+  return <div className="card-header">{children}</div>;
+}
+
+function CardBody({ children }: { children: React.ReactNode }) {
+  return <div className="card-body">{children}</div>;
+}
+
+// Usage
+<Card>
+  <CardHeader>Title</CardHeader>
+  <CardBody>Content</CardBody>
+</Card>
+```
+
+### Render Props
+
+```typescript
+interface DataLoaderProps<T> {
+  load: () => Promise<T>;
+  children: (data: T) => React.ReactNode;
+  fallback?: React.ReactNode;
+}
+
+function DataLoader<T>({ load, children, fallback }: DataLoaderProps<T>) {
+  const [data, setData] = useState<T | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    load().then(setData).finally(() => setIsLoading(false));
+  }, [load]);
+
+  if (isLoading) return fallback ?? <Spinner />;
+  if (!data) return null;
+
+  return <>{children(data)}</>;
+}
+
+// Usage
+<DataLoader load={fetchUsers}>
+  {users => users.map(u => <UserCard key={u.id} user={u} />)}
+</DataLoader>
+```
+
+### Controlled vs Uncontrolled
+
+```typescript
+// Controlled - parent owns the state
+interface ControlledInputProps {
+  value: string;
+  onChange: (value: string) => void;
+}
+
+function ControlledInput({ value, onChange }: ControlledInputProps) {
+  return (
+    <input
+      value={value}
+      onChange={e => onChange(e.target.value)}
+    />
+  );
+}
+
+// Uncontrolled with ref
+function UncontrolledInput() {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleSubmit = () => {
+    console.log(inputRef.current?.value);
+  };
+
+  return <input ref={inputRef} />;
+}
+```
+
+---
+
+## TypeScript Patterns
+
+### Component Props
+
+```typescript
+// Basic props
+interface ButtonProps {
+  label: string;
+  onClick: () => void;
+  disabled?: boolean;
+}
+
+// Props with children
+interface CardProps {
+  title: string;
+  children: React.ReactNode;
+}
+
+// Extending HTML elements
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: 'primary' | 'secondary';
+  isLoading?: boolean;
+}
+
+function Button({ variant = 'primary', isLoading, children, ...props }: ButtonProps) {
+  return (
+    <button className={variant} disabled={isLoading} {...props}>
+      {isLoading ? <Spinner /> : children}
+    </button>
+  );
+}
+
+// Generic components
+interface ListProps<T> {
+  items: T[];
+  renderItem: (item: T) => React.ReactNode;
+  keyExtractor: (item: T) => string;
+}
+
+function List<T>({ items, renderItem, keyExtractor }: ListProps<T>) {
+  return (
+    <ul>
+      {items.map(item => (
+        <li key={keyExtractor(item)}>{renderItem(item)}</li>
+      ))}
+    </ul>
+  );
+}
+```
+
+### Event Handlers
+
+```typescript
+// Typed event handlers
+const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  setValue(e.target.value);
+};
+
+const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+  // ...
+};
+
+const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+  // ...
+};
+```
+
+---
+
+## Testing
+
+### Component Testing with Testing Library
+
+```typescript
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+
+describe('UserCard', () => {
+  it('displays user name', () => {
+    render(<UserCard user={{ id: '1', name: 'John Doe' }} />);
+    expect(screen.getByText('John Doe')).toBeInTheDocument();
+  });
+
+  it('calls onSelect when clicked', async () => {
+    const user = userEvent.setup();
+    const handleSelect = jest.fn();
+
+    render(
+      <UserCard
+        user={{ id: '1', name: 'John Doe' }}
+        onSelect={handleSelect}
+      />
+    );
+
+    await user.click(screen.getByRole('button', { name: /select/i }));
+    expect(handleSelect).toHaveBeenCalledWith('1');
+  });
+});
+```
+
+### Hook Testing
+
+```typescript
+import { renderHook, waitFor } from '@testing-library/react';
+
+describe('useUser', () => {
+  it('fetches user data', async () => {
+    const mockUser = { id: '1', name: 'John' };
+    jest.spyOn(api, 'getUser').mockResolvedValue(mockUser);
+
+    const { result } = renderHook(() => useUser('1'));
+
+    expect(result.current.isLoading).toBe(true);
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    expect(result.current.user).toEqual(mockUser);
+  });
+});
+```
+
+### Testing Server Components
+
+```typescript
+// Use async component testing
+import { render } from '@testing-library/react';
+
+describe('UsersPage', () => {
+  it('renders users', async () => {
+    const mockUsers = [{ id: '1', name: 'John' }];
+    jest.spyOn(api, 'getUsers').mockResolvedValue(mockUsers);
+
+    const component = await UsersPage();
+    render(component);
+
+    expect(screen.getByText('John')).toBeInTheDocument();
+  });
+});
+```
+
+---
+
+## File Organization
+
+```
+src/
+├── app/                    # Next.js App Router pages
+│   └── ...
+├── components/             # Shared React components
+│   ├── ui/                 # Primitive UI components
+│   │   ├── button.tsx
+│   │   ├── input.tsx
+│   │   └── modal.tsx
+│   └── features/           # Feature-specific components
+│       ├── user-card.tsx
+│       └── dashboard-chart.tsx
+├── hooks/                  # Custom React hooks
+│   ├── use-user.ts
+│   ├── use-debounce.ts
+│   └── use-local-storage.ts
+├── lib/                    # Utilities and helpers
+│   ├── api.ts
+│   ├── utils.ts
+│   └── constants.ts
+├── stores/                 # State management
+│   └── user-store.ts
+├── types/                  # TypeScript types
+│   ├── user.ts
+│   └── api.ts
+└── styles/                 # Global styles
+    └── globals.css
+```
+
+---
+
+## Performance
+
+### React.memo
+
+Use sparingly, only when profiling shows benefit:
+
+```typescript
+// Only memoize when component re-renders are expensive
+// and props rarely change
+const ExpensiveList = React.memo(function ExpensiveList({ items }: Props) {
+  return items.map(item => <ExpensiveItem key={item.id} item={item} />);
+});
+```
+
+### Code Splitting
+
+```typescript
+// Dynamic imports
+const HeavyComponent = dynamic(() => import('./HeavyComponent'), {
+  loading: () => <Spinner />,
+});
+
+// Lazy loading
+const LazyChart = lazy(() => import('./Chart'));
+
+<Suspense fallback={<ChartSkeleton />}>
+  <LazyChart data={data} />
+</Suspense>
+```
+
+### Image Optimization
+
+```typescript
+import Image from 'next/image';
+
+<Image
+  src="/hero.jpg"
+  alt="Hero image"
+  width={1200}
+  height={600}
+  priority // For above-fold images
+  placeholder="blur"
+  blurDataURL={blurUrl}
+/>
+```
+
+---
+
+## Common Mistakes to Avoid
+
+1. **Using `use client` everywhere** - Default to Server Components
+2. **Fetching in useEffect** - Use Server Components or React Query
+3. **Prop drilling** - Use composition or context
+4. **Over-memoizing** - Only memoize when profiling shows need
+5. **Large components** - Extract hooks and smaller components
+6. **Missing keys in lists** - Always use unique, stable keys
+7. **State for derived data** - Compute during render instead
+8. **Ignoring Suspense** - Use for loading states
+9. **Not handling errors** - Add error boundaries
+10. **Inline function props** - Extract when it causes re-renders

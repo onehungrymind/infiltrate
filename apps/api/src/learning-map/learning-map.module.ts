@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule } from '@nestjs/config';
 import { LearningMapController } from './learning-map.controller';
 import { LearningMapService } from './learning-map.service';
 import { LearningPath } from '../learning-paths/entities/learning-path.entity';
@@ -8,7 +9,10 @@ import { Principle } from '../principles/entities/principle.entity';
 import { KnowledgeUnit } from '../knowledge-units/entities/knowledge-unit.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([LearningPath, NotebookProgress, Principle, KnowledgeUnit])],
+  imports: [
+    TypeOrmModule.forFeature([LearningPath, NotebookProgress, Principle, KnowledgeUnit]),
+    ConfigModule,
+  ],
   controllers: [LearningMapController],
   providers: [LearningMapService],
   exports: [LearningMapService],

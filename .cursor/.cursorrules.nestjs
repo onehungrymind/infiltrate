@@ -1,0 +1,952 @@
+# Cursor Rules - Nest.js
+
+## Core Philosophy
+
+This Nest.js project follows clean architecture principles, SOLID design, and the official Nest.js conventions. All code must be maintainable, testable, and leverage the framework's dependency injection system.
+
+### Guiding Principles
+
+1. **Single Responsibility**: Each module, service, and controller has one job
+2. **Fine-Grained Units**: Small, focused classes that are easy to test in isolation
+3. **Dependency Injection**: All dependencies are injectable and mockable
+4. **Layered Architecture**: Controllers → Services → Repositories → Database
+5. **Fail Fast**: Validate early with DTOs and pipes
+
+---
+
+## Project Structure
+
+```
+src/
+├── main.ts                    # Application entry point
+├── app.module.ts              # Root module
+├── common/                    # Shared utilities
+│   ├── decorators/
+│   ├── filters/
+│   ├── guards/
+│   ├── interceptors/
+│   ├── pipes/
+│   └── interfaces/
+├── config/                    # Configuration
+│   ├── config.module.ts
+│   ├── database.config.ts
+│   └── app.config.ts
+├── modules/                   # Feature modules
+│   ├── users/
+│   │   ├── users.module.ts
+│   │   ├── users.controller.ts
+│   │   ├── users.controller.spec.ts
+│   │   ├── users.service.ts
+│   │   ├── users.service.spec.ts
+│   │   ├── dto/
+│   │   │   ├── create-user.dto.ts
+│   │   │   ├── update-user.dto.ts
+│   │   │   └── user-response.dto.ts
+│   │   ├── entities/
+│   │   │   └── user.entity.ts
+│   │   └── interfaces/
+│   │       └── user-repository.interface.ts
+│   └── auth/
+│       └── ...
+└── database/                  # Database setup
+    ├── migrations/
+    └── seeds/
+```
+
+---
+
+## Modules
+
+### Module Organization
+
+```typescript
+// users.module.ts
+import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { UsersController } from './users.controller';
+import { UsersService } from './users.service';
+import { User } from './entities/user.entity';
+
+@Module({
+  imports: [TypeOrmModule.forFeature([User])],
+  controllers: [UsersController],
+  providers: [UsersService],
+  exports: [UsersService], // Only export what other modules need
+})
+export class UsersModule {}
+```
+
+### Module Guidelines
+
+- One module per domain concept
+- Keep modules focused and cohesive
+- Export only what's needed by other modules
+- Use `forRoot()` / `forRootAsync()` for configurable modules
+- Use `forFeature()` for feature-specific setup
+
+---
+
+## Controllers
+
+### Controller Design
+
+Controllers handle HTTP concerns only—no business logic:
+
+```typescript
+// users.controller.ts
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Param,
+  Body,
+  Query,
+  HttpCode,
+  HttpStatus,
+  ParseUUIDPipe,
+} from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { UsersService } from './users.service';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { UserResponseDto } from './dto/user-response.dto';
+import { PaginationDto } from '@/common/dto/pagination.dto';
+
+@ApiTags('users')
+@Controller('users')
+export class UsersController {
+  constructor(private readonly usersService: UsersService) {}
+
+  @Get()
+  @ApiOperation({ summary: 'Get all users' })
+  @ApiResponse({ status: 200, type: [UserResponseDto] })
+  async findAll(@Query() pagination: PaginationDto): Promise<UserResponseDto[]> {
+    const users = await this.usersService.findAll(pagination);
+    return users.map(UserResponseDto.fromEntity);
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: 'Get user by ID' })
+  @ApiResponse({ status: 200, type: UserResponseDto })
+  @ApiResponse({ status: 404, description: 'User not found' })
+  async findOne(
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<UserResponseDto> {
+    const user = await this.usersService.findOne(id);
+    return UserResponseDto.fromEntity(user);
+  }
+
+  @Post()
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Create user' })
+  @ApiResponse({ status: 201, type: UserResponseDto })
+  async create(@Body() dto: CreateUserDto): Promise<UserResponseDto> {
+    const user = await this.usersService.create(dto);
+    return UserResponseDto.fromEntity(user);
+  }
+
+  @Put(':id')
+  @ApiOperation({ summary: 'Update user' })
+  async update(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: UpdateUserDto,
+  ): Promise<UserResponseDto> {
+    const user = await this.usersService.update(id, dto);
+    return UserResponseDto.fromEntity(user);
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Delete user' })
+  async remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
+    await this.usersService.remove(id);
+  }
+}
+```
+
+### Controller Guidelines
+
+- Use appropriate HTTP status codes
+- Use `ParseUUIDPipe`, `ParseIntPipe`, etc. for parameter validation
+- Return DTOs, never entities
+- Keep controllers thin—delegate to services
+- Use Swagger decorators for API documentation
+
+---
+
+## Services
+
+### Service Design
+
+Services contain business logic:
+
+```typescript
+// users.service.ts
+import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { User } from './entities/user.entity';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { PaginationDto } from '@/common/dto/pagination.dto';
+import * as bcrypt from 'bcrypt';
+
+@Injectable()
+export class UsersService {
+  constructor(
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+  ) {}
+
+  async findAll(pagination: PaginationDto): Promise<User[]> {
+    const { page = 1, limit = 10 } = pagination;
+    return this.userRepository.find({
+      skip: (page - 1) * limit,
+      take: limit,
+      order: { createdAt: 'DESC' },
+    });
+  }
+
+  async findOne(id: string): Promise<User> {
+    const user = await this.userRepository.findOne({ where: { id } });
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+    return user;
+  }
+
+  async findByEmail(email: string): Promise<User | null> {
+    return this.userRepository.findOne({ where: { email } });
+  }
+
+  async create(dto: CreateUserDto): Promise<User> {
+    const existingUser = await this.findByEmail(dto.email);
+    if (existingUser) {
+      throw new ConflictException('Email already exists');
+    }
+
+    const hashedPassword = await this.hashPassword(dto.password);
+    const user = this.userRepository.create({
+      ...dto,
+      password: hashedPassword,
+    });
+
+    return this.userRepository.save(user);
+  }
+
+  async update(id: string, dto: UpdateUserDto): Promise<User> {
+    const user = await this.findOne(id);
+
+    if (dto.email && dto.email !== user.email) {
+      const existingUser = await this.findByEmail(dto.email);
+      if (existingUser) {
+        throw new ConflictException('Email already exists');
+      }
+    }
+
+    if (dto.password) {
+      dto.password = await this.hashPassword(dto.password);
+    }
+
+    Object.assign(user, dto);
+    return this.userRepository.save(user);
+  }
+
+  async remove(id: string): Promise<void> {
+    const user = await this.findOne(id);
+    await this.userRepository.remove(user);
+  }
+
+  private async hashPassword(password: string): Promise<string> {
+    const salt = await bcrypt.genSalt(10);
+    return bcrypt.hash(password, salt);
+  }
+}
+```
+
+### Service Guidelines
+
+- One public method per use case
+- Private methods for shared logic
+- Throw appropriate HTTP exceptions
+- Keep methods focused and small
+- Use transactions for multi-step operations
+
+---
+
+## DTOs and Validation
+
+### Input DTOs
+
+```typescript
+// dto/create-user.dto.ts
+import {
+  IsString,
+  IsEmail,
+  MinLength,
+  MaxLength,
+  IsOptional,
+  IsEnum,
+  Matches,
+} from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
+import { UserRole } from '../enums/user-role.enum';
+
+export class CreateUserDto {
+  @ApiProperty({ example: 'John Doe' })
+  @IsString()
+  @MinLength(2)
+  @MaxLength(100)
+  @Transform(({ value }) => value?.trim())
+  name: string;
+
+  @ApiProperty({ example: 'john@example.com' })
+  @IsEmail()
+  @Transform(({ value }) => value?.toLowerCase().trim())
+  email: string;
+
+  @ApiProperty({ example: 'SecureP@ss123' })
+  @IsString()
+  @MinLength(8)
+  @MaxLength(72)
+  @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, {
+    message: 'Password must contain uppercase, lowercase, and number',
+  })
+  password: string;
+
+  @ApiPropertyOptional({ enum: UserRole, default: UserRole.USER })
+  @IsOptional()
+  @IsEnum(UserRole)
+  role?: UserRole = UserRole.USER;
+}
+```
+
+### Update DTOs
+
+```typescript
+// dto/update-user.dto.ts
+import { PartialType, OmitType } from '@nestjs/swagger';
+import { CreateUserDto } from './create-user.dto';
+
+// All fields optional except password
+export class UpdateUserDto extends PartialType(
+  OmitType(CreateUserDto, ['password'] as const),
+) {}
+
+// Or with password optional
+export class UpdateUserDto extends PartialType(CreateUserDto) {}
+```
+
+### Response DTOs
+
+```typescript
+// dto/user-response.dto.ts
+import { ApiProperty } from '@nestjs/swagger';
+import { Exclude, Expose } from 'class-transformer';
+import { User } from '../entities/user.entity';
+import { UserRole } from '../enums/user-role.enum';
+
+export class UserResponseDto {
+  @ApiProperty()
+  @Expose()
+  id: string;
+
+  @ApiProperty()
+  @Expose()
+  name: string;
+
+  @ApiProperty()
+  @Expose()
+  email: string;
+
+  @ApiProperty({ enum: UserRole })
+  @Expose()
+  role: UserRole;
+
+  @ApiProperty()
+  @Expose()
+  createdAt: Date;
+
+  @Exclude()
+  password: string;
+
+  static fromEntity(user: User): UserResponseDto {
+    const dto = new UserResponseDto();
+    dto.id = user.id;
+    dto.name = user.name;
+    dto.email = user.email;
+    dto.role = user.role;
+    dto.createdAt = user.createdAt;
+    return dto;
+  }
+}
+```
+
+### Pagination DTO
+
+```typescript
+// common/dto/pagination.dto.ts
+import { IsOptional, IsInt, Min, Max } from 'class-validator';
+import { Type } from 'class-transformer';
+import { ApiPropertyOptional } from '@nestjs/swagger';
+
+export class PaginationDto {
+  @ApiPropertyOptional({ default: 1 })
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  page?: number = 1;
+
+  @ApiPropertyOptional({ default: 10 })
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  @Max(100)
+  limit?: number = 10;
+}
+```
+
+---
+
+## Entities
+
+### Entity Design
+
+```typescript
+// entities/user.entity.ts
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  OneToMany,
+  Index,
+} from 'typeorm';
+import { UserRole } from '../enums/user-role.enum';
+import { Post } from '@/modules/posts/entities/post.entity';
+
+@Entity('users')
+export class User {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
+  @Column({ length: 100 })
+  name: string;
+
+  @Index({ unique: true })
+  @Column({ length: 255 })
+  email: string;
+
+  @Column()
+  password: string;
+
+  @Column({ type: 'enum', enum: UserRole, default: UserRole.USER })
+  role: UserRole;
+
+  @Column({ default: true })
+  isActive: boolean;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
+
+  @OneToMany(() => Post, (post) => post.author)
+  posts: Post[];
+}
+```
+
+---
+
+## Guards
+
+### Authentication Guard
+
+```typescript
+// common/guards/jwt-auth.guard.ts
+import { Injectable, ExecutionContext } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { Reflector } from '@nestjs/core';
+import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
+
+@Injectable()
+export class JwtAuthGuard extends AuthGuard('jwt') {
+  constructor(private reflector: Reflector) {
+    super();
+  }
+
+  canActivate(context: ExecutionContext) {
+    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+
+    if (isPublic) {
+      return true;
+    }
+
+    return super.canActivate(context);
+  }
+}
+```
+
+### Role Guard
+
+```typescript
+// common/guards/roles.guard.ts
+import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
+import { ROLES_KEY } from '../decorators/roles.decorator';
+import { UserRole } from '@/modules/users/enums/user-role.enum';
+
+@Injectable()
+export class RolesGuard implements CanActivate {
+  constructor(private reflector: Reflector) {}
+
+  canActivate(context: ExecutionContext): boolean {
+    const requiredRoles = this.reflector.getAllAndOverride<UserRole[]>(
+      ROLES_KEY,
+      [context.getHandler(), context.getClass()],
+    );
+
+    if (!requiredRoles) {
+      return true;
+    }
+
+    const { user } = context.switchToHttp().getRequest();
+    return requiredRoles.includes(user.role);
+  }
+}
+```
+
+---
+
+## Custom Decorators
+
+```typescript
+// common/decorators/public.decorator.ts
+import { SetMetadata } from '@nestjs/common';
+
+export const IS_PUBLIC_KEY = 'isPublic';
+export const Public = () => SetMetadata(IS_PUBLIC_KEY, true);
+
+// common/decorators/roles.decorator.ts
+import { SetMetadata } from '@nestjs/common';
+import { UserRole } from '@/modules/users/enums/user-role.enum';
+
+export const ROLES_KEY = 'roles';
+export const Roles = (...roles: UserRole[]) => SetMetadata(ROLES_KEY, roles);
+
+// common/decorators/current-user.decorator.ts
+import { createParamDecorator, ExecutionContext } from '@nestjs/common';
+
+export const CurrentUser = createParamDecorator(
+  (data: string | undefined, ctx: ExecutionContext) => {
+    const request = ctx.switchToHttp().getRequest();
+    const user = request.user;
+    return data ? user?.[data] : user;
+  },
+);
+
+// Usage
+@Get('profile')
+getProfile(@CurrentUser() user: User) {
+  return user;
+}
+
+@Get('my-id')
+getMyId(@CurrentUser('id') userId: string) {
+  return userId;
+}
+```
+
+---
+
+## Exception Filters
+
+```typescript
+// common/filters/http-exception.filter.ts
+import {
+  ExceptionFilter,
+  Catch,
+  ArgumentsHost,
+  HttpException,
+  HttpStatus,
+  Logger,
+} from '@nestjs/common';
+import { Request, Response } from 'express';
+
+@Catch()
+export class AllExceptionsFilter implements ExceptionFilter {
+  private readonly logger = new Logger(AllExceptionsFilter.name);
+
+  catch(exception: unknown, host: ArgumentsHost): void {
+    const ctx = host.switchToHttp();
+    const response = ctx.getResponse<Response>();
+    const request = ctx.getRequest<Request>();
+
+    const status =
+      exception instanceof HttpException
+        ? exception.getStatus()
+        : HttpStatus.INTERNAL_SERVER_ERROR;
+
+    const message =
+      exception instanceof HttpException
+        ? exception.message
+        : 'Internal server error';
+
+    const errorResponse = {
+      statusCode: status,
+      timestamp: new Date().toISOString(),
+      path: request.url,
+      method: request.method,
+      message,
+    };
+
+    if (status === HttpStatus.INTERNAL_SERVER_ERROR) {
+      this.logger.error(
+        `${request.method} ${request.url}`,
+        exception instanceof Error ? exception.stack : 'Unknown error',
+      );
+    }
+
+    response.status(status).json(errorResponse);
+  }
+}
+```
+
+---
+
+## Interceptors
+
+```typescript
+// common/interceptors/logging.interceptor.ts
+import {
+  Injectable,
+  NestInterceptor,
+  ExecutionContext,
+  CallHandler,
+  Logger,
+} from '@nestjs/common';
+import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
+
+@Injectable()
+export class LoggingInterceptor implements NestInterceptor {
+  private readonly logger = new Logger(LoggingInterceptor.name);
+
+  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+    const request = context.switchToHttp().getRequest();
+    const { method, url } = request;
+    const now = Date.now();
+
+    return next.handle().pipe(
+      tap(() => {
+        const response = context.switchToHttp().getResponse();
+        this.logger.log(
+          `${method} ${url} ${response.statusCode} - ${Date.now() - now}ms`,
+        );
+      }),
+    );
+  }
+}
+
+// common/interceptors/transform.interceptor.ts
+import {
+  Injectable,
+  NestInterceptor,
+  ExecutionContext,
+  CallHandler,
+} from '@nestjs/common';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+
+export interface ApiResponse<T> {
+  data: T;
+  meta?: {
+    timestamp: string;
+  };
+}
+
+@Injectable()
+export class TransformInterceptor<T>
+  implements NestInterceptor<T, ApiResponse<T>>
+{
+  intercept(
+    context: ExecutionContext,
+    next: CallHandler,
+  ): Observable<ApiResponse<T>> {
+    return next.handle().pipe(
+      map((data) => ({
+        data,
+        meta: {
+          timestamp: new Date().toISOString(),
+        },
+      })),
+    );
+  }
+}
+```
+
+---
+
+## Configuration
+
+```typescript
+// config/app.config.ts
+import { registerAs } from '@nestjs/config';
+
+export default registerAs('app', () => ({
+  nodeEnv: process.env.NODE_ENV || 'development',
+  port: parseInt(process.env.PORT, 10) || 3000,
+  apiPrefix: process.env.API_PREFIX || 'api',
+}));
+
+// config/database.config.ts
+import { registerAs } from '@nestjs/config';
+
+export default registerAs('database', () => ({
+  host: process.env.DB_HOST || 'localhost',
+  port: parseInt(process.env.DB_PORT, 10) || 5432,
+  username: process.env.DB_USERNAME,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_DATABASE,
+}));
+
+// config/config.module.ts
+import { Module } from '@nestjs/common';
+import { ConfigModule as NestConfigModule } from '@nestjs/config';
+import * as Joi from 'joi';
+import appConfig from './app.config';
+import databaseConfig from './database.config';
+
+@Module({
+  imports: [
+    NestConfigModule.forRoot({
+      isGlobal: true,
+      load: [appConfig, databaseConfig],
+      validationSchema: Joi.object({
+        NODE_ENV: Joi.string()
+          .valid('development', 'production', 'test')
+          .default('development'),
+        PORT: Joi.number().default(3000),
+        DB_HOST: Joi.string().required(),
+        DB_PORT: Joi.number().default(5432),
+        DB_USERNAME: Joi.string().required(),
+        DB_PASSWORD: Joi.string().required(),
+        DB_DATABASE: Joi.string().required(),
+      }),
+    }),
+  ],
+})
+export class ConfigModule {}
+```
+
+---
+
+## Testing
+
+### Service Testing
+
+```typescript
+// users.service.spec.ts
+import { Test, TestingModule } from '@nestjs/testing';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { UsersService } from './users.service';
+import { User } from './entities/user.entity';
+import { NotFoundException, ConflictException } from '@nestjs/common';
+
+describe('UsersService', () => {
+  let service: UsersService;
+  let repository: jest.Mocked<Repository<User>>;
+
+  const mockUser: User = {
+    id: '1',
+    name: 'John Doe',
+    email: 'john@example.com',
+    password: 'hashedPassword',
+    role: UserRole.USER,
+    isActive: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    posts: [],
+  };
+
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        UsersService,
+        {
+          provide: getRepositoryToken(User),
+          useValue: {
+            find: jest.fn(),
+            findOne: jest.fn(),
+            create: jest.fn(),
+            save: jest.fn(),
+            remove: jest.fn(),
+          },
+        },
+      ],
+    }).compile();
+
+    service = module.get<UsersService>(UsersService);
+    repository = module.get(getRepositoryToken(User));
+  });
+
+  describe('findOne', () => {
+    it('returns user when found', async () => {
+      repository.findOne.mockResolvedValue(mockUser);
+
+      const result = await service.findOne('1');
+
+      expect(result).toEqual(mockUser);
+      expect(repository.findOne).toHaveBeenCalledWith({ where: { id: '1' } });
+    });
+
+    it('throws NotFoundException when user not found', async () => {
+      repository.findOne.mockResolvedValue(null);
+
+      await expect(service.findOne('999')).rejects.toThrow(NotFoundException);
+    });
+  });
+
+  describe('create', () => {
+    const createDto = { name: 'John', email: 'john@example.com', password: 'pass' };
+
+    it('creates user successfully', async () => {
+      repository.findOne.mockResolvedValue(null);
+      repository.create.mockReturnValue(mockUser);
+      repository.save.mockResolvedValue(mockUser);
+
+      const result = await service.create(createDto);
+
+      expect(result).toEqual(mockUser);
+    });
+
+    it('throws ConflictException when email exists', async () => {
+      repository.findOne.mockResolvedValue(mockUser);
+
+      await expect(service.create(createDto)).rejects.toThrow(ConflictException);
+    });
+  });
+});
+```
+
+### Controller Testing
+
+```typescript
+// users.controller.spec.ts
+import { Test, TestingModule } from '@nestjs/testing';
+import { UsersController } from './users.controller';
+import { UsersService } from './users.service';
+
+describe('UsersController', () => {
+  let controller: UsersController;
+  let service: jest.Mocked<UsersService>;
+
+  const mockUser = { id: '1', name: 'John', email: 'john@example.com' };
+
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      controllers: [UsersController],
+      providers: [
+        {
+          provide: UsersService,
+          useValue: {
+            findAll: jest.fn(),
+            findOne: jest.fn(),
+            create: jest.fn(),
+            update: jest.fn(),
+            remove: jest.fn(),
+          },
+        },
+      ],
+    }).compile();
+
+    controller = module.get<UsersController>(UsersController);
+    service = module.get(UsersService);
+  });
+
+  describe('findOne', () => {
+    it('returns user response dto', async () => {
+      service.findOne.mockResolvedValue(mockUser as any);
+
+      const result = await controller.findOne('1');
+
+      expect(result.id).toBe('1');
+      expect(service.findOne).toHaveBeenCalledWith('1');
+    });
+  });
+});
+```
+
+### E2E Testing
+
+```typescript
+// test/users.e2e-spec.ts
+import { Test, TestingModule } from '@nestjs/testing';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
+import * as request from 'supertest';
+import { AppModule } from '../src/app.module';
+
+describe('UsersController (e2e)', () => {
+  let app: INestApplication;
+
+  beforeAll(async () => {
+    const moduleFixture: TestingModule = await Test.createTestingModule({
+      imports: [AppModule],
+    }).compile();
+
+    app = moduleFixture.createNestApplication();
+    app.useGlobalPipes(new ValidationPipe({ transform: true }));
+    await app.init();
+  });
+
+  afterAll(async () => {
+    await app.close();
+  });
+
+  describe('POST /users', () => {
+    it('creates a user', () => {
+      return request(app.getHttpServer())
+        .post('/users')
+        .send({ name: 'John', email: 'john@test.com', password: 'Pass123!' })
+        .expect(201)
+        .expect((res) => {
+          expect(res.body.id).toBeDefined();
+          expect(res.body.email).toBe('john@test.com');
+        });
+    });
+
+    it('returns 400 for invalid data', () => {
+      return request(app.getHttpServer())
+        .post('/users')
+        .send({ name: 'J', email: 'invalid' })
+        .expect(400);
+    });
+  });
+});
+```
+
+---
+
+## Common Mistakes to Avoid
+
+1. **Business logic in controllers** - Keep controllers thin
+2. **Exposing entities directly** - Always use DTOs
+3. **Not validating input** - Use class-validator on all DTOs
+4. **Hardcoded configuration** - Use ConfigService
+5. **Catching all exceptions** - Let NestJS handle errors
+6. **Not using dependency injection** - All dependencies should be injectable
+7. **Fat services** - Split into smaller, focused services
+8. **Missing API documentation** - Use Swagger decorators
+9. **Not handling transactions** - Use QueryRunner for multi-step operations
+10. **Testing implementation details** - Test behavior, mock dependencies

@@ -99,4 +99,16 @@ export class LearningMapController {
   async getLearningPathsForMap() {
     return await this.learningMapService.getLearningPathsForMap();
   }
+
+  @Post('generate/:pathId')
+  @ApiOperation({ summary: 'Generate principles for a learning path using AI' })
+  @ApiResponse({ status: 201, description: 'Principles generated successfully' })
+  @ApiResponse({ status: 400, description: 'Bad request - path already has principles or AI not configured' })
+  @ApiResponse({ status: 404, description: 'Learning path not found' })
+  async generatePrinciples(
+    @Param('pathId') pathId: string,
+    @Body() body: { force?: boolean } = {},
+  ) {
+    return await this.learningMapService.generatePrinciplesWithAI(pathId, body.force);
+  }
 }

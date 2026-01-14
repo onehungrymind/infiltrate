@@ -8,6 +8,7 @@ import {
   LearningMapProgress,
   NodeProgress,
   NodeDetails,
+  Principle,
 } from '@kasita/common-models';
 
 @Injectable({
@@ -123,5 +124,20 @@ export class LearningMapService {
     }>>(`${this.apiUrl}/learning-map/learning-paths`).pipe(
       catchError(() => of([]))
     );
+  }
+
+  /**
+   * Generate principles for a learning path using AI
+   * @param pathId - The learning path ID
+   * @param force - If true, delete existing principles before generating
+   */
+  generatePrinciples(pathId: string, force = true): Observable<{
+    principles: Principle[];
+    message: string;
+  }> {
+    return this.http.post<{
+      principles: Principle[];
+      message: string;
+    }>(`${this.apiUrl}/learning-map/generate/${pathId}`, { force });
   }
 }
