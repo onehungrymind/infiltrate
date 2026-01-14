@@ -5,6 +5,32 @@
       <h1>Learning Map</h1>
       <p class="subtitle">Visualize your path from knowledge to mastery</p>
     </div>
+
+    <!-- Learning Path Selector -->
+    <div class="path-selector">
+      @if (hasAvailablePaths()) {
+      <mat-form-field appearance="outline" class="path-select">
+        <mat-label>Learning Path</mat-label>
+        <mat-select
+          [value]="selectedPathId()"
+          (selectionChange)="selectPath($event.value)">
+          @for (path of availablePaths(); track path.id) {
+          <mat-option [value]="path.id">
+            {{ path.name }} ({{ path.principleCount }} principles)
+          </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      }
+      <button
+        mat-stroked-button
+        [class.active]="viewMode() === 'mock'"
+        (click)="showMockData()"
+        class="mock-data-button">
+        Demo View
+      </button>
+    </div>
+
     <!-- Progress Summary in Header -->
     @if (learningPath()) {
     <div class="header-progress">
@@ -86,17 +112,34 @@
       </div>
       <div class="panel-body">
         <p class="panel-description">{{ getNodeDescription() }}</p>
+
+        <!-- Metadata for principles -->
+        @if (getNodeMetadata().length > 0) {
+        <div class="node-metadata">
+          @for (meta of getNodeMetadata(); track meta.label) {
+          <div class="metadata-item">
+            <span class="metadata-label">{{ meta.label }}:</span>
+            <span class="metadata-value">{{ meta.value }}</span>
+          </div>
+          }
+        </div>
+        }
+
         <div class="node-actions">
-          <button 
+          <button
             type="button"
-            class="action-button primary" 
+            class="action-button primary"
             (click)="navigateToNode(selectedNode()!)">
-            Open
+            @if (selectedNode()!.type === 'principle') {
+              View Units
+            } @else {
+              Open
+            }
           </button>
-          @if (selectedNode()!.status === 'available') {
-          <button 
+          @if (selectedNode()!.status === 'available' || selectedNode()!.status === 'not-started') {
+          <button
             type="button"
-            class="action-button secondary" 
+            class="action-button secondary"
             (click)="updateNodeStatus(selectedNode()!.id, 'in-progress')">
             Start
           </button>

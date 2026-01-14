@@ -85,4 +85,18 @@ export class LearningMapController {
   async getEstimatedTimeToCompletion(@Param('outcomeId') outcomeId: string) {
     return await this.learningMapService.getEstimatedTimeToCompletion(outcomeId);
   }
+
+  @Get('principles/:pathId')
+  @ApiOperation({ summary: 'Get principle-based learning map for a learning path' })
+  @ApiResponse({ status: 200, description: 'Principle map retrieved successfully' })
+  async getPrincipleMap(@Param('pathId') pathId: string) {
+    return await this.learningMapService.getPrincipleMap(pathId);
+  }
+
+  @Get('learning-paths')
+  @ApiOperation({ summary: 'Get all learning paths with principle counts' })
+  @ApiResponse({ status: 200, description: 'Learning paths retrieved successfully' })
+  async getLearningPathsForMap() {
+    return await this.learningMapService.getLearningPathsForMap();
+  }
 }

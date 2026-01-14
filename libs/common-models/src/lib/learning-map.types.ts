@@ -4,23 +4,25 @@
  * Types for the interactive learning map visualization component
  */
 
-export type NodeType = 
-  | 'outcome' 
-  | 'module' 
-  | 'exercise' 
-  | 'checkpoint' 
-  | 'knowledge-transfer' 
-  | 'demonstration';
+export type NodeType =
+  | 'outcome'
+  | 'module'
+  | 'exercise'
+  | 'checkpoint'
+  | 'knowledge-transfer'
+  | 'demonstration'
+  | 'principle';
 
-export type NodeStatus = 
-  | 'not-started' 
-  | 'locked' 
-  | 'available' 
-  | 'in-progress' 
-  | 'completed' 
-  | 'passed' 
-  | 'failed' 
-  | 'submitted' 
+export type NodeStatus =
+  | 'not-started'
+  | 'locked'
+  | 'available'
+  | 'in-progress'
+  | 'completed'
+  | 'mastered'
+  | 'passed'
+  | 'failed'
+  | 'submitted'
   | 'validated';
 
 export type EdgeType = 
@@ -71,13 +73,14 @@ export interface LearningMapNode {
 }
 
 // Node data unions
-export type NodeData = 
-  | OutcomeNodeData 
-  | ModuleNodeData 
-  | ExerciseNodeData 
-  | CheckpointNodeData 
-  | KnowledgeTransferNodeData 
-  | DemonstrationNodeData;
+export type NodeData =
+  | OutcomeNodeData
+  | ModuleNodeData
+  | ExerciseNodeData
+  | CheckpointNodeData
+  | KnowledgeTransferNodeData
+  | DemonstrationNodeData
+  | PrincipleNodeData;
 
 export interface OutcomeNodeData {
   title: string;
@@ -133,6 +136,17 @@ export interface DemonstrationNodeData {
   validated: boolean;
   performanceMetrics?: Record<string, number>;
   validatedAt?: Date;
+}
+
+export interface PrincipleNodeData {
+  title: string;
+  description: string;
+  difficulty: 'foundational' | 'intermediate' | 'advanced';
+  estimatedHours: number;
+  prerequisites: string[]; // principle IDs
+  order: number;
+  knowledgeUnitCount?: number;
+  masteredAt?: Date;
 }
 
 // Edge interface

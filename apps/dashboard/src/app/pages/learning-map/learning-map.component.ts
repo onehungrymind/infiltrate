@@ -5,25 +5,20 @@ import {
   OnDestroy,
   signal,
   computed,
-  ViewChild,
-  ElementRef,
-  AfterViewInit,
-  effect,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { MaterialModule } from '@kasita/material';
-import { AuthService } from '@kasita/core-data';
-import { LearningMapService } from '@kasita/core-data';
+import { AuthService, LearningMapService } from '@kasita/core-data';
 import {
   LearningPathMap,
   LearningMapNode,
   NodeStatus,
 } from '@kasita/common-models';
 import { ReactFlowWrapperComponent } from './react-flow-wrapper.component';
-import { convertToReactFlowFormat, ReactFlowNode, ReactFlowEdge } from './react-flow-utils';
+import { convertToReactFlowFormat, ReactFlowNode } from './react-flow-utils';
 
 @Component({
   selector: 'app-learning-map',
@@ -69,10 +64,21 @@ export class LearningMapComponent implements OnInit, OnDestroy {
   selectedNode = signal<LearningMapNode | null>(null);
   clickPosition = signal<{ x: number; y: number } | null>(null);
 
+  // Learning path selector state
+  availablePaths = signal<Array<{
+    id: string;
+    name: string;
+    domain: string;
+    principleCount: number;
+  }>>([]);
+  selectedPathId = signal<string | null>(null);
+  viewMode = signal<'principles' | 'mock'>('principles');
+
   // Computed values
   nodes = computed(() => this.learningPath()?.nodes || []);
   edges = computed(() => this.learningPath()?.edges || []);
   progress = computed(() => this.learningPath()?.metadata.progress || 0);
+  hasAvailablePaths = computed(() => this.availablePaths().length > 0);
 
   // React Flow data
   reactFlowNodes = computed(() => {
@@ -92,11 +98,80 @@ export class LearningMapComponent implements OnInit, OnDestroy {
   // View controls - minimap is controlled by React Flow wrapper
 
   ngOnInit(): void {
-    this.loadLearningPath();
+    this.loadAvailablePaths();
   }
 
   ngOnDestroy(): void {
     // Cleanup handled by React Flow wrapper
+  }
+
+  /**
+   * Load available learning paths that have principles
+   */
+  loadAvailablePaths(): void {
+    this.loading.set(true);
+    this.learningMapService.getLearningPathsForMap().subscribe({
+      next: (paths) => {
+        this.availablePaths.set(paths);
+        if (paths.length > 0) {
+          // Auto-select the first path
+          this.selectPath(paths[0].id);
+        } else {
+          // No paths with principles, fall back to mock data
+          this.viewMode.set('mock');
+          this.loadMockData();
+          this.loading.set(false);
+        }
+      },
+      error: () => {
+        // Fall back to mock data on error
+        this.viewMode.set('mock');
+        this.loadMockData();
+        this.loading.set(false);
+      },
+    });
+  }
+
+  /**
+   * Select a learning path and load its principle map
+   */
+  selectPath(pathId: string): void {
+    this.selectedPathId.set(pathId);
+    this.viewMode.set('principles');
+    this.loadPrincipleMap(pathId);
+  }
+
+  /**
+   * Load the principle map for a learning path
+   */
+  loadPrincipleMap(pathId: string): void {
+    this.loading.set(true);
+    this.error.set(null);
+    this.selectedNode.set(null);
+
+    this.learningMapService.getPrincipleMap(pathId).subscribe({
+      next: (map) => {
+        if (map) {
+          this.learningPath.set(map);
+        } else {
+          this.error.set('No principles found for this learning path');
+        }
+        this.loading.set(false);
+      },
+      error: (err) => {
+        this.error.set(err?.error?.message || 'Failed to load principle map');
+        this.loading.set(false);
+      },
+    });
+  }
+
+  /**
+   * Switch to mock data view
+   */
+  showMockData(): void {
+    this.viewMode.set('mock');
+    this.selectedPathId.set(null);
+    this.loadMockData();
   }
 
   // React Flow event handlers
@@ -127,34 +202,6 @@ export class LearningMapComponent implements OnInit, OnDestroy {
     this.clickPosition.set(null);
   }
 
-  loadLearningPath(): void {
-    const user = this.authService.getCurrentUser();
-    if (!user) {
-      this.error.set('User not authenticated');
-      return;
-    }
-
-    const outcomeId = 'ml-engineer-transition';
-
-    this.loading.set(true);
-    this.error.set(null);
-
-    (this.learningMapService as any).getLearningPath(user.id, outcomeId).subscribe({
-      next: (path: LearningPathMap | null) => {
-        if (path) {
-          this.learningPath.set(path);
-        } else {
-          this.loadMockData();
-        }
-        this.loading.set(false);
-      },
-      error: () => {
-        this.loadMockData();
-        this.loading.set(false);
-      },
-    });
-  }
-
   onNodeClick(node: LearningMapNode): void {
     this.selectedNode.set(node);
     // Position will be set by onReactFlowNodeClick if available
@@ -173,6 +220,10 @@ export class LearningMapComponent implements OnInit, OnDestroy {
       case 'checkpoint':
         this.router.navigate(['/challenges'], { queryParams: { checkpointId: node.id } });
         break;
+      case 'principle':
+        // Navigate to knowledge units filtered by this principle
+        this.router.navigate(['/knowledge-units'], { queryParams: { principleId: node.id } });
+        break;
     }
   }
 
@@ -180,12 +231,37 @@ export class LearningMapComponent implements OnInit, OnDestroy {
     const node = this.selectedNode();
     if (!node) return '';
 
-    if (node.type === 'outcome') {
-      return ((node.data as unknown as Record<string, unknown>)['description'] as string) || '';
-    } else if (node.type === 'module') {
-      return ((node.data as unknown as Record<string, unknown>)['description'] as string) || '';
+    const data = node.data as unknown as Record<string, unknown>;
+
+    if (node.type === 'outcome' || node.type === 'module' || node.type === 'principle') {
+      return (data['description'] as string) || '';
     }
     return node.label;
+  }
+
+  /**
+   * Get additional info for the selected node (for principles, show difficulty and knowledge unit count)
+   */
+  getNodeMetadata(): { label: string; value: string }[] {
+    const node = this.selectedNode();
+    if (!node) return [];
+
+    const data = node.data as unknown as Record<string, unknown>;
+    const metadata: { label: string; value: string }[] = [];
+
+    if (node.type === 'principle') {
+      if (data['difficulty']) {
+        metadata.push({ label: 'Difficulty', value: data['difficulty'] as string });
+      }
+      if (data['estimatedHours']) {
+        metadata.push({ label: 'Estimated Time', value: `${data['estimatedHours']}h` });
+      }
+      if (data['knowledgeUnitCount'] !== undefined) {
+        metadata.push({ label: 'Knowledge Units', value: `${data['knowledgeUnitCount']}` });
+      }
+    }
+
+    return metadata;
   }
 
   getPanelPosition(): { left: number; top: number } {
@@ -227,9 +303,15 @@ export class LearningMapComponent implements OnInit, OnDestroy {
     const user = this.authService.getCurrentUser();
     if (!user) return;
 
-    ((this.learningMapService as any).updateNodeStatus(nodeId, status) as any).subscribe({
+    this.learningMapService.updateNodeStatus(nodeId, status).subscribe({
       next: () => {
-        this.loadLearningPath();
+        // Reload the current view
+        const pathId = this.selectedPathId();
+        if (pathId && this.viewMode() === 'principles') {
+          this.loadPrincipleMap(pathId);
+        } else {
+          this.loadMockData();
+        }
       },
       error: (err: unknown) => {
         const error = err as { error?: { message?: string } };

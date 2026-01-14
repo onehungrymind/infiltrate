@@ -94,4 +94,34 @@ export class LearningMapService {
       catchError(() => of({ hours: 0, days: 0 }))
     );
   }
+
+  /**
+   * Get principle-based learning map for a learning path
+   */
+  getPrincipleMap(pathId: string): Observable<LearningPathMap | null> {
+    return this.http.get<LearningPathMap>(
+      `${this.apiUrl}/learning-map/principles/${pathId}`
+    ).pipe(
+      catchError(() => of(null))
+    );
+  }
+
+  /**
+   * Get all learning paths with principle counts for the selector
+   */
+  getLearningPathsForMap(): Observable<Array<{
+    id: string;
+    name: string;
+    domain: string;
+    principleCount: number;
+  }>> {
+    return this.http.get<Array<{
+      id: string;
+      name: string;
+      domain: string;
+      principleCount: number;
+    }>>(`${this.apiUrl}/learning-map/learning-paths`).pipe(
+      catchError(() => of([]))
+    );
+  }
 }

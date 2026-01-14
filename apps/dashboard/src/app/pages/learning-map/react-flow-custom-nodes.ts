@@ -11,24 +11,40 @@ export async function createCustomNodeComponents() {
   const ReactFlow = await import('@xyflow/react');
   
   // Helper to get node colors - Match React Flow documentation styling
-  const getNodeColors = (nodeType: string, status: string) => {
+  const getNodeColors = (nodeType: string, status: string, data?: any) => {
     // Status-based border colors (as per requirements)
     const statusBorders: Record<string, string> = {
       'completed': '#10b981',      // Green
-      'in-progress': '#3b82f6',     // Blue
-      'locked': '#d1d5db',          // Gray
+      'mastered': '#10b981',       // Green (for principles)
+      'in-progress': '#3b82f6',    // Blue
+      'in_progress': '#3b82f6',    // Blue (underscore variant for principles)
+      'locked': '#d1d5db',         // Gray
       'not-started': '#d1d5db',    // Gray
+      'pending': '#d1d5db',        // Gray (for principles)
     };
 
     // Type-specific overrides for active states
     const activeBorders: Record<string, string> = {
-      'exercise': '#f59e0b',        // Orange for active exercise
+      'exercise': '#f59e0b',       // Orange for active exercise
       'demonstration': '#eab308',  // Gold for demonstration
+    };
+
+    // Difficulty-based colors for principles
+    const difficultyColors: Record<string, string> = {
+      'foundational': '#22c55e',   // Green
+      'intermediate': '#f59e0b',   // Orange/Amber
+      'advanced': '#ef4444',       // Red
     };
 
     // Determine border color based on status and type
     let borderColor = statusBorders[status] || '#d1d5db';
-    if (status === 'in-progress' && activeBorders[nodeType]) {
+
+    // For principles, use difficulty-based coloring when in-progress or pending
+    if (nodeType === 'principle' && data?.difficulty) {
+      if (status === 'in-progress' || status === 'in_progress' || status === 'pending') {
+        borderColor = difficultyColors[data.difficulty] || borderColor;
+      }
+    } else if (status === 'in-progress' && activeBorders[nodeType]) {
       borderColor = activeBorders[nodeType];
     }
 
@@ -44,11 +60,12 @@ export async function createCustomNodeComponents() {
   // Generic custom node component - Match React Flow documentation styling
   const CustomNode = ({ data, selected }: any) => {
     const Handle = ReactFlow.Handle;
-    
-    const colors = getNodeColors(data.nodeType, data.status);
+
+    const colors = getNodeColors(data.nodeType, data.status, data);
     const isLocked = data.status === 'locked';
-    const isInProgress = data.status === 'in-progress';
-    const isCompleted = data.status === 'completed';
+    const isInProgress = data.status === 'in-progress' || data.status === 'in_progress';
+    const isCompleted = data.status === 'completed' || data.status === 'mastered';
+    const isPending = data.status === 'pending' || data.status === 'not-started';
 
     // Standardized node styling - all rectangular, no rotation
     const nodeStyle: React.CSSProperties = {
@@ -173,5 +190,6 @@ export async function createCustomNodeComponents() {
     'custom-checkpoint': CustomNode,
     'custom-knowledge-transfer': CustomNode,
     'custom-demonstration': CustomNode,
+    'custom-principle': CustomNode,
   };
 }
