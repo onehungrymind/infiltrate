@@ -111,4 +111,43 @@ export class LearningMapController {
   ) {
     return await this.learningMapService.generatePrinciplesWithAI(pathId, body.force);
   }
+
+  @Post('ingest/:pathId')
+  @ApiOperation({ summary: 'Trigger content ingestion for a learning path' })
+  @ApiResponse({ status: 201, description: 'Ingestion completed successfully' })
+  @ApiResponse({ status: 400, description: 'Bad request - no source configs or ingestion failed' })
+  @ApiResponse({ status: 404, description: 'Learning path not found' })
+  async triggerIngestion(@Param('pathId') pathId: string) {
+    return await this.learningMapService.triggerIngestion(pathId);
+  }
+
+  @Post('synthesize/:pathId')
+  @ApiOperation({ summary: 'Trigger content synthesis for a learning path' })
+  @ApiResponse({ status: 201, description: 'Synthesis completed successfully' })
+  @ApiResponse({ status: 400, description: 'Bad request - no raw content or synthesis failed' })
+  @ApiResponse({ status: 404, description: 'Learning path not found' })
+  async triggerSynthesis(@Param('pathId') pathId: string) {
+    return await this.learningMapService.triggerSynthesis(pathId);
+  }
+
+  @Post('suggest-sources/:pathId')
+  @ApiOperation({ summary: 'Get AI-suggested content sources for a learning path' })
+  @ApiResponse({ status: 201, description: 'Sources suggested successfully' })
+  @ApiResponse({ status: 400, description: 'Bad request - AI not configured' })
+  @ApiResponse({ status: 404, description: 'Learning path not found' })
+  async suggestSources(@Param('pathId') pathId: string) {
+    return await this.learningMapService.suggestSourcesWithAI(pathId);
+  }
+
+  @Post('add-source/:pathId')
+  @ApiOperation({ summary: 'Add a suggested source to a learning path' })
+  @ApiResponse({ status: 201, description: 'Source added successfully' })
+  @ApiResponse({ status: 400, description: 'Bad request - source already exists' })
+  @ApiResponse({ status: 404, description: 'Learning path not found' })
+  async addSource(
+    @Param('pathId') pathId: string,
+    @Body() body: { name: string; url: string; type: string },
+  ) {
+    return await this.learningMapService.addSuggestedSource(pathId, body);
+  }
 }

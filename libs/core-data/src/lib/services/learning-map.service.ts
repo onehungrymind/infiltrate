@@ -140,4 +140,144 @@ export class LearningMapService {
       message: string;
     }>(`${this.apiUrl}/learning-map/generate/${pathId}`, { force });
   }
+
+  /**
+   * Trigger content ingestion for a learning path
+   * Runs the Patchbay service to ingest content from configured sources
+   * @param pathId - The learning path ID
+   */
+  triggerIngestion(pathId: string): Observable<{
+    status: 'completed' | 'failed';
+    message: string;
+    sourcesProcessed: number;
+    itemsIngested: number;
+  }> {
+    return this.http.post<{
+      status: 'completed' | 'failed';
+      message: string;
+      sourcesProcessed: number;
+      itemsIngested: number;
+    }>(`${this.apiUrl}/learning-map/ingest/${pathId}`, {});
+  }
+
+  /**
+   * Trigger content synthesis for a learning path
+   * Runs the Synthesizer service to generate knowledge units from raw content
+   * @param pathId - The learning path ID
+   */
+  triggerSynthesis(pathId: string): Observable<{
+    status: 'completed' | 'failed';
+    message: string;
+    rawContentProcessed: number;
+    knowledgeUnitsGenerated: number;
+  }> {
+    return this.http.post<{
+      status: 'completed' | 'failed';
+      message: string;
+      rawContentProcessed: number;
+      knowledgeUnitsGenerated: number;
+    }>(`${this.apiUrl}/learning-map/synthesize/${pathId}`, {});
+  }
+
+  /**
+   * Get AI-suggested content sources for a learning path
+   * @param pathId - The learning path ID
+   */
+  suggestSources(pathId: string): Observable<{
+    sources: Array<{
+      name: string;
+      url: string;
+      type: string;
+      description: string;
+      reputation: string;
+    }>;
+    message: string;
+  }> {
+    return this.http.post<{
+      sources: Array<{
+        name: string;
+        url: string;
+        type: string;
+        description: string;
+        reputation: string;
+      }>;
+      message: string;
+    }>(`${this.apiUrl}/learning-map/suggest-sources/${pathId}`, {});
+  }
+
+  /**
+   * Add a suggested source to a learning path
+   * @param pathId - The learning path ID
+   * @param source - The source to add
+   */
+  addSource(pathId: string, source: { name: string; url: string; type: string }): Observable<{
+    id: string;
+    name: string;
+    url: string;
+    type: string;
+    enabled: boolean;
+    created: boolean;
+  }> {
+    return this.http.post<{
+      id: string;
+      name: string;
+      url: string;
+      type: string;
+      enabled: boolean;
+      created: boolean;
+    }>(`${this.apiUrl}/learning-map/add-source/${pathId}`, source);
+  }
+
+  /**
+   * Get sources for a specific learning path (new many-to-many model)
+   * @param pathId - The learning path ID
+   */
+  getSourcesForPath(pathId: string): Observable<Array<{
+    id: string;
+    url: string;
+    type: string;
+    name: string;
+    enabled: boolean;
+    linkId: string;
+  }>> {
+    return this.http.get<Array<{
+      id: string;
+      url: string;
+      type: string;
+      name: string;
+      enabled: boolean;
+      linkId: string;
+    }>>(`${this.apiUrl}/sources/path/${pathId}`).pipe(
+      catchError(() => of([]))
+    );
+  }
+
+  /**
+   * Get all sources
+   */
+  getAllSources(): Observable<Array<{
+    id: string;
+    url: string;
+    type: string;
+    name: string;
+  }>> {
+    return this.http.get<Array<{
+      id: string;
+      url: string;
+      type: string;
+      name: string;
+    }>>(`${this.apiUrl}/sources`).pipe(
+      catchError(() => of([]))
+    );
+  }
+
+  /**
+   * Update source link enabled status
+   */
+  updateSourceLink(sourceId: string, pathId: string, enabled: boolean): Observable<void> {
+    return this.http.patch<void>(
+      `${this.apiUrl}/sources/${sourceId}/link/${pathId}`,
+      { enabled }
+    );
+  }
 }

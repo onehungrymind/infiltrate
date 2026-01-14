@@ -2,8 +2,13 @@ import { Injectable, NotFoundException, BadRequestException } from '@nestjs/comm
 import { InjectRepository } from '@nestjs/typeorm';
 import { ConfigService } from '@nestjs/config';
 import { Repository } from 'typeorm';
+import { exec } from 'child_process';
+import { promisify } from 'util';
 import Anthropic from '@anthropic-ai/sdk';
 import { GENERATE_PRINCIPLES_PROMPT } from './prompts/generate-principles.prompt';
+import { SUGGEST_SOURCES_PROMPT } from './prompts/suggest-sources.prompt';
+
+const execAsync = promisify(exec);
 import {
   LearningPathMap,
   LearningMapProgress,
@@ -18,6 +23,10 @@ import { LearningPath } from '../learning-paths/entities/learning-path.entity';
 import { NotebookProgress } from '../notebooks/entities/notebook-progress.entity';
 import { Principle } from '../principles/entities/principle.entity';
 import { KnowledgeUnit } from '../knowledge-units/entities/knowledge-unit.entity';
+import { SourceConfig } from '../source-configs/entities/source-config.entity';
+import { SourcePathLink } from '../source-configs/entities/source-path-link.entity';
+import { RawContent } from '../raw-content/entities/raw-content.entity';
+import { SourcesService } from '../source-configs/sources.service';
 
 @Injectable()
 export class LearningMapService {
@@ -32,7 +41,14 @@ export class LearningMapService {
     private readonly principleRepository: Repository<Principle>,
     @InjectRepository(KnowledgeUnit)
     private readonly knowledgeUnitRepository: Repository<KnowledgeUnit>,
+    @InjectRepository(SourceConfig)
+    private readonly sourceConfigRepository: Repository<SourceConfig>,
+    @InjectRepository(SourcePathLink)
+    private readonly sourcePathLinkRepository: Repository<SourcePathLink>,
+    @InjectRepository(RawContent)
+    private readonly rawContentRepository: Repository<RawContent>,
     private readonly configService: ConfigService,
+    private readonly sourcesService: SourcesService,
   ) {
     const apiKey = this.configService.get<string>('ANTHROPIC_API_KEY');
     if (apiKey) {
@@ -489,6 +505,252 @@ export class LearningMapService {
       throw new BadRequestException(
         `Failed to parse AI response: ${error instanceof Error ? error.message : 'Unknown error'}`
       );
+    }
+  }
+
+  /**
+   * Suggest content sources for a learning path using AI
+   * @param pathId - The learning path ID to suggest sources for
+   * @returns Suggested source configurations
+   */
+  async suggestSourcesWithAI(pathId: string): Promise<{
+    sources: Array<{
+      name: string;
+      url: string;
+      type: string;
+      description: string;
+      reputation: string;
+    }>;
+    message: string;
+  }> {
+    if (!this.anthropic) {
+      throw new BadRequestException(
+        'AI generation is not available. Please configure ANTHROPIC_API_KEY in .env'
+      );
+    }
+
+    // Fetch the learning path
+    const learningPath = await this.learningPathRepository.findOne({
+      where: { id: pathId },
+    });
+
+    if (!learningPath) {
+      throw new NotFoundException(`Learning path ${pathId} not found`);
+    }
+
+    // Generate source suggestions using Claude
+    const prompt = SUGGEST_SOURCES_PROMPT
+      .replace('{name}', learningPath.name)
+      .replace('{domain}', learningPath.domain || '')
+      .replace('{targetSkill}', learningPath.targetSkill || '');
+
+    const response = await this.anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 2048,
+      messages: [{ role: 'user', content: prompt }],
+    });
+
+    const content = response.content[0];
+    if (content.type !== 'text') {
+      throw new BadRequestException('Unexpected response type from Claude API');
+    }
+
+    // Parse JSON (handle potential markdown wrapping)
+    let jsonText = content.text.trim();
+    if (jsonText.startsWith('```')) {
+      jsonText = jsonText.replace(/```json\n?|\n?```/g, '');
+    }
+
+    try {
+      const data = JSON.parse(jsonText);
+      if (!data.sources || !Array.isArray(data.sources)) {
+        throw new Error('Invalid response structure');
+      }
+
+      return {
+        sources: data.sources,
+        message: `Found ${data.sources.length} recommended sources for "${learningPath.name}"`,
+      };
+    } catch (error) {
+      throw new BadRequestException(
+        `Failed to parse AI response: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
+    }
+  }
+
+  /**
+   * Add a suggested source to the learning path
+   * Uses the new many-to-many Source model
+   */
+  async addSuggestedSource(
+    pathId: string,
+    source: { name: string; url: string; type: string }
+  ): Promise<{ id: string; url: string; type: string; name: string; enabled: boolean; created: boolean }> {
+    // Use the SourcesService to create and link in one operation
+    const { source: savedSource, link, created } = await this.sourcesService.createAndLink(
+      { url: source.url, type: source.type, name: source.name },
+      pathId,
+      true // enabled
+    );
+
+    return {
+      id: savedSource.id,
+      url: savedSource.url,
+      type: savedSource.type,
+      name: savedSource.name,
+      enabled: link.enabled,
+      created,
+    };
+  }
+
+  /**
+   * Trigger content ingestion for a learning path
+   * Runs the Patchbay Python app to ingest content from configured sources
+   */
+  async triggerIngestion(pathId: string): Promise<{
+    status: 'completed' | 'failed';
+    message: string;
+    sourcesProcessed: number;
+    itemsIngested: number;
+  }> {
+    // Verify the learning path exists
+    const learningPath = await this.learningPathRepository.findOne({
+      where: { id: pathId },
+    });
+
+    if (!learningPath) {
+      throw new NotFoundException(`Learning path ${pathId} not found`);
+    }
+
+    // Check if there are enabled sources for this path
+    // Check both old SourceConfig model and new SourcePathLink model for backward compatibility
+    const oldSourceConfigs = await this.sourceConfigRepository.find({
+      where: { pathId, enabled: true },
+    });
+
+    const newSourceLinks = await this.sourcePathLinkRepository.find({
+      where: { pathId, enabled: true },
+    });
+
+    const totalEnabledSources = oldSourceConfigs.length + newSourceLinks.length;
+
+    if (totalEnabledSources === 0) {
+      throw new BadRequestException(
+        `No enabled sources found for this learning path. Add sources first.`
+      );
+    }
+
+    // Count raw content before ingestion
+    const rawContentBefore = await this.rawContentRepository.count({
+      where: { pathId },
+    });
+
+    // Get the API URL from config
+    const apiUrl = this.configService.get<string>('API_URL') || 'http://localhost:3333/api';
+
+    try {
+      // Run the Patchbay ingestion command
+      const { stdout, stderr } = await execAsync(
+        `cd apps/patchbay && API_URL="${apiUrl}" DEFAULT_PATH_ID="${pathId}" python -m src.main ingest`,
+        {
+          timeout: 300000, // 5 minute timeout
+          maxBuffer: 1024 * 1024 * 10, // 10MB buffer
+          env: {
+            ...process.env,
+            API_URL: apiUrl,
+            DEFAULT_PATH_ID: pathId,
+          },
+        }
+      );
+
+      // Count raw content after ingestion
+      const rawContentAfter = await this.rawContentRepository.count({
+        where: { pathId },
+      });
+
+      const itemsIngested = rawContentAfter - rawContentBefore;
+
+      return {
+        status: 'completed',
+        message: `Successfully ingested content from ${totalEnabledSources} sources`,
+        sourcesProcessed: totalEnabledSources,
+        itemsIngested,
+      };
+    } catch (error: any) {
+      const errorMessage = error.stderr || error.message || 'Unknown error';
+      throw new BadRequestException(`Ingestion failed: ${errorMessage}`);
+    }
+  }
+
+  /**
+   * Trigger content synthesis for a learning path
+   * Runs the Synthesizer Python app to generate knowledge units from raw content
+   */
+  async triggerSynthesis(pathId: string): Promise<{
+    status: 'completed' | 'failed';
+    message: string;
+    rawContentProcessed: number;
+    knowledgeUnitsGenerated: number;
+  }> {
+    // Verify the learning path exists
+    const learningPath = await this.learningPathRepository.findOne({
+      where: { id: pathId },
+    });
+
+    if (!learningPath) {
+      throw new NotFoundException(`Learning path ${pathId} not found`);
+    }
+
+    // Check if there's raw content to synthesize
+    const rawContentCount = await this.rawContentRepository.count({
+      where: { pathId },
+    });
+
+    if (rawContentCount === 0) {
+      throw new BadRequestException(
+        `No raw content found for this learning path. Run ingestion first.`
+      );
+    }
+
+    // Count knowledge units before synthesis
+    const unitsBefore = await this.knowledgeUnitRepository.count({
+      where: { pathId },
+    });
+
+    // Get the API URL from config
+    const apiUrl = this.configService.get<string>('API_URL') || 'http://localhost:3333/api';
+
+    try {
+      // Run the Synthesizer process command
+      const { stdout, stderr } = await execAsync(
+        `cd apps/synthesizer && API_URL="${apiUrl}" DEFAULT_PATH_ID="${pathId}" python -m src.main process`,
+        {
+          timeout: 600000, // 10 minute timeout (synthesis can take longer)
+          maxBuffer: 1024 * 1024 * 10, // 10MB buffer
+          env: {
+            ...process.env,
+            API_URL: apiUrl,
+            DEFAULT_PATH_ID: pathId,
+          },
+        }
+      );
+
+      // Count knowledge units after synthesis
+      const unitsAfter = await this.knowledgeUnitRepository.count({
+        where: { pathId },
+      });
+
+      const unitsGenerated = unitsAfter - unitsBefore;
+
+      return {
+        status: 'completed',
+        message: `Successfully synthesized ${unitsGenerated} knowledge units from ${rawContentCount} raw content items`,
+        rawContentProcessed: rawContentCount,
+        knowledgeUnitsGenerated: unitsGenerated,
+      };
+    } catch (error: any) {
+      const errorMessage = error.stderr || error.message || 'Unknown error';
+      throw new BadRequestException(`Synthesis failed: ${errorMessage}`);
     }
   }
 }

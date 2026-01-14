@@ -28,20 +28,24 @@
 
   <!-- Filter Dropdowns -->
   @if (filterConfigs.length > 0) {
-    <div class="filter-chips-container">
-      @for (config of filterConfigs; track config.field) {
-        <div class="filter-select-wrapper">
-          <label class="filter-label">{{ config.label }}</label>
-          <select
-            class="filter-select"
-            [value]="filters[config.field] || ''"
-            (change)="onFilterChange(config.field, $event)"
-          >
-            <option value="">All</option>
-            @for (option of config.options; track option.value) {
-              <option [value]="option.value">{{ option.label }}</option>
-            }
-          </select>
+    <div class="filters-container">
+      @for (rowNum of getRowNumbers(); track rowNum) {
+        <div class="filter-row">
+          @for (config of getFiltersByRow().get(rowNum); track config.field) {
+            <div class="filter-select-wrapper" [class.full-width]="config.fullWidth">
+              <label class="filter-label">{{ config.label }}</label>
+              <select
+                class="filter-select"
+                [value]="filters[config.field] || ''"
+                (change)="onFilterChange(config.field, $event)"
+              >
+                <option value="">All</option>
+                @for (option of config.options; track option.value) {
+                  <option [value]="option.value">{{ option.label }}</option>
+                }
+              </select>
+            </div>
+          }
         </div>
       }
     </div>

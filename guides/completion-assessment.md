@@ -1,7 +1,7 @@
 # Kasita MVP Completion Assessment
 
 **Last Updated**: January 14, 2026
-**Overall Completion**: 62%
+**Overall Completion**: 65%
 
 ---
 
@@ -10,8 +10,8 @@
 | Epic | Progress | Status |
 |------|----------|--------|
 | Epic 1: Learning Objective & Map Generation | 60% | :large_blue_circle: Mostly Complete |
-| Epic 2: Content Sourcing & Ingestion | 70% | :large_blue_circle: Mostly Complete |
-| Epic 3: Content Synthesis & Knowledge Units | 65% | :large_blue_circle: Mostly Complete |
+| Epic 2: Content Sourcing & Ingestion | 80% | :large_blue_circle: Mostly Complete |
+| Epic 3: Content Synthesis & Knowledge Units | 75% | :large_blue_circle: Mostly Complete |
 | Epic 4: Adaptive Content Presentation | 50% | :yellow_circle: Partial |
 | Epic 5: Feedback Loops | 15% | :red_circle: Early Stage |
 | Epic 6: Progress Tracking & Validation | 50% | :yellow_circle: Partial |
@@ -46,7 +46,7 @@
 
 ---
 
-## Epic 2: Content Sourcing & Ingestion (70%)
+## Epic 2: Content Sourcing & Ingestion (80%)
 
 ### Completed
 - [x] CS-01: Configure source channels (RSS, URLs, PDFs)
@@ -55,10 +55,10 @@
 - [x] Article adapter (Trafilatura)
 - [x] PDF adapter (PyPDF2)
 - [x] JavaScript Weekly adapter
+- [x] CS-04: Trigger ingestion with progress (Dashboard button with result feedback)
 
 ### Partial
 - [ ] CS-03: Manual URL/document upload (URLs work, no file upload)
-- [ ] CS-04: Trigger ingestion with progress (works, no real-time UI)
 - [ ] CS-06: Exclude specific sources/content (delete works, no filtering)
 
 ### Not Started
@@ -70,7 +70,7 @@
 
 ---
 
-## Epic 3: Content Synthesis & Knowledge Units (65%)
+## Epic 3: Content Synthesis & Knowledge Units (75%)
 
 ### Completed
 - [x] SY-01: Trigger synthesis to create knowledge units
@@ -78,6 +78,7 @@
 - [x] SY-05: Edit knowledge unit content
 - [x] SY-06: Tagged by difficulty level
 - [x] SY-07: Estimated mastery time
+- [x] Synthesis trigger button in dashboard (with result feedback)
 
 ### Partial
 - [ ] SY-03: Cross-references between units (sourceIds tracked, no UI)
@@ -85,7 +86,6 @@
 
 ### Not Started
 - [ ] Add "challenges" field to knowledge units
-- [ ] Synthesis trigger button in dashboard
 
 ---
 
@@ -223,8 +223,8 @@ These must be completed for a functional MVP:
 | Completion Assessment | :white_check_mark: Complete |
 | Login/auth | :white_check_mark: Complete |
 | Approval workflow UI | :red_circle: Not Started |
-| Ingestion trigger button | :red_circle: Not Started |
-| Synthesis trigger button | :red_circle: Not Started |
+| Ingestion trigger button | :white_check_mark: Complete |
+| Synthesis trigger button | :white_check_mark: Complete |
 | Learning path wizard | :red_circle: Not Started |
 | AI principle generation button | :white_check_mark: Complete |
 
@@ -260,6 +260,18 @@ These must be completed for a functional MVP:
 ---
 
 ## Recent Changes
+
+### January 14, 2026 (Update 8)
+- Added Ingestion and Synthesis trigger buttons to Learning Path detail:
+  - Added `POST /learning-map/ingest/:pathId` endpoint to trigger Patchbay ingestion
+  - Added `POST /learning-map/synthesize/:pathId` endpoint to trigger Synthesizer
+  - Added trigger buttons to Learning Path detail component with loading states
+  - Shows success/error messages and result statistics (sources processed, items ingested, knowledge units generated)
+  - Validates prerequisites before triggering (source configs exist, raw content exists)
+- Stage 1 (Foundation) is now complete!
+- Overall completion increased from 62% to 65%
+- Epic 2 (Content Sourcing) increased from 70% to 80%
+- Epic 3 (Content Synthesis) increased from 65% to 75%
 
 ### January 14, 2026 (Update 7)
 - Enhanced AI learning map generation:
@@ -333,14 +345,19 @@ These must be completed for a functional MVP:
 
 ## Next Milestone Target
 
-**Target**: Complete Stage 1 (Foundation) from implementation plan
+**Target**: Complete Stage 1 (Foundation) from implementation plan :white_check_mark:
 
 - [x] SM-2 Algorithm implementation
 - [x] Study Flashcards with SM-2 integration
 - [x] Quiz implementation with SM-2 integration
 - [x] Principle entity and CRUD
 - [x] AI learning map generation
-- [ ] Dashboard trigger buttons (Ingestion, Synthesis)
+- [x] Dashboard trigger buttons (Ingestion, Synthesis)
+
+**Next Target**: Stage 2 - Content Pipeline Enhancement
+- [ ] Manual URL/document upload with file upload
+- [ ] Approval workflow UI for knowledge units
+- [ ] Challenge submission system
 
 ---
 
@@ -348,6 +365,7 @@ These must be completed for a functional MVP:
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.7 | 2026-01-14 | Ingestion and Synthesis trigger buttons, Stage 1 complete |
 | 1.6 | 2026-01-14 | Force regeneration, FK constraint fix, SVG icon fixes |
 | 1.5 | 2026-01-14 | AI learning map generation with Claude, dashboard trigger button |
 | 1.4 | 2026-01-14 | Principle entity complete, Completion Assessment dashboard added |

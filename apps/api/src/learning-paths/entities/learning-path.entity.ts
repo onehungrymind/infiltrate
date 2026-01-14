@@ -2,6 +2,7 @@ import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateCol
 import { KnowledgeUnit } from '../../knowledge-units/entities/knowledge-unit.entity';
 import { Principle } from '../../principles/entities/principle.entity';
 import { SourceConfig } from '../../source-configs/entities/source-config.entity';
+import { SourcePathLink } from '../../source-configs/entities/source-path-link.entity';
 import { RawContent } from '../../raw-content/entities/raw-content.entity';
 
 @Entity('learning_paths')
@@ -32,6 +33,9 @@ export class LearningPath {
 
   @OneToMany(() => SourceConfig, source => source.learningPath)
   sources: SourceConfig[];
+
+  @OneToMany(() => SourcePathLink, link => link.learningPath)
+  sourceLinks: SourcePathLink[];
 
   @OneToMany(() => RawContent, content => content.learningPath)
   rawContent: RawContent[];

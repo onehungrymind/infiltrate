@@ -12,6 +12,8 @@ export interface FilterConfig {
   label: string;
   options: FilterOption[];
   multiple?: boolean;
+  fullWidth?: boolean;  // If true, filter takes full width on its own row
+  row?: number;         // Group filters into rows (filters with same row number are grouped)
 }
 
 export interface SearchFilterState {
@@ -58,6 +60,29 @@ export class SearchFilterBar {
       Array.isArray(v) ? v.length > 0 : v !== ''
     );
     return hasSearch || hasFilters;
+  }
+
+  /**
+   * Groups filters by row number for rendering
+   * Filters without a row number are placed in row 0
+   */
+  getFiltersByRow(): Map<number, FilterConfig[]> {
+    const rows = new Map<number, FilterConfig[]>();
+    for (const config of this.filterConfigs) {
+      const rowNum = config.row ?? 0;
+      if (!rows.has(rowNum)) {
+        rows.set(rowNum, []);
+      }
+      rows.get(rowNum)!.push(config);
+    }
+    return rows;
+  }
+
+  /**
+   * Get sorted row numbers for iteration
+   */
+  getRowNumbers(): number[] {
+    return Array.from(this.getFiltersByRow().keys()).sort((a, b) => a - b);
   }
 
   private emitChange() {

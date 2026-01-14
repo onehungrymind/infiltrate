@@ -88,6 +88,7 @@ export interface BaseEntity {
 
   /**
    * Source configuration for content ingestion (tied to a learning path)
+   * @deprecated Use Source + SourcePathLink instead for many-to-many relationship
    */
   export interface SourceConfig extends BaseEntity {
     pathId: string;
@@ -95,6 +96,33 @@ export interface BaseEntity {
     type: SourceType;
     name: string;                    // "JavaScript Weekly"
     enabled: boolean;
+  }
+
+  /**
+   * Source - a content source that can be shared across learning paths
+   * URL is unique to prevent duplicates
+   */
+  export interface Source extends BaseEntity {
+    url: string;                     // "https://javascriptweekly.com/rss" (unique)
+    type: SourceType;
+    name: string;                    // "JavaScript Weekly"
+  }
+
+  /**
+   * Links a Source to a LearningPath with per-path settings
+   */
+  export interface SourcePathLink extends BaseEntity {
+    sourceId: string;
+    pathId: string;
+    enabled: boolean;                // Can be enabled/disabled per path
+  }
+
+  /**
+   * Source with link information (for API responses when querying by path)
+   */
+  export interface SourceWithLink extends Source {
+    enabled: boolean;                // From SourcePathLink
+    linkId: string;                  // SourcePathLink ID
   }
   
   /**
@@ -224,12 +252,34 @@ export interface BaseEntity {
     type: SourceType;
     name: string;
   }
-  
+
   export interface UpdateSourceConfigDto {
     url?: string;
     type?: SourceType;
     name?: string;
     enabled?: boolean;
+  }
+
+  // New Source DTOs (many-to-many model)
+  export interface CreateSourceDto {
+    url: string;
+    type: SourceType;
+    name: string;
+  }
+
+  export interface UpdateSourceDto {
+    type?: SourceType;
+    name?: string;
+  }
+
+  export interface LinkSourceToPathDto {
+    sourceId: string;
+    pathId: string;
+    enabled?: boolean;
+  }
+
+  export interface UpdateSourceLinkDto {
+    enabled: boolean;
   }
   
   export interface CreateDataSourceDto {

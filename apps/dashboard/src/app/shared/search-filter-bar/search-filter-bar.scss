@@ -74,7 +74,14 @@
   }
 }
 
-.filter-chips-container {
+.filters-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.filter-row {
   display: flex;
   gap: 16px;
   width: 100%;
@@ -86,6 +93,10 @@
   gap: 4px;
   flex: 1;
   min-width: 0;
+
+  &.full-width {
+    flex: 0 0 100%;
+  }
 }
 
 .filter-label {
@@ -153,12 +164,16 @@
 
 // Responsive adjustments
 @media (max-width: 480px) {
-  .filter-chips-container {
+  .filter-row {
     flex-direction: column;
     gap: 12px;
   }
 
   .filter-select-wrapper {
     width: 100%;
+
+    &.full-width {
+      flex: 0 0 auto;
+    }
   }
 }
