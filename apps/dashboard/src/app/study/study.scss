@@ -1,7 +1,15 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
 .study-container {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  flex: 1;
+  min-height: 0;
   padding: 24px;
   background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
 }
@@ -62,5 +70,8 @@
 
 .study-content {
   flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
   overflow: auto;
 }
