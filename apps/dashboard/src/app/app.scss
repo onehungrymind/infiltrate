@@ -25,10 +25,16 @@ main > div {
 }
 
 router-outlet {
-  display: block;
+  display: none; // router-outlet itself takes no space
+}
+
+// The routed component is inserted as a sibling AFTER router-outlet
+router-outlet + * {
   flex: 1 1 0%;
+  display: flex;
+  flex-direction: column;
   min-height: 0;
-  overflow: hidden;
+  overflow: auto;
 }
 
 
