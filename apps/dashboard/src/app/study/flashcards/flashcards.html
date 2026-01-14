@@ -5,12 +5,12 @@
       <label for="pathSelect" class="filter-label">Learning Path</label>
       <select
         id="pathSelect"
-        [(ngModel)]="selectedPathId"
-        (ngModelChange)="onPathChange()"
+        [ngModel]="selectedPathId()"
+        (ngModelChange)="onPathChange($event)"
         class="filter-select"
       >
         <option [ngValue]="null">All Paths</option>
-        @for (path of learningPaths; track path.id) {
+        @for (path of learningPaths(); track path.id) {
           <option [ngValue]="path.id">{{ path.name }}</option>
         }
       </select>
@@ -20,8 +20,8 @@
       <label class="filter-checkbox">
         <input
           type="checkbox"
-          [(ngModel)]="showDueOnly"
-          (ngModelChange)="onDueOnlyChange()"
+          [ngModel]="showDueOnly()"
+          (ngModelChange)="onDueOnlyChange($event)"
         />
         <span>Due for Review Only</span>
       </label>
@@ -29,7 +29,7 @@
   </div>
 
   <!-- Loading State -->
-  @if (isLoading) {
+  @if (isLoading()) {
     <div class="loading-state">
       <div class="loading-spinner"></div>
       <p>Loading cards...</p>
@@ -37,7 +37,7 @@
   }
 
   <!-- Empty State -->
-  @else if (cards.length === 0) {
+  @else if (cards().length === 0) {
     <div class="empty-state">
       <div class="empty-icon">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -46,7 +46,7 @@
       </div>
       <h3>No cards available</h3>
       <p>
-        @if (showDueOnly) {
+        @if (showDueOnly()) {
           No cards are due for review. Try disabling the filter or check back later.
         } @else {
           Add some knowledge units to start studying.
@@ -60,25 +60,25 @@
     <div class="flashcard-wrapper">
       <!-- Progress Bar -->
       <div class="progress-bar">
-        <div class="progress-fill" [style.width.%]="progress"></div>
+        <div class="progress-fill" [style.width.%]="progress()"></div>
       </div>
 
       <!-- Card -->
       <div
         class="flashcard"
-        [class.flipped]="isFlipped"
+        [class.flipped]="isFlipped()"
         (click)="flipCard()"
       >
         <div class="card-face card-front">
           <div class="card-header">
             <span class="card-label">Question</span>
-            <span class="card-mastery" [class]="currentCard?.progress?.masteryLevel || 'new'">
-              {{ masteryLabel }}
+            <span class="card-mastery" [class]="currentCard()?.progress?.masteryLevel || 'new'">
+              {{ masteryLabel() }}
             </span>
           </div>
           <div class="card-content">
-            <h2 class="card-concept">{{ currentCard?.knowledgeUnit?.concept }}</h2>
-            <p class="card-question">{{ currentCard?.knowledgeUnit?.question }}</p>
+            <h2 class="card-concept">{{ currentCard()?.knowledgeUnit?.concept }}</h2>
+            <p class="card-question">{{ currentCard()?.knowledgeUnit?.question }}</p>
           </div>
           <div class="card-footer">
             <span class="flip-hint">Click to reveal answer</span>
@@ -88,25 +88,25 @@
         <div class="card-face card-back">
           <div class="card-header">
             <span class="card-label">Answer</span>
-            @if (confidenceLabel) {
-              <span class="card-confidence">{{ confidenceLabel }}</span>
+            @if (confidenceLabel()) {
+              <span class="card-confidence">{{ confidenceLabel() }}</span>
             }
           </div>
           <div class="card-content card-content-scrollable">
-            <p class="card-answer">{{ currentCard?.knowledgeUnit?.answer }}</p>
+            <p class="card-answer">{{ currentCard()?.knowledgeUnit?.answer }}</p>
 
-            @if (currentCard?.knowledgeUnit?.elaboration) {
+            @if (currentCard()?.knowledgeUnit?.elaboration) {
               <div class="card-section">
                 <h4>Details</h4>
-                <p>{{ currentCard?.knowledgeUnit?.elaboration }}</p>
+                <p>{{ currentCard()?.knowledgeUnit?.elaboration }}</p>
               </div>
             }
 
-            @if (currentCard?.knowledgeUnit?.examples?.length) {
+            @if (currentCard()?.knowledgeUnit?.examples?.length) {
               <div class="card-section">
                 <h4>Examples</h4>
                 <ul>
-                  @for (example of currentCard?.knowledgeUnit?.examples; track example) {
+                  @for (example of currentCard()?.knowledgeUnit?.examples; track example) {
                     <li>{{ example }}</li>
                   }
                 </ul>
@@ -160,7 +160,7 @@
         <button
           class="nav-btn"
           (click)="previousCard()"
-          [disabled]="currentIndex === 0"
+          [disabled]="currentIndex() === 0"
         >
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
@@ -169,13 +169,13 @@
         </button>
 
         <span class="nav-counter">
-          {{ currentIndex + 1 }} of {{ cards.length }}
+          {{ currentIndex() + 1 }} of {{ cards().length }}
         </span>
 
         <button
           class="nav-btn"
           (click)="nextCard()"
-          [disabled]="currentIndex === cards.length - 1"
+          [disabled]="currentIndex() === cards().length - 1"
         >
           Next
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">

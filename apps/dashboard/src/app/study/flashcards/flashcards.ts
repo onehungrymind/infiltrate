@@ -1,11 +1,10 @@
-import { Component, OnInit, OnDestroy, inject, HostListener, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, inject, HostListener, computed, signal, effect } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { KnowledgeUnit, LearningPath, UserProgress } from '@kasita/common-models';
 import { KnowledgeUnitFacade, LearningPathsFacade, UserProgressFacade } from '@kasita/core-state';
 import { AuthService } from '@kasita/core-data';
-import { Subject, combineLatest } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
 
 interface StudyCard {
   knowledgeUnit: KnowledgeUnit;
@@ -19,33 +18,93 @@ interface StudyCard {
   templateUrl: './flashcards.html',
   styleUrl: './flashcards.scss',
 })
-export class StudyFlashcards implements OnInit, OnDestroy {
+export class StudyFlashcards implements OnInit {
   private knowledgeUnitFacade = inject(KnowledgeUnitFacade);
   private learningPathsFacade = inject(LearningPathsFacade);
   private userProgressFacade = inject(UserProgressFacade);
   private authService = inject(AuthService);
-  private cdr = inject(ChangeDetectorRef);
-  private destroy$ = new Subject<void>();
 
-  learningPaths: LearningPath[] = [];
-  selectedPathId: string | null = null;
-  showDueOnly = false;
+  // Signals from NgRx
+  private allKnowledgeUnits = toSignal(this.knowledgeUnitFacade.allKnowledgeUnits$, { initialValue: [] as KnowledgeUnit[] });
+  private allProgress = toSignal(this.userProgressFacade.allUserProgress$, { initialValue: [] as UserProgress[] });
+  learningPaths = toSignal(this.learningPathsFacade.allLearningPaths$, { initialValue: [] as LearningPath[] });
 
-  cards: StudyCard[] = [];
-  currentIndex = 0;
-  isFlipped = false;
-  isLoading = true;
+  // Local state signals
+  selectedPathId = signal<string | null>(null);
+  showDueOnly = signal(false);
+  currentIndex = signal(0);
+  isFlipped = signal(false);
 
-  private allKnowledgeUnits: KnowledgeUnit[] = [];
-  private allProgress: UserProgress[] = [];
+  // Computed signals
+  cards = computed(() => {
+    let units = this.allKnowledgeUnits();
+    const pathId = this.selectedPathId();
+
+    // Filter by learning path if selected
+    if (pathId) {
+      units = units.filter((u) => u.pathId === pathId);
+    }
+
+    // Build cards with progress
+    const progress = this.allProgress();
+    let cards: StudyCard[] = units.map((unit) => ({
+      knowledgeUnit: unit,
+      progress: progress.find((p) => p.unitId === unit.id) || null,
+    }));
+
+    // Filter by due for review if enabled
+    if (this.showDueOnly()) {
+      const now = new Date();
+      cards = cards.filter((card) => {
+        if (!card.progress) return true;
+        return new Date(card.progress.nextReviewDate) <= now;
+      });
+    }
+
+    return cards;
+  });
+
+  isLoading = computed(() => {
+    return this.allKnowledgeUnits().length === 0;
+  });
+
+  currentCard = computed(() => {
+    const cards = this.cards();
+    const index = this.currentIndex();
+    return cards[index] || null;
+  });
+
+  progress = computed(() => {
+    const cards = this.cards();
+    if (cards.length === 0) return 0;
+    return ((this.currentIndex() + 1) / cards.length) * 100;
+  });
+
+  masteryLabel = computed(() => {
+    const card = this.currentCard();
+    if (!card?.progress) return 'New';
+    return card.progress.masteryLevel.charAt(0).toUpperCase() + card.progress.masteryLevel.slice(1);
+  });
+
+  confidenceLabel = computed(() => {
+    const card = this.currentCard();
+    if (!card?.progress) return '';
+    return `${card.progress.confidence}% confidence`;
+  });
+
+  constructor() {
+    // Reset currentIndex when cards change and index is out of bounds
+    effect(() => {
+      const cards = this.cards();
+      const index = this.currentIndex();
+      if (index >= cards.length && cards.length > 0) {
+        this.currentIndex.set(cards.length - 1);
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.loadData();
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 
   @HostListener('window:keydown', ['$event'])
@@ -70,159 +129,81 @@ export class StudyFlashcards implements OnInit, OnDestroy {
         this.flipCard();
         break;
       case '1':
-        this.rateCard(0); // Again
+        this.rateCard(0);
         break;
       case '2':
-        this.rateCard(3); // Hard
+        this.rateCard(3);
         break;
       case '3':
-        this.rateCard(4); // Good
+        this.rateCard(4);
         break;
       case '4':
-        this.rateCard(5); // Easy
+        this.rateCard(5);
         break;
     }
   }
 
   private loadData(): void {
-    this.isLoading = true;
-
-    // Load learning paths
     this.learningPathsFacade.loadLearningPaths();
-    this.learningPathsFacade.allLearningPaths$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((paths) => {
-        this.learningPaths = paths;
-        this.cdr.markForCheck();
-      });
-
-    // Load knowledge units
     this.knowledgeUnitFacade.loadKnowledgeUnits();
 
-    // Load user progress
     const userId = this.authService.getUserId();
     if (userId) {
       this.userProgressFacade.loadUserProgressByUser(userId);
     }
-
-    // Combine knowledge units and progress
-    combineLatest([
-      this.knowledgeUnitFacade.allKnowledgeUnits$,
-      this.userProgressFacade.allUserProgress$,
-    ])
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(([units, progress]) => {
-        this.allKnowledgeUnits = units;
-        this.allProgress = progress;
-        this.buildCards();
-        this.isLoading = false;
-        this.cdr.markForCheck();
-      });
   }
 
-  private buildCards(): void {
-    let units = this.allKnowledgeUnits;
-
-    // Filter by learning path if selected
-    if (this.selectedPathId) {
-      units = units.filter((u) => u.pathId === this.selectedPathId);
-    }
-
-    // Build cards with progress
-    this.cards = units.map((unit) => {
-      const progress = this.allProgress.find((p) => p.unitId === unit.id) || null;
-      return { knowledgeUnit: unit, progress };
-    });
-
-    // Filter by due for review if enabled
-    if (this.showDueOnly) {
-      const now = new Date();
-      this.cards = this.cards.filter((card) => {
-        if (!card.progress) return true; // New cards are always due
-        return new Date(card.progress.nextReviewDate) <= now;
-      });
-    }
-
-    // Reset to first card if current index is out of bounds
-    if (this.currentIndex >= this.cards.length) {
-      this.currentIndex = Math.max(0, this.cards.length - 1);
-    }
-
-    this.isFlipped = false;
+  onPathChange(pathId: string | null): void {
+    this.selectedPathId.set(pathId);
+    this.currentIndex.set(0);
+    this.isFlipped.set(false);
   }
 
-  onPathChange(): void {
-    this.buildCards();
-    this.currentIndex = 0;
-  }
-
-  onDueOnlyChange(): void {
-    this.buildCards();
-    this.currentIndex = 0;
+  onDueOnlyChange(dueOnly: boolean): void {
+    this.showDueOnly.set(dueOnly);
+    this.currentIndex.set(0);
+    this.isFlipped.set(false);
   }
 
   flipCard(): void {
-    if (this.cards.length > 0) {
-      this.isFlipped = !this.isFlipped;
+    if (this.cards().length > 0) {
+      this.isFlipped.update(v => !v);
     }
   }
 
   nextCard(): void {
-    if (this.currentIndex < this.cards.length - 1) {
-      this.currentIndex++;
-      this.isFlipped = false;
+    if (this.currentIndex() < this.cards().length - 1) {
+      this.currentIndex.update(i => i + 1);
+      this.isFlipped.set(false);
     }
   }
 
   previousCard(): void {
-    if (this.currentIndex > 0) {
-      this.currentIndex--;
-      this.isFlipped = false;
+    if (this.currentIndex() > 0) {
+      this.currentIndex.update(i => i - 1);
+      this.isFlipped.set(false);
     }
   }
 
   rateCard(quality: number): void {
-    if (this.cards.length === 0) return;
+    const cards = this.cards();
+    if (cards.length === 0) return;
 
-    const card = this.cards[this.currentIndex];
+    const card = cards[this.currentIndex()];
     const userId = this.authService.getUserId();
 
     if (!userId) return;
 
-    // Record the attempt
     this.userProgressFacade.recordAttempt({
       userId,
       unitId: card.knowledgeUnit.id,
       quality,
     });
 
-    // Move to next card or finish
-    if (this.currentIndex < this.cards.length - 1) {
+    if (this.currentIndex() < cards.length - 1) {
       this.nextCard();
     } else {
-      // Last card - reload to update progress
       this.userProgressFacade.loadUserProgressByUser(userId);
     }
-  }
-
-  get currentCard(): StudyCard | null {
-    return this.cards[this.currentIndex] || null;
-  }
-
-  get progress(): number {
-    if (this.cards.length === 0) return 0;
-    return ((this.currentIndex + 1) / this.cards.length) * 100;
-  }
-
-  get masteryLabel(): string {
-    const progress = this.currentCard?.progress;
-    if (!progress) return 'New';
-    return progress.masteryLevel.charAt(0).toUpperCase() + progress.masteryLevel.slice(1);
-  }
-
-  get confidenceLabel(): string {
-    const progress = this.currentCard?.progress;
-    if (!progress) return '';
-    return `${progress.confidence}% confidence`;
   }
 }
