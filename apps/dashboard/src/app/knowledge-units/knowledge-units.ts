@@ -1,28 +1,73 @@
 import { AsyncPipe } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal, computed } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { KnowledgeUnit } from '@kasita/common-models';
 import { KnowledgeUnitFacade } from '@kasita/core-state';
 import { MaterialModule } from '@kasita/material';
-import { Observable } from 'rxjs';
 import { KnowledgeUnitDetail } from './knowledge-unit-detail/knowledge-unit-detail';
 import { KnowledgeUnitsList } from './knowledge-units-list/knowledge-units-list';
+import { SearchFilterBar, FilterConfig, SearchFilterState } from '../shared/search-filter-bar/search-filter-bar';
+import { filterEntities, commonFilterMatchers } from '../shared/search-filter-bar/filter-utils';
 
 @Component({
   selector: 'app-knowledge-units',
-  imports: [KnowledgeUnitsList, KnowledgeUnitDetail, AsyncPipe, MaterialModule],
+  imports: [KnowledgeUnitsList, KnowledgeUnitDetail, AsyncPipe, MaterialModule, SearchFilterBar],
   templateUrl: './knowledge-units.html',
   styleUrl: './knowledge-units.scss',
 })
 export class KnowledgeUnits implements OnInit {
   private knowledgeUnitsFacade = inject(KnowledgeUnitFacade);
 
-  knowledgeUnits$: Observable<KnowledgeUnit[]> =
-    this.knowledgeUnitsFacade.allKnowledgeUnits$;
-  selectedKnowledgeUnit$: Observable<KnowledgeUnit | null> =
-    this.knowledgeUnitsFacade.selectedKnowledgeUnit$;
+  private allKnowledgeUnits = toSignal(this.knowledgeUnitsFacade.allKnowledgeUnits$, { initialValue: [] as KnowledgeUnit[] });
+  selectedKnowledgeUnit$ = this.knowledgeUnitsFacade.selectedKnowledgeUnit$;
   loaded$ = this.knowledgeUnitsFacade.loaded$;
   error$ = this.knowledgeUnitsFacade.error$;
   mutations$ = this.knowledgeUnitsFacade.mutations$;
+
+  // Search/Filter state
+  searchFilterState = signal<SearchFilterState>({ searchTerm: '', filters: {} });
+
+  // Filter configuration
+  filterConfigs: FilterConfig[] = [
+    {
+      field: 'status',
+      label: 'Status',
+      options: [
+        { label: 'Pending', value: 'pending' },
+        { label: 'Approved', value: 'approved' },
+        { label: 'Rejected', value: 'rejected' },
+      ],
+    },
+    {
+      field: 'difficulty',
+      label: 'Difficulty',
+      options: [
+        { label: 'Beginner', value: 'beginner' },
+        { label: 'Intermediate', value: 'intermediate' },
+        { label: 'Advanced', value: 'advanced' },
+        { label: 'Expert', value: 'expert' },
+      ],
+    },
+  ];
+
+  // Filtered knowledge units
+  knowledgeUnits = computed(() => {
+    const all = this.allKnowledgeUnits();
+    const state = this.searchFilterState();
+    return filterEntities(
+      all,
+      state,
+      ['concept', 'question', 'answer'],
+      {
+        status: commonFilterMatchers.exactMatch<KnowledgeUnit>('status'),
+        difficulty: commonFilterMatchers.exactMatch<KnowledgeUnit>('difficulty'),
+      }
+    );
+  });
+
+  onSearchFilterChange(state: SearchFilterState) {
+    this.searchFilterState.set(state);
+  }
 
   constructor() {
     this.mutations$.subscribe(() => this.reset());

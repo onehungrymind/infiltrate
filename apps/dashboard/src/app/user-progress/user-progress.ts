@@ -1,31 +1,63 @@
-import { AsyncPipe } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal, computed } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { UserProgress as UserProgressModel } from '@kasita/common-models';
 import { UserProgressFacade } from '@kasita/core-state';
 import { MaterialModule } from '@kasita/material';
-import { Observable } from 'rxjs';
 import { UserProgressDetail } from './user-progress-detail/user-progress-detail';
 import { UserProgressList } from './user-progress-list/user-progress-list';
+import { SearchFilterBar, FilterConfig, SearchFilterState } from '../shared/search-filter-bar/search-filter-bar';
+import { filterEntities, commonFilterMatchers } from '../shared/search-filter-bar/filter-utils';
 
 @Component({
   selector: 'app-user-progress',
-  imports: [UserProgressList, UserProgressDetail, AsyncPipe, MaterialModule],
+  imports: [UserProgressList, UserProgressDetail, MaterialModule, SearchFilterBar],
   templateUrl: './user-progress.html',
   styleUrl: './user-progress.scss',
 })
 export class UserProgress implements OnInit {
   private userProgressFacade = inject(UserProgressFacade);
 
-  userProgress$: Observable<UserProgressModel[]> =
-    this.userProgressFacade.allUserProgress$;
-  selectedUserProgress$: Observable<UserProgressModel | null> =
-    this.userProgressFacade.selectedUserProgress$;
-  loaded$ = this.userProgressFacade.loaded$;
-  error$ = this.userProgressFacade.error$;
-  mutations$ = this.userProgressFacade.mutations$;
+  private allUserProgress = toSignal(this.userProgressFacade.allUserProgress$, { initialValue: [] as UserProgressModel[] });
+  selectedUserProgress = toSignal(this.userProgressFacade.selectedUserProgress$, { initialValue: null });
+  loaded = toSignal(this.userProgressFacade.loaded$, { initialValue: false });
+  error = toSignal(this.userProgressFacade.error$, { initialValue: null });
+
+  // Search/Filter state
+  searchFilterState = signal<SearchFilterState>({ searchTerm: '', filters: {} });
+
+  // Filter configuration
+  filterConfigs: FilterConfig[] = [
+    {
+      field: 'masteryLevel',
+      label: 'Mastery Level',
+      options: [
+        { label: 'Learning', value: 'learning' },
+        { label: 'Reviewing', value: 'reviewing' },
+        { label: 'Mastered', value: 'mastered' },
+      ],
+    },
+  ];
+
+  // Filtered user progress
+  userProgress = computed(() => {
+    const all = this.allUserProgress();
+    const state = this.searchFilterState();
+    return filterEntities(
+      all,
+      state,
+      ['userId', 'unitId'],
+      {
+        masteryLevel: commonFilterMatchers.exactMatch<UserProgressModel>('masteryLevel'),
+      }
+    );
+  });
+
+  onSearchFilterChange(state: SearchFilterState) {
+    this.searchFilterState.set(state);
+  }
 
   constructor() {
-    this.mutations$.subscribe(() => this.reset());
+    this.userProgressFacade.mutations$.subscribe(() => this.reset());
   }
 
   ngOnInit(): void {

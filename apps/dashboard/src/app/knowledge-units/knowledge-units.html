@@ -2,7 +2,9 @@
   <div class="master-panel">
     @if (error$ | async) {
       <div class="error-message">
-        <mat-icon>error</mat-icon>
+        <svg class="error-icon" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+        </svg>
         <span>{{ error$ | async }}</span>
       </div>
     } @else if ((loaded$ | async) === false) {
@@ -11,8 +13,13 @@
         <span>Loading knowledge units...</span>
       </div>
     } @else {
+      <app-search-filter-bar
+        placeholder="Search by concept, question, or answer..."
+        [filterConfigs]="filterConfigs"
+        (searchChange)="onSearchFilterChange($event)"
+      ></app-search-filter-bar>
       <app-knowledge-units-list
-        [knowledgeUnits]="(knowledgeUnits$ | async) ?? []"
+        [knowledgeUnits]="knowledgeUnits()"
         [selectedKnowledgeUnit]="selectedKnowledgeUnit$ | async"
         (selected)="selectKnowledgeUnit($event)"
         (deleted)="deleteKnowledgeUnit($event)"

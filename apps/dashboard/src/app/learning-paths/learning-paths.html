@@ -13,6 +13,11 @@
         <span>Loading learning paths...</span>
       </div>
     } @else {
+      <app-search-filter-bar
+        placeholder="Search by name, domain, or target skill..."
+        [filterConfigs]="filterConfigs"
+        (searchChange)="onSearchFilterChange($event)"
+      ></app-search-filter-bar>
       <app-learning-paths-list
         [learningPaths]="learningPaths()"
         [selectedLearningPath]="selectedLearningPath()"

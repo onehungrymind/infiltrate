@@ -1,0 +1,64 @@
+<div class="search-filter-bar">
+  <!-- Search Input -->
+  <div class="search-input-container">
+    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="11" cy="11" r="8"/>
+      <path d="m21 21-4.35-4.35"/>
+    </svg>
+    <input
+      type="text"
+      class="search-input"
+      [placeholder]="placeholder"
+      [(ngModel)]="searchTerm"
+      (ngModelChange)="onSearchChange()"
+    />
+    @if (searchTerm) {
+      <button
+        type="button"
+        class="clear-search-btn"
+        (click)="searchTerm = ''; onSearchChange()"
+        aria-label="Clear search"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 6L6 18M6 6l12 12"/>
+        </svg>
+      </button>
+    }
+  </div>
+
+  <!-- Filter Dropdowns -->
+  @if (filterConfigs.length > 0) {
+    <div class="filter-chips-container">
+      @for (config of filterConfigs; track config.field) {
+        <div class="filter-select-wrapper">
+          <label class="filter-label">{{ config.label }}</label>
+          <select
+            class="filter-select"
+            [value]="filters[config.field] || ''"
+            (change)="onFilterChange(config.field, $event)"
+          >
+            <option value="">All</option>
+            @for (option of config.options; track option.value) {
+              <option [value]="option.value">{{ option.label }}</option>
+            }
+          </select>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Clear Filters Button -->
+  @if (showClearButton && hasActiveFilters()) {
+    <button
+      type="button"
+      class="clear-all-btn"
+      (click)="clearAll()"
+    >
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M3 6h18M3 12h18M3 18h18"/>
+        <path d="m19 6-2 2m0-2 2 2M19 12l-2 2m0-2 2 2M19 18l-2 2m0-2 2 2"/>
+      </svg>
+      Clear
+    </button>
+  }
+</div>

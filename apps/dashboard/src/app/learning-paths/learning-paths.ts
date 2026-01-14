@@ -1,24 +1,60 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { LearningPath } from '@kasita/common-models';
 import { LearningPathsFacade } from '@kasita/core-state';
 import { MaterialModule } from '@kasita/material';
 import { LearningPathDetail } from './learning-path-detail/learning-path-detail';
 import { LearningPathsList } from './learning-paths-list/learning-paths-list';
+import { SearchFilterBar, FilterConfig, SearchFilterState } from '../shared/search-filter-bar/search-filter-bar';
+import { filterEntities, commonFilterMatchers } from '../shared/search-filter-bar/filter-utils';
 
 @Component({
   selector: 'app-learning-paths',
-  imports: [LearningPathsList, LearningPathDetail, MaterialModule],
+  imports: [LearningPathsList, LearningPathDetail, MaterialModule, SearchFilterBar],
   templateUrl: './learning-paths.html',
   styleUrl: './learning-paths.scss',
 })
 export class LearningPaths implements OnInit {
   private learningPathsFacade = inject(LearningPathsFacade);
 
-  learningPaths = toSignal(this.learningPathsFacade.allLearningPaths$, { initialValue: [] as LearningPath[] });
+  private allLearningPaths = toSignal(this.learningPathsFacade.allLearningPaths$, { initialValue: [] as LearningPath[] });
   selectedLearningPath = toSignal(this.learningPathsFacade.selectedLearningPath$, { initialValue: null });
   loaded = toSignal(this.learningPathsFacade.loaded$, { initialValue: false });
   error = toSignal(this.learningPathsFacade.error$, { initialValue: null });
+
+  // Search/Filter state
+  searchFilterState = signal<SearchFilterState>({ searchTerm: '', filters: {} });
+
+  // Filter configuration
+  filterConfigs: FilterConfig[] = [
+    {
+      field: 'status',
+      label: 'Status',
+      options: [
+        { label: 'Not Started', value: 'not-started' },
+        { label: 'In Progress', value: 'in-progress' },
+        { label: 'Completed', value: 'completed' },
+      ],
+    },
+  ];
+
+  // Filtered learning paths
+  learningPaths = computed(() => {
+    const all = this.allLearningPaths();
+    const state = this.searchFilterState();
+    return filterEntities(
+      all,
+      state,
+      ['name', 'domain', 'targetSkill'],
+      {
+        status: commonFilterMatchers.exactMatch<LearningPath>('status'),
+      }
+    );
+  });
+
+  onSearchFilterChange(state: SearchFilterState) {
+    this.searchFilterState.set(state);
+  }
 
   constructor() {
     this.learningPathsFacade.mutations$.subscribe(() => this.reset());

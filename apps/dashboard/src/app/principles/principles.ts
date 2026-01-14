@@ -1,31 +1,73 @@
-import { AsyncPipe } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal, computed } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { Principle } from '@kasita/common-models';
 import { PrincipleFacade } from '@kasita/core-state';
 import { MaterialModule } from '@kasita/material';
-import { Observable } from 'rxjs';
 import { PrincipleDetail } from './principle-detail/principle-detail';
 import { PrinciplesList } from './principles-list/principles-list';
+import { SearchFilterBar, FilterConfig, SearchFilterState } from '../shared/search-filter-bar/search-filter-bar';
+import { filterEntities, commonFilterMatchers } from '../shared/search-filter-bar/filter-utils';
 
 @Component({
   selector: 'app-principles',
-  imports: [PrinciplesList, PrincipleDetail, AsyncPipe, MaterialModule],
+  imports: [PrinciplesList, PrincipleDetail, MaterialModule, SearchFilterBar],
   templateUrl: './principles.html',
   styleUrl: './principles.scss',
 })
 export class Principles implements OnInit {
   private principleFacade = inject(PrincipleFacade);
 
-  principles$: Observable<Principle[]> =
-    this.principleFacade.allPrinciples$;
-  selectedPrinciple$: Observable<Principle | null> =
-    this.principleFacade.selectedPrinciple$;
-  loaded$ = this.principleFacade.loaded$;
-  error$ = this.principleFacade.error$;
-  mutations$ = this.principleFacade.mutations$;
+  private allPrinciples = toSignal(this.principleFacade.allPrinciples$, { initialValue: [] as Principle[] });
+  selectedPrinciple = toSignal(this.principleFacade.selectedPrinciple$, { initialValue: null });
+  loaded = toSignal(this.principleFacade.loaded$, { initialValue: false });
+  error = toSignal(this.principleFacade.error$, { initialValue: null });
+
+  // Search/Filter state
+  searchFilterState = signal<SearchFilterState>({ searchTerm: '', filters: {} });
+
+  // Filter configuration
+  filterConfigs: FilterConfig[] = [
+    {
+      field: 'status',
+      label: 'Status',
+      options: [
+        { label: 'Pending', value: 'pending' },
+        { label: 'In Progress', value: 'in_progress' },
+        { label: 'Mastered', value: 'mastered' },
+      ],
+    },
+    {
+      field: 'difficulty',
+      label: 'Difficulty',
+      options: [
+        { label: 'Foundational', value: 'foundational' },
+        { label: 'Intermediate', value: 'intermediate' },
+        { label: 'Advanced', value: 'advanced' },
+      ],
+    },
+  ];
+
+  // Filtered principles
+  principles = computed(() => {
+    const all = this.allPrinciples();
+    const state = this.searchFilterState();
+    return filterEntities(
+      all,
+      state,
+      ['name', 'description'],
+      {
+        status: commonFilterMatchers.exactMatch<Principle>('status'),
+        difficulty: commonFilterMatchers.exactMatch<Principle>('difficulty'),
+      }
+    );
+  });
+
+  onSearchFilterChange(state: SearchFilterState) {
+    this.searchFilterState.set(state);
+  }
 
   constructor() {
-    this.mutations$.subscribe(() => this.reset());
+    this.principleFacade.mutations$.subscribe(() => this.reset());
   }
 
   ngOnInit(): void {
