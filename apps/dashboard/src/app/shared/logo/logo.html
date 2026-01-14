@@ -6,6 +6,9 @@
     [class.logo-icon-small]="collapsed"
   />
   <span class="logo-text" [class.text-4xl]="!collapsed" [class.text-2xl]="collapsed">
-    <span class="logo-bold">KAS</span><span class="logo-thin" *ngIf="!collapsed">ITA</span>
+    <span class="logo-bold">KAS</span>
+    @if (!collapsed) {
+      <span class="logo-thin">ITA</span>
+    }
   </span>
 </a>

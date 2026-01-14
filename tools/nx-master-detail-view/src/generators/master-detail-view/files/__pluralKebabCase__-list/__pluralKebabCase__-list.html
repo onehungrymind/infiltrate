@@ -1,32 +1,41 @@
 <div class="flex flex-col gap-4">
-  <div *ngFor="let <%= singularPropertyName %> of <%= pluralPropertyName %>" 
-       class="border border-gray-200 rounded-lg p-4 cursor-pointer hover:bg-gray-50 transition-colors"
-       (click)="selected.emit(<%= singularPropertyName %>)">
-    <div class="flex justify-between items-start">
-      <div class="flex-1">
-        <h3 class="text-lg font-semibold text-gray-900 mb-2">
-          {{ <%= singularPropertyName %>.title || <%= singularPropertyName %>.name || 'Untitled' }}
-        </h3>
-        <p class="text-sm text-gray-600" *ngIf="<%= singularPropertyName %>.description">
-          {{ <%= singularPropertyName %>.description }}
-        </p>
-        <p class="text-xs text-gray-500 mt-2" *ngIf="<%= singularPropertyName %>.created_at">
-          Created: {{ <%= singularPropertyName %>.created_at | date:'short' }}
-        </p>
+  @for (<%= singularPropertyName %> of <%= pluralPropertyName %>; track <%= singularPropertyName %>.id) {
+    <div
+      class="border border-gray-200 rounded-lg p-4 cursor-pointer hover:bg-gray-50 transition-colors"
+      (click)="selected.emit(<%= singularPropertyName %>)">
+      <div class="flex justify-between items-start">
+        <div class="flex-1">
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">
+            {{ <%= singularPropertyName %>.title || <%= singularPropertyName %>.name || 'Untitled' }}
+          </h3>
+          @if (<%= singularPropertyName %>.description) {
+            <p class="text-sm text-gray-600">
+              {{ <%= singularPropertyName %>.description }}
+            </p>
+          }
+          @if (<%= singularPropertyName %>.created_at) {
+            <p class="text-xs text-gray-500 mt-2">
+              Created: {{ <%= singularPropertyName %>.created_at | date:'short' }}
+            </p>
+          }
+        </div>
+        @if (!readonly) {
+          <button
+            mat-icon-button
+            color="warn"
+            (click)="onDelete(<%= singularPropertyName %>); $event.stopPropagation()"
+            class="ml-2">
+            <mat-icon>delete</mat-icon>
+          </button>
+        }
       </div>
-      <button 
-        *ngIf="!readonly"
-        mat-icon-button 
-        color="warn" 
-        (click)="onDelete(<%= singularPropertyName %>); $event.stopPropagation()"
-        class="ml-2">
-        <mat-icon>delete</mat-icon>
-      </button>
     </div>
-  </div>
+  }
   
-  <div *ngIf="<%= pluralPropertyName %>.length === 0" class="text-center py-8 text-gray-500">
-    <mat-icon class="text-4xl mb-2">inbox</mat-icon>
-    <p>No <%= pluralPropertyName %> found</p>
-  </div>
+  @if (<%= pluralPropertyName %>.length === 0) {
+    <div class="text-center py-8 text-gray-500">
+      <mat-icon class="text-4xl mb-2">inbox</mat-icon>
+      <p>No <%= pluralPropertyName %> found</p>
+    </div>
+  }
 </div>

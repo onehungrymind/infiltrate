@@ -110,32 +110,42 @@
                     </span>
                 </div>
 
-                <div *ngIf="inputPhase().aiRecommendation" class="mb-4 rounded-lg bg-blue-50 p-4">
-                    <p class="text-sm text-blue-900">
-                        <span class="font-medium">AI Recommendation:</span> {{ inputPhase().aiRecommendation }}
-                    </p>
-                </div>
+                @if (inputPhase().aiRecommendation) {
+                    <div class="mb-4 rounded-lg bg-blue-50 p-4">
+                        <p class="text-sm text-blue-900">
+                            <span class="font-medium">AI Recommendation:</span> {{ inputPhase().aiRecommendation }}
+                        </p>
+                    </div>
+                }
 
                 <div class="grid gap-3 sm:grid-cols-2">
-                    <div *ngFor="let source of sources()"
-                        class="rounded-lg border border-gray-200 p-4 hover:border-primary-300 hover:shadow-md transition-all cursor-pointer">
-                        <div class="flex items-start justify-between">
-                            <div class="flex-1">
-                                <div class="flex items-center gap-2 mb-1">
-                                    <svg class="h-4 w-4" [ngClass]="getSourceIconColor(source.type)" fill="currentColor"
-                                        viewBox="0 0 20 20">
-                                        <path *ngIf="source.type === 'rss'"
-                                            d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
-                                        <path *ngIf="source.type === 'article'" fill-rule="evenodd"
-                                            d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"
-                                            clip-rule="evenodd" />
-                                    </svg>
-                                    <p class="text-sm font-medium text-gray-900">{{ source.name }}</p>
+                    @for (source of sources(); track source.id) {
+                        <div
+                            class="rounded-lg border border-gray-200 p-4 hover:border-primary-300 hover:shadow-md transition-all cursor-pointer">
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <svg class="h-4 w-4" [ngClass]="getSourceIconColor(source.type)" fill="currentColor"
+                                            viewBox="0 0 20 20">
+                                            @switch (source.type) {
+                                                @case ('rss') {
+                                                    <path
+                                                        d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
+                                                }
+                                                @case ('article') {
+                                                    <path fill-rule="evenodd"
+                                                        d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"
+                                                        clip-rule="evenodd" />
+                                                }
+                                            }
+                                        </svg>
+                                        <p class="text-sm font-medium text-gray-900">{{ source.name }}</p>
+                                    </div>
+                                    <p class="text-xs text-gray-600">{{ source.url }}</p>
                                 </div>
-                                <p class="text-xs text-gray-600">{{ source.url }}</p>
                             </div>
                         </div>
-                    </div>
+                    }
 
                     <button (click)="addSource()"
                         class="rounded-lg border border-dashed border-gray-300 p-4 hover:border-primary-400 hover:bg-primary-50/50 transition-all">
@@ -202,28 +212,32 @@
                 </div>
 
                 <div class="space-y-3">
-                    <div *ngFor="let unit of dueUnits().slice(0, 2)" class="rounded-lg border p-4" [ngClass]="{
-                   'border-emerald-200 bg-emerald-50': unit.priority === 'high',
-                   'border-gray-200': unit.priority !== 'high'
-                 }">
-                        <div class="flex items-start justify-between">
-                            <div class="flex-1">
-                                <p class="font-medium text-gray-900">{{ unit.concept }}</p>
-                                <p class="mt-1 text-sm text-gray-600">{{ unit.question }}</p>
-                                <div class="mt-3 flex items-center gap-4">
-                                    <span class="text-xs text-gray-600">Next review: {{ unit.nextReview }}</span>
-                                    <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium"
-                                        [ngClass]="getUnitStatusClass(unit.masteryLevel)">
-                                        {{ unit.masteryLevel }}
-                                    </span>
+                    @for (unit of dueUnits().slice(0, 2); track unit.id) {
+                        <div class="rounded-lg border p-4" [ngClass]="{
+                       'border-emerald-200 bg-emerald-50': unit.priority === 'high',
+                       'border-gray-200': unit.priority !== 'high'
+                     }">
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <p class="font-medium text-gray-900">{{ unit.concept }}</p>
+                                    <p class="mt-1 text-sm text-gray-600">{{ unit.question }}</p>
+                                    <div class="mt-3 flex items-center gap-4">
+                                        <span class="text-xs text-gray-600">Next review: {{ unit.nextReview }}</span>
+                                        <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium"
+                                            [ngClass]="getUnitStatusClass(unit.masteryLevel)">
+                                            {{ unit.masteryLevel }}
+                                        </span>
+                                    </div>
                                 </div>
+                                @if (unit.priority === 'high') {
+                                    <button (click)="studyUnit()"
+                                        class="ml-4 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700">
+                                        Study
+                                    </button>
+                                }
                             </div>
-                            <button (click)="studyUnit()" *ngIf="unit.priority === 'high'"
-                                class="ml-4 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700">
-                                Study
-                            </button>
                         </div>
-                    </div>
+                    }
                 </div>
 
                     <button (click)="viewAllUnits()"
@@ -255,7 +269,8 @@
                     </span>
                 </div>
 
-                <div *ngIf="!demonstratePhase().unlocked"
+                @if (!demonstratePhase().unlocked) {
+                <div
                     class="rounded-lg border border-dashed border-gray-300 bg-gray-50 p-8 text-center">
                     <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -274,12 +289,13 @@
                             demonstratePhase().unitsRemaining || 0 }} more units to unlock</p>
                     </div>
                 </div>
-
-                <div *ngIf="demonstratePhase().unlocked" class="space-y-2">
+                } @else {
+                <div class="space-y-2">
                     <div class="rounded-lg border border-gray-200 bg-white p-4 text-center text-gray-500">
                         <p class="text-sm">Exercises coming soon</p>
                     </div>
                 </div>
+                }
             </div>
         </div>
 
@@ -305,7 +321,8 @@
                     </span>
                 </div>
 
-                <div *ngIf="!outputPhase().unlocked"
+                @if (!outputPhase().unlocked) {
+                <div
                     class="rounded-lg border border-dashed border-gray-300 bg-gray-50 p-8 text-center">
                     <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -314,12 +331,13 @@
                     <h3 class="mt-4 text-sm font-medium text-gray-900">Complete Demonstrate phase to unlock</h3>
                     <p class="mt-2 text-sm text-gray-600">Build full projects that integrate multiple concepts</p>
                 </div>
-
-                <div *ngIf="outputPhase().unlocked" class="space-y-3">
+                } @else {
+                <div class="space-y-3">
                     <div class="rounded-lg border border-gray-200 bg-white p-4 text-center text-gray-500">
                         <p class="text-sm">Projects coming soon</p>
                     </div>
                 </div>
+                }
             </div>
         </div>
 
@@ -345,7 +363,8 @@
                     </span>
                 </div>
 
-                <div *ngIf="!transferPhase().unlocked"
+                @if (!transferPhase().unlocked) {
+                <div
                     class="rounded-lg border border-dashed border-gray-300 bg-gray-50 p-8 text-center">
                     <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -354,12 +373,13 @@
                     <h3 class="mt-4 text-sm font-medium text-gray-900">Complete Output phase to unlock</h3>
                     <p class="mt-2 text-sm text-gray-600">Create teaching materials to help others learn</p>
                 </div>
-
-                <div *ngIf="transferPhase().unlocked" class="space-y-2">
+                } @else {
+                <div class="space-y-2">
                     <div class="rounded-lg border border-gray-200 bg-white p-4 text-center text-gray-500">
                         <p class="text-sm">Transfer activities coming soon</p>
                     </div>
                 </div>
+                }
             </div>
         </div>
 

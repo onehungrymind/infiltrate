@@ -3,43 +3,51 @@
     <h1 class="list-title">Raw Content</h1>
   </div>
 
-  <div
-    *ngFor="let rawContent of rawContent"
-    class="list-item"
-    [class.active]="isSelected(rawContent)"
-    (click)="selected.emit(rawContent)"
-  >
-    <div class="list-item-content">
-      <div class="list-item-main">
-        <h3 class="list-item-title">
-          {{ rawContent.title || 'Untitled' }}
-        </h3>
-        <p class="list-item-meta" *ngIf="rawContent.author">
-          {{ rawContent.author }}
-        </p>
-        <p class="list-item-date" *ngIf="rawContent.createdAt">
-          {{ rawContent.createdAt | date:'short' }}
-        </p>
+  @for (rawContentItem of rawContent; track rawContentItem.id) {
+    <div
+      class="list-item"
+      [class.active]="isSelected(rawContentItem)"
+      (click)="selected.emit(rawContentItem)"
+    >
+      <div class="list-item-content">
+        <div class="list-item-main">
+          <h3 class="list-item-title">
+            {{ rawContentItem.title || 'Untitled' }}
+          </h3>
+          @if (rawContentItem.author) {
+            <p class="list-item-meta">
+              {{ rawContentItem.author }}
+            </p>
+          }
+          @if (rawContentItem.createdAt) {
+            <p class="list-item-date">
+              {{ rawContentItem.createdAt | date:'short' }}
+            </p>
+          }
+        </div>
+        @if (!readonly) {
+          <button
+            class="list-item-delete"
+            (click)="onDelete(rawContentItem); $event.stopImmediatePropagation()"
+            type="button"
+            aria-label="Delete raw content"
+          >
+            <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+              fill="currentColor" viewBox="0 0 24 24">
+              <path fill-rule="evenodd"
+                d="M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z"
+                clip-rule="evenodd" />
+            </svg>
+          </button>
+        }
       </div>
-      <button
-        *ngIf="!readonly"
-        class="list-item-delete"
-        (click)="onDelete(rawContent); $event.stopImmediatePropagation()"
-        type="button"
-        aria-label="Delete raw content"
-      >
-        <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-          fill="currentColor" viewBox="0 0 24 24">
-          <path fill-rule="evenodd"
-            d="M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z"
-            clip-rule="evenodd" />
-        </svg>
-      </button>
     </div>
-  </div>
+  }
 
-  <div *ngIf="rawContent.length === 0" class="list-empty">
-    <mat-icon class="list-empty-icon">inbox</mat-icon>
-    <p class="list-empty-text">No raw content found</p>
-  </div>
+  @if (rawContent.length === 0) {
+    <div class="list-empty">
+      <mat-icon class="list-empty-icon">inbox</mat-icon>
+      <p class="list-empty-text">No raw content found</p>
+    </div>
+  }
 </div>

@@ -1,62 +1,70 @@
 <!-- Setup Mode -->
-<div class="quiz-container" *ngIf="mode === 'setup'">
-  <div class="setup-card">
-    <div class="setup-header">
-      <div class="setup-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z" />
-        </svg>
-      </div>
-      <h2>Start a Quiz</h2>
-      <p>Test your knowledge with multiple choice and true/false questions</p>
-    </div>
-
-    <div class="setup-form">
-      <div class="form-group">
-        <label for="pathSelect">Learning Path</label>
-        <select id="pathSelect" [(ngModel)]="selectedPathId" class="form-select">
-          <option [ngValue]="null">All Learning Paths</option>
-          <option *ngFor="let path of learningPaths" [value]="path.id">{{ path.name }}</option>
-        </select>
+@if (mode === 'setup') {
+  <div class="quiz-container">
+    <div class="setup-card">
+      <div class="setup-header">
+        <div class="setup-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z" />
+          </svg>
+        </div>
+        <h2>Start a Quiz</h2>
+        <p>Test your knowledge with multiple choice and true/false questions</p>
       </div>
 
-      <div class="form-group">
-        <label for="questionCount">Number of Questions</label>
-        <select id="questionCount" [(ngModel)]="questionCount" class="form-select">
-          <option [value]="5">5 Questions</option>
-          <option [value]="10">10 Questions</option>
-          <option [value]="15">15 Questions</option>
-          <option [value]="20">20 Questions</option>
-        </select>
-      </div>
+      <div class="setup-form">
+        <div class="form-group">
+          <label for="pathSelect">Learning Path</label>
+          <select id="pathSelect" [(ngModel)]="selectedPathId" class="form-select">
+            <option [ngValue]="null">All Learning Paths</option>
+            @for (path of learningPaths; track path.id) {
+              <option [value]="path.id">{{ path.name }}</option>
+            }
+          </select>
+        </div>
 
-      <div class="form-group checkbox-group">
-        <label class="checkbox-label">
-          <input type="checkbox" [(ngModel)]="showDueOnly" />
-          <span class="checkbox-text">Due for review only</span>
-        </label>
-      </div>
+        <div class="form-group">
+          <label for="questionCount">Number of Questions</label>
+          <select id="questionCount" [(ngModel)]="questionCount" class="form-select">
+            <option [value]="5">5 Questions</option>
+            <option [value]="10">10 Questions</option>
+            <option [value]="15">15 Questions</option>
+            <option [value]="20">20 Questions</option>
+          </select>
+        </div>
 
-      <div class="available-count">
-        <span *ngIf="!isLoading">{{ availableUnitsCount }} questions available</span>
-        <span *ngIf="isLoading">Loading...</span>
-      </div>
+        <div class="form-group checkbox-group">
+          <label class="checkbox-label">
+            <input type="checkbox" [(ngModel)]="showDueOnly" />
+            <span class="checkbox-text">Due for review only</span>
+          </label>
+        </div>
 
-      <button
-        class="start-button"
-        (click)="startQuiz()"
-        [disabled]="isLoading || availableUnitsCount === 0">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z" />
-        </svg>
-        Start Quiz
-      </button>
+        <div class="available-count">
+          @if (!isLoading) {
+            <span>{{ availableUnitsCount }} questions available</span>
+          } @else {
+            <span>Loading...</span>
+          }
+        </div>
+
+        <button
+          class="start-button"
+          (click)="startQuiz()"
+          [disabled]="isLoading || availableUnitsCount === 0">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z" />
+          </svg>
+          Start Quiz
+        </button>
+      </div>
     </div>
   </div>
-</div>
+}
 
 <!-- Quiz Mode -->
-<div class="quiz-container" *ngIf="mode === 'quiz' && currentQuestion">
+@if (mode === 'quiz' && currentQuestion) {
+<div class="quiz-container">
   <!-- Progress Bar -->
   <div class="progress-bar">
     <div class="progress-fill" [style.width.%]="progress"></div>
@@ -73,33 +81,42 @@
     <div class="question-text">{{ currentQuestion.questionText }}</div>
 
     <div class="options-list">
-      <button
-        *ngFor="let option of currentQuestion.options; let i = index"
-        class="option-button"
-        [class.selected]="currentQuestion.selectedAnswer === i"
-        [class]="getOptionClass(i)"
-        (click)="selectAnswer(i)"
-        [disabled]="hasAnswered">
-        <span class="option-letter">{{ 'ABCD'[i] }}</span>
-        <span class="option-text">{{ option }}</span>
-        <span class="option-icon" *ngIf="hasAnswered && i === currentQuestion.correctAnswer">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-          </svg>
-        </span>
-        <span class="option-icon" *ngIf="hasAnswered && i === currentQuestion.selectedAnswer && !currentQuestion.isCorrect">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </span>
-      </button>
+      @for (option of currentQuestion.options; track $index) {
+        <button
+          class="option-button"
+          [class.selected]="currentQuestion.selectedAnswer === $index"
+          [class]="getOptionClass($index)"
+          (click)="selectAnswer($index)"
+          [disabled]="hasAnswered">
+          <span class="option-letter">{{ 'ABCD'[$index] }}</span>
+          <span class="option-text">{{ option }}</span>
+          @if (hasAnswered && $index === currentQuestion.correctAnswer) {
+            <span class="option-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+              </svg>
+            </span>
+          }
+          @if (hasAnswered && $index === currentQuestion.selectedAnswer && !currentQuestion.isCorrect) {
+            <span class="option-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </span>
+          }
+        </button>
+      }
     </div>
 
     <!-- Feedback -->
-    <div class="feedback" *ngIf="hasAnswered">
+    @if (hasAnswered) {
+    <div class="feedback">
       <div class="feedback-message" [class.correct]="currentQuestion.isCorrect" [class.incorrect]="!currentQuestion.isCorrect">
-        <span *ngIf="currentQuestion.isCorrect">Correct!</span>
-        <span *ngIf="!currentQuestion.isCorrect">Incorrect. The correct answer was: {{ currentQuestion.options[currentQuestion.correctAnswer] }}</span>
+        @if (currentQuestion.isCorrect) {
+          <span>Correct!</span>
+        } @else {
+          <span>Incorrect. The correct answer was: {{ currentQuestion.options[currentQuestion.correctAnswer] }}</span>
+        }
       </div>
       <button class="next-button" (click)="nextQuestion()">
         {{ currentIndex < questions.length - 1 ? 'Next Question' : 'See Results' }}
@@ -108,21 +125,29 @@
         </svg>
       </button>
     </div>
+    }
   </div>
 </div>
+}
 
 <!-- Results Mode -->
-<div class="quiz-container" *ngIf="mode === 'results' && result">
+@if (mode === 'results' && result) {
+<div class="quiz-container">
   <div class="results-card">
     <div class="results-header" [class]="getScoreClass()">
       <div class="score-circle">
         <span class="score-value">{{ result.score }}%</span>
       </div>
       <h2>Quiz Complete!</h2>
-      <p class="score-message" *ngIf="result.score >= 80">Excellent work!</p>
-      <p class="score-message" *ngIf="result.score >= 60 && result.score < 80">Good job!</p>
-      <p class="score-message" *ngIf="result.score >= 40 && result.score < 60">Keep practicing!</p>
-      <p class="score-message" *ngIf="result.score < 40">More review needed</p>
+      @if (result.score >= 80) {
+        <p class="score-message">Excellent work!</p>
+      } @else if (result.score >= 60) {
+        <p class="score-message">Good job!</p>
+      } @else if (result.score >= 40) {
+        <p class="score-message">Keep practicing!</p>
+      } @else {
+        <p class="score-message">More review needed</p>
+      }
     </div>
 
     <div class="results-stats">
@@ -153,19 +178,22 @@
     <div class="review-section">
       <h3>Review Your Answers</h3>
       <div class="review-list">
-        <div *ngFor="let q of result.questions; let i = index" class="review-item" [class.correct]="q.isCorrect" [class.incorrect]="!q.isCorrect">
-          <div class="review-number">{{ i + 1 }}</div>
+        @for (q of result.questions; track q.knowledgeUnit.id) {
+        <div class="review-item" [class.correct]="q.isCorrect" [class.incorrect]="!q.isCorrect">
+          <div class="review-number">{{ $index + 1 }}</div>
           <div class="review-content">
             <div class="review-concept">{{ q.knowledgeUnit.concept }}</div>
             <div class="review-question">{{ q.questionText }}</div>
             <div class="review-answer">
-              <span *ngIf="q.isCorrect" class="answer-correct">
+              @if (q.isCorrect) {
+              <span class="answer-correct">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                 </svg>
                 {{ q.options[q.correctAnswer] }}
               </span>
-              <span *ngIf="!q.isCorrect" class="answer-incorrect">
+              } @else {
+              <span class="answer-incorrect">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -173,10 +201,13 @@
                 <br />
                 <span class="correct-answer">Correct: {{ q.options[q.correctAnswer] }}</span>
               </span>
+              }
             </div>
           </div>
         </div>
+        }
       </div>
     </div>
   </div>
 </div>
+}

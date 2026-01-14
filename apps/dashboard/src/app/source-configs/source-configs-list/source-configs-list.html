@@ -3,46 +3,51 @@
     <h1 class="list-title">Source Configs</h1>
   </div>
 
-  <div
-    *ngFor="let sourceConfig of sourceConfigs"
-    class="list-item"
-    [class.active]="isSelected(sourceConfig)"
-    (click)="selected.emit(sourceConfig)"
-  >
-    <div class="list-item-content">
-      <div class="list-item-main">
-        <h3 class="list-item-title">
-          {{ sourceConfig.name || 'Untitled' }}
-        </h3>
-        <p class="list-item-meta" *ngIf="sourceConfig.url">
-          {{ sourceConfig.url }}
-        </p>
-        <p class="list-item-date" *ngIf="sourceConfig.createdAt">
-          {{ sourceConfig.createdAt | date:'short' }}
-        </p>
+  @for (sourceConfigItem of sourceConfigs; track sourceConfigItem.id) {
+    <div
+      class="list-item"
+      [class.active]="isSelected(sourceConfigItem)"
+      (click)="selected.emit(sourceConfigItem)"
+    >
+      <div class="list-item-content">
+        <div class="list-item-main">
+          <h3 class="list-item-title">
+            {{ sourceConfigItem.name || 'Untitled' }}
+          </h3>
+          @if (sourceConfigItem.url) {
+            <p class="list-item-meta">
+              {{ sourceConfigItem.url }}
+            </p>
+          }
+          @if (sourceConfigItem.createdAt) {
+            <p class="list-item-date">
+              {{ sourceConfigItem.createdAt | date:'short' }}
+            </p>
+          }
+        </div>
+        @if (!readonly) {
+          <button
+            class="list-item-delete"
+            (click)="onDelete(sourceConfigItem); $event.stopImmediatePropagation()"
+            type="button"
+            aria-label="Delete source config"
+          >
+            <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+              fill="currentColor" viewBox="0 0 24 24">
+              <path fill-rule="evenodd"
+                d="M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z"
+                clip-rule="evenodd" />
+            </svg>
+          </button>
+        }
       </div>
-      <button
-        *ngIf="!readonly"
-        class="list-item-delete"
-        (click)="onDelete(sourceConfig); $event.stopImmediatePropagation()"
-        type="button"
-        aria-label="Delete source config"
-      >
-        <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-          fill="currentColor" viewBox="0 0 24 24">
-          <path fill-rule="evenodd"
-            d="M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z"
-            clip-rule="evenodd" />
-        </svg>
-      </button>
     </div>
-  </div>
+  }
 
-  <div
-    *ngIf="sourceConfigs.length === 0"
-    class="list-empty"
-  >
-    <mat-icon class="list-empty-icon">inbox</mat-icon>
-    <p class="list-empty-text">No source configs found</p>
-  </div>
+  @if (sourceConfigs.length === 0) {
+    <div class="list-empty">
+      <mat-icon class="list-empty-icon">inbox</mat-icon>
+      <p class="list-empty-text">No source configs found</p>
+    </div>
+  }
 </div>

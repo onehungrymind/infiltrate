@@ -1,13 +1,15 @@
 <div
   class="overflow-hidden border-t lg:border-t-0 lg:border-l border-gray-200 px-4 sm:px-6 md:py-8 md:mt-8 lg:px-8 lg:py-0 flex flex-col">
-  <p class="text-2xl" *ngIf="current<%= singularClassName %>?.id; else elseBlock">
-    Viewing {{ originalTitle | titlecase }}
-  </p>
-  <ng-template #elseBlock>
+  @if (current<%= singularClassName %>?.id) {
+    <p class="text-2xl">
+      Viewing {{ originalTitle | titlecase }}
+    </p>
+  } @else {
     <p class="text-2xl">Select a <%= singularClassName %> to view details</p>
-  </ng-template>
+  }
 
-  <div class="flex-1 flex flex-col" *ngIf="current<%= singularClassName %>">
+  @if (current<%= singularClassName %>) {
+  <div class="flex-1 flex flex-col">
     <div class="px-4 py-6 sm:p-8 flex-1">
       <div class="max-w-2xl">
         <h3 class="text-lg font-medium text-gray-900 mb-4">Raw Data</h3>
@@ -33,11 +35,12 @@
       </button>
     </div>
   </div>
-  
-  <div *ngIf="!current<%= singularClassName %>" class="flex-1 flex items-center justify-center">
+  } @else {
+  <div class="flex-1 flex items-center justify-center">
     <div class="text-center text-gray-500">
       <mat-icon class="text-4xl mb-2">info</mat-icon>
       <p>Select an item from the list to view its details</p>
     </div>
   </div>
+  }
 </div>
