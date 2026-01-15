@@ -1,4 +1,4 @@
-import { Controller, Post, HttpCode, HttpStatus, Inject } from '@nestjs/common';
+import { Controller, Post, HttpCode, HttpStatus } from '@nestjs/common';
 import { SeederService } from './seeder.service';
 import { Public } from '../auth/decorators/public.decorator';
 import { DataSource } from 'typeorm';

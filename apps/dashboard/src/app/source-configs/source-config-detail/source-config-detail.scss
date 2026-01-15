@@ -184,3 +184,136 @@
   border-radius: 6px;
   border-left: 3px solid #9ca3af;
 }
+
+.paths-section {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(224, 228, 240, 0.3);
+}
+
+.paths-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: #6b7280;
+  margin: 0 0 12px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.linked-paths {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.linked-path-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px 6px 12px;
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  border-radius: 16px;
+  font-size: 13px;
+  color: #16a34a;
+}
+
+.linked-path-name {
+  font-weight: 500;
+}
+
+.linked-path-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: none;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  color: inherit;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  &:hover:not(:disabled) {
+    background: rgba(239, 68, 68, 0.2);
+    color: #dc2626;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.no-paths {
+  font-size: 13px;
+  color: #9ca3af;
+  margin: 0;
+  font-style: italic;
+}
+
+.add-path-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.add-path-select {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid rgba(224, 228, 240, 0.5);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.8);
+  color: #1a1a2e;
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+
+  &:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.add-path-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 60px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+}

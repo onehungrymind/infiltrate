@@ -33,6 +33,35 @@ export class SourcesService {
   }
 
   /**
+   * Get all sources with their linked learning paths
+   */
+  async findAllWithPaths(): Promise<Array<Source & { linkedPaths: Array<{ id: string; name: string; enabled: boolean }> }>> {
+    const sources = await this.sourceRepository.find({
+      order: { name: 'ASC' },
+    });
+
+    const result = await Promise.all(
+      sources.map(async (source) => {
+        const links = await this.linkRepository.find({
+          where: { sourceId: source.id },
+          relations: ['learningPath'],
+        });
+
+        return {
+          ...source,
+          linkedPaths: links.map((link) => ({
+            id: link.pathId,
+            name: link.learningPath?.name || 'Unknown',
+            enabled: link.enabled,
+          })),
+        };
+      })
+    );
+
+    return result;
+  }
+
+  /**
    * Get a single source by ID
    */
   async findOne(id: string): Promise<Source> {

@@ -25,13 +25,13 @@ export class SourcesController {
 
   @Get()
   @ApiOperation({ summary: 'Get all sources' })
-  @ApiResponse({ status: 200, description: 'List of all sources' })
+  @ApiResponse({ status: 200, description: 'List of all sources with linked paths' })
   @ApiQuery({ name: 'pathId', required: false, description: 'Filter by learning path' })
   async findAll(@Query('pathId') pathId?: string) {
     if (pathId) {
       return await this.sourcesService.findByPath(pathId);
     }
-    return await this.sourcesService.findAll();
+    return await this.sourcesService.findAllWithPaths();
   }
 
   @Get(':id')

@@ -253,19 +253,21 @@ export class LearningMapService {
   }
 
   /**
-   * Get all sources
+   * Get all sources with their linked learning paths
    */
   getAllSources(): Observable<Array<{
     id: string;
     url: string;
     type: string;
     name: string;
+    linkedPaths: Array<{ id: string; name: string; enabled: boolean }>;
   }>> {
     return this.http.get<Array<{
       id: string;
       url: string;
       type: string;
       name: string;
+      linkedPaths: Array<{ id: string; name: string; enabled: boolean }>;
     }>>(`${this.apiUrl}/sources`).pipe(
       catchError(() => of([]))
     );

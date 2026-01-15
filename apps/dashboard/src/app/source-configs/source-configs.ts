@@ -8,6 +8,13 @@ import { SourceDetail } from './source-config-detail/source-config-detail';
 import { SourcesList } from './source-configs-list/source-configs-list';
 import { SearchFilterBar, FilterConfig, SearchFilterState } from '../shared/search-filter-bar/search-filter-bar';
 
+// Linked path info
+export interface LinkedPath {
+  id: string;
+  name: string;
+  enabled: boolean;
+}
+
 // Source type for list display (without createdAt/updatedAt since API doesn't return them)
 export interface SourceListItem {
   id: string;
@@ -16,6 +23,7 @@ export interface SourceListItem {
   name: string;
   enabled?: boolean;
   linkId?: string;
+  linkedPaths?: LinkedPath[];
 }
 
 @Component({
@@ -140,7 +148,7 @@ export class SourceConfigs implements OnInit {
         }
       });
     } else {
-      // Load all sources (no enabled status)
+      // Load all sources with linked paths
       this.learningMapService.getAllSources().subscribe({
         next: (sources) => {
           this.allSources.set(sources.map(s => ({
@@ -148,6 +156,7 @@ export class SourceConfigs implements OnInit {
             url: s.url,
             type: s.type as 'rss' | 'article' | 'pdf',
             name: s.name,
+            linkedPaths: s.linkedPaths,
           })));
           this.loaded.set(true);
         },
@@ -246,5 +255,15 @@ export class SourceConfigs implements OnInit {
 
   cancel() {
     this.selectedSource.set(null);
+  }
+
+  onPathLinked() {
+    // Refresh sources to show updated linked paths
+    this.loadSources();
+  }
+
+  onPathUnlinked() {
+    // Refresh sources to show updated linked paths
+    this.loadSources();
   }
 }

@@ -41,6 +41,15 @@
           }
           <div class="list-item-badges">
             <span class="badge badge-type">{{ source.type }}</span>
+            @if (source.linkedPaths && source.linkedPaths.length > 0) {
+              @for (path of source.linkedPaths; track path.id) {
+                <span class="badge badge-path" [class.badge-path-disabled]="!path.enabled">
+                  {{ path.name }}
+                </span>
+              }
+            } @else if (!showEnabled) {
+              <span class="badge badge-unlinked">No paths</span>
+            }
           </div>
         </div>
         @if (!readonly) {

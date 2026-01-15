@@ -241,3 +241,22 @@
   background: rgba(99, 102, 241, 0.1);
   color: #6366f1;
 }
+
+.badge-path {
+  background: rgba(34, 197, 94, 0.1);
+  color: #16a34a;
+
+  &.badge-path-disabled {
+    background: rgba(156, 163, 175, 0.1);
+    color: #9ca3af;
+  }
+}
+
+.badge-unlinked {
+  background: rgba(251, 191, 36, 0.1);
+  color: #d97706;
+}
+
+.list-item-badges {
+  flex-wrap: wrap;
+}
