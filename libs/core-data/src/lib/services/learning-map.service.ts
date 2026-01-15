@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, switchMap, map } from 'rxjs/operators';
 import { API_URL } from '../config/api-url.token';
 import {
   LearningPathMap,
@@ -278,6 +278,138 @@ export class LearningMapService {
     return this.http.patch<void>(
       `${this.apiUrl}/sources/${sourceId}/link/${pathId}`,
       { enabled }
+    );
+  }
+
+  /**
+   * Get a single source by ID
+   */
+  getSource(id: string): Observable<{
+    id: string;
+    url: string;
+    type: string;
+    name: string;
+  } | null> {
+    return this.http.get<{
+      id: string;
+      url: string;
+      type: string;
+      name: string;
+    }>(`${this.apiUrl}/sources/${id}`).pipe(
+      catchError(() => of(null))
+    );
+  }
+
+  /**
+   * Create a new source (or return existing if URL matches)
+   */
+  createSource(source: { url: string; type: string; name: string }): Observable<{
+    id: string;
+    url: string;
+    type: string;
+    name: string;
+    created: boolean;
+  }> {
+    return this.http.post<{
+      id: string;
+      url: string;
+      type: string;
+      name: string;
+      created: boolean;
+    }>(`${this.apiUrl}/sources`, source);
+  }
+
+  /**
+   * Update an existing source
+   */
+  updateSource(id: string, updates: { name?: string; type?: string }): Observable<{
+    id: string;
+    url: string;
+    type: string;
+    name: string;
+  }> {
+    return this.http.patch<{
+      id: string;
+      url: string;
+      type: string;
+      name: string;
+    }>(`${this.apiUrl}/sources/${id}`, updates);
+  }
+
+  /**
+   * Delete a source (cascades to all path links)
+   */
+  deleteSource(id: string): Observable<{ deleted: boolean }> {
+    return this.http.delete<{ deleted: boolean }>(`${this.apiUrl}/sources/${id}`);
+  }
+
+  /**
+   * Link a source to a learning path
+   */
+  linkSourceToPath(sourceId: string, pathId: string, enabled = true): Observable<{
+    id: string;
+    sourceId: string;
+    pathId: string;
+    enabled: boolean;
+  }> {
+    return this.http.post<{
+      id: string;
+      sourceId: string;
+      pathId: string;
+      enabled: boolean;
+    }>(`${this.apiUrl}/sources/${sourceId}/link/${pathId}`, { enabled });
+  }
+
+  /**
+   * Unlink a source from a learning path
+   */
+  unlinkSourceFromPath(sourceId: string, pathId: string): Observable<{ unlinked: boolean }> {
+    return this.http.delete<{ unlinked: boolean }>(
+      `${this.apiUrl}/sources/${sourceId}/link/${pathId}`
+    );
+  }
+
+  /**
+   * Get all learning paths linked to a source
+   */
+  getLinkedPaths(sourceId: string): Observable<Array<{
+    id: string;
+    name: string;
+    enabled: boolean;
+    linkId: string;
+  }>> {
+    return this.http.get<Array<{
+      id: string;
+      name: string;
+      enabled: boolean;
+      linkId: string;
+    }>>(`${this.apiUrl}/sources/${sourceId}/paths`).pipe(
+      catchError(() => of([]))
+    );
+  }
+
+  /**
+   * Create a source and link it to a path in one operation
+   */
+  createAndLinkSource(
+    source: { url: string; type: string; name: string },
+    pathId: string,
+    enabled = true
+  ): Observable<{
+    id: string;
+    url: string;
+    type: string;
+    name: string;
+    enabled: boolean;
+    created: boolean;
+  }> {
+    return this.createSource(source).pipe(
+      switchMap(created =>
+        this.linkSourceToPath(created.id, pathId, enabled).pipe(
+          map(() => ({ ...created, enabled })),
+          catchError(() => of({ ...created, enabled })) // Link might already exist
+        )
+      )
     );
   }
 }

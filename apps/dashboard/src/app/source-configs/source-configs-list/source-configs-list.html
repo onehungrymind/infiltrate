@@ -1,36 +1,54 @@
 <div class="list-container">
   <div class="list-header">
-    <h1 class="list-title">Source Configs</h1>
+    <h1 class="list-title">Sources</h1>
   </div>
 
-  @for (sourceConfigItem of sourceConfigs; track sourceConfigItem.id) {
+  @for (source of sources; track source.id) {
     <div
       class="list-item"
-      [class.active]="isSelected(sourceConfigItem)"
-      (click)="selected.emit(sourceConfigItem)"
+      [class.active]="isSelected(source)"
+      [class.disabled]="showEnabled && source.enabled === false"
+      (click)="selected.emit(source)"
     >
       <div class="list-item-content">
+        @if (showEnabled) {
+          <button
+            class="list-item-toggle"
+            [class.enabled]="source.enabled"
+            (click)="onToggleEnabled(source, $event)"
+            type="button"
+            [attr.aria-label]="source.enabled ? 'Disable source' : 'Enable source'"
+          >
+            @if (source.enabled) {
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+              </svg>
+            } @else {
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/>
+              </svg>
+            }
+          </button>
+        }
         <div class="list-item-main">
           <h3 class="list-item-title">
-            {{ sourceConfigItem.name || 'Untitled' }}
+            {{ source.name || 'Untitled' }}
           </h3>
-          @if (sourceConfigItem.url) {
+          @if (source.url) {
             <p class="list-item-meta">
-              {{ sourceConfigItem.url }}
+              {{ source.url }}
             </p>
           }
-          @if (sourceConfigItem.createdAt) {
-            <p class="list-item-date">
-              {{ sourceConfigItem.createdAt | date:'short' }}
-            </p>
-          }
+          <div class="list-item-badges">
+            <span class="badge badge-type">{{ source.type }}</span>
+          </div>
         </div>
         @if (!readonly) {
           <button
             class="list-item-delete"
-            (click)="onDelete(sourceConfigItem); $event.stopImmediatePropagation()"
+            (click)="onDelete(source); $event.stopImmediatePropagation()"
             type="button"
-            aria-label="Delete source config"
+            aria-label="Delete source"
           >
             <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
               fill="currentColor" viewBox="0 0 24 24">
@@ -44,10 +62,10 @@
     </div>
   }
 
-  @if (sourceConfigs.length === 0) {
+  @if (sources.length === 0) {
     <div class="list-empty">
       <mat-icon class="list-empty-icon">inbox</mat-icon>
-      <p class="list-empty-text">No source configs found</p>
+      <p class="list-empty-text">No sources found</p>
     </div>
   }
 </div>

@@ -5,10 +5,16 @@
 
   <form (ngSubmit)="onSubmit()" class="detail-form">
     <div class="detail-content">
-      <app-dynamic-form 
-        [metaInfo]="metaInfo" 
+      <app-dynamic-form
+        [metaInfo]="metaInfo"
         [dynamicForm]="dynamicForm"
       />
+
+      @if (isEditing) {
+        <p class="detail-hint">
+          Note: URL cannot be changed after creation. To use a different URL, create a new source.
+        </p>
+      }
     </div>
 
     <div class="detail-actions">
@@ -24,7 +30,7 @@
         class="detail-button detail-button-primary"
         [disabled]="!isFormValid()"
       >
-        {{ sourceConfig?.id ? 'Update' : 'Create' }}
+        {{ isEditing ? 'Update' : 'Create' }}
       </button>
     </div>
   </form>

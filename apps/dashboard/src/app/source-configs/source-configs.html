@@ -10,7 +10,7 @@
     } @else if (!loaded()) {
       <div class="loading-message">
         <mat-spinner diameter="40"></mat-spinner>
-        <span>Loading source configs...</span>
+        <span>Loading sources...</span>
       </div>
     } @else {
       <app-search-filter-bar
@@ -18,19 +18,22 @@
         [filterConfigs]="filterConfigs()"
         (searchChange)="onSearchFilterChange($event)"
       ></app-search-filter-bar>
-      <app-source-configs-list
-        [sourceConfigs]="sourceConfigs()"
-        [selectedSourceConfig]="selectedSourceConfig()"
-        (selected)="selectSourceConfig($event)"
-        (deleted)="deleteSourceConfig($event)"
-      ></app-source-configs-list>
+      <app-sources-list
+        [sources]="sources()"
+        [selectedSource]="selectedSource()"
+        [showEnabled]="!!selectedPathId()"
+        (selected)="selectSource($event)"
+        (deleted)="deleteSource($event)"
+        (toggleEnabled)="toggleEnabled($event)"
+      ></app-sources-list>
     }
   </div>
   <div class="detail-panel">
-    <app-source-config-detail
-      [sourceConfig]="selectedSourceConfig()"
-      (saved)="saveSourceConfig($event)"
+    <app-source-detail
+      [source]="selectedSource()"
+      [isEditing]="!!selectedSource()?.id"
+      (saved)="saveSource($event)"
       (cancelled)="cancel()"
-    ></app-source-config-detail>
+    ></app-source-detail>
   </div>
 </div>

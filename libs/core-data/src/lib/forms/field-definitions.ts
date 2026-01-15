@@ -239,7 +239,7 @@ export const knowledgeUnitFields: FieldDef[] = [
 ];
 
 /**
- * Field definitions for SourceConfig entity
+ * Field definitions for SourceConfig entity (deprecated - use sourceFields)
  * Note: pathId is handled separately, not in form
  */
 export const sourceConfigFields: FieldDef[] = [
@@ -277,6 +277,42 @@ export const sourceConfigFields: FieldDef[] = [
     label: 'Enabled',
     type: 'checkbox',
     required: false,
+  },
+];
+
+/**
+ * Field definitions for Source entity (new many-to-many model)
+ * Note: enabled is per-path in SourcePathLink junction table
+ */
+export const sourceFields: FieldDef[] = [
+  {
+    name: 'name',
+    label: 'Name',
+    type: 'text',
+    required: true,
+    minLength: 1,
+    maxLength: 200,
+    placeholder: 'e.g., JavaScript Weekly',
+  },
+  {
+    name: 'url',
+    label: 'URL',
+    type: 'url',
+    required: true,
+    minLength: 1,
+    maxLength: 500,
+    placeholder: 'https://javascriptweekly.com/rss',
+  },
+  {
+    name: 'type',
+    label: 'Type',
+    type: 'select',
+    required: true,
+    options: [
+      { value: 'rss', label: 'RSS Feed' },
+      { value: 'article', label: 'Article' },
+      { value: 'pdf', label: 'PDF' },
+    ],
   },
 ];
 

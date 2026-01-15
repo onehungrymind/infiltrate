@@ -1,61 +1,62 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output, signal, computed } from '@angular/core';
-import { SourceConfig } from '@kasita/common-models';
 import { MaterialModule } from '@kasita/material';
 import { form } from '@angular/forms/signals';
 import { DynamicForm } from '../../shared/dynamic-form/dynamic-form';
-import { sourceConfigFields, toSchema, initializeEntity } from '@kasita/core-data';
+import { sourceFields, toSchema, initializeEntity } from '@kasita/core-data';
+import { SourceListItem } from '../source-configs';
 
 @Component({
-  selector: 'app-source-config-detail',
+  selector: 'app-source-detail',
   imports: [CommonModule, MaterialModule, DynamicForm],
   templateUrl: './source-config-detail.html',
   styleUrl: './source-config-detail.scss',
 })
-export class SourceConfigDetail {
-  private _sourceConfig = signal<SourceConfig | null>(null);
+export class SourceDetail {
+  private _source = signal<SourceListItem | null>(null);
   originalTitle = signal('');
-  
-  metaInfo = signal(sourceConfigFields);
-  entity = signal<Partial<SourceConfig>>(initializeEntity(sourceConfigFields));
-  
+
+  metaInfo = signal(sourceFields);
+  entity = signal<Partial<SourceListItem>>(initializeEntity(sourceFields));
+
   // Create the form directly (not in computed) since form() uses inject() internally
   dynamicForm = form(this.entity, toSchema(this.metaInfo()));
 
-  @Input() set sourceConfig(value: SourceConfig | null) {
-    this._sourceConfig.set(value);
+  @Input() isEditing = false;
+
+  @Input() set source(value: SourceListItem | null) {
+    this._source.set(value);
     if (value && value.id) {
       // Update mode: fill form with existing entity data
-      this.originalTitle.set(value.name || 'Source Config');
+      this.originalTitle.set(value.name || 'Source');
       this.entity.set({
         name: value.name || '',
         url: value.url || '',
         type: value.type || 'rss',
-        enabled: value.enabled ?? true,
       });
     } else {
       // Create mode: show empty form
-      this.originalTitle.set('New Source Config');
-      this.entity.set(initializeEntity(sourceConfigFields));
+      this.originalTitle.set('New Source');
+      this.entity.set(initializeEntity(sourceFields));
     }
   }
 
-  get sourceConfig(): SourceConfig | null {
-    return this._sourceConfig();
+  get source(): SourceListItem | null {
+    return this._source();
   }
 
-  @Output() saved = new EventEmitter<SourceConfig>();
+  @Output() saved = new EventEmitter<Partial<SourceListItem>>();
   @Output() cancelled = new EventEmitter<void>();
 
   onSubmit() {
     // Get form values from the entity signal
     const formValue = this.entity();
-    
+
     // Check if form is valid
-    const form = this.dynamicForm;
+    const formObj = this.dynamicForm;
     let hasErrors = false;
     for (const fieldDef of this.metaInfo()) {
-      const field = (form as any)[fieldDef.name];
+      const field = (formObj as any)[fieldDef.name];
       if (field && typeof field.errors === 'function') {
         const errors = field.errors();
         if (Array.isArray(errors) && errors.length > 0) {
@@ -64,22 +65,15 @@ export class SourceConfigDetail {
         }
       }
     }
-    
+
     if (!hasErrors) {
-      const currentConfig = this.sourceConfig;
-      // Create or update based on whether item has an id
-      const entity: SourceConfig = {
-        ...formValue,
-        // If updating (has id), preserve id and pathId
-        ...(currentConfig?.id ? { 
-          id: currentConfig.id,
-          pathId: currentConfig.pathId || '',
-        } : {
-          // If creating (no id), preserve pathId if it exists
-          pathId: currentConfig?.pathId || '',
-        }),
-      } as SourceConfig;
-      
+      // Emit the source data without pathId (it's handled via linking now)
+      const entity: Partial<SourceListItem> = {
+        name: formValue.name,
+        url: formValue.url,
+        type: formValue.type,
+      };
+
       this.saved.emit(entity);
     }
   }
@@ -89,9 +83,9 @@ export class SourceConfigDetail {
   }
 
   isFormValid = computed(() => {
-    const form = this.dynamicForm;
+    const formObj = this.dynamicForm;
     for (const fieldDef of this.metaInfo()) {
-      const field = (form as any)[fieldDef.name];
+      const field = (formObj as any)[fieldDef.name];
       if (field && typeof field.errors === 'function') {
         const errors = field.errors();
         if (Array.isArray(errors) && errors.length > 0) {

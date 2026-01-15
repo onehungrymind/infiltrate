@@ -1,34 +1,41 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
-import { SourceConfig } from '@kasita/common-models';
 import { MaterialModule, ConfirmationDialogComponent } from '@kasita/material';
 import { MatDialog } from '@angular/material/dialog';
+import { SourceListItem } from '../source-configs';
 
 @Component({
-  selector: 'app-source-configs-list',
+  selector: 'app-sources-list',
   standalone: true,
   imports: [CommonModule, MaterialModule],
   templateUrl: './source-configs-list.html',
   styleUrl: './source-configs-list.scss',
 })
-export class SourceConfigsList {
+export class SourcesList {
   private dialog = inject(MatDialog);
 
-  @Input() sourceConfigs: SourceConfig[] = [];
-  @Input() selectedSourceConfig: SourceConfig | null = null;
+  @Input() sources: SourceListItem[] = [];
+  @Input() selectedSource: SourceListItem | null = null;
   @Input() readonly = false;
-  @Output() selected = new EventEmitter();
-  @Output() deleted = new EventEmitter();
-  
-  isSelected(sourceConfig: SourceConfig): boolean {
-    return this.selectedSourceConfig?.id === sourceConfig.id;
+  @Input() showEnabled = false;
+  @Output() selected = new EventEmitter<SourceListItem>();
+  @Output() deleted = new EventEmitter<SourceListItem>();
+  @Output() toggleEnabled = new EventEmitter<SourceListItem>();
+
+  isSelected(source: SourceListItem): boolean {
+    return this.selectedSource?.id === source.id;
   }
 
-  onDelete(sourceConfig: SourceConfig) {
+  onToggleEnabled(source: SourceListItem, event: Event) {
+    event.stopPropagation();
+    this.toggleEnabled.emit(source);
+  }
+
+  onDelete(source: SourceListItem) {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        title: 'Delete Source Config',
-        message: `Are you sure you want to delete "${sourceConfig.name || 'this source config'}"? This action cannot be undone.`,
+        title: 'Delete Source',
+        message: `Are you sure you want to delete "${source.name || 'this source'}"? This will remove it from all learning paths. This action cannot be undone.`,
         confirmText: 'Delete',
         cancelText: 'Cancel',
       },
@@ -36,7 +43,7 @@ export class SourceConfigsList {
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.deleted.emit(sourceConfig);
+        this.deleted.emit(source);
       }
     });
   }
