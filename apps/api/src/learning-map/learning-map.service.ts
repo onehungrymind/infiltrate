@@ -619,9 +619,10 @@ export class LearningMapService {
       throw new NotFoundException(`Learning path ${pathId} not found`);
     }
 
-    // Check if there are enabled sources for this path
+    // Check if there are enabled sources for this path (with source data)
     const enabledSourceLinks = await this.sourcePathLinkRepository.find({
       where: { pathId, enabled: true },
+      relations: ['source'],
     });
 
     if (enabledSourceLinks.length === 0) {
@@ -629,6 +630,11 @@ export class LearningMapService {
         `No enabled sources found for this learning path. Add sources first.`
       );
     }
+
+    // Extract source URLs to pass to patchbay
+    const sourceUrls = enabledSourceLinks
+      .filter(link => link.source?.url)
+      .map(link => link.source.url);
 
     // Count raw content before ingestion
     const rawContentBefore = await this.rawContentRepository.count({
@@ -639,9 +645,9 @@ export class LearningMapService {
     const apiUrl = this.configService.get<string>('API_URL') || 'http://localhost:3333/api';
 
     try {
-      // Run the Patchbay ingestion command
+      // Run the Patchbay ingestion command with sources passed directly
       const { stdout, stderr } = await execAsync(
-        `cd apps/patchbay && API_URL="${apiUrl}" DEFAULT_PATH_ID="${pathId}" python -m src.main ingest`,
+        `cd apps/patchbay && uv run python -m src.main ingest`,
         {
           timeout: 300000, // 5 minute timeout
           maxBuffer: 1024 * 1024 * 10, // 10MB buffer
@@ -649,6 +655,7 @@ export class LearningMapService {
             ...process.env,
             API_URL: apiUrl,
             DEFAULT_PATH_ID: pathId,
+            SOURCES_JSON: JSON.stringify(sourceUrls),
           },
         }
       );
@@ -713,7 +720,7 @@ export class LearningMapService {
     try {
       // Run the Synthesizer process command
       const { stdout, stderr } = await execAsync(
-        `cd apps/synthesizer && API_URL="${apiUrl}" DEFAULT_PATH_ID="${pathId}" python -m src.main process`,
+        `cd apps/synthesizer && API_URL="${apiUrl}" DEFAULT_PATH_ID="${pathId}" uv run python -m src.main process`,
         {
           timeout: 600000, // 10 minute timeout (synthesis can take longer)
           maxBuffer: 1024 * 1024 * 10, // 10MB buffer

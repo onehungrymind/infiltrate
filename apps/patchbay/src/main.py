@@ -38,25 +38,28 @@ def main():
     command = sys.argv[1]
     
     if command == "ingest":
-        # Try to get sources from API first, fall back to environment
+        import json
         sources = []
-        api_url = os.getenv("API_URL")
-        if api_url:
-            from src.api_client import KasitaApiClient
-            api_client = KasitaApiClient(api_url)
-            source_configs = api_client.get_enabled_source_configs()
-            if source_configs:
-                sources = [config["url"] for config in source_configs]
-                logger.info(f"Fetched {len(sources)} sources from API")
-        
-        # Fall back to environment variable if no API sources
+
+        # First priority: SOURCES_JSON passed directly from API
+        sources_json = os.getenv("SOURCES_JSON")
+        if sources_json:
+            try:
+                sources = json.loads(sources_json)
+                logger.info(f"Using {len(sources)} sources from SOURCES_JSON")
+            except json.JSONDecodeError as e:
+                logger.error(f"Failed to parse SOURCES_JSON: {e}")
+
+        # Fall back to RSS_SOURCES environment variable
         if not sources:
             sources_env = os.getenv("RSS_SOURCES", "")
-            if not sources_env:
-                logger.error("No sources configured. Set RSS_SOURCES environment variable or configure API_URL.")
-                sys.exit(1)
-            sources = [s.strip() for s in sources_env.split(",")]
-            logger.info(f"Using {len(sources)} sources from environment")
+            if sources_env:
+                sources = [s.strip() for s in sources_env.split(",")]
+                logger.info(f"Using {len(sources)} sources from RSS_SOURCES")
+
+        if not sources:
+            logger.error("No sources configured. Pass SOURCES_JSON or set RSS_SOURCES environment variable.")
+            sys.exit(1)
         
         results = ingestor.ingest_multiple(sources)
         
