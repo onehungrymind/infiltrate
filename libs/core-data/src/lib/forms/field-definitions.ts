@@ -564,3 +564,177 @@ export const userProgressFields: FieldDef[] = [
   },
 ];
 
+/**
+ * Field definitions for Challenge entity
+ * Note: unitId is handled separately
+ */
+export const challengeFields: FieldDef[] = [
+  {
+    name: 'title',
+    label: 'Title',
+    type: 'text',
+    required: true,
+    minLength: 1,
+    maxLength: 200,
+    placeholder: 'e.g., Implement a Binary Search',
+  },
+  {
+    name: 'description',
+    label: 'Description',
+    type: 'textarea',
+    required: true,
+    minLength: 1,
+    maxLength: 5000,
+    rows: 6,
+    placeholder: 'Instructions for the learner...',
+    helpText: 'Detailed instructions and context for completing the challenge',
+  },
+  {
+    name: 'difficulty',
+    label: 'Difficulty',
+    type: 'select',
+    required: true,
+    options: [
+      { value: 'beginner', label: 'Beginner' },
+      { value: 'intermediate', label: 'Intermediate' },
+      { value: 'advanced', label: 'Advanced' },
+      { value: 'expert', label: 'Expert' },
+    ],
+  },
+  {
+    name: 'estimatedMinutes',
+    label: 'Estimated Minutes',
+    type: 'number',
+    required: true,
+    min: 1,
+    max: 480,
+    placeholder: '30',
+    helpText: 'Expected time to complete (1-480 minutes)',
+  },
+  {
+    name: 'successCriteria',
+    label: 'Success Criteria',
+    type: 'textarea',
+    required: false,
+    rows: 4,
+    placeholder: 'One criterion per line',
+    helpText: 'What must be achieved to pass (one per line)',
+  },
+  {
+    name: 'contentTypes',
+    label: 'Allowed Content Types',
+    type: 'text',
+    required: false,
+    placeholder: 'code, written, project',
+    helpText: 'Comma-separated: code, written, project',
+  },
+  {
+    name: 'isActive',
+    label: 'Active',
+    type: 'checkbox',
+    required: false,
+    helpText: 'Whether the challenge is visible to learners',
+  },
+];
+
+/**
+ * Field definitions for Project entity
+ * Note: pathId is handled separately
+ */
+export const projectFields: FieldDef[] = [
+  {
+    name: 'name',
+    label: 'Name',
+    type: 'text',
+    required: true,
+    minLength: 1,
+    maxLength: 200,
+    placeholder: 'e.g., Build a REST API',
+  },
+  {
+    name: 'description',
+    label: 'Description',
+    type: 'textarea',
+    required: true,
+    minLength: 1,
+    maxLength: 5000,
+    rows: 6,
+    placeholder: 'Project overview and context...',
+  },
+  {
+    name: 'objectives',
+    label: 'Learning Objectives',
+    type: 'textarea',
+    required: false,
+    rows: 4,
+    placeholder: 'One objective per line',
+    helpText: 'What the learner will achieve (one per line)',
+  },
+  {
+    name: 'requirements',
+    label: 'Requirements',
+    type: 'textarea',
+    required: false,
+    rows: 4,
+    placeholder: 'One requirement per line',
+    helpText: 'What must be delivered (one per line)',
+  },
+  {
+    name: 'estimatedHours',
+    label: 'Estimated Hours',
+    type: 'number',
+    required: true,
+    min: 1,
+    max: 100,
+    placeholder: '8',
+    helpText: 'Expected time to complete (1-100 hours)',
+  },
+  {
+    name: 'difficulty',
+    label: 'Difficulty',
+    type: 'select',
+    required: true,
+    options: [
+      { value: 'beginner', label: 'Beginner' },
+      { value: 'intermediate', label: 'Intermediate' },
+      { value: 'advanced', label: 'Advanced' },
+      { value: 'expert', label: 'Expert' },
+    ],
+  },
+  {
+    name: 'isActive',
+    label: 'Active',
+    type: 'checkbox',
+    required: false,
+    helpText: 'Whether the project is visible to learners',
+  },
+];
+
+/**
+ * Field definitions for Submission entity
+ * Note: userId, unitId, and pathId are handled separately
+ */
+export const submissionFields: FieldDef[] = [
+  {
+    name: 'title',
+    label: 'Title',
+    type: 'text',
+    required: true,
+    minLength: 1,
+    maxLength: 200,
+    placeholder: 'Submission title',
+  },
+  {
+    name: 'contentType',
+    label: 'Content Type',
+    type: 'select',
+    required: true,
+    options: [
+      { value: 'text', label: 'Text / Code' },
+      { value: 'url', label: 'URL Link' },
+      { value: 'file', label: 'File Upload' },
+    ],
+    helpText: 'How you want to submit your work',
+  },
+];
+

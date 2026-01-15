@@ -299,4 +299,158 @@ export const seedPayload = {
       lastAttemptAt: new Date(),
     },
   ],
+  challenges: [
+    // React Server Components Challenges
+    {
+      unitId: 'unit-1', // Will be replaced with actual ID
+      title: 'Build a Server Component Dashboard',
+      description: 'Create a dashboard page using React Server Components that fetches and displays user statistics. The component should render on the server and include proper loading states using Suspense.',
+      difficulty: 'intermediate' as const,
+      estimatedMinutes: 45,
+      rubricCriteria: [
+        { name: 'Server-side Rendering', description: 'Component properly renders on the server without client-side JavaScript', maxPoints: 25 },
+        { name: 'Data Fetching', description: 'Data is fetched directly in the component without useEffect', maxPoints: 25 },
+        { name: 'Suspense Integration', description: 'Proper use of Suspense boundaries for loading states', maxPoints: 25 },
+        { name: 'Code Quality', description: 'Clean, readable code following best practices', maxPoints: 25 },
+      ],
+      successCriteria: [
+        'Dashboard renders user statistics from a database query',
+        'No useState or useEffect hooks are used',
+        'Suspense boundary wraps async operations',
+        'Page works with JavaScript disabled',
+      ],
+      contentTypes: ['code'],
+      isActive: true,
+    },
+    {
+      unitId: 'unit-2', // Will be replaced with actual ID
+      title: 'Implement Streaming SSR',
+      description: 'Modify an existing page to use streaming SSR with progressive loading. The page should show critical content immediately while secondary content loads in the background.',
+      difficulty: 'advanced' as const,
+      estimatedMinutes: 60,
+      rubricCriteria: [
+        { name: 'Streaming Implementation', description: 'Content streams progressively to the client', maxPoints: 30 },
+        { name: 'Critical Path', description: 'Critical content appears within 100ms', maxPoints: 30 },
+        { name: 'User Experience', description: 'Loading states are smooth and non-jarring', maxPoints: 20 },
+        { name: 'Performance', description: 'Time to First Byte is under 200ms', maxPoints: 20 },
+      ],
+      successCriteria: [
+        'Page header renders immediately',
+        'Secondary content loads progressively',
+        'No layout shift during loading',
+      ],
+      contentTypes: ['code'],
+      isActive: true,
+    },
+    // Machine Learning Challenge
+    {
+      unitId: 'unit-3', // Will be replaced with actual ID (ML unit)
+      title: 'Implement Gradient Descent from Scratch',
+      description: 'Write a Python implementation of gradient descent to train a simple linear regression model. Include both batch and stochastic variants.',
+      difficulty: 'intermediate' as const,
+      estimatedMinutes: 90,
+      rubricCriteria: [
+        { name: 'Correctness', description: 'Algorithm converges to the optimal solution', maxPoints: 35 },
+        { name: 'Implementation', description: 'Both batch and SGD variants implemented correctly', maxPoints: 35 },
+        { name: 'Visualization', description: 'Loss curve is plotted showing convergence', maxPoints: 15 },
+        { name: 'Documentation', description: 'Code is well-commented explaining the math', maxPoints: 15 },
+      ],
+      successCriteria: [
+        'Loss decreases over iterations',
+        'Model fits the training data',
+        'Learning rate parameter is configurable',
+      ],
+      contentTypes: ['code'],
+      isActive: true,
+    },
+    // TypeScript Challenge
+    {
+      unitId: 'unit-4', // Will be replaced with actual ID (TS unit)
+      title: 'Build Advanced Utility Types',
+      description: 'Create a set of advanced TypeScript utility types including DeepPartial, DeepReadonly, and a type-safe Pick variant that validates keys at compile time.',
+      difficulty: 'advanced' as const,
+      estimatedMinutes: 45,
+      rubricCriteria: [
+        { name: 'DeepPartial', description: 'Correctly makes all nested properties optional', maxPoints: 25 },
+        { name: 'DeepReadonly', description: 'Correctly makes all nested properties readonly', maxPoints: 25 },
+        { name: 'StrictPick', description: 'Pick variant that errors on invalid keys', maxPoints: 30 },
+        { name: 'Test Cases', description: 'Includes type tests demonstrating functionality', maxPoints: 20 },
+      ],
+      successCriteria: [
+        'All utility types compile without errors',
+        'Types work with nested objects',
+        'Invalid usage produces compile-time errors',
+      ],
+      contentTypes: ['code'],
+      isActive: true,
+    },
+  ],
+  projects: [
+    // React Server Components Project
+    {
+      pathId: 'path-1',
+      name: 'Full-Stack RSC E-commerce Store',
+      description: 'Build a complete e-commerce storefront using React Server Components, including product listing, shopping cart, and checkout flow. This project integrates all RSC concepts including streaming, server actions, and data fetching patterns.',
+      objectives: [
+        'Understand how to structure a full RSC application',
+        'Master data fetching patterns in Server Components',
+        'Implement forms and mutations with Server Actions',
+        'Create optimal loading experiences with streaming',
+      ],
+      requirements: [
+        'Product listing page with server-side filtering',
+        'Product detail page with related products',
+        'Shopping cart using Server Actions for mutations',
+        'Checkout flow with form validation',
+        'Admin dashboard for product management',
+      ],
+      estimatedHours: 20,
+      difficulty: 'advanced' as const,
+      isActive: true,
+    },
+    // Machine Learning Project
+    {
+      pathId: 'path-2',
+      name: 'Image Classification Pipeline',
+      description: 'Build an end-to-end image classification system from data preparation to model deployment. This project covers the full ML lifecycle including data preprocessing, model training, evaluation, and serving.',
+      objectives: [
+        'Learn data preprocessing and augmentation techniques',
+        'Understand CNN architectures for image classification',
+        'Master model evaluation and hyperparameter tuning',
+        'Deploy a model for inference',
+      ],
+      requirements: [
+        'Data loading and preprocessing pipeline',
+        'CNN model implementation using PyTorch or TensorFlow',
+        'Training loop with validation monitoring',
+        'Model evaluation with confusion matrix and metrics',
+        'Simple web interface for predictions',
+      ],
+      estimatedHours: 30,
+      difficulty: 'intermediate' as const,
+      isActive: true,
+    },
+    // TypeScript Project
+    {
+      pathId: 'path-3',
+      name: 'Type-Safe API Client Generator',
+      description: 'Create a code generator that reads an OpenAPI specification and generates a fully type-safe TypeScript API client. The generated client should provide compile-time type checking for all API calls.',
+      objectives: [
+        'Parse and process OpenAPI specifications',
+        'Generate TypeScript types from JSON schemas',
+        'Create type-safe fetch wrappers',
+        'Handle generic response types and error cases',
+      ],
+      requirements: [
+        'OpenAPI 3.0 specification parser',
+        'TypeScript type generator for request/response types',
+        'Generated client with full type inference',
+        'Support for path parameters, query strings, and request bodies',
+        'Error handling with discriminated unions',
+      ],
+      estimatedHours: 15,
+      difficulty: 'expert' as const,
+      isActive: true,
+    },
+  ],
 };

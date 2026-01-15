@@ -9,6 +9,8 @@ import { Source } from '../source-configs/entities/source.entity';
 import { SourcePathLink } from '../source-configs/entities/source-path-link.entity';
 import { UserProgress } from '../user-progress/entities/user-progress.entity';
 import { User } from '../users/entities/user.entity';
+import { Challenge } from '../challenges/entities/challenge.entity';
+import { Project } from '../projects/entities/project.entity';
 import { seedPayload } from './seed-payload';
 import * as bcrypt from 'bcrypt';
 
@@ -33,6 +35,10 @@ export class SeederService {
     private userProgressRepository: Repository<UserProgress>,
     @InjectRepository(User)
     private usersRepository: Repository<User>,
+    @InjectRepository(Challenge)
+    private challengesRepository: Repository<Challenge>,
+    @InjectRepository(Project)
+    private projectsRepository: Repository<Project>,
   ) {}
 
   async seed(): Promise<void> {
@@ -75,7 +81,15 @@ export class SeederService {
     const knowledgeUnits = await this.seedKnowledgeUnits(learningPaths, principles);
     this.logger.log(`💡 Seeded ${knowledgeUnits.length} knowledge units`);
 
-    // 6) Seed User Progress (linked to knowledge units and users)
+    // 6) Seed Challenges (linked to knowledge units)
+    const challenges = await this.seedChallenges(knowledgeUnits);
+    this.logger.log(`🏆 Seeded ${challenges.length} challenges`);
+
+    // 7) Seed Projects (linked to learning paths)
+    const projects = await this.seedProjects(learningPaths);
+    this.logger.log(`📁 Seeded ${projects.length} projects`);
+
+    // 8) Seed User Progress (linked to knowledge units and users)
     await this.seedUserProgress(knowledgeUnits, users);
     this.logger.log('📊 Seeded user progress');
   }
@@ -231,8 +245,50 @@ export class SeederService {
     await this.userProgressRepository.save(progressToSave);
   }
 
+  private async seedChallenges(knowledgeUnits: KnowledgeUnit[]): Promise<Challenge[]> {
+    if (!seedPayload.challenges || seedPayload.challenges.length === 0) {
+      return [];
+    }
+
+    const challengesToSave = seedPayload.challenges.map((challenge, index) => {
+      // Map unit-1, unit-2, etc. to actual unit IDs
+      const unitIndex = parseInt(challenge.unitId.replace('unit-', '')) - 1;
+      const unitId = knowledgeUnits[unitIndex]?.id || knowledgeUnits[0]?.id;
+
+      return {
+        ...challenge,
+        unitId: unitId,
+      };
+    });
+
+    const savedChallenges = await this.challengesRepository.save(challengesToSave);
+    return savedChallenges;
+  }
+
+  private async seedProjects(learningPaths: LearningPath[]): Promise<Project[]> {
+    if (!seedPayload.projects || seedPayload.projects.length === 0) {
+      return [];
+    }
+
+    const projectsToSave = seedPayload.projects.map((project) => {
+      // Map path-1, path-2, etc. to actual path IDs
+      const pathIndex = parseInt(project.pathId.replace('path-', '')) - 1;
+      const pathId = learningPaths[pathIndex]?.id || learningPaths[0]?.id;
+
+      return {
+        ...project,
+        pathId: pathId,
+      };
+    });
+
+    const savedProjects = await this.projectsRepository.save(projectsToSave);
+    return savedProjects;
+  }
+
   async clearDatabase(): Promise<void> {
     await this.userProgressRepository.clear();
+    await this.challengesRepository.clear();
+    await this.projectsRepository.clear();
     await this.knowledgeUnitsRepository.clear();
     await this.principlesRepository.clear();
     await this.rawContentRepository.clear();

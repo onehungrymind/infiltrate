@@ -217,3 +217,104 @@ export {
   updateUser,
   deleteUser,
 };
+
+/* Submissions */
+import * as SubmissionsActions from './lib/submissions/submissions.actions';
+import * as SubmissionsFeature from './lib/submissions/submissions.feature';
+import * as SubmissionsEffects from './lib/submissions/submissions.effects';
+import { SubmissionsFacade } from './lib/submissions/submissions.facade';
+import { submissionsFeature } from './lib/submissions/submissions.feature';
+import {
+  loadSubmissions,
+  loadSubmission,
+  loadSubmissionsByUser,
+  loadSubmissionsByUnit,
+  loadSubmissionsByPath,
+  createSubmission,
+  updateSubmission,
+  deleteSubmission,
+  submitForReview,
+  requestAiFeedback,
+  loadFeedback,
+} from './lib/submissions/submissions.effects';
+
+export {
+  submissionsFeature,
+  SubmissionsFacade,
+  SubmissionsActions,
+  SubmissionsFeature,
+  SubmissionsEffects,
+  loadSubmissions,
+  loadSubmission,
+  loadSubmissionsByUser,
+  loadSubmissionsByUnit,
+  loadSubmissionsByPath,
+  createSubmission,
+  updateSubmission,
+  deleteSubmission,
+  submitForReview,
+  requestAiFeedback,
+  loadFeedback,
+};
+
+/* Challenges */
+import * as ChallengesActions from './lib/challenges/challenges.actions';
+import * as ChallengesFeature from './lib/challenges/challenges.feature';
+import * as ChallengesEffects from './lib/challenges/challenges.effects';
+import { ChallengesFacade } from './lib/challenges/challenges.facade';
+import { challengesFeature } from './lib/challenges/challenges.feature';
+import {
+  loadChallenges,
+  loadChallenge,
+  loadChallengesByUnit,
+  createChallenge,
+  updateChallenge,
+  deleteChallenge,
+} from './lib/challenges/challenges.effects';
+
+export {
+  challengesFeature,
+  ChallengesFacade,
+  ChallengesActions,
+  ChallengesFeature,
+  ChallengesEffects,
+  loadChallenges,
+  loadChallenge,
+  loadChallengesByUnit,
+  createChallenge,
+  updateChallenge,
+  deleteChallenge,
+};
+
+/* Projects */
+import * as ProjectsActions from './lib/projects/projects.actions';
+import * as ProjectsFeature from './lib/projects/projects.feature';
+import * as ProjectsEffects from './lib/projects/projects.effects';
+import { ProjectsFacade } from './lib/projects/projects.facade';
+import { projectsFeature } from './lib/projects/projects.feature';
+import {
+  loadProjects,
+  loadProject,
+  loadProjectsByPath,
+  createProject,
+  updateProject,
+  deleteProject,
+  linkPrinciple,
+  unlinkPrinciple,
+} from './lib/projects/projects.effects';
+
+export {
+  projectsFeature,
+  ProjectsFacade,
+  ProjectsActions,
+  ProjectsFeature,
+  ProjectsEffects,
+  loadProjects,
+  loadProject,
+  loadProjectsByPath,
+  createProject,
+  updateProject,
+  deleteProject,
+  linkPrinciple,
+  unlinkPrinciple,
+};

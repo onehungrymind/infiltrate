@@ -47,3 +47,12 @@ export * from './lib/services/notebooks.service';
 
 /* Learning Map */
 export * from './lib/services/learning-map.service';
+
+/* Submissions */
+export * from './lib/services/submissions/submissions.service';
+
+/* Challenges */
+export * from './lib/services/challenges/challenges.service';
+
+/* Projects */
+export * from './lib/services/projects/projects.service';

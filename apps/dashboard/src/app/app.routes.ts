@@ -23,6 +23,11 @@ export const appRoutes: Route[] = [
     canActivate: [authGuard],
   },
   {
+    path: 'projects',
+    loadComponent: () => import('./projects/projects').then((m) => m.Projects),
+    canActivate: [authGuard],
+  },
+  {
     path: 'schedule',
     loadComponent: () => import('./schedule/schedule').then((m) => m.Schedule),
     canActivate: [authGuard],
@@ -121,6 +126,11 @@ export const appRoutes: Route[] = [
   {
     path: 'completion-assessment',
     loadComponent: () => import('./pages/completion-assessment/completion-assessment').then((m) => m.CompletionAssessment),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'submissions',
+    loadComponent: () => import('./submissions/submissions').then((m) => m.Submissions),
     canActivate: [authGuard],
   },
 ];

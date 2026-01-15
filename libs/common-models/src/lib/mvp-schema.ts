@@ -46,6 +46,16 @@ export interface BaseEntity {
 
   export type PrincipleStatus = 'pending' | 'in_progress' | 'mastered';
 
+  // Legacy content types for challenge constraints
+  export type ChallengeContentType = 'code' | 'written' | 'project';
+
+  // Expanded submission content types
+  export type SubmissionContentType = 'text' | 'url' | 'file';
+
+  export type SubmissionStatus = 'draft' | 'submitted' | 'under_review' | 'approved' | 'rejected';
+
+  export type FeedbackSource = 'ai' | 'mentor';
+
   // ============================================================================
   // CORE ENTITIES
   // ============================================================================
@@ -84,6 +94,78 @@ export interface BaseEntity {
     prerequisites: string[];         // IDs of prerequisite principles
     order: number;                   // Display order in learning map
     status: PrincipleStatus;         // 'pending' | 'in_progress' | 'mastered'
+  }
+
+  /**
+   * Rubric criterion for grading submissions
+   */
+  export interface RubricCriterion {
+    name: string;                    // "Correctness"
+    description: string;             // "Solution produces correct output"
+    maxPoints: number;               // 30
+  }
+
+  /**
+   * Challenge - focused exercise tied to a single KnowledgeUnit
+   */
+  export interface Challenge extends BaseEntity {
+    unitId: string;                  // FK to KnowledgeUnit
+    title: string;                   // "Implement a Binary Search"
+    description: string;             // Instructions for the learner
+    difficulty: DifficultyLevel;     // 'beginner' | 'intermediate' | 'advanced' | 'expert'
+    estimatedMinutes: number;        // Expected time to complete
+    rubricCriteria: RubricCriterion[]; // Custom rubric for this challenge
+    successCriteria: string[];       // What must be achieved
+    contentTypes: ChallengeContentType[]; // Allowed: ['code'], ['written'], etc.
+    isActive: boolean;               // Can hide challenges
+  }
+
+  /**
+   * Project - multi-principle assessment
+   */
+  export interface Project extends BaseEntity {
+    pathId: string;                  // FK to LearningPath
+    name: string;                    // "Build a REST API"
+    description: string;             // Overview
+    objectives: string[];            // Learning goals
+    requirements: string[];          // What must be delivered
+    estimatedHours: number;          // 8-20 hours
+    difficulty: DifficultyLevel;
+    isActive: boolean;
+  }
+
+  /**
+   * Junction table: Project ↔ Principle (many-to-many)
+   */
+  export interface ProjectPrinciple extends BaseEntity {
+    projectId: string;
+    principleId: string;
+    weight: number;                  // % of total grade (0-100)
+    rubricCriteria: RubricCriterion[]; // Criteria for this principle
+  }
+
+  /**
+   * URL metadata for URL submissions
+   */
+  export interface UrlMetadata {
+    title?: string;                  // Fetched page title
+    description?: string;            // Meta description
+    platform?: string;               // 'github' | 'codepen' | 'other'
+    repoStats?: {                    // For GitHub
+      stars?: number;
+      language?: string;
+      lastCommit?: Date;
+    };
+  }
+
+  /**
+   * File metadata for file submissions
+   */
+  export interface FileMetadata {
+    originalName: string;            // "solution.py"
+    mimeType: string;                // "text/x-python"
+    size: number;                    // bytes
+    storagePath: string;             // "uploads/submissions/{id}/{filename}"
   }
 
   /**
@@ -207,7 +289,51 @@ export interface BaseEntity {
     attempts: number;
     lastAttemptAt?: Date;
   }
-  
+
+  /**
+   * Submission - user's work submitted for a challenge or project
+   */
+  export interface Submission extends BaseEntity {
+    userId: string;
+    unitId?: string;                 // @deprecated - use challengeId instead
+    challengeId?: string;            // FK to Challenge (for challenge submissions)
+    projectId?: string;              // FK to Project (for project submissions)
+    pathId?: string;                 // Optional link to LearningPath
+    title: string;
+    contentType: SubmissionContentType; // 'text' | 'url' | 'file'
+    content: string;                 // Text content OR URL OR file path
+    urlMetadata?: UrlMetadata;       // Metadata when contentType='url'
+    fileMetadata?: FileMetadata;     // Metadata when contentType='file'
+    status: SubmissionStatus;
+    score?: number;                  // 0-100 after review
+    submittedAt?: Date;
+    reviewedAt?: Date;
+    metadata?: Record<string, any>;
+  }
+
+  /**
+   * Rubric score breakdown
+   */
+  export interface RubricScore {
+    criterion: string;
+    achieved: number;
+    maximum: number;
+    feedback?: string;
+  }
+
+  /**
+   * Feedback - AI or mentor feedback on a submission
+   */
+  export interface Feedback extends BaseEntity {
+    submissionId: string;
+    source: FeedbackSource;
+    reviewerId?: string;             // For mentor feedback
+    overallScore: number;            // 0-100
+    rubricBreakdown: RubricScore[];
+    suggestions: string[];
+    content: string;                 // Detailed feedback
+  }
+
   // ============================================================================
   // DTOs (Data Transfer Objects)
   // ============================================================================
@@ -405,6 +531,93 @@ export interface BaseEntity {
     userId: string;
     unitId: string;
     quality: number;                 // 0-5 for SM-2 algorithm
+  }
+
+  export interface CreateSubmissionDto {
+    userId: string;
+    unitId?: string;                 // @deprecated - use challengeId instead
+    challengeId?: string;
+    projectId?: string;
+    pathId?: string;
+    title: string;
+    contentType?: SubmissionContentType;
+    content: string;
+    urlMetadata?: UrlMetadata;
+    fileMetadata?: FileMetadata;
+    metadata?: Record<string, any>;
+  }
+
+  export interface UpdateSubmissionDto {
+    title?: string;
+    content?: string;
+    contentType?: SubmissionContentType;
+    urlMetadata?: UrlMetadata;
+    fileMetadata?: FileMetadata;
+    status?: SubmissionStatus;
+    score?: number;
+    metadata?: Record<string, any>;
+  }
+
+  // Challenge DTOs
+  export interface CreateChallengeDto {
+    unitId: string;
+    title: string;
+    description: string;
+    difficulty?: DifficultyLevel;
+    estimatedMinutes?: number;
+    rubricCriteria?: RubricCriterion[];
+    successCriteria?: string[];
+    contentTypes?: ChallengeContentType[];
+    isActive?: boolean;
+  }
+
+  export interface UpdateChallengeDto {
+    title?: string;
+    description?: string;
+    difficulty?: DifficultyLevel;
+    estimatedMinutes?: number;
+    rubricCriteria?: RubricCriterion[];
+    successCriteria?: string[];
+    contentTypes?: ChallengeContentType[];
+    isActive?: boolean;
+  }
+
+  // Project DTOs
+  export interface CreateProjectDto {
+    pathId: string;
+    name: string;
+    description: string;
+    objectives?: string[];
+    requirements?: string[];
+    estimatedHours?: number;
+    difficulty?: DifficultyLevel;
+    isActive?: boolean;
+  }
+
+  export interface UpdateProjectDto {
+    name?: string;
+    description?: string;
+    objectives?: string[];
+    requirements?: string[];
+    estimatedHours?: number;
+    difficulty?: DifficultyLevel;
+    isActive?: boolean;
+  }
+
+  // ProjectPrinciple DTO for linking principles to projects
+  export interface LinkPrincipleDto {
+    principleId: string;
+    weight: number;
+    rubricCriteria?: RubricCriterion[];
+  }
+
+  export interface UpdateProjectPrincipleDto {
+    weight?: number;
+    rubricCriteria?: RubricCriterion[];
+  }
+
+  export interface RequestFeedbackDto {
+    rubricCriteria?: string[];
   }
 
   export interface StudyStats {

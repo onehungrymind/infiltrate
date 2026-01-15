@@ -1,0 +1,67 @@
+<div class="list-container">
+  <div class="list-header">
+    <h1 class="list-title">Projects</h1>
+  </div>
+
+  @for (project of projects(); track project.id) {
+    <div
+      class="list-item"
+      [class.active]="isSelected(project)"
+      (click)="selected.emit(project)"
+    >
+      <div class="list-item-content">
+        <div class="list-item-main">
+          <div class="list-item-header">
+            <svg class="content-type-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-8.69-6.44-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z" />
+            </svg>
+            <h3 class="list-item-title">
+              {{ project.name || 'Untitled' }}
+            </h3>
+          </div>
+          @if (project.description) {
+            <p class="list-item-meta">
+              {{ project.description | slice:0:80 }}{{ project.description.length > 80 ? '...' : '' }}
+            </p>
+          }
+          <div class="list-item-badges">
+            <span
+              class="difficulty-badge"
+              [style.background-color]="getDifficultyColor(project.difficulty)"
+            >
+              {{ project.difficulty | titlecase }}
+            </span>
+            <span class="time-badge">
+              {{ getEstimatedTime(project.estimatedHours) }}
+            </span>
+            @if (!project.isActive) {
+              <span class="inactive-badge">Inactive</span>
+            }
+          </div>
+        </div>
+        <button
+          class="list-item-delete"
+          (click)="onDelete(project); $event.stopImmediatePropagation()"
+          type="button"
+          aria-label="Delete project"
+        >
+          <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+            fill="currentColor" viewBox="0 0 24 24">
+            <path fill-rule="evenodd"
+              d="M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z"
+              clip-rule="evenodd" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  }
+
+  @if (projects().length === 0) {
+    <div class="list-empty">
+      <svg class="list-empty-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-8.69-6.44-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z" />
+      </svg>
+      <p class="list-empty-text">No projects found</p>
+    </div>
+  }
+</div>

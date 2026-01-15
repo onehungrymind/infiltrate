@@ -1,0 +1,83 @@
+<div class="feedback-container">
+  <div class="feedback-header">
+    <h2 class="feedback-title">Feedback</h2>
+  </div>
+
+  @if (loading) {
+    <div class="feedback-loading">
+      <mat-spinner diameter="32"></mat-spinner>
+      <span>Loading feedback...</span>
+    </div>
+  } @else {
+    @if (feedback$ | async; as feedbackList) {
+      @if (feedbackList.length === 0) {
+        <div class="feedback-empty">
+          <mat-icon class="feedback-empty-icon">rate_review</mat-icon>
+          <p class="feedback-empty-text">No feedback yet</p>
+          <p class="feedback-empty-hint">Submit for review and request AI feedback to see results here</p>
+        </div>
+      } @else {
+        @for (feedback of feedbackList; track feedback.id) {
+          <div class="feedback-card">
+            <div class="feedback-card-header">
+              <div class="feedback-source">
+                <mat-icon class="source-icon">{{ getSourceIcon(feedback.source) }}</mat-icon>
+                <span class="source-label">{{ getSourceLabel(feedback.source) }}</span>
+              </div>
+              <div class="feedback-meta">
+                <span class="overall-score" [style.background-color]="getScoreColor(feedback.overallScore)">
+                  {{ feedback.overallScore }}%
+                </span>
+                <span class="feedback-date">{{ formatDate(feedback.createdAt) }}</span>
+              </div>
+            </div>
+
+            @if (feedback.rubricBreakdown && feedback.rubricBreakdown.length > 0) {
+              <div class="rubric-section">
+                <h4 class="section-title">Rubric Breakdown</h4>
+                <div class="rubric-list">
+                  @for (rubric of feedback.rubricBreakdown; track rubric.criterion) {
+                    <div class="rubric-item">
+                      <div class="rubric-header">
+                        <span class="rubric-criterion">{{ rubric.criterion }}</span>
+                        <span class="rubric-score">{{ rubric.achieved }}/{{ rubric.maximum }}</span>
+                      </div>
+                      <div class="rubric-bar">
+                        <div
+                          class="rubric-progress"
+                          [style.width.%]="(rubric.achieved / rubric.maximum) * 100"
+                          [style.background-color]="getScoreColor((rubric.achieved / rubric.maximum) * 100)"
+                        ></div>
+                      </div>
+                      @if (rubric.feedback) {
+                        <p class="rubric-feedback">{{ rubric.feedback }}</p>
+                      }
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+
+            @if (feedback.suggestions && feedback.suggestions.length > 0) {
+              <div class="suggestions-section">
+                <h4 class="section-title">Suggestions for Improvement</h4>
+                <ul class="suggestions-list">
+                  @for (suggestion of feedback.suggestions; track $index) {
+                    <li class="suggestion-item">{{ suggestion }}</li>
+                  }
+                </ul>
+              </div>
+            }
+
+            @if (feedback.content) {
+              <div class="content-section">
+                <h4 class="section-title">Detailed Feedback</h4>
+                <p class="feedback-content">{{ feedback.content }}</p>
+              </div>
+            }
+          </div>
+        }
+      }
+    }
+  }
+</div>

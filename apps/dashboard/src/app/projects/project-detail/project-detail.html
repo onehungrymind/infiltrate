@@ -1,0 +1,87 @@
+<div class="detail-container">
+  @if (project() || true) {
+    <div class="detail-header">
+      <h1 class="detail-title">{{ originalTitle() | titlecase }}</h1>
+      @if (project()?.id) {
+        <div class="project-info">
+          <span
+            class="difficulty-indicator"
+            [style.background-color]="getDifficultyColor(project()?.difficulty || 'beginner')"
+          >
+            {{ project()?.difficulty | titlecase }}
+          </span>
+          @if (project()?.isActive === false) {
+            <span class="inactive-indicator">Inactive</span>
+          }
+        </div>
+      }
+    </div>
+
+    <form (submit)="onSubmit($event)" class="detail-form">
+      <div class="detail-content">
+        <!-- Path Selection -->
+        <div class="detail-section">
+          <label class="detail-section-title">Learning Path *</label>
+          <select
+            class="path-select"
+            [value]="selectedPathId()"
+            (change)="onPathChange($any($event.target).value)"
+          >
+            <option value="">Select a learning path...</option>
+            @for (path of paths(); track path.id) {
+              <option [value]="path.id">{{ path.name }}</option>
+            }
+          </select>
+        </div>
+
+        <!-- Dynamic Form Fields -->
+        <app-dynamic-form
+          [metaInfo]="metaInfo"
+          [dynamicForm]="dynamicForm"
+        />
+
+        <!-- Linked Principles Info -->
+        @if (project()?.id && pathPrinciples().length > 0) {
+          <div class="detail-section principles-section">
+            <h3 class="detail-section-title">Available Principles</h3>
+            <p class="section-help">
+              Principles from this learning path that can be linked to this project
+            </p>
+            <div class="principles-list">
+              @for (principle of pathPrinciples(); track principle.id) {
+                <div class="principle-item">
+                  <span class="principle-name">{{ principle.name }}</span>
+                  <span class="principle-difficulty" [style.color]="getDifficultyColor(principle.difficulty)">
+                    {{ principle.difficulty | titlecase }}
+                  </span>
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+
+      <div class="detail-actions">
+        <button
+          type="button"
+          class="detail-button detail-button-secondary"
+          (click)="onCancel()"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          class="detail-button detail-button-primary"
+          [disabled]="!isFormValid()"
+        >
+          {{ project()?.id ? 'Update' : 'Create' }}
+        </button>
+      </div>
+    </form>
+  } @else {
+    <div class="detail-empty">
+      <mat-icon class="detail-empty-icon">folder_special</mat-icon>
+      <p class="detail-empty-text">Select a project to view details</p>
+    </div>
+  }
+</div>

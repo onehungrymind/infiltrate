@@ -126,4 +126,43 @@ export const ENTITY_DTO_KEYS = {
     'order',
     'status',
   ] as const,
+
+  SUBMISSIONS: [
+    'userId',
+    'unitId',
+    'challengeId',
+    'projectId',
+    'pathId',
+    'title',
+    'contentType',
+    'content',
+    'urlMetadata',
+    'fileMetadata',
+    'status',
+    'score',
+    'metadata',
+  ] as const,
+
+  CHALLENGES: [
+    'unitId',
+    'title',
+    'description',
+    'difficulty',
+    'estimatedMinutes',
+    'rubricCriteria',
+    'successCriteria',
+    'contentTypes',
+    'isActive',
+  ] as const,
+
+  PROJECTS: [
+    'pathId',
+    'name',
+    'description',
+    'objectives',
+    'requirements',
+    'estimatedHours',
+    'difficulty',
+    'isActive',
+  ] as const,
 } as const;

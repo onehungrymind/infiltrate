@@ -30,6 +30,14 @@ import { NotebookProgress } from '../notebooks/entities/notebook-progress.entity
 import { LearningMapModule } from '../learning-map/learning-map.module';
 import { PrinciplesModule } from '../principles/principles.module';
 import { Principle } from '../principles/entities/principle.entity';
+import { SubmissionsModule } from '../submissions/submissions.module';
+import { Submission } from '../submissions/entities/submission.entity';
+import { Feedback } from '../submissions/entities/feedback.entity';
+import { ChallengesModule } from '../challenges/challenges.module';
+import { Challenge } from '../challenges/entities/challenge.entity';
+import { ProjectsModule } from '../projects/projects.module';
+import { Project } from '../projects/entities/project.entity';
+import { ProjectPrinciple } from '../projects/entities/project-principle.entity';
 
 @Module({
   imports: [
@@ -46,7 +54,7 @@ import { Principle } from '../principles/entities/principle.entity';
       database: process.env.DATABASE_URL?.replace('file:', '') || 'kasita.db',
       synchronize: process.env.NODE_ENV !== 'production', // Auto-sync in dev
       logging: false, // Disable SQL logging for better performance
-      entities: [LearningPath, Source, SourcePathLink, RawContent, KnowledgeUnit, UserProgress, User, DataSource, GraphSearch, NotebookProgress, Principle],
+      entities: [LearningPath, Source, SourcePathLink, RawContent, KnowledgeUnit, UserProgress, User, DataSource, GraphSearch, NotebookProgress, Principle, Submission, Feedback, Challenge, Project, ProjectPrinciple],
     }),
     LearningPathsModule,
     SourceConfigsModule,
@@ -62,6 +70,9 @@ import { Principle } from '../principles/entities/principle.entity';
     NotebooksModule,
     LearningMapModule,
     PrinciplesModule,
+    SubmissionsModule,
+    ChallengesModule,
+    ProjectsModule,
   ],
   controllers: [AppController],
   providers: [AppService, ProgressGateway],

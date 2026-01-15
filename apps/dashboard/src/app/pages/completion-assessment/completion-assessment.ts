@@ -28,16 +28,16 @@ interface CriticalPathItem {
 })
 export class CompletionAssessment {
   lastUpdated = signal('January 15, 2026');
-  overallCompletion = signal(70);
+  overallCompletion = signal(78);
 
   epics = signal<Epic[]>([
     { name: 'Epic 1: Learning Objective & Map Generation', progress: 60, status: 'mostly-complete', color: '#3b82f6' },
     { name: 'Epic 2: Content Sourcing & Ingestion', progress: 90, status: 'complete', color: '#22c55e' },
     { name: 'Epic 3: Content Synthesis & Knowledge Units', progress: 75, status: 'mostly-complete', color: '#3b82f6' },
-    { name: 'Epic 4: Adaptive Content Presentation', progress: 50, status: 'partial', color: '#f59e0b' },
-    { name: 'Epic 5: Feedback Loops', progress: 15, status: 'early-stage', color: '#ef4444' },
+    { name: 'Epic 4: Adaptive Content Presentation', progress: 70, status: 'mostly-complete', color: '#3b82f6' },
+    { name: 'Epic 5: Feedback Loops', progress: 60, status: 'mostly-complete', color: '#3b82f6' },
     { name: 'Epic 6: Progress Tracking & Validation', progress: 50, status: 'partial', color: '#f59e0b' },
-    { name: 'Epic 7: Input/Output Optionality', progress: 60, status: 'mostly-complete', color: '#3b82f6' },
+    { name: 'Epic 7: Input/Output Optionality', progress: 70, status: 'mostly-complete', color: '#3b82f6' },
   ]);
 
   criticalPathItems = signal<CriticalPathItem[]>([
@@ -45,7 +45,7 @@ export class CompletionAssessment {
     { name: 'Principle entity', status: 'complete', blocking: 'Learning map structure' },
     { name: 'AI learning map generation', status: 'complete', blocking: 'Core user flow' },
     { name: 'Quiz Runner', status: 'complete', blocking: 'Learning variety' },
-    { name: 'Challenge submission system', status: 'not-started', blocking: 'Feedback loop' },
+    { name: 'Challenge submission system', status: 'complete', blocking: 'Feedback loop' },
     { name: 'Flashcard-API integration', status: 'complete', blocking: 'Progress tracking' },
   ]);
 
@@ -62,8 +62,12 @@ export class CompletionAssessment {
     { name: 'Knowledge Graph generation', status: 'complete' },
     { name: 'SM-2 algorithm', status: 'complete' },
     { name: 'Principle CRUD', status: 'complete' },
-    { name: 'Submission CRUD', status: 'not-started' },
-    { name: 'Feedback CRUD', status: 'not-started' },
+    { name: 'Challenge CRUD', status: 'complete' },
+    { name: 'Project CRUD', status: 'complete' },
+    { name: 'Submission CRUD', status: 'complete' },
+    { name: 'Feedback CRUD', status: 'complete' },
+    { name: 'File upload endpoint', status: 'complete' },
+    { name: 'URL metadata extraction', status: 'complete' },
     { name: 'AI map generation', status: 'complete' },
     { name: 'AI source suggestions', status: 'complete' },
   ]);
@@ -78,6 +82,9 @@ export class CompletionAssessment {
     { name: 'Sources CRUD (many-to-many)', status: 'complete' },
     { name: 'Raw content CRUD', status: 'complete' },
     { name: 'User progress CRUD', status: 'complete' },
+    { name: 'Challenges CRUD', status: 'complete' },
+    { name: 'Projects CRUD', status: 'complete' },
+    { name: 'Submissions CRUD', status: 'complete' },
     { name: 'React Flow learning map', status: 'complete' },
     { name: 'Home dashboard', status: 'complete' },
     { name: 'Login/auth', status: 'complete' },

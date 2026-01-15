@@ -1,7 +1,7 @@
 # Kasita MVP Completion Assessment
 
 **Last Updated**: January 15, 2026
-**Overall Completion**: 70%
+**Overall Completion**: 78%
 
 ---
 
@@ -12,10 +12,10 @@
 | Epic 1: Learning Objective & Map Generation | 60% | :large_blue_circle: Mostly Complete |
 | Epic 2: Content Sourcing & Ingestion | 90% | :white_check_mark: Nearly Complete |
 | Epic 3: Content Synthesis & Knowledge Units | 75% | :large_blue_circle: Mostly Complete |
-| Epic 4: Adaptive Content Presentation | 50% | :yellow_circle: Partial |
-| Epic 5: Feedback Loops | 15% | :red_circle: Early Stage |
+| Epic 4: Adaptive Content Presentation | 70% | :large_blue_circle: Mostly Complete |
+| Epic 5: Feedback Loops | 60% | :large_blue_circle: Good Foundation |
 | Epic 6: Progress Tracking & Validation | 50% | :yellow_circle: Partial |
-| Epic 7: Input/Output Optionality | 60% | :large_blue_circle: Good Foundation |
+| Epic 7: Input/Output Optionality | 70% | :large_blue_circle: Good Foundation |
 
 ---
 
@@ -61,7 +61,7 @@
 - [x] Source path links with per-path enabled status
 
 ### Partial
-- [ ] CS-03: Manual URL/document upload (URLs work, no file upload)
+- [ ] CS-03: Manual URL/document upload (URLs work, file upload now available via Submissions)
 - [ ] CS-06: Exclude specific sources/content (delete works, no filtering)
 
 ### Not Started
@@ -87,17 +87,26 @@
 - [ ] SY-04: Review/approve/reject units (status field exists, no workflow UI)
 
 ### Not Started
-- [ ] Add "challenges" field to knowledge units
+- [ ] ~~Add "challenges" field to knowledge units~~ (Resolved - Challenge entity links to KnowledgeUnit)
 
 ---
 
-## Epic 4: Adaptive Content Presentation (50%)
+## Epic 4: Adaptive Content Presentation (70%)
 
 ### Completed
 - [x] Flashcards (Infiltrate app) - gamified experience
 - [x] Study Flashcards (Dashboard) - simple study mode with SM-2 integration
 - [x] Study Quiz (Dashboard) - multiple choice and true/false with SM-2 integration
 - [x] AP-03: Varied presentation formats (flashcards and quiz in Dashboard)
+- [x] Challenge entity with CRUD (API + Dashboard)
+  - Challenges linked to KnowledgeUnits
+  - Custom rubric criteria per challenge
+  - Difficulty levels and time estimates
+  - Dashboard UI with list and detail views
+- [x] Project entity with CRUD (API + Dashboard)
+  - Projects linked to LearningPaths
+  - Objectives and requirements
+  - Dashboard UI with list and detail views
 
 ### Not Started
 - [ ] AP-01: Set preferred learning modalities
@@ -106,29 +115,37 @@
 - [ ] AP-05: Manually switch formats
 - [ ] AP-06: Analogies matched to existing knowledge
 - [ ] AP-07: Adjust cognitive load
-- [ ] Challenge Arena app
+- [ ] Challenge Arena app (learning app interface)
 
 ---
 
-## Epic 5: Feedback Loops (15%)
+## Epic 5: Feedback Loops (60%)
 
 ### Completed
-- (None)
+- [x] FB-02: AI feedback on challenge submissions (Claude-powered)
+- [x] Submission entity with full CRUD
+  - Extended content types: text, URL (with metadata extraction), file upload
+  - Link to Challenge or Project
+  - URL metadata fetcher (GitHub integration with repo stats)
+  - File upload with drag-drop (10MB limit, multiple formats)
+- [x] Feedback entity with full CRUD
+- [x] AI feedback generation with rubric-based evaluation
+
+### Partial
+- [ ] FB-06: Feedback history (exists per submission, no aggregated view)
 
 ### Not Started
 - [ ] FB-01: Immediate AI feedback on flashcards
-- [ ] FB-02: AI feedback on challenge submissions
-- [ ] FB-03: AI evaluation of projects
+- [ ] FB-03: AI evaluation of projects (larger scope projects)
 - [ ] FB-04: Request human mentor review
 - [ ] FB-05: Mentor reviews submissions
-- [ ] FB-06: Feedback history
 - [ ] FB-07: Identify recurring gaps
 - [ ] FB-08: Rate feedback quality
-- [ ] Submission entity
-- [ ] Feedback entity
 
 ### Blockers
-- Entire epic depends on Challenge system (Epic 4)
+- ~~Entire epic depends on Challenge system~~ (Resolved)
+- ~~Submission entity not implemented~~ (Resolved)
+- ~~Feedback entity not implemented~~ (Resolved)
 
 ---
 
@@ -155,7 +172,7 @@
 
 ---
 
-## Epic 7: Input/Output Optionality (60%)
+## Epic 7: Input/Output Optionality (70%)
 
 ### Completed
 - [x] IO-01: Add new Patchbay adapters (clean adapter pattern)
@@ -164,6 +181,8 @@
 - [x] Standardized API for Learning Apps
 - [x] Stable knowledge unit schema
 - [x] API-only communication
+- [x] File upload for submissions (PDF, images, code files, ZIP)
+- [x] URL submission with metadata extraction
 
 ### Not Started
 - [ ] IO-02: Import Anki/Notion
@@ -185,7 +204,9 @@ These must be completed for a functional MVP:
 | Principle entity | :white_check_mark: Complete | ~~Learning map structure~~ |
 | AI learning map generation | :white_check_mark: Complete | ~~Core user flow~~ |
 | Quiz Runner | :white_check_mark: Complete | ~~Learning variety~~ |
-| Challenge submission system | :red_circle: Not Started | Feedback loop |
+| Challenge entity & CRUD | :white_check_mark: Complete | ~~Feedback loop~~ |
+| Submission entity with extended types | :white_check_mark: Complete | ~~Feedback loop~~ |
+| Feedback entity & AI generation | :white_check_mark: Complete | ~~Feedback loop~~ |
 | Flashcard-API integration | :white_check_mark: Complete | ~~Progress tracking~~ |
 
 ---
@@ -206,11 +227,16 @@ These must be completed for a functional MVP:
 | Ingestion endpoints | :white_check_mark: Complete |
 | Knowledge Graph generation | :white_check_mark: Complete |
 | Principle CRUD | :white_check_mark: Complete |
-| Submission CRUD | :red_circle: Not Started |
-| Feedback CRUD | :red_circle: Not Started |
+| Challenge CRUD | :white_check_mark: Complete |
+| Project CRUD | :white_check_mark: Complete |
+| Submission CRUD (extended types) | :white_check_mark: Complete |
+| Feedback CRUD | :white_check_mark: Complete |
 | SM-2 algorithm | :white_check_mark: Complete |
 | AI map generation | :white_check_mark: Complete |
 | AI source suggestions | :white_check_mark: Complete |
+| AI feedback generation | :white_check_mark: Complete |
+| File upload (Multer) | :white_check_mark: Complete |
+| URL metadata extraction | :white_check_mark: Complete |
 
 ### Dashboard (Angular)
 | Component | Status |
@@ -228,6 +254,13 @@ These must be completed for a functional MVP:
 | Home dashboard | :white_check_mark: Complete |
 | Completion Assessment | :white_check_mark: Complete |
 | Login/auth | :white_check_mark: Complete |
+| Challenges CRUD | :white_check_mark: Complete |
+| Projects CRUD | :white_check_mark: Complete |
+| Submissions CRUD (extended) | :white_check_mark: Complete |
+| Submissions - Content type selector | :white_check_mark: Complete |
+| Submissions - File upload dropzone | :white_check_mark: Complete |
+| Submissions - URL metadata fetch | :white_check_mark: Complete |
+| Submissions - Challenge/Project link | :white_check_mark: Complete |
 | Approval workflow UI | :red_circle: Not Started |
 | Ingestion trigger button | :white_check_mark: Complete |
 | Synthesis trigger button | :white_check_mark: Complete |
@@ -267,6 +300,40 @@ These must be completed for a functional MVP:
 ---
 
 ## Recent Changes
+
+### January 15, 2026 (Update 10)
+- **Challenges & Projects System** - Major feature implementation:
+  - Created Challenge entity (API) with full CRUD
+    - Links to KnowledgeUnit
+    - Custom rubric criteria (name, description, maxPoints)
+    - Difficulty levels, time estimates, success criteria
+    - Content type constraints
+  - Created Project entity (API) with full CRUD
+    - Links to LearningPath
+    - Objectives and requirements arrays
+    - Difficulty levels and time estimates
+  - Created NgRx state management for Challenges and Projects
+  - Created Dashboard UI for Challenges (list + detail with rubric builder)
+  - Created Dashboard UI for Projects (list + detail)
+  - Added routes and sidebar navigation
+- **Extended Submission Types** - Full implementation:
+  - Updated Submission entity with challengeId, projectId, urlMetadata, fileMetadata
+  - Created file upload utility (Multer config, 10MB limit, multiple formats)
+  - Created URL metadata fetcher (GitHub API integration, page scraping)
+  - Updated submission-detail component with:
+    - Content type selector (text/code, URL, file)
+    - URL input with "Fetch Metadata" button showing repo stats
+    - File upload dropzone with drag-and-drop
+    - Challenge/Project selector dropdowns
+  - Updated submissions-list with content type icons
+  - Added file upload and URL metadata methods to submissions service
+- **Database Seeding** - Added seed data:
+  - 4 Challenges (RSC dashboard, streaming SSR, gradient descent, utility types)
+  - 3 Projects (RSC e-commerce, ML pipeline, TS API generator)
+- Overall completion increased from 70% to 78%
+- Epic 4 (Adaptive Content) increased from 50% to 70%
+- Epic 5 (Feedback Loops) increased from 15% to 60%
+- Epic 7 (Input/Output) increased from 60% to 70%
 
 ### January 15, 2026 (Update 9)
 - **Source Config Many-to-Many Refactoring** - Major architectural improvement:
@@ -383,10 +450,19 @@ These must be completed for a functional MVP:
 - [x] AI learning map generation
 - [x] Dashboard trigger buttons (Ingestion, Synthesis)
 
-**Next Target**: Stage 2 - Content Pipeline Enhancement
-- [ ] Manual URL/document upload with file upload
+**Target**: Stage 2 - Challenges & Projects :white_check_mark:
+- [x] Challenge entity with CRUD
+- [x] Project entity with CRUD
+- [x] Extended submission types (text, URL, file)
+- [x] File upload with drag-drop
+- [x] URL metadata extraction
+- [x] Challenge/Project selector in submissions
+
+**Next Target**: Stage 3 - Polish & Enhancement
 - [ ] Approval workflow UI for knowledge units
-- [ ] Challenge submission system
+- [ ] Challenge Arena learning app
+- [ ] Human mentor review flow
+- [ ] Portfolio generation
 
 ---
 
@@ -394,6 +470,7 @@ These must be completed for a functional MVP:
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.9 | 2026-01-15 | Challenges & Projects system, Extended submission types, File upload, URL metadata |
 | 1.8 | 2026-01-15 | Source many-to-many refactoring, Learning Path filters, Python ingestion fixes |
 | 1.7 | 2026-01-14 | Ingestion and Synthesis trigger buttons, Stage 1 complete |
 | 1.6 | 2026-01-14 | Force regeneration, FK constraint fix, SVG icon fixes |

@@ -11,9 +11,11 @@ import { SourcePathLink } from '../source-configs/entities/source-path-link.enti
 import { UserProgress } from '../user-progress/entities/user-progress.entity';
 import { User } from '../users/entities/user.entity';
 import { DataSource } from '../data-sources/entities/data-source.entity';
+import { Challenge } from '../challenges/entities/challenge.entity';
+import { Project } from '../projects/entities/project.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([LearningPath, KnowledgeUnit, Principle, RawContent, Source, SourcePathLink, UserProgress, User, DataSource])],
+  imports: [TypeOrmModule.forFeature([LearningPath, KnowledgeUnit, Principle, RawContent, Source, SourcePathLink, UserProgress, User, DataSource, Challenge, Project])],
   controllers: [SeedController],
   providers: [SeederService],
   exports: [SeederService],
