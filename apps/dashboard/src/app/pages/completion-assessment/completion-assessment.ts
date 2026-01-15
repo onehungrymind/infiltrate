@@ -27,13 +27,13 @@ interface CriticalPathItem {
   styleUrl: './completion-assessment.scss',
 })
 export class CompletionAssessment {
-  lastUpdated = signal('January 14, 2026');
-  overallCompletion = signal(62);
+  lastUpdated = signal('January 15, 2026');
+  overallCompletion = signal(70);
 
   epics = signal<Epic[]>([
     { name: 'Epic 1: Learning Objective & Map Generation', progress: 60, status: 'mostly-complete', color: '#3b82f6' },
-    { name: 'Epic 2: Content Sourcing & Ingestion', progress: 70, status: 'mostly-complete', color: '#3b82f6' },
-    { name: 'Epic 3: Content Synthesis & Knowledge Units', progress: 65, status: 'mostly-complete', color: '#3b82f6' },
+    { name: 'Epic 2: Content Sourcing & Ingestion', progress: 90, status: 'complete', color: '#22c55e' },
+    { name: 'Epic 3: Content Synthesis & Knowledge Units', progress: 75, status: 'mostly-complete', color: '#3b82f6' },
     { name: 'Epic 4: Adaptive Content Presentation', progress: 50, status: 'partial', color: '#f59e0b' },
     { name: 'Epic 5: Feedback Loops', progress: 15, status: 'early-stage', color: '#ef4444' },
     { name: 'Epic 6: Progress Tracking & Validation', progress: 50, status: 'partial', color: '#f59e0b' },
@@ -53,7 +53,8 @@ export class CompletionAssessment {
     { name: 'User CRUD', status: 'complete' },
     { name: 'Learning Path CRUD', status: 'complete' },
     { name: 'Knowledge Unit CRUD', status: 'complete' },
-    { name: 'Source Config CRUD', status: 'complete' },
+    { name: 'Sources CRUD (many-to-many)', status: 'complete' },
+    { name: 'Source Path Links', status: 'complete' },
     { name: 'Raw Content CRUD', status: 'complete' },
     { name: 'User Progress CRUD', status: 'complete' },
     { name: 'JWT Authentication', status: 'complete' },
@@ -64,14 +65,17 @@ export class CompletionAssessment {
     { name: 'Submission CRUD', status: 'not-started' },
     { name: 'Feedback CRUD', status: 'not-started' },
     { name: 'AI map generation', status: 'complete' },
+    { name: 'AI source suggestions', status: 'complete' },
   ]);
 
   dashboardComponents = signal<ComponentStatus[]>([
     { name: 'User management', status: 'complete' },
     { name: 'Learning paths CRUD', status: 'complete' },
     { name: 'Principles CRUD', status: 'complete' },
+    { name: 'Principles - Learning Path filter', status: 'complete' },
     { name: 'Knowledge units CRUD', status: 'complete' },
-    { name: 'Source configs CRUD', status: 'complete' },
+    { name: 'Knowledge units - Learning Path filter', status: 'complete' },
+    { name: 'Sources CRUD (many-to-many)', status: 'complete' },
     { name: 'Raw content CRUD', status: 'complete' },
     { name: 'User progress CRUD', status: 'complete' },
     { name: 'React Flow learning map', status: 'complete' },
@@ -79,10 +83,11 @@ export class CompletionAssessment {
     { name: 'Login/auth', status: 'complete' },
     { name: 'Completion Assessment', status: 'complete' },
     { name: 'Approval workflow UI', status: 'not-started' },
-    { name: 'Ingestion trigger button', status: 'not-started' },
-    { name: 'Synthesis trigger button', status: 'not-started' },
+    { name: 'Ingestion trigger button', status: 'complete' },
+    { name: 'Synthesis trigger button', status: 'complete' },
     { name: 'Learning path wizard', status: 'not-started' },
     { name: 'AI principle generation button', status: 'complete' },
+    { name: 'AI source suggestions UI', status: 'complete' },
   ]);
 
   patchbayComponents = signal<ComponentStatus[]>([

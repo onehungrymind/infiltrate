@@ -1,7 +1,7 @@
 # Kasita MVP Completion Assessment
 
-**Last Updated**: January 14, 2026
-**Overall Completion**: 65%
+**Last Updated**: January 15, 2026
+**Overall Completion**: 70%
 
 ---
 
@@ -10,7 +10,7 @@
 | Epic | Progress | Status |
 |------|----------|--------|
 | Epic 1: Learning Objective & Map Generation | 60% | :large_blue_circle: Mostly Complete |
-| Epic 2: Content Sourcing & Ingestion | 80% | :large_blue_circle: Mostly Complete |
+| Epic 2: Content Sourcing & Ingestion | 90% | :white_check_mark: Nearly Complete |
 | Epic 3: Content Synthesis & Knowledge Units | 75% | :large_blue_circle: Mostly Complete |
 | Epic 4: Adaptive Content Presentation | 50% | :yellow_circle: Partial |
 | Epic 5: Feedback Loops | 15% | :red_circle: Early Stage |
@@ -46,23 +46,25 @@
 
 ---
 
-## Epic 2: Content Sourcing & Ingestion (80%)
+## Epic 2: Content Sourcing & Ingestion (90%)
 
 ### Completed
 - [x] CS-01: Configure source channels (RSS, URLs, PDFs)
+- [x] CS-02: AI suggest relevant sources (Claude-powered source suggestions in Learning Path detail)
 - [x] CS-05: View raw content before synthesis
 - [x] RSS/Atom adapter
 - [x] Article adapter (Trafilatura)
 - [x] PDF adapter (PyPDF2)
 - [x] JavaScript Weekly adapter
 - [x] CS-04: Trigger ingestion with progress (Dashboard button with result feedback)
+- [x] Many-to-many Source/LearningPath relationship (sources can be shared across paths)
+- [x] Source path links with per-path enabled status
 
 ### Partial
 - [ ] CS-03: Manual URL/document upload (URLs work, no file upload)
 - [ ] CS-06: Exclude specific sources/content (delete works, no filtering)
 
 ### Not Started
-- [ ] CS-02: AI suggest relevant sources
 - [ ] CS-07: See sources used per principle
 - [ ] YouTube transcript adapter
 - [ ] Podcast transcript adapter
@@ -196,7 +198,8 @@ These must be completed for a functional MVP:
 | User CRUD | :white_check_mark: Complete |
 | Learning Path CRUD | :white_check_mark: Complete |
 | Knowledge Unit CRUD | :white_check_mark: Complete |
-| Source Config CRUD | :white_check_mark: Complete |
+| Sources CRUD (many-to-many) | :white_check_mark: Complete |
+| Source Path Links | :white_check_mark: Complete |
 | Raw Content CRUD | :white_check_mark: Complete |
 | User Progress CRUD | :white_check_mark: Complete |
 | JWT Authentication | :white_check_mark: Complete |
@@ -207,6 +210,7 @@ These must be completed for a functional MVP:
 | Feedback CRUD | :red_circle: Not Started |
 | SM-2 algorithm | :white_check_mark: Complete |
 | AI map generation | :white_check_mark: Complete |
+| AI source suggestions | :white_check_mark: Complete |
 
 ### Dashboard (Angular)
 | Component | Status |
@@ -214,8 +218,10 @@ These must be completed for a functional MVP:
 | User management | :white_check_mark: Complete |
 | Learning paths CRUD | :white_check_mark: Complete |
 | Principles CRUD | :white_check_mark: Complete |
+| Principles - Learning Path filter | :white_check_mark: Complete |
 | Knowledge units CRUD | :white_check_mark: Complete |
-| Source configs CRUD | :white_check_mark: Complete |
+| Knowledge units - Learning Path filter | :white_check_mark: Complete |
+| Sources CRUD (many-to-many) | :white_check_mark: Complete |
 | Raw content CRUD | :white_check_mark: Complete |
 | User progress CRUD | :white_check_mark: Complete |
 | React Flow learning map | :white_check_mark: Complete |
@@ -227,6 +233,7 @@ These must be completed for a functional MVP:
 | Synthesis trigger button | :white_check_mark: Complete |
 | Learning path wizard | :red_circle: Not Started |
 | AI principle generation button | :white_check_mark: Complete |
+| AI source suggestions UI | :white_check_mark: Complete |
 
 ### Patchbay (Python)
 | Component | Status |
@@ -260,6 +267,28 @@ These must be completed for a functional MVP:
 ---
 
 ## Recent Changes
+
+### January 15, 2026 (Update 9)
+- **Source Config Many-to-Many Refactoring** - Major architectural improvement:
+  - Refactored from one-to-many to many-to-many relationship between Sources and LearningPaths
+  - Created Source entity (replaces SourceConfig) with unique URL constraint
+  - Created SourcePathLink junction table with per-path enabled status
+  - Updated API with new endpoints: `/sources`, `/sources/path/:pathId`, `/sources/:id/link/:pathId`
+  - Sources can now be shared across multiple learning paths
+- **Dashboard Filtering Improvements**:
+  - Added Learning Path dropdown filter to Principles page
+  - Added Learning Path dropdown filter to Knowledge Units page
+  - Dynamic filter configs based on loaded learning paths
+- **Python Ingestion Fixes**:
+  - Fixed Python command to use `uv run python` for virtual environment
+  - Updated pyproject.toml files to use `dependency-groups.dev` (removed deprecated `tool.uv.dev-dependencies`)
+  - API now passes sources directly via SOURCES_JSON env var (bypasses auth requirement)
+  - Increased API body size limit to 10MB for large content ingestion
+- **Code Cleanup**:
+  - Added Python patterns to .gitignore (`__pycache__/`, `*.pyc`, etc.)
+  - Removed 34 tracked pycache files from git
+- Overall completion increased from 65% to 70%
+- Epic 2 (Content Sourcing) increased from 80% to 90%
 
 ### January 14, 2026 (Update 8)
 - Added Ingestion and Synthesis trigger buttons to Learning Path detail:
@@ -365,6 +394,7 @@ These must be completed for a functional MVP:
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.8 | 2026-01-15 | Source many-to-many refactoring, Learning Path filters, Python ingestion fixes |
 | 1.7 | 2026-01-14 | Ingestion and Synthesis trigger buttons, Stage 1 complete |
 | 1.6 | 2026-01-14 | Force regeneration, FK constraint fix, SVG icon fixes |
 | 1.5 | 2026-01-14 | AI learning map generation with Claude, dashboard trigger button |
