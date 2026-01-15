@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { Principle } from '@kasita/common-models';
-import { PrincipleFacade } from '@kasita/core-state';
+import { LearningPath, Principle } from '@kasita/common-models';
+import { PrincipleFacade, LearningPathsFacade } from '@kasita/core-state';
 import { MaterialModule } from '@kasita/material';
 import { PrincipleDetail } from './principle-detail/principle-detail';
 import { PrinciplesList } from './principles-list/principles-list';
@@ -16,8 +16,10 @@ import { filterEntities, commonFilterMatchers } from '../shared/search-filter-ba
 })
 export class Principles implements OnInit {
   private principleFacade = inject(PrincipleFacade);
+  private learningPathsFacade = inject(LearningPathsFacade);
 
   private allPrinciples = toSignal(this.principleFacade.allPrinciples$, { initialValue: [] as Principle[] });
+  private allLearningPaths = toSignal(this.learningPathsFacade.allLearningPaths$, { initialValue: [] as LearningPath[] });
   selectedPrinciple = toSignal(this.principleFacade.selectedPrinciple$, { initialValue: null });
   loaded = toSignal(this.principleFacade.loaded$, { initialValue: false });
   error = toSignal(this.principleFacade.error$, { initialValue: null });
@@ -25,27 +27,41 @@ export class Principles implements OnInit {
   // Search/Filter state
   searchFilterState = signal<SearchFilterState>({ searchTerm: '', filters: {} });
 
-  // Filter configuration
-  filterConfigs: FilterConfig[] = [
-    {
-      field: 'status',
-      label: 'Status',
-      options: [
-        { label: 'Pending', value: 'pending' },
-        { label: 'In Progress', value: 'in_progress' },
-        { label: 'Mastered', value: 'mastered' },
-      ],
-    },
-    {
-      field: 'difficulty',
-      label: 'Difficulty',
-      options: [
-        { label: 'Foundational', value: 'foundational' },
-        { label: 'Intermediate', value: 'intermediate' },
-        { label: 'Advanced', value: 'advanced' },
-      ],
-    },
-  ];
+  // Dynamic filter configuration based on loaded learning paths
+  filterConfigs = computed<FilterConfig[]>(() => {
+    const paths = this.allLearningPaths();
+    const pathOptions = paths.map(p => ({ label: p.name, value: p.id }));
+
+    return [
+      {
+        field: 'pathId',
+        label: 'Learning Path',
+        options: pathOptions,
+        fullWidth: true,
+        row: 1,
+      },
+      {
+        field: 'status',
+        label: 'Status',
+        options: [
+          { label: 'Pending', value: 'pending' },
+          { label: 'In Progress', value: 'in_progress' },
+          { label: 'Mastered', value: 'mastered' },
+        ],
+        row: 2,
+      },
+      {
+        field: 'difficulty',
+        label: 'Difficulty',
+        options: [
+          { label: 'Foundational', value: 'foundational' },
+          { label: 'Intermediate', value: 'intermediate' },
+          { label: 'Advanced', value: 'advanced' },
+        ],
+        row: 2,
+      },
+    ];
+  });
 
   // Filtered principles
   principles = computed(() => {
@@ -56,6 +72,7 @@ export class Principles implements OnInit {
       state,
       ['name', 'description'],
       {
+        pathId: commonFilterMatchers.exactMatch<Principle>('pathId'),
         status: commonFilterMatchers.exactMatch<Principle>('status'),
         difficulty: commonFilterMatchers.exactMatch<Principle>('difficulty'),
       }
@@ -71,6 +88,7 @@ export class Principles implements OnInit {
   }
 
   ngOnInit(): void {
+    this.learningPathsFacade.loadLearningPaths();
     this.reset();
   }
 

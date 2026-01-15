@@ -55,44 +55,35 @@ export class PrincipleDetail {
   @Output() saved = new EventEmitter<Principle>();
   @Output() cancelled = new EventEmitter<void>();
 
-  onSubmit() {
-    // Get form values from the entity signal
+  onSubmit(event: Event) {
+    // Prevent default form submission (page refresh) - required for Signal Forms
+    event.preventDefault();
+
+    // Check if form is valid
+    if (!this.isFormValid()) {
+      return;
+    }
+
+    // Get form values from the entity signal (Signal Forms sync bidirectionally)
     const formValue = this.entity();
+    const currentPrinciple = this.principle;
 
-    // Check if form is valid by checking if any field has errors
-    const form = this.dynamicForm;
-    let hasErrors = false;
-    for (const fieldDef of this.metaInfo()) {
-      const field = (form as any)[fieldDef.name];
-      if (field && typeof field.errors === 'function') {
-        const errors = field.errors();
-        if (Array.isArray(errors) && errors.length > 0) {
-          hasErrors = true;
-          break;
-        }
-      }
-    }
+    // Create or update based on whether item has an id
+    const entity: Principle = {
+      ...formValue,
+      // If updating (has id), preserve id and other metadata
+      ...(currentPrinciple?.id ? {
+        id: currentPrinciple.id,
+        pathId: currentPrinciple.pathId,
+        createdAt: currentPrinciple.createdAt,
+        updatedAt: currentPrinciple.updatedAt,
+      } : {
+        // If creating (no id), set a default pathId (user should select this)
+        pathId: (formValue as any).pathId || '',
+      }),
+    } as Principle;
 
-    if (!hasErrors) {
-      const currentPrinciple = this.principle;
-
-      // Create or update based on whether item has an id
-      const entity: Principle = {
-        ...formValue,
-        // If updating (has id), preserve id and other metadata
-        ...(currentPrinciple?.id ? {
-          id: currentPrinciple.id,
-          pathId: currentPrinciple.pathId,
-          createdAt: currentPrinciple.createdAt,
-          updatedAt: currentPrinciple.updatedAt,
-        } : {
-          // If creating (no id), set a default pathId (user should select this)
-          pathId: formValue.pathId || '',
-        }),
-      } as Principle;
-
-      this.saved.emit(entity);
-    }
+    this.saved.emit(entity);
   }
 
   onCancel() {

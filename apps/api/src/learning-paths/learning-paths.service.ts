@@ -15,7 +15,7 @@ export class LearningPathsService {
   async create(createLearningPathDto: CreateLearningPathDto): Promise<LearningPath> {
     const learningPath = this.learningPathRepository.create({
       ...createLearningPathDto,
-      status: 'not-started',
+      status: createLearningPathDto.status || 'not-started',
     });
     return await this.learningPathRepository.save(learningPath);
   }

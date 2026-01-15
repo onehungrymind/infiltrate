@@ -15,7 +15,7 @@
     } @else {
       <app-search-filter-bar
         placeholder="Search by name or description..."
-        [filterConfigs]="filterConfigs"
+        [filterConfigs]="filterConfigs()"
         (searchChange)="onSearchFilterChange($event)"
       ></app-search-filter-bar>
       <app-principles-list

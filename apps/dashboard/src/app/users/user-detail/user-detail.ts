@@ -134,48 +134,38 @@ export class UserDetail {
   @Output() saved = new EventEmitter<User>();
   @Output() cancelled = new EventEmitter<void>();
 
-  onSubmit() {
-    // Get form values from the entity signal
+  onSubmit(event: Event) {
+    // Prevent default form submission (page refresh) - required for Signal Forms
+    event.preventDefault();
+
+    // Check if form is valid
+    if (!this.isFormValid()) {
+      return;
+    }
+
+    // Get form values from the entity signal (Signal Forms sync bidirectionally)
     const formValue = this.entity();
-    
-    // Check if form is valid by checking if any field has errors
-    const form = this.dynamicForm;
-    let hasErrors = false;
-    for (const fieldDef of this.metaInfo()) {
-      const field = (form as any)[fieldDef.name];
-      if (field && typeof field.errors === 'function') {
-        const errors = field.errors();
-        if (Array.isArray(errors) && errors.length > 0) {
-          hasErrors = true;
-          break;
-        }
-      }
+    const currentUser = this.user;
+
+    // Create or update based on whether item has an id
+    const entity: User = {
+      ...formValue,
+      // If updating (has id), preserve id and other metadata
+      ...(currentUser?.id ? {
+        id: currentUser.id,
+        createdAt: currentUser.createdAt,
+        updatedAt: currentUser.updatedAt,
+      } : {
+        // If creating (no id), set defaults
+      }),
+    } as User;
+
+    // Password is always included - backend will detect if it changed
+    if ((formValue as any).password) {
+      (entity as any).password = (formValue as any).password;
     }
-    
-    if (!hasErrors) {
-      const currentUser = this.user;
-      
-      // Create or update based on whether item has an id
-      const entity: User = {
-        ...formValue,
-        // If updating (has id), preserve id and other metadata
-        ...(currentUser?.id ? { 
-          id: currentUser.id,
-          createdAt: currentUser.createdAt,
-          updatedAt: currentUser.updatedAt,
-        } : {
-          // If creating (no id), set defaults
-        }),
-      } as User;
-      
-      // Password is always included - backend will detect if it changed
-      const formValueWithPassword = formValue as Partial<User & { password?: string }>;
-      if (formValueWithPassword.password) {
-        (entity as any).password = formValueWithPassword.password;
-      }
-      
-      this.saved.emit(entity);
-    }
+
+    this.saved.emit(entity);
   }
 
   onCancel() {

@@ -15,7 +15,7 @@
     } @else {
       <app-search-filter-bar
         placeholder="Search by concept, question, or answer..."
-        [filterConfigs]="filterConfigs"
+        [filterConfigs]="filterConfigs()"
         (searchChange)="onSearchFilterChange($event)"
       ></app-search-filter-bar>
       <app-knowledge-units-list

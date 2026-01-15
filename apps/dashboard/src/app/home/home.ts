@@ -1,20 +1,26 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { 
-  LearningPath, 
-  SourceConfig,
+import {
+  LearningPath,
   MasteryLevel,
   KnowledgeUnit,
   UserProgress
 } from '@kasita/common-models';
-import { 
-  LearningPathsFacade, 
-  KnowledgeUnitFacade, 
-  UserProgressFacade,
-  SourceConfigFacade 
+import {
+  LearningPathsFacade,
+  KnowledgeUnitFacade,
+  UserProgressFacade
 } from '@kasita/core-state';
+import { LearningMapService } from '@kasita/core-data';
 import { combineLatest } from 'rxjs';
+
+interface SourceInfo {
+  id: string;
+  name: string;
+  type: string;
+  url: string;
+}
 
 interface PhaseStatus {
   status: 'Complete' | 'In Progress' | 'Active' | 'Locked';
@@ -51,14 +57,13 @@ export class Home implements OnInit {
   private learningPathsFacade = inject(LearningPathsFacade);
   private knowledgeUnitsFacade = inject(KnowledgeUnitFacade);
   private userProgressFacade = inject(UserProgressFacade);
-  private sourceConfigsFacade = inject(SourceConfigFacade);
+  private learningMapService = inject(LearningMapService);
   private router = inject(Router);
 
   // Observables
   learningPaths$ = this.learningPathsFacade.allLearningPaths$;
   knowledgeUnits$ = this.knowledgeUnitsFacade.allKnowledgeUnits$;
   userProgress$ = this.userProgressFacade.allUserProgress$;
-  sourceConfigs$ = this.sourceConfigsFacade.allSourceConfigs$;
 
   // Current path - use first learning path or null
   currentPath = signal<LearningPath | null>(null);
@@ -100,7 +105,7 @@ export class Home implements OnInit {
   });
 
   // Computed data
-  sources = signal<SourceConfig[]>([]);
+  sources = signal<SourceInfo[]>([]);
   ingestedCount = signal(0);
   canSynthesize = signal(false);
   consumeStats = signal<ConsumeStats>({
@@ -115,24 +120,13 @@ export class Home implements OnInit {
     this.learningPathsFacade.loadLearningPaths();
     this.knowledgeUnitsFacade.loadKnowledgeUnits();
     this.userProgressFacade.loadUserProgress();
-    this.sourceConfigsFacade.loadSourceConfigs();
 
-    // Set current path (first learning path)
+    // Set current path (first learning path) and load its sources
     this.learningPaths$.subscribe(paths => {
       if (paths && paths.length > 0) {
         this.currentPath.set(paths[0]);
         this.calculateOverallProgress(paths[0]);
-      }
-    });
-
-    // Calculate source configs for current path
-    combineLatest([this.sourceConfigs$]).subscribe(([configs]) => {
-      const path = this.currentPath();
-      if (path) {
-        const pathConfigs = configs.filter((c: SourceConfig) => c.pathId === path.id);
-        this.sources.set(pathConfigs);
-        this.ingestedCount.set(pathConfigs.length);
-        this.canSynthesize.set(pathConfigs.length > 0);
+        this.loadSourcesForPath(paths[0].id);
       }
     });
 
@@ -214,6 +208,14 @@ export class Home implements OnInit {
       progress = 0;
     }
     this.overallProgress.set(progress);
+  }
+
+  private loadSourcesForPath(pathId: string): void {
+    this.learningMapService.getSourcesForPath(pathId).subscribe(sources => {
+      this.sources.set(sources.map(s => ({ id: s.id, name: s.name, type: s.type, url: s.url })));
+      this.ingestedCount.set(sources.length);
+      this.canSynthesize.set(sources.length > 0);
+    });
   }
 
   // Hero actions

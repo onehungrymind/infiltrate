@@ -60,56 +60,48 @@ export class KnowledgeUnitDetail {
   @Output() saved = new EventEmitter<KnowledgeUnit>();
   @Output() cancelled = new EventEmitter<void>();
 
-  onSubmit() {
-    // Get form values from the entity signal
-    const formValue = this.entity();
-    
+  onSubmit(event: Event) {
+    // Prevent default form submission (page refresh) - required for Signal Forms
+    event.preventDefault();
+
     // Check if form is valid
-    const form = this.dynamicForm;
-    let hasErrors = false;
-    for (const fieldDef of this.metaInfo()) {
-      const field = (form as any)[fieldDef.name];
-      if (field && typeof field.errors === 'function') {
-        const errors = field.errors();
-        if (Array.isArray(errors) && errors.length > 0) {
-          hasErrors = true;
-          break;
-        }
-      }
+    if (!this.isFormValid()) {
+      return;
     }
-    
-    if (!hasErrors) {
-      // Convert string arrays back to arrays
-      const processedValues: any = { ...formValue };
-      if (typeof processedValues.examples === 'string') {
-        processedValues.examples = stringToArray(processedValues.examples);
-      }
-      if (typeof processedValues.analogies === 'string') {
-        processedValues.analogies = stringToArray(processedValues.analogies);
-      }
-      if (typeof processedValues.commonMistakes === 'string') {
-        processedValues.commonMistakes = stringToArray(processedValues.commonMistakes);
-      }
-      if (typeof processedValues.tags === 'string') {
-        processedValues.tags = commaStringToArray(processedValues.tags);
-      }
-      
-      const currentUnit = this.knowledgeUnit;
-      // Create or update based on whether item has an id
-      const entity: KnowledgeUnit = {
-        ...processedValues,
-        // If updating (has id), preserve id and pathId
-        ...(currentUnit?.id ? { 
-          id: currentUnit.id,
-          pathId: currentUnit.pathId || '',
-        } : {
-          // If creating (no id), preserve pathId if it exists
-          pathId: currentUnit?.pathId || '',
-        }),
-      } as KnowledgeUnit;
-      
-      this.saved.emit(entity);
+
+    // Get form values from the entity signal (Signal Forms sync bidirectionally)
+    const formValue = this.entity();
+
+    // Convert string arrays back to arrays
+    const processedValues: any = { ...formValue };
+    if (typeof processedValues.examples === 'string') {
+      processedValues.examples = stringToArray(processedValues.examples);
     }
+    if (typeof processedValues.analogies === 'string') {
+      processedValues.analogies = stringToArray(processedValues.analogies);
+    }
+    if (typeof processedValues.commonMistakes === 'string') {
+      processedValues.commonMistakes = stringToArray(processedValues.commonMistakes);
+    }
+    if (typeof processedValues.tags === 'string') {
+      processedValues.tags = commaStringToArray(processedValues.tags);
+    }
+
+    const currentUnit = this.knowledgeUnit;
+    // Create or update based on whether item has an id
+    const entity: KnowledgeUnit = {
+      ...processedValues,
+      // If updating (has id), preserve id and pathId
+      ...(currentUnit?.id ? {
+        id: currentUnit.id,
+        pathId: currentUnit.pathId || '',
+      } : {
+        // If creating (no id), preserve pathId if it exists
+        pathId: currentUnit?.pathId || '',
+      }),
+    } as KnowledgeUnit;
+
+    this.saved.emit(entity);
   }
 
   onCancel() {

@@ -7,7 +7,6 @@ import { LearningPath } from '../learning-paths/entities/learning-path.entity';
 import { NotebookProgress } from '../notebooks/entities/notebook-progress.entity';
 import { Principle } from '../principles/entities/principle.entity';
 import { KnowledgeUnit } from '../knowledge-units/entities/knowledge-unit.entity';
-import { SourceConfig } from '../source-configs/entities/source-config.entity';
 import { Source } from '../source-configs/entities/source.entity';
 import { SourcePathLink } from '../source-configs/entities/source-path-link.entity';
 import { RawContent } from '../raw-content/entities/raw-content.entity';
@@ -20,7 +19,6 @@ import { SourceConfigsModule } from '../source-configs/source-configs.module';
       NotebookProgress,
       Principle,
       KnowledgeUnit,
-      SourceConfig,
       Source,
       SourcePathLink,
       RawContent,

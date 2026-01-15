@@ -23,7 +23,6 @@ import { LearningPath } from '../learning-paths/entities/learning-path.entity';
 import { NotebookProgress } from '../notebooks/entities/notebook-progress.entity';
 import { Principle } from '../principles/entities/principle.entity';
 import { KnowledgeUnit } from '../knowledge-units/entities/knowledge-unit.entity';
-import { SourceConfig } from '../source-configs/entities/source-config.entity';
 import { SourcePathLink } from '../source-configs/entities/source-path-link.entity';
 import { RawContent } from '../raw-content/entities/raw-content.entity';
 import { SourcesService } from '../source-configs/sources.service';
@@ -41,8 +40,6 @@ export class LearningMapService {
     private readonly principleRepository: Repository<Principle>,
     @InjectRepository(KnowledgeUnit)
     private readonly knowledgeUnitRepository: Repository<KnowledgeUnit>,
-    @InjectRepository(SourceConfig)
-    private readonly sourceConfigRepository: Repository<SourceConfig>,
     @InjectRepository(SourcePathLink)
     private readonly sourcePathLinkRepository: Repository<SourcePathLink>,
     @InjectRepository(RawContent)
@@ -623,18 +620,11 @@ export class LearningMapService {
     }
 
     // Check if there are enabled sources for this path
-    // Check both old SourceConfig model and new SourcePathLink model for backward compatibility
-    const oldSourceConfigs = await this.sourceConfigRepository.find({
+    const enabledSourceLinks = await this.sourcePathLinkRepository.find({
       where: { pathId, enabled: true },
     });
 
-    const newSourceLinks = await this.sourcePathLinkRepository.find({
-      where: { pathId, enabled: true },
-    });
-
-    const totalEnabledSources = oldSourceConfigs.length + newSourceLinks.length;
-
-    if (totalEnabledSources === 0) {
+    if (enabledSourceLinks.length === 0) {
       throw new BadRequestException(
         `No enabled sources found for this learning path. Add sources first.`
       );
@@ -672,8 +662,8 @@ export class LearningMapService {
 
       return {
         status: 'completed',
-        message: `Successfully ingested content from ${totalEnabledSources} sources`,
-        sourcesProcessed: totalEnabledSources,
+        message: `Successfully ingested content from ${enabledSourceLinks.length} sources`,
+        sourcesProcessed: enabledSourceLinks.length,
         itemsIngested,
       };
     } catch (error: any) {

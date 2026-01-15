@@ -1,14 +1,11 @@
 import { Controller, Post, HttpCode, HttpStatus } from '@nestjs/common';
 import { SeederService } from './seeder.service';
 import { Public } from '../auth/decorators/public.decorator';
-import { DataSource } from 'typeorm';
-import { migrateSourceConfigsToManyToMany } from '../source-configs/migrations/migrate-to-many-to-many';
 
 @Controller('seed')
 export class SeedController {
   constructor(
     private readonly seederService: SeederService,
-    private readonly dataSource: DataSource,
   ) {}
 
   @Public()
@@ -49,26 +46,6 @@ export class SeedController {
       return {
         success: false,
         message: 'Error clearing database',
-        error: error.message,
-        timestamp: new Date().toISOString(),
-      };
-    }
-  }
-
-  @Public()
-  @Post('migrate-sources')
-  @HttpCode(HttpStatus.OK)
-  async migrateSourceConfigs() {
-    try {
-      const result = await migrateSourceConfigsToManyToMany(this.dataSource);
-      return {
-        ...result,
-        timestamp: new Date().toISOString(),
-      };
-    } catch (error) {
-      return {
-        success: false,
-        message: 'Migration failed',
         error: error.message,
         timestamp: new Date().toISOString(),
       };

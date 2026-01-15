@@ -18,7 +18,6 @@ import {
   knowledgeUnitsFeature,
   principlesFeature,
   rawContentFeature,
-  sourceConfigsFeature,
   userProgressFeature,
   dataSourcesFeature,
   usersFeature,
@@ -47,12 +46,6 @@ import {
   createRawContent,
   updateRawContent,
   deleteRawContent,
-  // Source Configs Effects
-  loadSourceConfigs,
-  loadSourceConfig,
-  createSourceConfig,
-  updateSourceConfig,
-  deleteSourceConfig,
   // User Progress Effects
   loadUserProgress,
   loadUserProgressItem,
@@ -87,7 +80,6 @@ export const appConfig: ApplicationConfig = {
       knowledgeUnits: knowledgeUnitsFeature.reducer,
       principles: principlesFeature.reducer,
       rawContent: rawContentFeature.reducer,
-      sourceConfigs: sourceConfigsFeature.reducer,
       userProgress: userProgressFeature.reducer,
       dataSources: dataSourcesFeature.reducer,
       users: usersFeature.reducer,
@@ -118,12 +110,6 @@ export const appConfig: ApplicationConfig = {
       createRawContent,
       updateRawContent,
       deleteRawContent,
-      // Source Configs
-      loadSourceConfigs,
-      loadSourceConfig,
-      createSourceConfig,
-      updateSourceConfig,
-      deleteSourceConfig,
       // User Progress
       loadUserProgress,
       loadUserProgressItem,

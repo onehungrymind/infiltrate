@@ -13,7 +13,6 @@ import { IngestionModule } from '../ingestion/ingestion.module';
 import { ProgressGateway } from '../progress/progress.gateway';
 import { DatabaseModule } from '../database/database.module';
 import { LearningPath } from '../learning-paths/entities/learning-path.entity';
-import { SourceConfig } from '../source-configs/entities/source-config.entity';
 import { Source } from '../source-configs/entities/source.entity';
 import { SourcePathLink } from '../source-configs/entities/source-path-link.entity';
 import { RawContent } from '../raw-content/entities/raw-content.entity';
@@ -47,7 +46,7 @@ import { Principle } from '../principles/entities/principle.entity';
       database: process.env.DATABASE_URL?.replace('file:', '') || 'kasita.db',
       synchronize: process.env.NODE_ENV !== 'production', // Auto-sync in dev
       logging: false, // Disable SQL logging for better performance
-      entities: [LearningPath, SourceConfig, Source, SourcePathLink, RawContent, KnowledgeUnit, UserProgress, User, DataSource, GraphSearch, NotebookProgress, Principle],
+      entities: [LearningPath, Source, SourcePathLink, RawContent, KnowledgeUnit, UserProgress, User, DataSource, GraphSearch, NotebookProgress, Principle],
     }),
     LearningPathsModule,
     SourceConfigsModule,

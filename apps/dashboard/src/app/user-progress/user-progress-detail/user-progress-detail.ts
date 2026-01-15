@@ -50,46 +50,37 @@ export class UserProgressDetail {
   @Output() saved = new EventEmitter<UserProgress>();
   @Output() cancelled = new EventEmitter<void>();
 
-  onSubmit() {
-    // Get form values from the entity signal
-    const formValue = this.entity();
-    
+  onSubmit(event: Event) {
+    // Prevent default form submission (page refresh) - required for Signal Forms
+    event.preventDefault();
+
     // Check if form is valid
-    const form = this.dynamicForm;
-    let hasErrors = false;
-    for (const fieldDef of this.metaInfo()) {
-      const field = (form as any)[fieldDef.name];
-      if (field && typeof field.errors === 'function') {
-        const errors = field.errors();
-        if (Array.isArray(errors) && errors.length > 0) {
-          hasErrors = true;
-          break;
-        }
-      }
+    if (!this.isFormValid()) {
+      return;
     }
-    
-    if (!hasErrors) {
-      const currentUser = this.authService.getCurrentUser();
-      const userId = currentUser?.id || '';
-      const currentProgress = this.userProgress;
-      
-      // Create or update based on whether item has an id
-      const entity: UserProgress = {
-        ...formValue,
-        // If updating (has id), preserve id and metadata
-        ...(currentProgress?.id ? { 
-          id: currentProgress.id,
-          userId: currentProgress.userId || userId,
-          unitId: currentProgress.unitId || '',
-        } : {
-          // If creating (no id), set userId and preserve unitId if it exists
-          userId,
-          unitId: currentProgress?.unitId || '',
-        }),
-      } as UserProgress;
-      
-      this.saved.emit(entity);
-    }
+
+    // Get form values from the entity signal (Signal Forms sync bidirectionally)
+    const formValue = this.entity();
+    const currentUser = this.authService.getCurrentUser();
+    const userId = currentUser?.id || '';
+    const currentProgress = this.userProgress;
+
+    // Create or update based on whether item has an id
+    const entity: UserProgress = {
+      ...formValue,
+      // If updating (has id), preserve id and metadata
+      ...(currentProgress?.id ? {
+        id: currentProgress.id,
+        userId: currentProgress.userId || userId,
+        unitId: currentProgress.unitId || '',
+      } : {
+        // If creating (no id), set userId and preserve unitId if it exists
+        userId,
+        unitId: currentProgress?.unitId || '',
+      }),
+    } as UserProgress;
+
+    this.saved.emit(entity);
   }
 
   onCancel() {

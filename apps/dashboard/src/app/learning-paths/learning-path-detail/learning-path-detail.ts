@@ -110,46 +110,38 @@ export class LearningPathDetail {
   @Output() saved = new EventEmitter<LearningPath>();
   @Output() cancelled = new EventEmitter<void>();
 
-  onSubmit() {
-    // Get form values from the entity signal
+  onSubmit(event: Event) {
+    // Prevent default form submission (page refresh) - required for Signal Forms
+    event.preventDefault();
+
+    // Check if form is valid
+    if (!this.isFormValid()) {
+      return;
+    }
+
+    // Get form values from the entity signal (Signal Forms sync bidirectionally)
     const formValue = this.entity();
-    
-    // Check if form is valid by checking if any field has errors
-    const form = this.dynamicForm;
-    let hasErrors = false;
-    for (const fieldDef of this.metaInfo()) {
-      const field = (form as any)[fieldDef.name];
-      if (field && typeof field.errors === 'function') {
-        const errors = field.errors();
-        if (Array.isArray(errors) && errors.length > 0) {
-          hasErrors = true;
-          break;
-        }
-      }
-    }
-    
-    if (!hasErrors) {
-      const currentPath = this.learningPath;
-      const currentUser = this.authService.getCurrentUser();
-      const userId = currentUser?.id || '';
-      
-      // Create or update based on whether item has an id
-      const entity: LearningPath = {
-        ...formValue,
-        // If updating (has id), preserve id and other metadata
-        ...(currentPath?.id ? { 
-          id: currentPath.id,
-          userId: currentPath.userId || userId,
-          createdAt: currentPath.createdAt,
-          updatedAt: currentPath.updatedAt,
-        } : {
-          // If creating (no id), set userId
-          userId,
-        }),
-      } as LearningPath;
-      
-      this.saved.emit(entity);
-    }
+
+    const currentPath = this.learningPath;
+    const currentUser = this.authService.getCurrentUser();
+    const userId = currentUser?.id || '';
+
+    // Create or update based on whether item has an id
+    const entity: LearningPath = {
+      ...formValue,
+      // If updating (has id), preserve id and other metadata
+      ...(currentPath?.id ? {
+        id: currentPath.id,
+        userId: currentPath.userId || userId,
+        createdAt: currentPath.createdAt,
+        updatedAt: currentPath.updatedAt,
+      } : {
+        // If creating (no id), set userId
+        userId,
+      }),
+    } as LearningPath;
+
+    this.saved.emit(entity);
   }
 
   onCancel() {

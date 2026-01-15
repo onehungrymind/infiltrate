@@ -5,7 +5,8 @@ import { LearningPath } from '../learning-paths/entities/learning-path.entity';
 import { KnowledgeUnit } from '../knowledge-units/entities/knowledge-unit.entity';
 import { Principle } from '../principles/entities/principle.entity';
 import { RawContent } from '../raw-content/entities/raw-content.entity';
-import { SourceConfig } from '../source-configs/entities/source-config.entity';
+import { Source } from '../source-configs/entities/source.entity';
+import { SourcePathLink } from '../source-configs/entities/source-path-link.entity';
 import { UserProgress } from '../user-progress/entities/user-progress.entity';
 import { User } from '../users/entities/user.entity';
 import { seedPayload } from './seed-payload';
@@ -24,8 +25,10 @@ export class SeederService {
     private principlesRepository: Repository<Principle>,
     @InjectRepository(RawContent)
     private rawContentRepository: Repository<RawContent>,
-    @InjectRepository(SourceConfig)
-    private sourceConfigsRepository: Repository<SourceConfig>,
+    @InjectRepository(Source)
+    private sourcesRepository: Repository<Source>,
+    @InjectRepository(SourcePathLink)
+    private sourcePathLinksRepository: Repository<SourcePathLink>,
     @InjectRepository(UserProgress)
     private userProgressRepository: Repository<UserProgress>,
     @InjectRepository(User)
@@ -129,20 +132,37 @@ export class SeederService {
   }
 
   private async seedSourceConfigs(learningPaths: LearningPath[]): Promise<void> {
-    const sourceConfigsToSave = seedPayload.sourceConfigs.map(config => {
-      // Find the learning path by matching the index or by name
+    // Group source configs by URL to avoid duplicates
+    const urlToSourceMap = new Map<string, { source: any; pathIds: { pathId: string; enabled: boolean }[] }>();
+
+    for (const config of seedPayload.sourceConfigs) {
       const pathId = learningPaths.find(
         (_, index) => `path-${index + 1}` === config.pathId,
       )?.id || learningPaths[0]?.id;
 
-      return {
-        ...config,
-        pathId: pathId || learningPaths[0]?.id,
+      if (!urlToSourceMap.has(config.url)) {
+        urlToSourceMap.set(config.url, {
+          source: { url: config.url, type: config.type, name: config.name },
+          pathIds: [],
+        });
+      }
+      urlToSourceMap.get(config.url)!.pathIds.push({
+        pathId: pathId!,
         enabled: config.enabled !== undefined ? config.enabled : true,
-      };
-    });
+      });
+    }
 
-    await this.sourceConfigsRepository.save(sourceConfigsToSave);
+    // Create sources and links
+    for (const { source, pathIds } of urlToSourceMap.values()) {
+      const savedSource = await this.sourcesRepository.save(source);
+      for (const { pathId, enabled } of pathIds) {
+        await this.sourcePathLinksRepository.save({
+          sourceId: savedSource.id,
+          pathId,
+          enabled,
+        });
+      }
+    }
   }
 
   private async seedRawContent(learningPaths: LearningPath[]): Promise<void> {
@@ -216,7 +236,8 @@ export class SeederService {
     await this.knowledgeUnitsRepository.clear();
     await this.principlesRepository.clear();
     await this.rawContentRepository.clear();
-    await this.sourceConfigsRepository.clear();
+    await this.sourcePathLinksRepository.clear();
+    await this.sourcesRepository.clear();
     await this.learningPathsRepository.clear();
     await this.usersRepository.clear();
     this.logger.log('🧹 Cleared existing data');

@@ -118,34 +118,26 @@ export class SourceDetail {
     });
   }
 
-  onSubmit() {
-    // Get form values from the entity signal
-    const formValue = this.entity();
+  onSubmit(event: Event) {
+    // Prevent default form submission (page refresh) - required for Signal Forms
+    event.preventDefault();
 
     // Check if form is valid
-    const formObj = this.dynamicForm;
-    let hasErrors = false;
-    for (const fieldDef of this.metaInfo()) {
-      const field = (formObj as any)[fieldDef.name];
-      if (field && typeof field.errors === 'function') {
-        const errors = field.errors();
-        if (Array.isArray(errors) && errors.length > 0) {
-          hasErrors = true;
-          break;
-        }
-      }
+    if (!this.isFormValid()) {
+      return;
     }
 
-    if (!hasErrors) {
-      // Emit the source data without pathId (it's handled via linking now)
-      const entity: Partial<SourceListItem> = {
-        name: formValue.name,
-        url: formValue.url,
-        type: formValue.type,
-      };
+    // Get form values from the entity signal (Signal Forms sync bidirectionally)
+    const formValue = this.entity();
 
-      this.saved.emit(entity);
-    }
+    // Emit the source data without pathId (it's handled via linking now)
+    const entity: Partial<SourceListItem> = {
+      name: formValue.name,
+      url: formValue.url,
+      type: formValue.type,
+    };
+
+    this.saved.emit(entity);
   }
 
   onCancel() {

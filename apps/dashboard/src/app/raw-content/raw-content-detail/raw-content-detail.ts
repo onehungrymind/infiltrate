@@ -47,43 +47,35 @@ export class RawContentDetail {
   @Output() saved = new EventEmitter<RawContent>();
   @Output() cancelled = new EventEmitter<void>();
 
-  onSubmit() {
-    // Get form values from the entity signal
-    const formValue = this.entity();
-    
+  onSubmit(event: Event) {
+    // Prevent default form submission (page refresh) - required for Signal Forms
+    event.preventDefault();
+
     // Check if form is valid
-    const form = this.dynamicForm;
-    let hasErrors = false;
-    for (const fieldDef of this.metaInfo()) {
-      const field = (form as any)[fieldDef.name];
-      if (field && typeof field.errors === 'function') {
-        const errors = field.errors();
-        if (Array.isArray(errors) && errors.length > 0) {
-          hasErrors = true;
-          break;
-        }
-      }
+    if (!this.isFormValid()) {
+      return;
     }
-    
-    if (!hasErrors) {
-      const currentContent = this.rawContent;
-      // Create or update based on whether item has an id
-      const entity: RawContent = {
-        ...formValue,
-        // If updating (has id), preserve id and metadata
-        ...(currentContent?.id ? { 
-          id: currentContent.id,
-          pathId: currentContent.pathId || '',
-          sourceType: currentContent.sourceType || 'article',
-        } : {
-          // If creating (no id), use defaults
-          pathId: currentContent?.pathId || '',
-          sourceType: currentContent?.sourceType || 'article',
-        }),
-      } as RawContent;
-      
-      this.saved.emit(entity);
-    }
+
+    // Get form values from the entity signal (Signal Forms sync bidirectionally)
+    const formValue = this.entity();
+    const currentContent = this.rawContent;
+
+    // Create or update based on whether item has an id
+    const entity: RawContent = {
+      ...formValue,
+      // If updating (has id), preserve id and metadata
+      ...(currentContent?.id ? {
+        id: currentContent.id,
+        pathId: currentContent.pathId || '',
+        sourceType: currentContent.sourceType || 'article',
+      } : {
+        // If creating (no id), use defaults
+        pathId: currentContent?.pathId || '',
+        sourceType: currentContent?.sourceType || 'article',
+      }),
+    } as RawContent;
+
+    this.saved.emit(entity);
   }
 
   onCancel() {

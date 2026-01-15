@@ -1,5 +1,5 @@
-import { IsString, IsNotEmpty } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { IsString, IsNotEmpty, IsOptional, IsIn } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateLearningPathDto {
   @ApiProperty()
@@ -21,4 +21,10 @@ export class CreateLearningPathDto {
   @IsString()
   @IsNotEmpty()
   targetSkill: string;
+
+  @ApiPropertyOptional({ example: 'not-started', enum: ['not-started', 'in-progress', 'completed'] })
+  @IsOptional()
+  @IsString()
+  @IsIn(['not-started', 'in-progress', 'completed'])
+  status?: string;
 }

@@ -3,7 +3,7 @@
     <h1 class="detail-title">{{ originalTitle() | titlecase }}</h1>
   </div>
 
-  <form (ngSubmit)="onSubmit()" class="detail-form">
+  <form (submit)="onSubmit($event)" class="detail-form">
     <div class="detail-content">
       <app-dynamic-form 
         [metaInfo]="metaInfo" 

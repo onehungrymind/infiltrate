@@ -1,8 +1,8 @@
 import { AsyncPipe } from '@angular/common';
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { KnowledgeUnit } from '@kasita/common-models';
-import { KnowledgeUnitFacade } from '@kasita/core-state';
+import { KnowledgeUnit, LearningPath } from '@kasita/common-models';
+import { KnowledgeUnitFacade, LearningPathsFacade } from '@kasita/core-state';
 import { MaterialModule } from '@kasita/material';
 import { KnowledgeUnitDetail } from './knowledge-unit-detail/knowledge-unit-detail';
 import { KnowledgeUnitsList } from './knowledge-units-list/knowledge-units-list';
@@ -17,8 +17,10 @@ import { filterEntities, commonFilterMatchers } from '../shared/search-filter-ba
 })
 export class KnowledgeUnits implements OnInit {
   private knowledgeUnitsFacade = inject(KnowledgeUnitFacade);
+  private learningPathsFacade = inject(LearningPathsFacade);
 
   private allKnowledgeUnits = toSignal(this.knowledgeUnitsFacade.allKnowledgeUnits$, { initialValue: [] as KnowledgeUnit[] });
+  private allLearningPaths = toSignal(this.learningPathsFacade.allLearningPaths$, { initialValue: [] as LearningPath[] });
   selectedKnowledgeUnit$ = this.knowledgeUnitsFacade.selectedKnowledgeUnit$;
   loaded$ = this.knowledgeUnitsFacade.loaded$;
   error$ = this.knowledgeUnitsFacade.error$;
@@ -27,28 +29,32 @@ export class KnowledgeUnits implements OnInit {
   // Search/Filter state
   searchFilterState = signal<SearchFilterState>({ searchTerm: '', filters: {} });
 
-  // Filter configuration
-  filterConfigs: FilterConfig[] = [
-    {
-      field: 'status',
-      label: 'Status',
-      options: [
-        { label: 'Pending', value: 'pending' },
-        { label: 'Approved', value: 'approved' },
-        { label: 'Rejected', value: 'rejected' },
-      ],
-    },
-    {
-      field: 'difficulty',
-      label: 'Difficulty',
-      options: [
-        { label: 'Beginner', value: 'beginner' },
-        { label: 'Intermediate', value: 'intermediate' },
-        { label: 'Advanced', value: 'advanced' },
-        { label: 'Expert', value: 'expert' },
-      ],
-    },
-  ];
+  // Dynamic filter configuration based on loaded learning paths
+  filterConfigs = computed<FilterConfig[]>(() => {
+    const paths = this.allLearningPaths();
+    const pathOptions = paths.map(p => ({ label: p.name, value: p.id }));
+
+    return [
+      {
+        field: 'pathId',
+        label: 'Learning Path',
+        options: pathOptions,
+        fullWidth: true,
+        row: 1,
+      },
+      {
+        field: 'difficulty',
+        label: 'Difficulty',
+        options: [
+          { label: 'Beginner', value: 'beginner' },
+          { label: 'Intermediate', value: 'intermediate' },
+          { label: 'Advanced', value: 'advanced' },
+          { label: 'Expert', value: 'expert' },
+        ],
+        row: 2,
+      },
+    ];
+  });
 
   // Filtered knowledge units
   knowledgeUnits = computed(() => {
@@ -59,7 +65,7 @@ export class KnowledgeUnits implements OnInit {
       state,
       ['concept', 'question', 'answer'],
       {
-        status: commonFilterMatchers.exactMatch<KnowledgeUnit>('status'),
+        pathId: commonFilterMatchers.exactMatch<KnowledgeUnit>('pathId'),
         difficulty: commonFilterMatchers.exactMatch<KnowledgeUnit>('difficulty'),
       }
     );
@@ -74,6 +80,7 @@ export class KnowledgeUnits implements OnInit {
   }
 
   ngOnInit(): void {
+    this.learningPathsFacade.loadLearningPaths();
     this.reset();
   }
 
