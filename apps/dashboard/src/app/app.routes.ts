@@ -13,8 +13,8 @@ export const appRoutes: Route[] = [
     loadComponent: () => import('./login/login').then((m) => m.Login),
   },
   {
-    path: 'content',
-    loadComponent: () => import('./content/content').then((m) => m.Content),
+    path: 'curriculum',
+    loadComponent: () => import('./curriculum/curriculum').then((m) => m.Curriculum),
     canActivate: [authGuard],
   },
   {

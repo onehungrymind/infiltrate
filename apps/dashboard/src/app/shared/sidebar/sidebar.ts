@@ -29,7 +29,7 @@ const sourceConfigIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" vi
   <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0Z" />
 </svg>`;
 
-const contentIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+const curriculumIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
   <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
 </svg>`;
 
@@ -121,23 +121,21 @@ export class Sidebar implements OnInit, OnDestroy {
     {
       routes: [
         { label: 'Home', path: '/', icon: 'home' },
-        { label: 'Study', path: '/study', icon: 'study' },
-        { label: 'Content', path: '/content', icon: 'content' },
-        { label: 'Challenges', path: '/challenges', icon: 'challenges' },
-        { label: 'Projects', path: '/projects', icon: 'projects' },
         { label: 'Schedule', path: '/schedule', icon: 'schedule' },
+        { label: 'Study', path: '/study', icon: 'study' },
+        { label: 'Curriculum', path: '/curriculum', icon: 'curriculum' },
+        { label: 'Submissions', path: '/submissions', icon: 'submissions' },
+        { label: 'Mentor Dashboard', path: '/mentor-dashboard', icon: 'mentor' },
       ],
       collapsed: false,
     },
     {
-      title: 'Features',
+      title: 'Laboratory',
       routes: [
+        { label: 'Learning Map', path: '/learning-map', icon: 'learning-map' },
         { label: 'Knowledge Graph', path: '/graph', icon: 'graph' },
         { label: 'Visualization', path: '/visualization/bfs', icon: 'visualization' },
         { label: 'Notebooks', path: '/notebook', icon: 'notebook' },
-        { label: 'Learning Map', path: '/learning-map', icon: 'learning-map' },
-        { label: 'Submissions', path: '/submissions', icon: 'submissions' },
-        { label: 'Mentor Dashboard', path: '/mentor-dashboard', icon: 'mentor' },
       ],
       collapsed: false,
     },
@@ -150,6 +148,14 @@ export class Sidebar implements OnInit, OnDestroy {
         { label: 'Source Configs', path: '/source-configs', icon: 'source-config' },
         { label: 'Raw Content', path: '/raw-content', icon: 'raw-content' },
         { label: 'Knowledge Units', path: '/knowledge-units', icon: 'knowledge-unit' },
+        { label: 'Challenges', path: '/challenges', icon: 'challenges' },
+        { label: 'Projects', path: '/projects', icon: 'projects' },
+      ],
+      collapsed: false,
+    },
+    {
+      title: 'Reports',
+      routes: [
         { label: 'Completion Assessment', path: '/completion-assessment', icon: 'assessment' },
       ],
       collapsed: false,
@@ -182,8 +188,8 @@ export class Sidebar implements OnInit, OnDestroy {
       case 'home':
         iconHtml = homeIcon;
         break;
-      case 'content':
-        iconHtml = contentIcon;
+      case 'curriculum':
+        iconHtml = curriculumIcon;
         break;
       case 'challenges':
         iconHtml = challengesIcon;

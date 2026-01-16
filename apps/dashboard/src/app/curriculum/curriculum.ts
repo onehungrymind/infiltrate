@@ -2,12 +2,12 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-content',
+  selector: 'app-curriculum',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './content.html',
-  styleUrl: './content.scss',
+  templateUrl: './curriculum.html',
+  styleUrl: './curriculum.scss',
 })
-export class Content {
+export class Curriculum {
   constructor() {}
 }
