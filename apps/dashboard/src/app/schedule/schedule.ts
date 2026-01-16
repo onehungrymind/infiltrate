@@ -24,7 +24,7 @@ import { addDays, addHours, startOfDay, isSameDay, isSameMonth } from 'date-fns'
 export class Schedule {
   viewDate = signal<Date>(new Date());
   view = signal<CalendarView>(CalendarView.Month);
-  activeDayIsOpen = signal<boolean>(false);
+  activeDayIsOpen = false;
   CalendarView = CalendarView;
 
   // Sample events - these would come from UserProgress/SM-2 data in production
@@ -84,12 +84,12 @@ export class Schedule {
 
   setView(view: CalendarView) {
     this.view.set(view);
-    this.activeDayIsOpen.set(false);
+    this.activeDayIsOpen = false;
   }
 
   navigateToday() {
     this.viewDate.set(new Date());
-    this.activeDayIsOpen.set(false);
+    this.activeDayIsOpen = false;
   }
 
   navigatePrevious() {
@@ -102,7 +102,7 @@ export class Schedule {
     } else {
       this.viewDate.set(addDays(current, -1));
     }
-    this.activeDayIsOpen.set(false);
+    this.activeDayIsOpen = false;
   }
 
   navigateNext() {
@@ -115,7 +115,7 @@ export class Schedule {
     } else {
       this.viewDate.set(addDays(current, 1));
     }
-    this.activeDayIsOpen.set(false);
+    this.activeDayIsOpen = false;
   }
 
   onEventClicked(event: CalendarEvent) {
@@ -124,17 +124,14 @@ export class Schedule {
   }
 
   onDayClicked({ date, events }: { date: Date; events: CalendarEvent[] }) {
-    // Only toggle if clicking in the current month and there are events
     if (isSameMonth(date, this.viewDate())) {
       if (
-        (isSameDay(this.viewDate(), date) && this.activeDayIsOpen()) ||
+        (isSameDay(this.viewDate(), date) && this.activeDayIsOpen) ||
         events.length === 0
       ) {
-        // Clicking same day again or day with no events - close panel
-        this.activeDayIsOpen.set(false);
+        this.activeDayIsOpen = false;
       } else {
-        // Clicking different day with events - open panel
-        this.activeDayIsOpen.set(true);
+        this.activeDayIsOpen = true;
       }
       this.viewDate.set(date);
     }

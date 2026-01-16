@@ -263,19 +263,6 @@
 
     .cal-events {
       margin: 0.25rem;
-
-      .cal-event {
-        padding: 0.25rem 0.5rem;
-        border-radius: 0.25rem;
-        font-size: 0.75rem;
-        margin-bottom: 0.125rem;
-        cursor: pointer;
-        transition: transform 0.1s;
-
-        &:hover {
-          transform: scale(1.02);
-        }
-      }
     }
 
     .cal-day-badge {
