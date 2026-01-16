@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
-import { UserProgressService } from './user-progress.service';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { ApiOperation, ApiQuery,ApiResponse, ApiTags } from '@nestjs/swagger';
+
 import { CreateUserProgressDto } from './dto/create-user-progress.dto';
-import { UpdateUserProgressDto } from './dto/update-user-progress.dto';
 import { RecordAttemptDto } from './dto/record-attempt.dto';
+import { UpdateUserProgressDto } from './dto/update-user-progress.dto';
+import { UserProgressService } from './user-progress.service';
 
 @ApiTags('user-progress')
 @Controller('user-progress')

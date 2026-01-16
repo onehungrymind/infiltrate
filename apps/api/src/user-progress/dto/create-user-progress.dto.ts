@@ -1,5 +1,5 @@
-import { IsString, IsNotEmpty, IsNumber, IsOptional, IsEnum, Min, Max } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, Max,Min } from 'class-validator';
 
 export class CreateUserProgressDto {
   @ApiProperty()

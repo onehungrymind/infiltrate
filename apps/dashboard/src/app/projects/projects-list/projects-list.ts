@@ -1,7 +1,7 @@
+import { TitleCasePipe } from '@angular/common';
 import { Component, input, output } from '@angular/core';
 import { Project } from '@kasita/common-models';
 import { MaterialModule } from '@kasita/material';
-import { TitleCasePipe } from '@angular/common';
 
 @Component({
   selector: 'app-projects-list',

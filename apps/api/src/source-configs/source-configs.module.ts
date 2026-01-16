@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
+import { LearningPath } from '../learning-paths/entities/learning-path.entity';
 import { Source } from './entities/source.entity';
 import { SourcePathLink } from './entities/source-path-link.entity';
-import { SourcesService } from './sources.service';
 import { SourcesController } from './sources.controller';
-import { LearningPath } from '../learning-paths/entities/learning-path.entity';
+import { SourcesService } from './sources.service';
 
 @Module({
   imports: [

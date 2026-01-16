@@ -1,13 +1,14 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output, signal, computed, inject } from '@angular/core';
+import { Component, computed, EventEmitter, inject,Input, Output, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { MaterialModule } from '@kasita/material';
 import { form } from '@angular/forms/signals';
-import { DynamicForm } from '../../shared/dynamic-form/dynamic-form';
-import { sourceFields, toSchema, initializeEntity, LearningMapService } from '@kasita/core-data';
+import { initializeEntity, LearningMapService,sourceFields, toSchema } from '@kasita/core-data';
 import { LearningPathsFacade } from '@kasita/core-state';
-import { SourceListItem, LinkedPath } from '../source-configs';
+import { MaterialModule } from '@kasita/material';
+
+import { DynamicForm } from '../../shared/dynamic-form/dynamic-form';
+import { LinkedPath,SourceListItem } from '../source-configs';
 
 @Component({
   selector: 'app-source-detail',

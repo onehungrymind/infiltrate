@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output, signal, computed } from '@angular/core';
-import { RawContent } from '@kasita/common-models';
-import { MaterialModule } from '@kasita/material';
+import { Component, computed,EventEmitter, Input, Output, signal } from '@angular/core';
 import { form } from '@angular/forms/signals';
+import { RawContent } from '@kasita/common-models';
+import { initializeEntity,rawContentFields, toSchema } from '@kasita/core-data';
+import { MaterialModule } from '@kasita/material';
+
 import { DynamicForm } from '../../shared/dynamic-form/dynamic-form';
-import { rawContentFields, toSchema, initializeEntity } from '@kasita/core-data';
 
 @Component({
   selector: 'app-raw-content-detail',

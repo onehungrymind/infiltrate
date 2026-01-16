@@ -1,8 +1,9 @@
-import { Controller, Post, Body, Get, Param, Query } from '@nestjs/common';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { ApiOperation,ApiTags } from '@nestjs/swagger';
+
 import { Public } from '../auth/decorators/public.decorator';
-import { KnowledgeGraphService } from './knowledge-graph.service';
 import { GenerateGraphDto } from './dto/generate-graph.dto';
+import { KnowledgeGraphService } from './knowledge-graph.service';
 
 @ApiTags('knowledge-graph')
 @Controller('knowledge-graph')

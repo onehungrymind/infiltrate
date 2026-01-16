@@ -1,5 +1,5 @@
-import { IsString, IsNotEmpty, IsOptional, IsIn } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsIn,IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateLearningPathDto {
   @ApiProperty()

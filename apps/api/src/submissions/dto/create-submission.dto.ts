@@ -1,6 +1,6 @@
-import { IsString, IsNotEmpty, IsOptional, IsEnum, MaxLength, IsObject, ValidateNested, IsNumber, Min } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
+import { IsEnum, IsNotEmpty, IsNumber, IsObject, IsOptional, IsString, MaxLength, Min,ValidateNested } from 'class-validator';
 
 export class UrlMetadataDto {
   @IsOptional()

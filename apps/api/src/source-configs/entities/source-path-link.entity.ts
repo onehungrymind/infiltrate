@@ -1,15 +1,16 @@
 import {
-  Entity,
   Column,
-  PrimaryGeneratedColumn,
   CreateDateColumn,
-  UpdateDateColumn,
-  ManyToOne,
+  Entity,
   JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
   Unique,
+  UpdateDateColumn,
 } from 'typeorm';
-import { Source } from './source.entity';
+
 import { LearningPath } from '../../learning-paths/entities/learning-path.entity';
+import { Source } from './source.entity';
 
 @Entity('source_path_links')
 @Unique(['sourceId', 'pathId'])

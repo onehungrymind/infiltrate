@@ -1,10 +1,10 @@
-import { Component, OnInit, inject, HostListener, computed, signal, effect } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
+import { Component, computed, effect,HostListener, inject, OnInit, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { KnowledgeUnit, LearningPath, UserProgress } from '@kasita/common-models';
-import { KnowledgeUnitFacade, LearningPathsFacade, UserProgressFacade } from '@kasita/core-state';
 import { AuthService } from '@kasita/core-data';
+import { KnowledgeUnitFacade, LearningPathsFacade, UserProgressFacade } from '@kasita/core-state';
 
 interface StudyCard {
   knowledgeUnit: KnowledgeUnit;

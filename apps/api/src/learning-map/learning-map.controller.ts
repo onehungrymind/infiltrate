@@ -1,17 +1,18 @@
 import {
+  Body,
   Controller,
   Get,
-  Post,
-  Patch,
   Param,
+  Patch,
+  Post,
   Query,
-  Body,
-  UseGuards,
   Request,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
-import { LearningMapService } from './learning-map.service';
+import { ApiBearerAuth,ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { LearningMapService } from './learning-map.service';
 
 @ApiTags('learning-map')
 @Controller('learning-map')

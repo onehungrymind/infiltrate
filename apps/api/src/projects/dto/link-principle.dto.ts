@@ -1,5 +1,5 @@
-import { IsString, IsNumber, IsArray, IsOptional, ValidateNested, Min, Max } from 'class-validator';
 import { Type } from 'class-transformer';
+import { IsArray, IsNumber, IsOptional, IsString, Max,Min, ValidateNested } from 'class-validator';
 
 export class RubricCriterionDto {
   @IsString()

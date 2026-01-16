@@ -1,0 +1,154 @@
+<div class="learning-map-container">
+  <!-- Header -->
+  <div class="map-header">
+    <div class="header-content">
+      <h1>Learning Map</h1>
+      <p class="subtitle">Visualize your path from knowledge to mastery</p>
+    </div>
+
+    <!-- Learning Path Selector -->
+    <div class="path-selector">
+      @if (hasAvailablePaths()) {
+      <div class="filter-group">
+        <label for="pathSelect" class="filter-label">Learning Path</label>
+        <select
+          id="pathSelect"
+          [ngModel]="selectedPathId()"
+          (ngModelChange)="selectPath($event)"
+          class="filter-select">
+          @for (path of availablePaths(); track path.id) {
+          <option [ngValue]="path.id">
+            {{ path.name }} ({{ path.principleCount }} principles)
+          </option>
+          }
+        </select>
+      </div>
+      }
+      <button
+        type="button"
+        [class.active]="viewMode() === 'mock'"
+        (click)="showMockData()"
+        class="demo-button">
+        Demo View
+      </button>
+    </div>
+
+    <!-- Progress Summary in Header -->
+    @if (learningPath()) {
+    <div class="header-progress">
+      <div class="progress-stats">
+        <div class="stat-item">
+          <span class="stat-label">Progress</span>
+          <span class="stat-value">{{ progress() }}%</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Completed</span>
+          <span class="stat-value">
+            {{ learningPath()!.metadata.completedNodes }}/{{ learningPath()!.metadata.totalNodes }}
+          </span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Est. Time</span>
+          <span class="stat-value">{{ learningPath()!.metadata.estimatedTime }}h</span>
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+
+  <!-- Error State -->
+  @if (error()) {
+  <div class="error-state">
+    <mat-card>
+      <mat-card-content>
+        <mat-icon>error</mat-icon>
+        <p>{{ error() }}</p>
+      </mat-card-content>
+    </mat-card>
+  </div>
+  }
+
+  <!-- Loading State -->
+  @if (loading()) {
+  <div class="loading-state">
+    <mat-spinner></mat-spinner>
+    <p>Loading learning path...</p>
+  </div>
+  }
+
+  <!-- React Flow Graph Container -->
+  @if (!loading() && !error()) {
+  <div class="map-visualization">
+    <lib-react-flow-wrapper
+      [nodes]="reactFlowNodes()"
+      [edges]="reactFlowEdges()"
+      [showControls]="true"
+      [showBackground]="true"
+      [showMinimap]="false"
+      [fitView]="true"
+      (nodeClick)="onReactFlowNodeClick($event.node, $event.event)"
+      (nodeDoubleClick)="onReactFlowNodeDoubleClick($event)"
+      (paneClick)="onPaneClick()">
+    </lib-react-flow-wrapper>
+  </div>
+  }
+
+  <!-- Node Details Panel -->
+  @if (selectedNode()) {
+  <div class="node-details-panel" 
+       [style.left.px]="getPanelPosition().left" 
+       [style.top.px]="getPanelPosition().top"
+       [@fadeIn]>
+    <div class="panel-content">
+      <div class="panel-header">
+        <h3 class="panel-title">{{ selectedNode()!.label }}</h3>
+        <button 
+          type="button"
+          class="close-button" 
+          (click)="selectedNode.set(null)"
+          aria-label="Close">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="20" height="20">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div class="panel-body">
+        <p class="panel-description">{{ getNodeDescription() }}</p>
+
+        <!-- Metadata for principles -->
+        @if (getNodeMetadata().length > 0) {
+        <div class="node-metadata">
+          @for (meta of getNodeMetadata(); track meta.label) {
+          <div class="metadata-item">
+            <span class="metadata-label">{{ meta.label }}:</span>
+            <span class="metadata-value">{{ meta.value }}</span>
+          </div>
+          }
+        </div>
+        }
+
+        <div class="node-actions">
+          <button
+            type="button"
+            class="action-button primary"
+            (click)="navigateToNode(selectedNode()!)">
+            @if (selectedNode()!.type === 'principle') {
+              View Units
+            } @else {
+              Open
+            }
+          </button>
+          @if (selectedNode()!.status === 'available' || selectedNode()!.status === 'not-started') {
+          <button
+            type="button"
+            class="action-button secondary"
+            (click)="updateNodeStatus(selectedNode()!.id, 'in-progress')">
+            Start
+          </button>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+  }
+</div>

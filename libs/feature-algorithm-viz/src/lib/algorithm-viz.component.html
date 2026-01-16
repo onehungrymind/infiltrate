@@ -1,0 +1,21 @@
+<div class="visualization-container">
+  <div class="header">
+    <h1>Code Visualization</h1>
+    <div class="example-selector">
+      <label for="example-select">Algorithm:</label>
+      <select
+        id="example-select"
+        [value]="getSelectedExampleId()"
+        (change)="onExampleChange($event)"
+        class="example-dropdown">
+        @for (example of examples; track example.id) {
+          <option [value]="example.id">{{ example.name }}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  <div class="content">
+    <router-outlet></router-outlet>
+  </div>
+</div>

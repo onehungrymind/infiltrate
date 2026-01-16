@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { RawContentService } from './raw-content.service';
+import { Body, Controller, Delete,Get, Param, Patch, Post } from '@nestjs/common';
+
 import { CreateRawContentDto } from './dto/create-raw-content.dto';
 import { UpdateRawContentDto } from './dto/update-raw-content.dto';
+import { RawContentService } from './raw-content.service';
 
 @Controller('raw-content')
 export class RawContentController {

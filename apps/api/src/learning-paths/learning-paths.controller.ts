@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { LearningPathsService } from './learning-paths.service';
+import { Body, Controller, Delete,Get, Param, Patch, Post } from '@nestjs/common';
+import { ApiOperation, ApiResponse,ApiTags } from '@nestjs/swagger';
+
 import { CreateLearningPathDto } from './dto/create-learning-path.dto';
 import { UpdateLearningPathDto } from './dto/update-learning-path.dto';
+import { LearningPathsService } from './learning-paths.service';
 
 @ApiTags('learning-paths')
 @Controller('learning-paths')

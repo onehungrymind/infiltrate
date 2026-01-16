@@ -1,15 +1,16 @@
 import {
-  Entity,
   Column,
-  PrimaryGeneratedColumn,
   CreateDateColumn,
-  UpdateDateColumn,
-  ManyToOne,
+  Entity,
   JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
   Unique,
+  UpdateDateColumn,
 } from 'typeorm';
-import { Project } from './project.entity';
+
 import { Principle } from '../../principles/entities/principle.entity';
+import { Project } from './project.entity';
 
 export interface RubricCriterionData {
   name: string;

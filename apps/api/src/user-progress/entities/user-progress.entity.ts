@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, Index } from 'typeorm';
+import { Column, CreateDateColumn, Entity, Index,ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+
 import { KnowledgeUnit } from '../../knowledge-units/entities/knowledge-unit.entity';
 
 @Entity('user_progress')

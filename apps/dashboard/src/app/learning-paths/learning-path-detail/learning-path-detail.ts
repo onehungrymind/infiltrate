@@ -1,12 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output, signal, computed, inject } from '@angular/core';
+import { Component, computed, EventEmitter, inject,Input, Output, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { LearningPath, Principle, User } from '@kasita/common-models';
-import { MaterialModule } from '@kasita/material';
 import { form } from '@angular/forms/signals';
-import { DynamicForm } from '../../shared/dynamic-form/dynamic-form';
-import { learningPathFields, toSchema, AuthService, initializeEntity, LearningMapService, LearningPathsService } from '@kasita/core-data';
+import { LearningPath, Principle, User } from '@kasita/common-models';
+import { AuthService, initializeEntity, LearningMapService, learningPathFields, LearningPathsService,toSchema } from '@kasita/core-data';
 import { UsersFacade } from '@kasita/core-state';
+import { MaterialModule } from '@kasita/material';
+
+import { DynamicForm } from '../../shared/dynamic-form/dynamic-form';
 
 @Component({
   selector: 'app-learning-path-detail',

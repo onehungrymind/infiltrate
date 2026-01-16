@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn } from 'typeorm';
+import { Column, CreateDateColumn,Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('graph_searches')
 export class GraphSearch {

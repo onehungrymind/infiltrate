@@ -1,5 +1,5 @@
-import { IsString, IsNotEmpty, IsEnum } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsEnum,IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateSourceDto {
   @ApiProperty({ example: 'https://javascriptweekly.com/rss' })

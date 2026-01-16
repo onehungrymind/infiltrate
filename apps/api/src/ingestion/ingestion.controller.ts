@@ -1,11 +1,12 @@
-import { Controller, Post, Body } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { IngestionService } from './ingestion.service';
+import { Body,Controller, Post } from '@nestjs/common';
+import { ApiOperation, ApiResponse,ApiTags } from '@nestjs/swagger';
+
 import { Public } from '../auth/decorators/public.decorator';
-import { CreateRawContentDto } from '../raw-content/dto/create-raw-content.dto';
 import { CreateKnowledgeUnitDto } from '../knowledge-units/dto/create-knowledge-unit.dto';
-import { RawContent } from '../raw-content/entities/raw-content.entity';
 import { KnowledgeUnit } from '../knowledge-units/entities/knowledge-unit.entity';
+import { CreateRawContentDto } from '../raw-content/dto/create-raw-content.dto';
+import { RawContent } from '../raw-content/entities/raw-content.entity';
+import { IngestionService } from './ingestion.service';
 
 @ApiTags('ingestion')
 @Controller('ingestion')

@@ -1,13 +1,13 @@
-import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, Router, NavigationEnd } from '@angular/router';
+import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
+import { NavigationEnd,Router, RouterModule } from '@angular/router';
+import { Subject } from 'rxjs';
+import { filter, takeUntil } from 'rxjs/operators';
+
+import { LayoutService } from './services/layout.service';
+import { ThemeService } from './services/theme.service';
 import { Header } from './shared/header/header';
 import { Sidebar } from './shared/sidebar/sidebar';
-import { ThemeService } from './services/theme.service';
-import { LayoutService } from './services/layout.service';
-import { filter } from 'rxjs/operators';
-import { takeUntil } from 'rxjs/operators';
-import { Subject } from 'rxjs';
 
 @Component({
   imports: [CommonModule, RouterModule, Header, Sidebar],

@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { RawContentService } from '../raw-content/raw-content.service';
+
+import { CreateKnowledgeUnitDto } from '../knowledge-units/dto/create-knowledge-unit.dto';
+import { KnowledgeUnit } from '../knowledge-units/entities/knowledge-unit.entity';
 import { KnowledgeUnitsService } from '../knowledge-units/knowledge-units.service';
 import { CreateRawContentDto } from '../raw-content/dto/create-raw-content.dto';
-import { CreateKnowledgeUnitDto } from '../knowledge-units/dto/create-knowledge-unit.dto';
 import { RawContent } from '../raw-content/entities/raw-content.entity';
-import { KnowledgeUnit } from '../knowledge-units/entities/knowledge-unit.entity';
+import { RawContentService } from '../raw-content/raw-content.service';
 
 @Injectable()
 export class IngestionService {

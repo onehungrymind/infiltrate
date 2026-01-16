@@ -1,7 +1,7 @@
-import { PartialType } from '@nestjs/swagger';
+import { ApiPropertyOptional, PartialType } from '@nestjs/swagger';
+import { IsEnum, IsNumber, IsOptional, Max,Min } from 'class-validator';
+
 import { CreateSubmissionDto } from './create-submission.dto';
-import { IsEnum, IsOptional, IsNumber, Min, Max } from 'class-validator';
-import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UpdateSubmissionDto extends PartialType(CreateSubmissionDto) {
   @ApiPropertyOptional({

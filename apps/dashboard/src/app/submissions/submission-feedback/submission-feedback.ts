@@ -1,9 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, inject } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { Feedback, ProjectGrade } from '@kasita/common-models';
-import { MaterialModule } from '@kasita/material';
+import { Component, inject,Input } from '@angular/core';
+import { ProjectGrade } from '@kasita/common-models';
 import { SubmissionsFacade } from '@kasita/core-state';
+import { MaterialModule } from '@kasita/material';
 
 @Component({
   selector: 'app-submission-feedback',

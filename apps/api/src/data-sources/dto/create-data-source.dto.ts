@@ -1,5 +1,5 @@
-import { IsString, IsNotEmpty, IsOptional, IsArray, IsEnum, IsBoolean, IsObject } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsArray, IsBoolean, IsEnum, IsNotEmpty, IsObject,IsOptional, IsString } from 'class-validator';
 
 export class CreateDataSourceDto {
   @ApiProperty()

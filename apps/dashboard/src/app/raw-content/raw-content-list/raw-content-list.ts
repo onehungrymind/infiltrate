@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
-import { RawContent } from '@kasita/common-models';
-import { MaterialModule, ConfirmationDialogComponent } from '@kasita/material';
+import { Component, EventEmitter, inject,Input, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { RawContent } from '@kasita/common-models';
+import { ConfirmationDialogComponent,MaterialModule } from '@kasita/material';
 
 @Component({
   selector: 'app-raw-content-list',

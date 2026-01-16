@@ -57,7 +57,7 @@ export const appRoutes: Route[] = [
   {
     path: 'graph',
     loadComponent: () =>
-      import('./pages/graph/graph').then((m) => m.Graph),
+      import('@kasita/feature-graph').then((m) => m.Graph),
     canActivate: [authGuard],
   },
   {
@@ -98,13 +98,13 @@ export const appRoutes: Route[] = [
   {
     path: 'visualization',
     loadComponent: () =>
-      import('./pages/visualization/visualization').then((m) => m.Visualization),
+      import('@kasita/feature-algorithm-viz').then((m) => m.AlgorithmVizComponent),
     canActivate: [authGuard],
     children: [
       {
         path: 'bfs',
         loadComponent: () =>
-          import('./pages/visualization/bfs/bfs').then((m) => m.BfsComponent),
+          import('@kasita/feature-algorithm-viz').then((m) => m.BfsComponent),
       },
       {
         path: '',
@@ -115,17 +115,22 @@ export const appRoutes: Route[] = [
   },
   {
     path: 'notebook',
-    loadComponent: () => import('./pages/notebook/notebook').then((m) => m.NotebookComponent),
+    loadComponent: () => import('@kasita/feature-notebook').then((m) => m.NotebookComponent),
     canActivate: [authGuard],
   },
   {
     path: 'learning-map',
-    loadComponent: () => import('./pages/learning-map/learning-map.component').then((m) => m.LearningMapComponent),
+    loadComponent: () => import('@kasita/feature-learning-map').then((m) => m.LearningMapComponent),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'metro-maps',
+    loadComponent: () => import('@kasita/feature-metro-maps').then((m) => m.MetroMapsComponent),
     canActivate: [authGuard],
   },
   {
     path: 'completion-assessment',
-    loadComponent: () => import('./pages/completion-assessment/completion-assessment').then((m) => m.CompletionAssessment),
+    loadComponent: () => import('@kasita/feature-completion-assessment').then((m) => m.CompletionAssessment),
     canActivate: [authGuard],
   },
   {

@@ -1,8 +1,8 @@
-import { Component, Input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, Input, signal } from '@angular/core';
+import { Field } from '@angular/forms/signals';
 import { FieldDef } from '@kasita/core-data';
 import { MaterialModule } from '@kasita/material';
-import { Field } from '@angular/forms/signals';
 
 @Component({
   selector: 'app-dynamic-form',

@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne } from 'typeorm';
+import { Column, CreateDateColumn, Entity, ManyToOne,PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+
 import { LearningPath } from '../../learning-paths/entities/learning-path.entity';
 
 @Entity('raw_content')

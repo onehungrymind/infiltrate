@@ -1,10 +1,11 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import Anthropic from '@anthropic-ai/sdk';
+import {Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import Anthropic from '@anthropic-ai/sdk';
-import { GENERATE_KNOWLEDGE_GRAPH_PROMPT } from './prompts/generate-graph.prompt';
+
 import { GraphSearch } from './entities/graph-search.entity';
+import { GENERATE_KNOWLEDGE_GRAPH_PROMPT } from './prompts/generate-graph.prompt';
 
 @Injectable()
 export class KnowledgeGraphService {

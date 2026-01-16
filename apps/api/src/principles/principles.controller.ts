@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { PrinciplesService } from './principles.service';
+import { Body, Controller, Delete,Get, Param, Patch, Post } from '@nestjs/common';
+
 import { CreatePrincipleDto } from './dto/create-principle.dto';
 import { UpdatePrincipleDto } from './dto/update-principle.dto';
+import { PrinciplesService } from './principles.service';
 
 @Controller('principles')
 export class PrinciplesController {

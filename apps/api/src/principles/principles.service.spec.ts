@@ -1,11 +1,12 @@
+import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { NotFoundException } from '@nestjs/common';
-import { PrinciplesService } from './principles.service';
-import { Principle } from './entities/principle.entity';
+
 import { CreatePrincipleDto } from './dto/create-principle.dto';
 import { UpdatePrincipleDto } from './dto/update-principle.dto';
+import { Principle } from './entities/principle.entity';
+import { PrinciplesService } from './principles.service';
 
 describe('PrinciplesService', () => {
   let service: PrinciplesService;

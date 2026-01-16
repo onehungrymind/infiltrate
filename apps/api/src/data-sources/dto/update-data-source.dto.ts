@@ -1,5 +1,5 @@
-import { IsString, IsOptional, IsArray, IsEnum, IsBoolean, IsObject } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsArray, IsBoolean, IsEnum, IsObject,IsOptional, IsString } from 'class-validator';
 
 export class UpdateDataSourceDto {
   @ApiProperty({ required: false })

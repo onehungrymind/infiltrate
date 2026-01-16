@@ -1,103 +1,104 @@
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import {
   ApplicationConfig,
   ErrorHandler,
   isDevMode,
 } from '@angular/core';
-import { provideRouter } from '@angular/router';
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { provideAnimations } from '@angular/platform-browser/animations';
-import { provideStore } from '@ngrx/store';
-import { provideEffects } from '@ngrx/effects';
-import { provideStoreDevtools } from '@ngrx/store-devtools';
 import { provideSignalFormsConfig } from '@angular/forms/signals';
-import { appRoutes } from './app.routes';
+import { provideAnimations } from '@angular/platform-browser/animations';
+import { provideRouter } from '@angular/router';
 import { API_URL, authInterceptor, errorInterceptor, GlobalErrorHandler } from '@kasita/core-data';
-import { environment } from '../environments/environment';
 import {
-  learningPathsFeature,
-  knowledgeUnitsFeature,
-  principlesFeature,
-  rawContentFeature,
-  userProgressFeature,
-  dataSourcesFeature,
-  usersFeature,
-  submissionsFeature,
   challengesFeature,
-  projectsFeature,
-  // Learning Paths Effects
-  loadLearningPaths,
-  loadLearningPath,
+  createChallenge,
+  createDataSource,
+  createKnowledgeUnit,
   createLearningPath,
-  updateLearningPath,
+  createPrinciple,
+  createProject,
+  createRawContent,
+  createSubmission,
+  createUser,
+  createUserProgress,
+  dataSourcesFeature,
+  deleteChallenge,
+  deleteDataSource,
+  deleteKnowledgeUnit,
   deleteLearningPath,
+  deletePrinciple,
+  deleteProject,
+  deleteRawContent,
+  deleteSubmission,
+  deleteUser,
+  deleteUserProgress,
+  knowledgeUnitsFeature,
+  learningPathsFeature,
+  linkPrinciple,
+  loadChallenge,
+  // Challenges Effects
+  loadChallenges,
+  loadChallengesByUnit,
+  loadDataSource,
+  // Data Sources Effects
+  loadDataSources,
+  loadFeedback,
+  loadKnowledgeUnit,
   // Knowledge Units Effects
   loadKnowledgeUnits,
-  loadKnowledgeUnit,
-  createKnowledgeUnit,
-  updateKnowledgeUnit,
-  deleteKnowledgeUnit,
+  loadLearningPath,
+  // Learning Paths Effects
+  loadLearningPaths,
+  loadMentorSubmissions,
+  loadPrinciple,
   // Principles Effects
   loadPrinciples,
-  loadPrinciple,
   loadPrinciplesByPath,
-  createPrinciple,
-  updatePrinciple,
-  deletePrinciple,
+  loadProject,
+  // Projects Effects
+  loadProjects,
+  loadProjectsByPath,
   // Raw Content Effects
   loadRawContent,
   loadRawContentItem,
-  createRawContent,
-  updateRawContent,
-  deleteRawContent,
+  loadSubmission,
+  // Submissions Effects
+  loadSubmissions,
+  loadSubmissionsByPath,
+  loadSubmissionsByUnit,
+  loadSubmissionsByUser,
+  loadUser,
   // User Progress Effects
   loadUserProgress,
   loadUserProgressItem,
-  createUserProgress,
-  updateUserProgress,
-  deleteUserProgress,
-  // Data Sources Effects
-  loadDataSources,
-  loadDataSource,
-  createDataSource,
-  updateDataSource,
-  deleteDataSource,
   // Users Effects
   loadUsers,
-  loadUser,
-  createUser,
-  updateUser,
-  deleteUser,
-  // Submissions Effects
-  loadSubmissions,
-  loadSubmission,
-  loadSubmissionsByUser,
-  loadSubmissionsByUnit,
-  loadSubmissionsByPath,
-  createSubmission,
-  updateSubmission,
-  deleteSubmission,
-  submitForReview,
+  principlesFeature,
+  projectsFeature,
+  rawContentFeature,
   requestAiFeedback,
-  loadFeedback,
-  loadMentorSubmissions,
+  submissionsFeature,
+  submitForReview,
   submitMentorFeedback,
-  // Challenges Effects
-  loadChallenges,
-  loadChallenge,
-  loadChallengesByUnit,
-  createChallenge,
-  updateChallenge,
-  deleteChallenge,
-  // Projects Effects
-  loadProjects,
-  loadProject,
-  loadProjectsByPath,
-  createProject,
-  updateProject,
-  deleteProject,
-  linkPrinciple,
   unlinkPrinciple,
+  updateChallenge,
+  updateDataSource,
+  updateKnowledgeUnit,
+  updateLearningPath,
+  updatePrinciple,
+  updateProject,
+  updateRawContent,
+  updateSubmission,
+  updateUser,
+  updateUserProgress,
+  userProgressFeature,
+  usersFeature,
 } from '@kasita/core-state';
+import { provideEffects } from '@ngrx/effects';
+import { provideStore } from '@ngrx/store';
+import { provideStoreDevtools } from '@ngrx/store-devtools';
+
+import { environment } from '../environments/environment';
+import { appRoutes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
   providers: [

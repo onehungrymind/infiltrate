@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
-import { MaterialModule, ConfirmationDialogComponent } from '@kasita/material';
+import { Component, EventEmitter, inject,Input, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { ConfirmationDialogComponent,MaterialModule } from '@kasita/material';
+
 import { SourceListItem } from '../source-configs';
 
 @Component({

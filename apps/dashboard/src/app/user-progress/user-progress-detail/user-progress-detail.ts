@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output, signal, computed, inject } from '@angular/core';
-import { UserProgress } from '@kasita/common-models';
-import { MaterialModule } from '@kasita/material';
+import { Component, computed, EventEmitter, inject,Input, Output, signal } from '@angular/core';
 import { form } from '@angular/forms/signals';
+import { UserProgress } from '@kasita/common-models';
+import { AuthService, initializeEntity,toSchema, userProgressFields } from '@kasita/core-data';
+import { MaterialModule } from '@kasita/material';
+
 import { DynamicForm } from '../../shared/dynamic-form/dynamic-form';
-import { userProgressFields, toSchema, AuthService, initializeEntity } from '@kasita/core-data';
 
 @Component({
   selector: 'app-user-progress-detail',

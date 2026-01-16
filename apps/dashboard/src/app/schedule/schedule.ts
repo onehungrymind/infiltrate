@@ -1,8 +1,8 @@
-import { Component, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CalendarModule, CalendarView, CalendarEvent, DateAdapter, CalendarUtils, CalendarA11y, CalendarDateFormatter, CalendarEventTitleFormatter } from 'angular-calendar';
+import { Component, computed,signal } from '@angular/core';
+import { CalendarA11y, CalendarDateFormatter, CalendarEvent, CalendarEventTitleFormatter,CalendarModule, CalendarUtils, CalendarView, DateAdapter } from 'angular-calendar';
 import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
-import { addDays, addHours, startOfDay, isSameDay, isSameMonth } from 'date-fns';
+import { addDays, addHours, isSameDay, isSameMonth,startOfDay } from 'date-fns';
 
 @Component({
   selector: 'app-schedule',

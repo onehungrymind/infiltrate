@@ -1,5 +1,5 @@
-import { IsString, IsOptional, IsEnum } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsEnum,IsOptional, IsString } from 'class-validator';
 
 export class UpdateSourceDto {
   @ApiProperty({ enum: ['rss', 'article', 'pdf'], required: false })

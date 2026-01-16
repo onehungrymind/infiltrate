@@ -1,10 +1,11 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundException } from '@nestjs/common';
-import { PrinciplesController } from './principles.controller';
-import { PrinciplesService } from './principles.service';
+import { Test, TestingModule } from '@nestjs/testing';
+
 import { CreatePrincipleDto } from './dto/create-principle.dto';
 import { UpdatePrincipleDto } from './dto/update-principle.dto';
 import { Principle } from './entities/principle.entity';
+import { PrinciplesController } from './principles.controller';
+import { PrinciplesService } from './principles.service';
 
 describe('PrinciplesController', () => {
   let controller: PrinciplesController;

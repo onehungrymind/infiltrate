@@ -1,7 +1,8 @@
-import { NestFactory, Reflector } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { NestFactory, Reflector } from '@nestjs/core';
+import { DocumentBuilder,SwaggerModule } from '@nestjs/swagger';
 import { json, urlencoded } from 'express';
+
 import { AppModule } from './app/app.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 

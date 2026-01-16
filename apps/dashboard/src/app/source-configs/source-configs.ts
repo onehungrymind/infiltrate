@@ -1,12 +1,13 @@
-import { Component, inject, OnInit, signal, computed, effect } from '@angular/core';
+import { Component, computed, effect,inject, OnInit, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { LearningPath, SourceType } from '@kasita/common-models';
-import { LearningPathsFacade } from '@kasita/core-state';
 import { LearningMapService } from '@kasita/core-data';
+import { LearningPathsFacade } from '@kasita/core-state';
 import { MaterialModule } from '@kasita/material';
+
+import { FilterConfig, SearchFilterBar, SearchFilterState } from '../shared/search-filter-bar/search-filter-bar';
 import { SourceDetail } from './source-config-detail/source-config-detail';
 import { SourcesList } from './source-configs-list/source-configs-list';
-import { SearchFilterBar, FilterConfig, SearchFilterState } from '../shared/search-filter-bar/search-filter-bar';
 
 // Linked path info
 export interface LinkedPath {

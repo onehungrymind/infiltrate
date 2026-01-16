@@ -9,6 +9,7 @@
  */
 
 import { DataSource } from 'typeorm';
+
 import { User } from '../entities/user.entity';
 
 export async function setDefaultRolesForExistingUsers(dataSource: DataSource): Promise<void> {

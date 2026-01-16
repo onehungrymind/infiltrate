@@ -1,9 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, LessThanOrEqual } from 'typeorm';
+import { LessThanOrEqual,Repository } from 'typeorm';
+
 import { CreateUserProgressDto } from './dto/create-user-progress.dto';
-import { UpdateUserProgressDto } from './dto/update-user-progress.dto';
 import { RecordAttemptDto } from './dto/record-attempt.dto';
+import { UpdateUserProgressDto } from './dto/update-user-progress.dto';
 import { UserProgress } from './entities/user-progress.entity';
 
 @Injectable()

@@ -1,11 +1,12 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { BadRequestException,Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+
+import { LearningPath } from '../learning-paths/entities/learning-path.entity';
 import { CreateSourceDto } from './dto/create-source.dto';
 import { UpdateSourceDto } from './dto/update-source.dto';
 import { Source } from './entities/source.entity';
 import { SourcePathLink } from './entities/source-path-link.entity';
-import { LearningPath } from '../learning-paths/entities/learning-path.entity';
 
 export interface SourceWithLink extends Source {
   enabled: boolean;

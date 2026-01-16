@@ -1,5 +1,5 @@
-import { IsString, IsNotEmpty, IsOptional, IsDateString, IsObject } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsDateString, IsNotEmpty, IsObject,IsOptional, IsString } from 'class-validator';
 
 export class CreateRawContentDto {
   @ApiProperty()

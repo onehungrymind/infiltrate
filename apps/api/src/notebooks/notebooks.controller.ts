@@ -1,16 +1,17 @@
 import {
+  Body,
   Controller,
   Get,
-  Post,
-  Body,
   Param,
-  UseGuards,
+  Post,
   Request,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
-import { NotebooksService } from './notebooks.service';
-import { SubmitNotebookDto } from './dto/submit-notebook.dto';
+import { ApiBearerAuth,ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { SubmitNotebookDto } from './dto/submit-notebook.dto';
+import { NotebooksService } from './notebooks.service';
 
 @ApiTags('notebooks')
 @Controller('notebooks')

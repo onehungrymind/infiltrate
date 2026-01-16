@@ -1,19 +1,20 @@
-import { Component, inject, OnInit, signal, computed } from '@angular/core';
+import { Component, computed,inject, OnInit, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { KnowledgeUnit, Challenge } from '@kasita/common-models';
+import { Challenge,KnowledgeUnit } from '@kasita/common-models';
 import { ChallengesFacade, KnowledgeUnitFacade } from '@kasita/core-state';
 import { MaterialModule } from '@kasita/material';
-import { ChallengeDetail } from './challenge-detail/challenge-detail';
-import { ChallengesList } from './challenges-list/challenges-list';
+
 import {
-  SearchFilterBar,
+  commonFilterMatchers,
+  filterEntities,
+} from '../shared/search-filter-bar/filter-utils';
+import {
   FilterConfig,
+  SearchFilterBar,
   SearchFilterState,
 } from '../shared/search-filter-bar/search-filter-bar';
-import {
-  filterEntities,
-  commonFilterMatchers,
-} from '../shared/search-filter-bar/filter-utils';
+import { ChallengeDetail } from './challenge-detail/challenge-detail';
+import { ChallengesList } from './challenges-list/challenges-list';
 
 @Component({
   selector: 'app-challenges',

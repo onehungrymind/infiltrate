@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-curriculum',
@@ -8,6 +8,4 @@ import { CommonModule } from '@angular/common';
   templateUrl: './curriculum.html',
   styleUrl: './curriculum.scss',
 })
-export class Curriculum {
-  constructor() {}
-}
+export class Curriculum {}

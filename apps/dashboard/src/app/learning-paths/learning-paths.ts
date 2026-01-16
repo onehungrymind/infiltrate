@@ -1,12 +1,13 @@
-import { Component, inject, OnInit, signal, computed } from '@angular/core';
+import { Component, computed,inject, OnInit, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { LearningPath } from '@kasita/common-models';
 import { LearningPathsFacade } from '@kasita/core-state';
 import { MaterialModule } from '@kasita/material';
+
+import { commonFilterMatchers,filterEntities } from '../shared/search-filter-bar/filter-utils';
+import { FilterConfig, SearchFilterBar, SearchFilterState } from '../shared/search-filter-bar/search-filter-bar';
 import { LearningPathDetail } from './learning-path-detail/learning-path-detail';
 import { LearningPathsList } from './learning-paths-list/learning-paths-list';
-import { SearchFilterBar, FilterConfig, SearchFilterState } from '../shared/search-filter-bar/search-filter-bar';
-import { filterEntities, commonFilterMatchers } from '../shared/search-filter-bar/filter-utils';
 
 @Component({
   selector: 'app-learning-paths',

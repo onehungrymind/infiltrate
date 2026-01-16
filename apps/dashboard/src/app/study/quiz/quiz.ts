@@ -1,10 +1,10 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, inject,OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { KnowledgeUnit, LearningPath, UserProgress } from '@kasita/common-models';
-import { KnowledgeUnitFacade, LearningPathsFacade, UserProgressFacade } from '@kasita/core-state';
 import { AuthService } from '@kasita/core-data';
-import { Subject, combineLatest } from 'rxjs';
+import { KnowledgeUnitFacade, LearningPathsFacade, UserProgressFacade } from '@kasita/core-state';
+import { combineLatest,Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 type QuestionType = 'multiple-choice' | 'true-false';

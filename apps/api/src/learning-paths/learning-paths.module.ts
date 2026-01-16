@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { LearningPathsService } from './learning-paths.service';
-import { LearningPathsController } from './learning-paths.controller';
+
 import { LearningPath } from './entities/learning-path.entity';
+import { LearningPathsController } from './learning-paths.controller';
+import { LearningPathsService } from './learning-paths.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([LearningPath])],

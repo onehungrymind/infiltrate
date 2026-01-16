@@ -3,14 +3,15 @@ import {
   Component,
   computed,
   input,
+OnChanges,
   output,
-  signal,
-} from '@angular/core';
-import { Project, LearningPath, Principle } from '@kasita/common-models';
-import { MaterialModule } from '@kasita/material';
+  signal, } from '@angular/core';
 import { form } from '@angular/forms/signals';
+import { LearningPath, Principle,Project } from '@kasita/common-models';
+import { initializeEntity,projectFields, toSchema } from '@kasita/core-data';
+import { MaterialModule } from '@kasita/material';
+
 import { DynamicForm } from '../../shared/dynamic-form/dynamic-form';
-import { projectFields, toSchema, initializeEntity } from '@kasita/core-data';
 
 @Component({
   selector: 'app-project-detail',
@@ -18,7 +19,7 @@ import { projectFields, toSchema, initializeEntity } from '@kasita/core-data';
   templateUrl: './project-detail.html',
   styleUrl: './project-detail.scss',
 })
-export class ProjectDetail {
+export class ProjectDetail implements OnChanges {
   project = input<Project | null>(null);
   paths = input<LearningPath[]>([]);
   principles = input<Principle[]>([]);

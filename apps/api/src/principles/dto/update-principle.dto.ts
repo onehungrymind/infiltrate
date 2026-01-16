@@ -1,7 +1,7 @@
-import { PartialType } from '@nestjs/swagger';
-import { CreatePrincipleDto } from './create-principle.dto';
+import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { IsEnum, IsOptional } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+
+import { CreatePrincipleDto } from './create-principle.dto';
 
 export class UpdatePrincipleDto extends PartialType(CreatePrincipleDto) {
   @ApiProperty({ enum: ['pending', 'in_progress', 'mastered'], required: false })

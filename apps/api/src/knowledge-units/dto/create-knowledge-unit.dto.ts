@@ -1,5 +1,5 @@
-import { IsString, IsNotEmpty, IsArray, IsOptional, IsEnum, IsNumber } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsArray, IsEnum, IsNotEmpty, IsNumber,IsOptional, IsString } from 'class-validator';
 
 export class CreateKnowledgeUnitDto {
   @ApiProperty()

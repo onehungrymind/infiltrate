@@ -10,6 +10,7 @@
     "importHelpers": true,
     "target": "es2015",
     "module": "esnext",
+    "jsx": "react-jsx",
     "lib": ["es2020", "dom"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
@@ -18,7 +19,13 @@
       "@kasita/common-models": ["libs/common-models/src/index.ts"],
       "@kasita/core-data": ["libs/core-data/src/index.ts"],
       "@kasita/core-state": ["libs/core-state/src/index.ts"],
-      "@kasita/material": ["libs/material/src/index.ts"]
+      "@kasita/material": ["libs/material/src/index.ts"],
+      "@kasita/feature-completion-assessment": ["libs/feature-completion-assessment/src/index.ts"],
+      "@kasita/feature-notebook": ["libs/feature-notebook/src/index.ts"],
+      "@kasita/feature-learning-map": ["libs/feature-learning-map/src/index.ts"],
+      "@kasita/feature-graph": ["libs/feature-graph/src/index.ts"],
+      "@kasita/feature-algorithm-viz": ["libs/feature-algorithm-viz/src/index.ts"],
+      "@kasita/feature-metro-maps": ["libs/feature-metro-maps/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

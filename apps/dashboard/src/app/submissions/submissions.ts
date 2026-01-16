@@ -1,21 +1,22 @@
-import { Component, inject, OnInit, signal, computed } from '@angular/core';
+import { Component, computed,inject, OnInit, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { LearningPath, Submission, Challenge, Project } from '@kasita/common-models';
-import { SubmissionsFacade, LearningPathsFacade, ChallengesFacade, ProjectsFacade } from '@kasita/core-state';
+import { Challenge, LearningPath, Project,Submission } from '@kasita/common-models';
 import { SubmissionsService } from '@kasita/core-data';
+import { ChallengesFacade, LearningPathsFacade, ProjectsFacade,SubmissionsFacade } from '@kasita/core-state';
 import { MaterialModule } from '@kasita/material';
-import { SubmissionDetail } from './submission-detail/submission-detail';
-import { SubmissionsList } from './submissions-list/submissions-list';
-import { SubmissionFeedback } from './submission-feedback/submission-feedback';
+
 import {
-  SearchFilterBar,
+  commonFilterMatchers,
+  filterEntities,
+} from '../shared/search-filter-bar/filter-utils';
+import {
   FilterConfig,
+  SearchFilterBar,
   SearchFilterState,
 } from '../shared/search-filter-bar/search-filter-bar';
-import {
-  filterEntities,
-  commonFilterMatchers,
-} from '../shared/search-filter-bar/filter-utils';
+import { SubmissionDetail } from './submission-detail/submission-detail';
+import { SubmissionFeedback } from './submission-feedback/submission-feedback';
+import { SubmissionsList } from './submissions-list/submissions-list';
 
 @Component({
   selector: 'app-submissions',

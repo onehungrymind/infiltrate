@@ -1,16 +1,16 @@
 import { CommonModule } from '@angular/common';
 import {
   Component,
+  computed,
   EventEmitter,
+  inject,
   Input,
   Output,
   signal,
-  computed,
-  inject,
 } from '@angular/core';
-import { Submission, Challenge, Project } from '@kasita/common-models';
-import { MaterialModule } from '@kasita/material';
+import { Challenge, Project,Submission } from '@kasita/common-models';
 import { SubmissionsService } from '@kasita/core-data';
+import { MaterialModule } from '@kasita/material';
 
 interface UrlMetadata {
   title?: string;

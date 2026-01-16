@@ -1,19 +1,20 @@
-import { Component, inject, OnInit, signal, computed } from '@angular/core';
+import { Component, computed,inject, OnInit, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { LearningPath, Principle, Project } from '@kasita/common-models';
-import { ProjectsFacade, LearningPathsFacade, PrincipleFacade } from '@kasita/core-state';
+import { LearningPathsFacade, PrincipleFacade,ProjectsFacade } from '@kasita/core-state';
 import { MaterialModule } from '@kasita/material';
-import { ProjectDetail } from './project-detail/project-detail';
-import { ProjectsList } from './projects-list/projects-list';
+
 import {
-  SearchFilterBar,
+  commonFilterMatchers,
+  filterEntities,
+} from '../shared/search-filter-bar/filter-utils';
+import {
   FilterConfig,
+  SearchFilterBar,
   SearchFilterState,
 } from '../shared/search-filter-bar/search-filter-bar';
-import {
-  filterEntities,
-  commonFilterMatchers,
-} from '../shared/search-filter-bar/filter-utils';
+import { ProjectDetail } from './project-detail/project-detail';
+import { ProjectsList } from './projects-list/projects-list';
 
 @Component({
   selector: 'app-projects',

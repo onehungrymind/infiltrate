@@ -1,18 +1,18 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import {
+  KnowledgeUnit,
   LearningPath,
   MasteryLevel,
-  KnowledgeUnit,
   UserProgress
 } from '@kasita/common-models';
+import { LearningMapService } from '@kasita/core-data';
 import {
-  LearningPathsFacade,
   KnowledgeUnitFacade,
+  LearningPathsFacade,
   UserProgressFacade
 } from '@kasita/core-state';
-import { LearningMapService } from '@kasita/core-data';
 import { combineLatest } from 'rxjs';
 
 interface SourceInfo {

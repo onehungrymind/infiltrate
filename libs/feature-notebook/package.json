@@ -1,0 +1,13 @@
+{
+  "name": "@kasita/feature-notebook",
+  "version": "0.0.1",
+  "peerDependencies": {
+    "@angular/common": "^21.0.0",
+    "@angular/core": "^21.0.0",
+    "@angular/forms": "^21.0.0",
+    "@angular/platform-browser": "^21.0.0",
+    "@kasita/core-data": "*",
+    "@kasita/material": "*"
+  },
+  "sideEffects": false
+}

@@ -3,14 +3,15 @@ import {
   Component,
   computed,
   input,
+OnChanges,
   output,
-  signal,
-} from '@angular/core';
-import { Challenge, KnowledgeUnit, RubricCriterion } from '@kasita/common-models';
-import { MaterialModule } from '@kasita/material';
+  signal, } from '@angular/core';
 import { form } from '@angular/forms/signals';
+import { Challenge, KnowledgeUnit, RubricCriterion } from '@kasita/common-models';
+import { challengeFields, initializeEntity,toSchema } from '@kasita/core-data';
+import { MaterialModule } from '@kasita/material';
+
 import { DynamicForm } from '../../shared/dynamic-form/dynamic-form';
-import { challengeFields, toSchema, initializeEntity } from '@kasita/core-data';
 
 @Component({
   selector: 'app-challenge-detail',
@@ -18,7 +19,7 @@ import { challengeFields, toSchema, initializeEntity } from '@kasita/core-data';
   templateUrl: './challenge-detail.html',
   styleUrl: './challenge-detail.scss',
 })
-export class ChallengeDetail {
+export class ChallengeDetail implements OnChanges {
   challenge = input<Challenge | null>(null);
   units = input<KnowledgeUnit[]>([]);
 

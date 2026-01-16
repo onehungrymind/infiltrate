@@ -1,15 +1,16 @@
 import {
-  Entity,
   Column,
-  PrimaryGeneratedColumn,
   CreateDateColumn,
-  UpdateDateColumn,
+  Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
-  JoinColumn,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
-import { KnowledgeUnit } from '../../knowledge-units/entities/knowledge-unit.entity';
+
 import { Challenge } from '../../challenges/entities/challenge.entity';
+import { KnowledgeUnit } from '../../knowledge-units/entities/knowledge-unit.entity';
 import { Project } from '../../projects/entities/project.entity';
 import { Feedback } from './feedback.entity';
 

@@ -1,6 +1,7 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany } from 'typeorm';
-import { LearningPath } from '../../learning-paths/entities/learning-path.entity';
+import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany,PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+
 import { KnowledgeUnit } from '../../knowledge-units/entities/knowledge-unit.entity';
+import { LearningPath } from '../../learning-paths/entities/learning-path.entity';
 
 @Entity('principles')
 export class Principle {

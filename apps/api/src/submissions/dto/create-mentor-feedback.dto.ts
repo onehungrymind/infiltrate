@@ -1,16 +1,16 @@
-import {
-  IsString,
-  IsNotEmpty,
-  IsNumber,
-  IsArray,
-  IsOptional,
-  IsEnum,
-  ValidateNested,
-  Min,
-  Max,
-} from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
+import {
+  IsArray,
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Max,
+  Min,
+  ValidateNested,
+} from 'class-validator';
 
 class RubricScoreDto {
   @ApiProperty({ description: 'Criterion name', example: 'Correctness' })

@@ -1,6 +1,7 @@
-import { Controller, Post, HttpCode, HttpStatus } from '@nestjs/common';
-import { SeederService } from './seeder.service';
+import { Controller, HttpCode, HttpStatus,Post } from '@nestjs/common';
+
 import { Public } from '../auth/decorators/public.decorator';
+import { SeederService } from './seeder.service';
 
 @Controller('seed')
 export class SeedController {

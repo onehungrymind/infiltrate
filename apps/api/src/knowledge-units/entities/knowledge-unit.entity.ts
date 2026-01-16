@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany } from 'typeorm';
+import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany,PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+
 import { LearningPath } from '../../learning-paths/entities/learning-path.entity';
 import { Principle } from '../../principles/entities/principle.entity';
 import { UserProgress } from '../../user-progress/entities/user-progress.entity';

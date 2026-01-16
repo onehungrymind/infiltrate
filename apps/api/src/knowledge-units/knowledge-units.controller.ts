@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { KnowledgeUnitsService } from './knowledge-units.service';
+import { Body, Controller, Delete,Get, Param, Patch, Post } from '@nestjs/common';
+
 import { CreateKnowledgeUnitDto } from './dto/create-knowledge-unit.dto';
 import { UpdateKnowledgeUnitDto } from './dto/update-knowledge-unit.dto';
+import { KnowledgeUnitsService } from './knowledge-units.service';
 
 @Controller('knowledge-units')
 export class KnowledgeUnitsController {

@@ -1,12 +1,13 @@
+import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { NotFoundException } from '@nestjs/common';
-import { LearningMapService } from './learning-map.service';
+
+import { KnowledgeUnit } from '../knowledge-units/entities/knowledge-unit.entity';
 import { LearningPath } from '../learning-paths/entities/learning-path.entity';
 import { NotebookProgress } from '../notebooks/entities/notebook-progress.entity';
 import { Principle } from '../principles/entities/principle.entity';
-import { KnowledgeUnit } from '../knowledge-units/entities/knowledge-unit.entity';
+import { LearningMapService } from './learning-map.service';
 
 describe('LearningMapService', () => {
   let service: LearningMapService;

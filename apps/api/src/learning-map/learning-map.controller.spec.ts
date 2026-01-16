@@ -1,9 +1,10 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { LearningMapEdge, LearningMapNode, LearningPathMap } from '@kasita/common-models';
 import { ExecutionContext, NotFoundException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { LearningMapController } from './learning-map.controller';
 import { LearningMapService } from './learning-map.service';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { LearningPathMap, LearningMapNode, LearningMapEdge, LearningMapProgress, NodeDetails } from '@kasita/common-models';
 
 describe('LearningMapController', () => {
   let controller: LearningMapController;

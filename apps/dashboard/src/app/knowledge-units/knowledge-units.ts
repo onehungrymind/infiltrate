@@ -1,13 +1,14 @@
 import { AsyncPipe } from '@angular/common';
-import { Component, inject, OnInit, signal, computed } from '@angular/core';
+import { Component, computed,inject, OnInit, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { KnowledgeUnit, LearningPath } from '@kasita/common-models';
 import { KnowledgeUnitFacade, LearningPathsFacade } from '@kasita/core-state';
 import { MaterialModule } from '@kasita/material';
+
+import { commonFilterMatchers,filterEntities } from '../shared/search-filter-bar/filter-utils';
+import { FilterConfig, SearchFilterBar, SearchFilterState } from '../shared/search-filter-bar/search-filter-bar';
 import { KnowledgeUnitDetail } from './knowledge-unit-detail/knowledge-unit-detail';
 import { KnowledgeUnitsList } from './knowledge-units-list/knowledge-units-list';
-import { SearchFilterBar, FilterConfig, SearchFilterState } from '../shared/search-filter-bar/search-filter-bar';
-import { filterEntities, commonFilterMatchers } from '../shared/search-filter-bar/filter-utils';
 
 @Component({
   selector: 'app-knowledge-units',

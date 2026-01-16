@@ -1,30 +1,31 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { ConfigService } from '@nestjs/config';
-import { Repository } from 'typeorm';
-import { exec } from 'child_process';
-import { promisify } from 'util';
 import Anthropic from '@anthropic-ai/sdk';
+import { BadRequestException,Injectable, NotFoundException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { InjectRepository } from '@nestjs/typeorm';
+import { exec } from 'child_process';
+import { Repository } from 'typeorm';
+import { promisify } from 'util';
+
 import { GENERATE_PRINCIPLES_PROMPT } from './prompts/generate-principles.prompt';
 import { SUGGEST_SOURCES_PROMPT } from './prompts/suggest-sources.prompt';
 
 const execAsync = promisify(exec);
 import {
-  LearningPathMap,
-  LearningMapProgress,
-  LearningMapNode,
   LearningMapEdge,
+  LearningMapNode,
+  LearningMapProgress,
+  LearningPathMap,
   NodeDetails,
-  NodeProgress,
   NodeStatus,
   PrincipleNodeData,
 } from '@kasita/common-models';
+
+import { KnowledgeUnit } from '../knowledge-units/entities/knowledge-unit.entity';
 import { LearningPath } from '../learning-paths/entities/learning-path.entity';
 import { NotebookProgress } from '../notebooks/entities/notebook-progress.entity';
 import { Principle } from '../principles/entities/principle.entity';
-import { KnowledgeUnit } from '../knowledge-units/entities/knowledge-unit.entity';
-import { SourcePathLink } from '../source-configs/entities/source-path-link.entity';
 import { RawContent } from '../raw-content/entities/raw-content.entity';
+import { SourcePathLink } from '../source-configs/entities/source-path-link.entity';
 import { SourcesService } from '../source-configs/sources.service';
 
 @Injectable()

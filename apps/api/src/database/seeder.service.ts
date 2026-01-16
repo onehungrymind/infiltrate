@@ -1,20 +1,21 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import * as bcrypt from 'bcrypt';
 import { Repository } from 'typeorm';
-import { LearningPath } from '../learning-paths/entities/learning-path.entity';
+
+import { Challenge } from '../challenges/entities/challenge.entity';
 import { KnowledgeUnit } from '../knowledge-units/entities/knowledge-unit.entity';
+import { LearningPath } from '../learning-paths/entities/learning-path.entity';
 import { Principle } from '../principles/entities/principle.entity';
+import { Project } from '../projects/entities/project.entity';
 import { RawContent } from '../raw-content/entities/raw-content.entity';
 import { Source } from '../source-configs/entities/source.entity';
 import { SourcePathLink } from '../source-configs/entities/source-path-link.entity';
+import { Feedback } from '../submissions/entities/feedback.entity';
+import { Submission } from '../submissions/entities/submission.entity';
 import { UserProgress } from '../user-progress/entities/user-progress.entity';
 import { User } from '../users/entities/user.entity';
-import { Challenge } from '../challenges/entities/challenge.entity';
-import { Project } from '../projects/entities/project.entity';
-import { Submission } from '../submissions/entities/submission.entity';
-import { Feedback } from '../submissions/entities/feedback.entity';
 import { seedPayload } from './seed-payload';
-import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class SeederService {
