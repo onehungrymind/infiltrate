@@ -1,0 +1,26 @@
+{
+  "name": "feature-linear-dashboard",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/feature-linear-dashboard/src",
+  "prefix": "lib",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@angular-devkit/build-angular:ng-packagr",
+      "outputs": ["{workspaceRoot}/dist/libs/feature-linear-dashboard"],
+      "options": {
+        "project": "libs/feature-linear-dashboard/ng-package.json"
+      },
+      "configurations": {
+        "production": {
+          "tsConfig": "libs/feature-linear-dashboard/tsconfig.lib.prod.json"
+        },
+        "development": {
+          "tsConfig": "libs/feature-linear-dashboard/tsconfig.lib.json"
+        }
+      },
+      "defaultConfiguration": "production"
+    }
+  }
+}

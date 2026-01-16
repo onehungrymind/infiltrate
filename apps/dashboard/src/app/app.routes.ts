@@ -134,6 +134,16 @@ export const appRoutes: Route[] = [
     canActivate: [authGuard],
   },
   {
+    path: 'linear-dashboard',
+    loadComponent: () => import('@kasita/feature-linear-dashboard').then((m) => m.LinearDashboardComponent),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'mind-map',
+    loadComponent: () => import('@kasita/feature-mind-map').then((m) => m.MindMapComponent),
+    canActivate: [authGuard],
+  },
+  {
     path: 'completion-assessment',
     loadComponent: () => import('@kasita/feature-completion-assessment').then((m) => m.CompletionAssessment),
     canActivate: [authGuard],

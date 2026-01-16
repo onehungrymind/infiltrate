@@ -1,0 +1,26 @@
+{
+  "name": "feature-mind-map",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/feature-mind-map/src",
+  "prefix": "lib",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@angular-devkit/build-angular:ng-packagr",
+      "outputs": ["{workspaceRoot}/dist/libs/feature-mind-map"],
+      "options": {
+        "project": "libs/feature-mind-map/ng-package.json"
+      },
+      "configurations": {
+        "production": {
+          "tsConfig": "libs/feature-mind-map/tsconfig.lib.prod.json"
+        },
+        "development": {
+          "tsConfig": "libs/feature-mind-map/tsconfig.lib.json"
+        }
+      },
+      "defaultConfiguration": "production"
+    }
+  }
+}
