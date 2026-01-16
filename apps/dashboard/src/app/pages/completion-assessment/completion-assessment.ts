@@ -28,84 +28,136 @@ interface CriticalPathItem {
 })
 export class CompletionAssessment {
   lastUpdated = signal('January 15, 2026');
-  overallCompletion = signal(78);
+  overallCompletion = signal(85);
 
   epics = signal<Epic[]>([
-    { name: 'Epic 1: Learning Objective & Map Generation', progress: 60, status: 'mostly-complete', color: '#3b82f6' },
+    { name: 'Epic 1: Learning Objective & Map Generation', progress: 70, status: 'mostly-complete', color: '#3b82f6' },
     { name: 'Epic 2: Content Sourcing & Ingestion', progress: 90, status: 'complete', color: '#22c55e' },
-    { name: 'Epic 3: Content Synthesis & Knowledge Units', progress: 75, status: 'mostly-complete', color: '#3b82f6' },
-    { name: 'Epic 4: Adaptive Content Presentation', progress: 70, status: 'mostly-complete', color: '#3b82f6' },
-    { name: 'Epic 5: Feedback Loops', progress: 60, status: 'mostly-complete', color: '#3b82f6' },
-    { name: 'Epic 6: Progress Tracking & Validation', progress: 50, status: 'partial', color: '#f59e0b' },
-    { name: 'Epic 7: Input/Output Optionality', progress: 70, status: 'mostly-complete', color: '#3b82f6' },
+    { name: 'Epic 3: Content Synthesis & Knowledge Units', progress: 80, status: 'mostly-complete', color: '#3b82f6' },
+    { name: 'Epic 4: Adaptive Content Presentation', progress: 75, status: 'mostly-complete', color: '#3b82f6' },
+    { name: 'Epic 5: Feedback Loops', progress: 85, status: 'mostly-complete', color: '#3b82f6' },
+    { name: 'Epic 6: Progress Tracking & Validation', progress: 60, status: 'partial', color: '#f59e0b' },
+    { name: 'Epic 7: Input/Output Optionality', progress: 75, status: 'mostly-complete', color: '#3b82f6' },
   ]);
 
   criticalPathItems = signal<CriticalPathItem[]>([
     { name: 'SM-2 spaced repetition algorithm', status: 'complete', blocking: 'Progress tracking' },
-    { name: 'Principle entity', status: 'complete', blocking: 'Learning map structure' },
-    { name: 'AI learning map generation', status: 'complete', blocking: 'Core user flow' },
-    { name: 'Quiz Runner', status: 'complete', blocking: 'Learning variety' },
-    { name: 'Challenge submission system', status: 'complete', blocking: 'Feedback loop' },
-    { name: 'Flashcard-API integration', status: 'complete', blocking: 'Progress tracking' },
+    { name: 'Principle entity & CRUD', status: 'complete', blocking: 'Learning map structure' },
+    { name: 'AI principle generation', status: 'complete', blocking: 'Core user flow' },
+    { name: 'Quiz with SM-2 integration', status: 'complete', blocking: 'Learning variety' },
+    { name: 'Challenge & Project entities', status: 'complete', blocking: 'Feedback loop' },
+    { name: 'Submission system (text/URL/file)', status: 'complete', blocking: 'Feedback loop' },
+    { name: 'AI feedback generation', status: 'complete', blocking: 'Feedback loop' },
+    { name: 'Mentor feedback system', status: 'complete', blocking: 'Human review flow' },
+    { name: 'React Flow learning map', status: 'complete', blocking: 'Visualization' },
+    { name: 'Content ingestion pipeline', status: 'complete', blocking: 'Content acquisition' },
+    { name: 'Knowledge unit synthesis', status: 'complete', blocking: 'Content processing' },
   ]);
 
   apiComponents = signal<ComponentStatus[]>([
-    { name: 'User CRUD', status: 'complete' },
+    // Core CRUD
+    { name: 'User CRUD + JWT Auth', status: 'complete' },
     { name: 'Learning Path CRUD', status: 'complete' },
     { name: 'Knowledge Unit CRUD', status: 'complete' },
-    { name: 'Sources CRUD (many-to-many)', status: 'complete' },
-    { name: 'Source Path Links', status: 'complete' },
-    { name: 'Raw Content CRUD', status: 'complete' },
-    { name: 'User Progress CRUD', status: 'complete' },
-    { name: 'JWT Authentication', status: 'complete' },
-    { name: 'Ingestion endpoints', status: 'complete' },
-    { name: 'Knowledge Graph generation', status: 'complete' },
-    { name: 'SM-2 algorithm', status: 'complete' },
     { name: 'Principle CRUD', status: 'complete' },
     { name: 'Challenge CRUD', status: 'complete' },
     { name: 'Project CRUD', status: 'complete' },
     { name: 'Submission CRUD', status: 'complete' },
     { name: 'Feedback CRUD', status: 'complete' },
-    { name: 'File upload endpoint', status: 'complete' },
-    { name: 'URL metadata extraction', status: 'complete' },
-    { name: 'AI map generation', status: 'complete' },
+    { name: 'User Progress CRUD', status: 'complete' },
+    { name: 'Raw Content CRUD', status: 'complete' },
+    // Source management
+    { name: 'Sources (many-to-many)', status: 'complete' },
+    { name: 'Source Path Links', status: 'complete' },
+    // Learning map
+    { name: 'Learning map endpoints', status: 'complete' },
+    { name: 'Node status tracking (partial)', status: 'placeholder' },
+    // AI features
+    { name: 'AI principle generation', status: 'complete' },
     { name: 'AI source suggestions', status: 'complete' },
+    { name: 'AI feedback generation', status: 'complete' },
+    // Ingestion & synthesis
+    { name: 'Ingestion trigger endpoint', status: 'complete' },
+    { name: 'Synthesis trigger endpoint', status: 'complete' },
+    { name: 'Knowledge graph generation', status: 'complete' },
+    // Submissions
+    { name: 'File upload (Multer)', status: 'complete' },
+    { name: 'URL metadata extraction', status: 'complete' },
+    { name: 'Submit for review flow', status: 'complete' },
+    // Mentor system
+    { name: 'Mentor assignment', status: 'complete' },
+    { name: 'Mentor submissions query', status: 'complete' },
+    { name: 'Mentor feedback submission', status: 'complete' },
+    // SM-2
+    { name: 'SM-2 record attempt', status: 'complete' },
+    { name: 'SM-2 due for review', status: 'complete' },
+    { name: 'SM-2 study stats', status: 'complete' },
   ]);
 
   dashboardComponents = signal<ComponentStatus[]>([
-    { name: 'User management', status: 'complete' },
-    { name: 'Learning paths CRUD', status: 'complete' },
+    // Auth & navigation
+    { name: 'Login/auth flow', status: 'complete' },
+    { name: 'Sidebar navigation', status: 'complete' },
+    { name: 'Home dashboard', status: 'complete' },
+    // Core CRUD pages
+    { name: 'Users management', status: 'complete' },
+    { name: 'Learning Paths CRUD', status: 'complete' },
+    { name: 'Knowledge Units CRUD', status: 'complete' },
     { name: 'Principles CRUD', status: 'complete' },
-    { name: 'Principles - Learning Path filter', status: 'complete' },
-    { name: 'Knowledge units CRUD', status: 'complete' },
-    { name: 'Knowledge units - Learning Path filter', status: 'complete' },
-    { name: 'Sources CRUD (many-to-many)', status: 'complete' },
-    { name: 'Raw content CRUD', status: 'complete' },
-    { name: 'User progress CRUD', status: 'complete' },
     { name: 'Challenges CRUD', status: 'complete' },
     { name: 'Projects CRUD', status: 'complete' },
     { name: 'Submissions CRUD', status: 'complete' },
+    { name: 'Raw Content CRUD', status: 'complete' },
+    { name: 'Sources CRUD', status: 'complete' },
+    { name: 'User Progress CRUD', status: 'complete' },
+    // Filters
+    { name: 'Learning Path filter (Principles)', status: 'complete' },
+    { name: 'Learning Path filter (Knowledge Units)', status: 'complete' },
+    { name: 'Search/filter bar component', status: 'complete' },
+    // Learning map & visualization
     { name: 'React Flow learning map', status: 'complete' },
-    { name: 'Home dashboard', status: 'complete' },
-    { name: 'Login/auth', status: 'complete' },
-    { name: 'Completion Assessment', status: 'complete' },
-    { name: 'Approval workflow UI', status: 'not-started' },
+    { name: 'Knowledge graph visualization', status: 'complete' },
+    { name: 'Cytoscape graph view', status: 'complete' },
+    // Study features
+    { name: 'Study Flashcards (SM-2)', status: 'complete' },
+    { name: 'Study Quiz (SM-2)', status: 'complete' },
+    // AI features
+    { name: 'AI principle generation UI', status: 'complete' },
+    { name: 'AI source suggestions UI', status: 'complete' },
+    { name: 'AI feedback request UI', status: 'complete' },
+    // Pipeline triggers
     { name: 'Ingestion trigger button', status: 'complete' },
     { name: 'Synthesis trigger button', status: 'complete' },
-    { name: 'Learning path wizard', status: 'not-started' },
-    { name: 'AI principle generation button', status: 'complete' },
-    { name: 'AI source suggestions UI', status: 'complete' },
+    // Submission features
+    { name: 'Content type selector', status: 'complete' },
+    { name: 'File upload dropzone', status: 'complete' },
+    { name: 'URL metadata fetcher', status: 'complete' },
+    { name: 'Challenge/Project selector', status: 'complete' },
+    { name: 'Feedback display', status: 'complete' },
+    { name: 'Grade badge display', status: 'complete' },
+    // Mentor system
+    { name: 'Mentor Dashboard', status: 'complete' },
+    { name: 'Mentor assignment selector', status: 'complete' },
+    { name: 'Mentor review form', status: 'complete' },
+    // Other
+    { name: 'Completion Assessment', status: 'complete' },
+    { name: 'Marimo notebook viewer', status: 'complete' },
+    // Not started
+    { name: 'Learning path wizard (multi-step)', status: 'not-started' },
+    { name: 'KU approval workflow UI', status: 'not-started' },
+    { name: 'Home nav actions (partial TODOs)', status: 'placeholder' },
   ]);
 
   patchbayComponents = signal<ComponentStatus[]>([
-    { name: 'RSS adapter', status: 'complete' },
-    { name: 'Article adapter', status: 'complete' },
-    { name: 'PDF adapter', status: 'complete' },
+    { name: 'RSS/Atom adapter', status: 'complete' },
+    { name: 'Article adapter (Trafilatura)', status: 'complete' },
+    { name: 'PDF adapter (PyPDF2)', status: 'complete' },
     { name: 'JavaScript Weekly adapter', status: 'complete' },
     { name: 'API integration', status: 'complete' },
+    { name: 'Adapter pattern architecture', status: 'complete' },
     { name: 'YouTube adapter', status: 'not-started' },
     { name: 'Podcast adapter', status: 'not-started' },
-    { name: 'Newsletter (IMAP) adapter', status: 'placeholder' },
+    { name: 'Newsletter (IMAP) adapter', status: 'not-started' },
   ]);
 
   synthesizerComponents = signal<ComponentStatus[]>([
@@ -114,13 +166,14 @@ export class CompletionAssessment {
     { name: 'Knowledge unit generator', status: 'complete' },
     { name: 'API integration', status: 'complete' },
     { name: 'Pipeline orchestrator', status: 'complete' },
+    { name: 'Claude AI integration', status: 'complete' },
   ]);
 
   learningApps = signal<ComponentStatus[]>([
-    { name: 'Infiltrate (Flashcards)', status: 'complete' },
-    { name: 'Study Flashcards (Dashboard)', status: 'complete' },
-    { name: 'Study Quiz (Dashboard)', status: 'complete' },
-    { name: 'Challenge Arena', status: 'placeholder' },
+    { name: 'Infiltrate (Gamified Flashcards)', status: 'complete' },
+    { name: 'Study Flashcards (SM-2)', status: 'complete' },
+    { name: 'Study Quiz (SM-2)', status: 'complete' },
+    { name: 'Challenge Arena', status: 'not-started' },
   ]);
 
   // Computed stats
