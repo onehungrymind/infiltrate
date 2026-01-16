@@ -129,6 +129,11 @@ export const appRoutes: Route[] = [
     canActivate: [authGuard],
   },
   {
+    path: 'skill-tree',
+    loadComponent: () => import('@kasita/feature-skill-tree').then((m) => m.SkillTreeComponent),
+    canActivate: [authGuard],
+  },
+  {
     path: 'completion-assessment',
     loadComponent: () => import('@kasita/feature-completion-assessment').then((m) => m.CompletionAssessment),
     canActivate: [authGuard],

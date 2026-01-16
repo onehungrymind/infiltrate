@@ -25,7 +25,8 @@
       "@kasita/feature-learning-map": ["libs/feature-learning-map/src/index.ts"],
       "@kasita/feature-graph": ["libs/feature-graph/src/index.ts"],
       "@kasita/feature-algorithm-viz": ["libs/feature-algorithm-viz/src/index.ts"],
-      "@kasita/feature-metro-maps": ["libs/feature-metro-maps/src/index.ts"]
+      "@kasita/feature-metro-maps": ["libs/feature-metro-maps/src/index.ts"],
+      "@kasita/feature-skill-tree": ["libs/feature-skill-tree/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
