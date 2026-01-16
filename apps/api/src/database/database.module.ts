@@ -13,9 +13,27 @@ import { User } from '../users/entities/user.entity';
 import { DataSource } from '../data-sources/entities/data-source.entity';
 import { Challenge } from '../challenges/entities/challenge.entity';
 import { Project } from '../projects/entities/project.entity';
+import { Submission } from '../submissions/entities/submission.entity';
+import { Feedback } from '../submissions/entities/feedback.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([LearningPath, KnowledgeUnit, Principle, RawContent, Source, SourcePathLink, UserProgress, User, DataSource, Challenge, Project])],
+  imports: [
+    TypeOrmModule.forFeature([
+      LearningPath,
+      KnowledgeUnit,
+      Principle,
+      RawContent,
+      Source,
+      SourcePathLink,
+      UserProgress,
+      User,
+      DataSource,
+      Challenge,
+      Project,
+      Submission,
+      Feedback,
+    ]),
+  ],
   controllers: [SeedController],
   providers: [SeederService],
   exports: [SeederService],

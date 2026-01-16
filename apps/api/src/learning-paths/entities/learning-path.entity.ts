@@ -1,8 +1,9 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToOne, JoinColumn } from 'typeorm';
 import { KnowledgeUnit } from '../../knowledge-units/entities/knowledge-unit.entity';
 import { Principle } from '../../principles/entities/principle.entity';
 import { SourcePathLink } from '../../source-configs/entities/source-path-link.entity';
 import { RawContent } from '../../raw-content/entities/raw-content.entity';
+import { User } from '../../users/entities/user.entity';
 
 @Entity('learning_paths')
 export class LearningPath {
@@ -11,6 +12,13 @@ export class LearningPath {
 
   @Column()
   userId: string;
+
+  @Column({ nullable: true })
+  mentorId: string;
+
+  @ManyToOne(() => User, { onDelete: 'SET NULL', nullable: true })
+  @JoinColumn({ name: 'mentorId' })
+  mentor: User;
 
   @Column()
   name: string;

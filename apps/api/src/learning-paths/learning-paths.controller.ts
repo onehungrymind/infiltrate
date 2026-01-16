@@ -1,8 +1,10 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { LearningPathsService } from './learning-paths.service';
 import { CreateLearningPathDto } from './dto/create-learning-path.dto';
 import { UpdateLearningPathDto } from './dto/update-learning-path.dto';
 
+@ApiTags('learning-paths')
 @Controller('learning-paths')
 export class LearningPathsController {
   constructor(private readonly learningPathsService: LearningPathsService) {}
@@ -17,9 +19,26 @@ export class LearningPathsController {
     return this.learningPathsService.findAll();
   }
 
+  @Get('mentor/:mentorId')
+  @ApiOperation({ summary: 'Get all learning paths assigned to a mentor' })
+  @ApiResponse({ status: 200, description: 'List of learning paths for the mentor' })
+  findByMentor(@Param('mentorId') mentorId: string) {
+    return this.learningPathsService.findByMentor(mentorId);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.learningPathsService.findOne(id);
+  }
+
+  @Patch(':id/mentor')
+  @ApiOperation({ summary: 'Assign or update mentor for a learning path' })
+  @ApiResponse({ status: 200, description: 'Mentor assigned successfully' })
+  assignMentor(
+    @Param('id') id: string,
+    @Body('mentorId') mentorId: string,
+  ) {
+    return this.learningPathsService.assignMentor(id, mentorId);
   }
 
   @Patch(':id')

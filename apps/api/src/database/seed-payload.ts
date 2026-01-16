@@ -1,8 +1,23 @@
 // Seed payload for Kasita domain model
 export const seedPayload = {
+  users: [
+    {
+      email: 'test@test.com',
+      password: 'insecure',
+      name: 'Test User',
+      role: 'user' as const,
+    },
+    {
+      email: 'mentor@test.com',
+      password: 'insecure',
+      name: 'Sarah Chen',
+      role: 'mentor' as const,
+    },
+  ],
   learningPaths: [
     {
       userId: 'demo-user-1',
+      mentorId: 'mentor-1', // Will be replaced with actual mentor ID
       name: 'React Server Components',
       domain: 'Web Development',
       targetSkill: 'Build production-ready RSC applications',
@@ -10,6 +25,7 @@ export const seedPayload = {
     },
     {
       userId: 'demo-user-1',
+      mentorId: 'mentor-1', // Will be replaced with actual mentor ID
       name: 'Machine Learning Fundamentals',
       domain: 'Data Science',
       targetSkill: 'Understand core ML concepts and algorithms',
@@ -451,6 +467,157 @@ export const seedPayload = {
       estimatedHours: 15,
       difficulty: 'expert' as const,
       isActive: true,
+    },
+  ],
+  submissions: [
+    // Challenge submission - approved with AI feedback
+    {
+      userId: 'user-1',
+      challengeId: 'challenge-1',
+      pathId: 'path-1',
+      title: 'Server Component Dashboard Implementation',
+      contentType: 'text' as const,
+      content: `// app/dashboard/page.tsx
+import { Suspense } from 'react';
+import { getUserStats } from '@/lib/db';
+
+async function DashboardStats() {
+  const stats = await getUserStats();
+  return (
+    <div className="stats-grid">
+      <div className="stat">{stats.totalUsers}</div>
+      <div className="stat">{stats.activeUsers}</div>
+    </div>
+  );
+}
+
+export default function DashboardPage() {
+  return (
+    <main>
+      <h1>Dashboard</h1>
+      <Suspense fallback={<div>Loading stats...</div>}>
+        <DashboardStats />
+      </Suspense>
+    </main>
+  );
+}`,
+      status: 'approved' as const,
+      score: 85,
+      submittedAt: new Date('2025-01-10'),
+      reviewedAt: new Date('2025-01-10'),
+    },
+    // Challenge submission - submitted, awaiting review
+    {
+      userId: 'user-1',
+      challengeId: 'challenge-2',
+      pathId: 'path-1',
+      title: 'Streaming SSR Implementation',
+      contentType: 'url' as const,
+      content: 'https://github.com/testuser/streaming-ssr-demo',
+      status: 'submitted' as const,
+      submittedAt: new Date('2025-01-14'),
+    },
+    // Project submission - approved with mentor feedback
+    {
+      userId: 'user-1',
+      projectId: 'project-1',
+      pathId: 'path-1',
+      title: 'RSC E-commerce Store - Final Submission',
+      contentType: 'url' as const,
+      content: 'https://github.com/testuser/rsc-ecommerce',
+      status: 'approved' as const,
+      grade: 'accepted' as const,
+      score: 92,
+      submittedAt: new Date('2025-01-08'),
+      reviewedAt: new Date('2025-01-09'),
+    },
+    // Project submission - needs work
+    {
+      userId: 'user-1',
+      projectId: 'project-2',
+      pathId: 'path-2',
+      title: 'Image Classification Pipeline - Draft',
+      contentType: 'url' as const,
+      content: 'https://github.com/testuser/ml-image-classifier',
+      status: 'rejected' as const,
+      grade: 'needs_work' as const,
+      score: 58,
+      submittedAt: new Date('2025-01-12'),
+      reviewedAt: new Date('2025-01-13'),
+    },
+    // Challenge submission - draft (not submitted)
+    {
+      userId: 'user-1',
+      challengeId: 'challenge-4',
+      pathId: 'path-3',
+      title: 'TypeScript Utility Types - WIP',
+      contentType: 'text' as const,
+      content: `type DeepPartial<T> = {
+  [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
+};
+
+// TODO: Implement DeepReadonly and StrictPick`,
+      status: 'draft' as const,
+    },
+  ],
+  feedback: [
+    // AI feedback for first challenge submission
+    {
+      submissionId: 'submission-1',
+      source: 'ai' as const,
+      overallScore: 85,
+      rubricBreakdown: [
+        { criterion: 'Server-side Rendering', achieved: 23, maximum: 25, feedback: 'Excellent use of async Server Component with proper data fetching.' },
+        { criterion: 'Data Fetching', achieved: 25, maximum: 25, feedback: 'Perfect! Data is fetched directly in the component without client-side hooks.' },
+        { criterion: 'Suspense Integration', achieved: 22, maximum: 25, feedback: 'Good Suspense boundary usage. Consider adding more granular loading states.' },
+        { criterion: 'Code Quality', achieved: 15, maximum: 25, feedback: 'Clean code but could benefit from TypeScript types and error boundaries.' },
+      ],
+      suggestions: [
+        'Add TypeScript types for the stats data structure',
+        'Consider adding an error boundary for better error handling',
+        'Add loading skeleton instead of plain text fallback',
+      ],
+      content: 'Great implementation of a Server Component dashboard! Your code correctly fetches data on the server and uses Suspense for loading states. The component will render without client-side JavaScript, which is exactly what we want. Consider enhancing the user experience with skeleton loaders and adding proper TypeScript types for better maintainability.',
+    },
+    // Mentor feedback for project submission
+    {
+      submissionId: 'submission-3',
+      source: 'mentor' as const,
+      reviewerId: 'mentor-1',
+      overallScore: 92,
+      rubricBreakdown: [
+        { criterion: 'Architecture', achieved: 28, maximum: 30, feedback: 'Well-structured RSC architecture with clear separation of concerns.' },
+        { criterion: 'Server Actions', achieved: 25, maximum: 25, feedback: 'Excellent implementation of cart mutations using Server Actions.' },
+        { criterion: 'Performance', achieved: 22, maximum: 25, feedback: 'Good streaming implementation. TTFB could be improved with edge deployment.' },
+        { criterion: 'Code Quality', achieved: 17, maximum: 20, feedback: 'Clean code with good documentation. Some areas could use more comments.' },
+      ],
+      suggestions: [
+        'Consider deploying to edge for better global performance',
+        'Add more inline documentation for complex Server Action flows',
+        'Implement optimistic updates for cart operations',
+      ],
+      content: 'Excellent work on your e-commerce project! You\'ve demonstrated a solid understanding of React Server Components architecture. The separation between Server and Client Components is well thought out, and your use of Server Actions for mutations is exactly right. The streaming implementation provides a great user experience. For future improvements, consider edge deployment and optimistic updates to further enhance perceived performance.',
+    },
+    // Mentor feedback for rejected project
+    {
+      submissionId: 'submission-4',
+      source: 'mentor' as const,
+      reviewerId: 'mentor-1',
+      overallScore: 58,
+      rubricBreakdown: [
+        { criterion: 'Data Pipeline', achieved: 15, maximum: 25, feedback: 'Basic pipeline exists but lacks proper data validation and augmentation.' },
+        { criterion: 'Model Architecture', achieved: 18, maximum: 25, feedback: 'Simple CNN implemented but not optimized for the dataset.' },
+        { criterion: 'Training & Evaluation', achieved: 15, maximum: 25, feedback: 'Training loop works but missing validation monitoring and early stopping.' },
+        { criterion: 'Documentation', achieved: 10, maximum: 25, feedback: 'Minimal documentation. Need more explanation of design decisions.' },
+      ],
+      suggestions: [
+        'Add data augmentation (random crops, flips, color jittering)',
+        'Implement proper train/validation split with monitoring',
+        'Add early stopping and model checkpointing',
+        'Include confusion matrix and per-class metrics',
+        'Add documentation explaining your architecture choices',
+      ],
+      content: 'Your project shows a good start but needs more work before it can be accepted. The basic pipeline is there, but it\'s missing crucial components like data augmentation and proper validation monitoring. The model architecture is too simple for the task - consider using transfer learning or a more sophisticated architecture. Please address the suggestions above and resubmit.',
     },
   ],
 };

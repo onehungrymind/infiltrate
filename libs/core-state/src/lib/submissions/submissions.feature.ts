@@ -12,6 +12,8 @@ export interface SubmissionsState extends EntityState<Submission> {
   loaded: boolean;
   feedbackBySubmissionId: Record<string, Feedback[]>;
   feedbackLoading: boolean;
+  mentorSubmissions: Submission[];
+  mentorSubmissionsLoaded: boolean;
 }
 
 export const submissionsAdapter: EntityAdapter<Submission> =
@@ -24,6 +26,8 @@ export const initialSubmissionsState: SubmissionsState =
     loaded: false,
     feedbackBySubmissionId: {},
     feedbackLoading: false,
+    mentorSubmissions: [],
+    mentorSubmissionsLoaded: false,
   });
 
 // --- Helper Functions ---
@@ -205,6 +209,54 @@ const submissionsReducer = createReducer(
     error,
   })),
 
+  // Mentor submissions
+  on(SubmissionsActions.loadMentorSubmissions, (state) => ({
+    ...state,
+    mentorSubmissionsLoaded: false,
+    error: null,
+  })),
+  on(
+    SubmissionsActions.loadMentorSubmissionsSuccess,
+    (state, { submissions }) => ({
+      ...state,
+      mentorSubmissions: submissions,
+      mentorSubmissionsLoaded: true,
+      error: null,
+    }),
+  ),
+  on(SubmissionsActions.loadMentorSubmissionsFailure, (state, { error }) => ({
+    ...state,
+    mentorSubmissionsLoaded: false,
+    error,
+  })),
+
+  // Mentor feedback
+  on(
+    SubmissionsActions.submitMentorFeedbackSuccess,
+    (state, { feedback, submission }) => {
+      const newFeedbackBySubmission = {
+        ...state.feedbackBySubmissionId,
+        [submission.id]: [
+          ...(state.feedbackBySubmissionId[submission.id] || []),
+          feedback,
+        ],
+      };
+      // Update the submission in mentor submissions list
+      const updatedMentorSubmissions = state.mentorSubmissions.map((s) =>
+        s.id === submission.id ? submission : s,
+      );
+      return submissionsAdapter.updateOne(
+        { id: submission.id ?? '', changes: submission },
+        {
+          ...state,
+          error: null,
+          feedbackBySubmissionId: newFeedbackBySubmission,
+          mentorSubmissions: updatedMentorSubmissions,
+        },
+      );
+    },
+  ),
+
   // Failures
   on(
     SubmissionsActions.loadSubmissionsFailure,
@@ -217,6 +269,7 @@ const submissionsReducer = createReducer(
     SubmissionsActions.deleteSubmissionFailure,
     SubmissionsActions.submitForReviewFailure,
     SubmissionsActions.requestAIFeedbackFailure,
+    SubmissionsActions.submitMentorFeedbackFailure,
     onFailure,
   ),
 );
@@ -271,6 +324,16 @@ export const submissionsFeature = createFeature({
         (feedbackMap) => feedbackMap[submissionId] || [],
       );
 
+    const selectMentorSubmissions = createSelector(
+      selectSubmissionsState,
+      (s) => s.mentorSubmissions,
+    );
+
+    const selectMentorSubmissionsLoaded = createSelector(
+      selectSubmissionsState,
+      (s) => s.mentorSubmissionsLoaded,
+    );
+
     return {
       // Adapter-powered
       selectAllSubmissions: selectAll,
@@ -299,6 +362,8 @@ export const submissionsFeature = createFeature({
       selectSubmissionsByStatus,
       selectFeedbackBySubmissionId,
       selectFeedbackForSubmission,
+      selectMentorSubmissions,
+      selectMentorSubmissionsLoaded,
     };
   },
 });
@@ -320,4 +385,6 @@ export const {
   selectSubmissionsByStatus,
   selectFeedbackBySubmissionId,
   selectFeedbackForSubmission,
+  selectMentorSubmissions,
+  selectMentorSubmissionsLoaded,
 } = submissionsFeature;

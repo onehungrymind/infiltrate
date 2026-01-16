@@ -1,10 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output, signal, computed, inject } from '@angular/core';
-import { LearningPath, Principle } from '@kasita/common-models';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { LearningPath, Principle, User } from '@kasita/common-models';
 import { MaterialModule } from '@kasita/material';
 import { form } from '@angular/forms/signals';
 import { DynamicForm } from '../../shared/dynamic-form/dynamic-form';
-import { learningPathFields, toSchema, AuthService, initializeEntity, LearningMapService } from '@kasita/core-data';
+import { learningPathFields, toSchema, AuthService, initializeEntity, LearningMapService, LearningPathsService } from '@kasita/core-data';
+import { UsersFacade } from '@kasita/core-state';
 
 @Component({
   selector: 'app-learning-path-detail',
@@ -15,8 +17,16 @@ import { learningPathFields, toSchema, AuthService, initializeEntity, LearningMa
 export class LearningPathDetail {
   private authService = inject(AuthService);
   private learningMapService = inject(LearningMapService);
+  private learningPathsService = inject(LearningPathsService);
+  private usersFacade = inject(UsersFacade);
   private _learningPath = signal<LearningPath | null>(null);
   originalTitle = signal('');
+
+  // Mentor state
+  allUsers = toSignal(this.usersFacade.allUsers$, { initialValue: [] as User[] });
+  selectedMentorId = signal<string | null>(null);
+  isAssigningMentor = signal(false);
+  mentorMessage = signal<{ type: 'success' | 'error'; text: string } | null>(null);
 
   // AI generation state
   isGenerating = signal(false);
@@ -63,6 +73,13 @@ export class LearningPathDetail {
 
   @Input() set learningPath(value: LearningPath | null) {
     this._learningPath.set(value);
+
+    // Reset mentor state
+    this.selectedMentorId.set(value?.mentorId || null);
+    this.isAssigningMentor.set(false);
+    this.mentorMessage.set(null);
+    // Load users for mentor selection
+    this.usersFacade.loadUsers();
 
     // Reset AI generation state when learning path changes
     this.isGenerating.set(false);
@@ -374,5 +391,49 @@ export class LearningPathDetail {
     };
 
     addNext();
+  }
+
+  // Mentor methods
+  getCurrentMentor(): User | null {
+    const mentorId = this.selectedMentorId();
+    if (!mentorId) return null;
+    return this.allUsers().find((u) => u.id === mentorId) || null;
+  }
+
+  onMentorChange(mentorId: string | null) {
+    this.selectedMentorId.set(mentorId);
+  }
+
+  assignMentor() {
+    const pathId = this._learningPath()?.id;
+    const mentorId = this.selectedMentorId();
+    if (!pathId) return;
+
+    this.isAssigningMentor.set(true);
+    this.mentorMessage.set(null);
+
+    this.learningPathsService.assignMentor(pathId, mentorId || '').subscribe({
+      next: () => {
+        this.isAssigningMentor.set(false);
+        this.mentorMessage.set({
+          type: 'success',
+          text: mentorId ? 'Mentor assigned successfully' : 'Mentor removed successfully',
+        });
+      },
+      error: (err) => {
+        this.isAssigningMentor.set(false);
+        const errorMessage = err.error?.message || err.message || 'Failed to assign mentor';
+        this.mentorMessage.set({
+          type: 'error',
+          text: errorMessage,
+        });
+      },
+    });
+  }
+
+  hasMentorChanged(): boolean {
+    const currentMentorId = this._learningPath()?.mentorId || null;
+    const selectedMentorId = this.selectedMentorId();
+    return currentMentorId !== selectedMentorId;
   }
 }

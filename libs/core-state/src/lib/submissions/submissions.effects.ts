@@ -302,3 +302,61 @@ export const loadFeedback = createEffect(
   },
   { functional: true },
 );
+
+// Mentor effects
+export const loadMentorSubmissions = createEffect(
+  (
+    actions$ = inject(Actions),
+    submissionsService = inject(SubmissionsService),
+  ) => {
+    return actions$.pipe(
+      ofType(SubmissionsActions.loadMentorSubmissions),
+      exhaustMap((action) => {
+        return submissionsService.findByMentor(action.mentorId, action.status).pipe(
+          map((submissions: Submission[]) =>
+            SubmissionsActions.loadMentorSubmissionsSuccess({ submissions }),
+          ),
+          catchError((error) =>
+            of(
+              SubmissionsActions.loadMentorSubmissionsFailure({
+                error: formatErrorMessage(error),
+              }),
+            ),
+          ),
+        );
+      }),
+    );
+  },
+  { functional: true },
+);
+
+export const submitMentorFeedback = createEffect(
+  (
+    actions$ = inject(Actions),
+    submissionsService = inject(SubmissionsService),
+  ) => {
+    return actions$.pipe(
+      ofType(SubmissionsActions.submitMentorFeedback),
+      exhaustMap((action) => {
+        return submissionsService
+          .submitMentorFeedback(action.submissionId, action.mentorId, action.feedback)
+          .pipe(
+            map((result: { feedback: Feedback; submission: Submission }) =>
+              SubmissionsActions.submitMentorFeedbackSuccess({
+                feedback: result.feedback,
+                submission: result.submission,
+              }),
+            ),
+            catchError((error) =>
+              of(
+                SubmissionsActions.submitMentorFeedbackFailure({
+                  error: formatErrorMessage(error),
+                }),
+              ),
+            ),
+          );
+      }),
+    );
+  },
+  { functional: true },
+);

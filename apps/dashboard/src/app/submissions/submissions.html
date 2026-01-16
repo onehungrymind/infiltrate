@@ -41,6 +41,7 @@
       <app-submission-feedback
         [submissionId]="selectedSubmission()?.id || ''"
         [loading]="feedbackLoading()"
+        [grade]="selectedSubmission()?.grade || null"
       ></app-submission-feedback>
     }
   </div>

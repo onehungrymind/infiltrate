@@ -86,6 +86,10 @@ const projectsIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBo
   <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44Z" />
 </svg>`;
 
+const mentorIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
+</svg>`;
+
 interface NavSection {
   title?: string;
   routes: NavRoute[];
@@ -133,6 +137,7 @@ export class Sidebar implements OnInit, OnDestroy {
         { label: 'Notebooks', path: '/notebook', icon: 'notebook' },
         { label: 'Learning Map', path: '/learning-map', icon: 'learning-map' },
         { label: 'Submissions', path: '/submissions', icon: 'submissions' },
+        { label: 'Mentor Dashboard', path: '/mentor-dashboard', icon: 'mentor' },
       ],
       collapsed: false,
     },
@@ -227,6 +232,9 @@ export class Sidebar implements OnInit, OnDestroy {
         break;
       case 'projects':
         iconHtml = projectsIcon;
+        break;
+      case 'mentor':
+        iconHtml = mentorIcon;
         break;
       default:
         iconHtml = '';

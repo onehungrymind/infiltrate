@@ -236,6 +236,8 @@ import {
   submitForReview,
   requestAiFeedback,
   loadFeedback,
+  loadMentorSubmissions,
+  submitMentorFeedback,
 } from './lib/submissions/submissions.effects';
 
 export {
@@ -255,6 +257,8 @@ export {
   submitForReview,
   requestAiFeedback,
   loadFeedback,
+  loadMentorSubmissions,
+  submitMentorFeedback,
 };
 
 /* Challenges */

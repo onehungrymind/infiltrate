@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Submission } from '@kasita/common-models';
+import { Submission, CreateMentorFeedbackDto } from '@kasita/common-models';
 import { Action, ActionsSubject, Store } from '@ngrx/store';
 import { SubmissionsActions } from './submissions.actions';
 
@@ -14,6 +14,8 @@ import {
   selectSubmissionsByStatus,
   selectFeedbackForSubmission,
   selectFeedbackLoading,
+  selectMentorSubmissions,
+  selectMentorSubmissionsLoaded,
 } from './submissions.feature';
 import { filter } from 'rxjs';
 
@@ -29,6 +31,8 @@ export class SubmissionsFacade {
   allSubmissions$ = this.store.select(selectAllSubmissions);
   selectedSubmission$ = this.store.select(selectSelectedSubmission);
   feedbackLoading$ = this.store.select(selectFeedbackLoading);
+  mentorSubmissions$ = this.store.select(selectMentorSubmissions);
+  mentorSubmissionsLoaded$ = this.store.select(selectMentorSubmissionsLoaded);
 
   mutations$ = this.actions$.pipe(
     filter(
@@ -121,6 +125,15 @@ export class SubmissionsFacade {
 
   loadFeedback(submissionId: string) {
     this.dispatch(SubmissionsActions.loadFeedback({ submissionId }));
+  }
+
+  // Mentor methods
+  loadMentorSubmissions(mentorId: string, status?: string) {
+    this.dispatch(SubmissionsActions.loadMentorSubmissions({ mentorId, status }));
+  }
+
+  submitMentorFeedback(submissionId: string, mentorId: string, feedback: CreateMentorFeedbackDto) {
+    this.dispatch(SubmissionsActions.submitMentorFeedback({ submissionId, mentorId, feedback }));
   }
 
   dispatch(action: Action) {

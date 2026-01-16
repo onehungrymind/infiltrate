@@ -42,4 +42,17 @@ export class LearningPathsService {
     const learningPath = await this.findOne(id);
     await this.learningPathRepository.remove(learningPath);
   }
+
+  async assignMentor(pathId: string, mentorId: string): Promise<LearningPath> {
+    const learningPath = await this.findOne(pathId);
+    learningPath.mentorId = mentorId;
+    return await this.learningPathRepository.save(learningPath);
+  }
+
+  async findByMentor(mentorId: string): Promise<LearningPath[]> {
+    return await this.learningPathRepository.find({
+      where: { mentorId },
+      order: { createdAt: 'DESC' },
+    });
+  }
 }

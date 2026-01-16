@@ -73,6 +73,17 @@ export class LearningPathsService {
     return this.http.delete(this.getUrlWithId(learningPath.id));
   }
 
+  findByMentor(mentorId: string) {
+    return this.http.get<LearningPath[]>(`${this.getUrl()}/mentor/${mentorId}`);
+  }
+
+  assignMentor(pathId: string, mentorId: string) {
+    return this.http.patch<LearningPath>(
+      `${this.getUrlWithId(pathId)}/mentor`,
+      { mentorId }
+    );
+  }
+
   private getUrl() {
     return `${this.apiUrl}/${this.model}`;
   }

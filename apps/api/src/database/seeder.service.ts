@@ -11,6 +11,8 @@ import { UserProgress } from '../user-progress/entities/user-progress.entity';
 import { User } from '../users/entities/user.entity';
 import { Challenge } from '../challenges/entities/challenge.entity';
 import { Project } from '../projects/entities/project.entity';
+import { Submission } from '../submissions/entities/submission.entity';
+import { Feedback } from '../submissions/entities/feedback.entity';
 import { seedPayload } from './seed-payload';
 import * as bcrypt from 'bcrypt';
 
@@ -39,6 +41,10 @@ export class SeederService {
     private challengesRepository: Repository<Challenge>,
     @InjectRepository(Project)
     private projectsRepository: Repository<Project>,
+    @InjectRepository(Submission)
+    private submissionsRepository: Repository<Submission>,
+    @InjectRepository(Feedback)
+    private feedbackRepository: Repository<Feedback>,
   ) {}
 
   async seed(): Promise<void> {
@@ -57,11 +63,11 @@ export class SeederService {
    * Seeds the database with users, learning paths, knowledge units, source configs, raw content, and user progress
    */
   private async seedData(): Promise<void> {
-    // 0) Seed Users first
+    // 0) Seed Users first (includes regular users and mentors)
     const users = await this.seedUsers();
     this.logger.log(`👤 Seeded ${users.length} users`);
 
-    // 1) Seed Learning Paths (linked to users)
+    // 1) Seed Learning Paths (linked to users and mentors)
     const learningPaths = await this.seedLearningPaths(users);
     this.logger.log(`📚 Seeded ${learningPaths.length} learning paths`);
 
@@ -92,32 +98,46 @@ export class SeederService {
     // 8) Seed User Progress (linked to knowledge units and users)
     await this.seedUserProgress(knowledgeUnits, users);
     this.logger.log('📊 Seeded user progress');
+
+    // 9) Seed Submissions (linked to users, challenges, projects, paths)
+    const submissions = await this.seedSubmissions(users, challenges, projects, learningPaths);
+    this.logger.log(`📝 Seeded ${submissions.length} submissions`);
+
+    // 10) Seed Feedback (linked to submissions and mentors)
+    const feedback = await this.seedFeedback(submissions, users);
+    this.logger.log(`💬 Seeded ${feedback.length} feedback entries`);
   }
 
   private async seedUsers(): Promise<User[]> {
-    // Hash password for test user
     const saltRounds = 12;
-    const hashedPassword = await bcrypt.hash('insecure', saltRounds);
+    const savedUsers: User[] = [];
 
-    const testUser = this.usersRepository.create({
-      email: 'test@test.com',
-      password: hashedPassword,
-      name: 'Test User',
-      isActive: true,
-      role: 'user',
-    });
+    for (const userData of seedPayload.users) {
+      const hashedPassword = await bcrypt.hash(userData.password, saltRounds);
+      const user = this.usersRepository.create({
+        email: userData.email,
+        password: hashedPassword,
+        name: userData.name,
+        isActive: true,
+        role: userData.role,
+      });
+      const savedUser = await this.usersRepository.save(user);
+      savedUsers.push(savedUser);
+    }
 
-    const savedUser = await this.usersRepository.save(testUser);
-    return [savedUser];
+    return savedUsers;
   }
 
   private async seedLearningPaths(users: User[]): Promise<LearningPath[]> {
-    const testUserId = users[0]?.id || 'demo-user-1';
+    const regularUser = users.find(u => u.role === 'user') || users[0];
+    const mentorUser = users.find(u => u.role === 'mentor');
 
     const learningPaths = await this.learningPathsRepository.save(
       seedPayload.learningPaths.map(path => ({
         ...path,
-        userId: testUserId, // Use the seeded test user ID
+        userId: regularUser?.id || 'demo-user-1',
+        // Assign mentor if path has mentorId in payload
+        mentorId: path.mentorId ? mentorUser?.id : undefined,
         status: path.status || 'not-started',
       })),
     );
@@ -285,7 +305,86 @@ export class SeederService {
     return savedProjects;
   }
 
+  private async seedSubmissions(
+    users: User[],
+    challenges: Challenge[],
+    projects: Project[],
+    learningPaths: LearningPath[],
+  ): Promise<Submission[]> {
+    if (!seedPayload.submissions || seedPayload.submissions.length === 0) {
+      return [];
+    }
+
+    const regularUser = users.find(u => u.role === 'user') || users[0];
+
+    const submissionsToSave = seedPayload.submissions.map((submission) => {
+      // Map challenge-1, challenge-2, etc. to actual challenge IDs
+      let challengeId: string | undefined;
+      if (submission.challengeId) {
+        const challengeIndex = parseInt(submission.challengeId.replace('challenge-', '')) - 1;
+        challengeId = challenges[challengeIndex]?.id;
+      }
+
+      // Map project-1, project-2, etc. to actual project IDs
+      let projectId: string | undefined;
+      if (submission.projectId) {
+        const projectIndex = parseInt(submission.projectId.replace('project-', '')) - 1;
+        projectId = projects[projectIndex]?.id;
+      }
+
+      // Map path-1, path-2, etc. to actual path IDs
+      let pathId: string | undefined;
+      if (submission.pathId) {
+        const pathIndex = parseInt(submission.pathId.replace('path-', '')) - 1;
+        pathId = learningPaths[pathIndex]?.id;
+      }
+
+      return {
+        ...submission,
+        userId: regularUser?.id || 'demo-user-1',
+        challengeId,
+        projectId,
+        pathId,
+      };
+    });
+
+    const savedSubmissions = await this.submissionsRepository.save(submissionsToSave);
+    return savedSubmissions;
+  }
+
+  private async seedFeedback(submissions: Submission[], users: User[]): Promise<Feedback[]> {
+    if (!seedPayload.feedback || seedPayload.feedback.length === 0) {
+      return [];
+    }
+
+    const mentorUser = users.find(u => u.role === 'mentor');
+
+    const feedbackToSave = seedPayload.feedback.map((fb) => {
+      // Map submission-1, submission-2, etc. to actual submission IDs
+      const submissionIndex = parseInt(fb.submissionId.replace('submission-', '')) - 1;
+      const submissionId = submissions[submissionIndex]?.id;
+
+      // Set reviewerId for mentor feedback
+      const reviewerId = fb.source === 'mentor' ? mentorUser?.id : undefined;
+
+      return {
+        ...fb,
+        submissionId,
+        reviewerId,
+      };
+    });
+
+    // Filter out feedback for submissions that don't exist
+    const validFeedback = feedbackToSave.filter(fb => fb.submissionId);
+
+    const savedFeedback = await this.feedbackRepository.save(validFeedback);
+    return savedFeedback;
+  }
+
   async clearDatabase(): Promise<void> {
+    // Clear in order respecting foreign key constraints
+    await this.feedbackRepository.clear();
+    await this.submissionsRepository.clear();
     await this.userProgressRepository.clear();
     await this.challengesRepository.clear();
     await this.projectsRepository.clear();

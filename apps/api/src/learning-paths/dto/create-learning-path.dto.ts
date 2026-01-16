@@ -7,6 +7,11 @@ export class CreateLearningPathDto {
   @IsNotEmpty()
   userId: string;
 
+  @ApiPropertyOptional({ description: 'Mentor user ID' })
+  @IsOptional()
+  @IsString()
+  mentorId?: string;
+
   @ApiProperty({ example: 'React Server Components' })
   @IsString()
   @IsNotEmpty()

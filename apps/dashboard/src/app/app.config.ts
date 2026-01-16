@@ -79,6 +79,8 @@ import {
   submitForReview,
   requestAiFeedback,
   loadFeedback,
+  loadMentorSubmissions,
+  submitMentorFeedback,
   // Challenges Effects
   loadChallenges,
   loadChallenge,
@@ -174,6 +176,8 @@ export const appConfig: ApplicationConfig = {
       submitForReview,
       requestAiFeedback,
       loadFeedback,
+      loadMentorSubmissions,
+      submitMentorFeedback,
       // Challenges
       loadChallenges,
       loadChallenge,

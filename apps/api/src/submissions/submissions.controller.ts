@@ -17,6 +17,7 @@ import { SubmissionsService } from './submissions.service';
 import { CreateSubmissionDto } from './dto/create-submission.dto';
 import { UpdateSubmissionDto } from './dto/update-submission.dto';
 import { RequestFeedbackDto } from './dto/request-feedback.dto';
+import { CreateMentorFeedbackDto } from './dto/create-mentor-feedback.dto';
 import { multerConfig, buildFileMetadata } from './utils/file-upload';
 import { fetchUrlMetadata, isValidUrl } from './utils/url-metadata';
 
@@ -55,6 +56,17 @@ export class SubmissionsController {
   @ApiResponse({ status: 200, description: 'List of submissions for the user' })
   findByUser(@Param('userId') userId: string) {
     return this.submissionsService.findByUser(userId);
+  }
+
+  @Get('mentor/:mentorId')
+  @ApiOperation({ summary: 'Get all submissions for paths assigned to a mentor' })
+  @ApiQuery({ name: 'status', required: false, description: 'Filter by submission status' })
+  @ApiResponse({ status: 200, description: 'List of submissions for mentor review' })
+  findByMentor(
+    @Param('mentorId') mentorId: string,
+    @Query('status') status?: string,
+  ) {
+    return this.submissionsService.findByMentor(mentorId, status);
   }
 
   @Get('unit/:unitId')
@@ -97,6 +109,23 @@ export class SubmissionsController {
     @Body() requestFeedbackDto: RequestFeedbackDto,
   ) {
     return this.submissionsService.requestAiFeedback(id, requestFeedbackDto);
+  }
+
+  @Post(':id/feedback/mentor')
+  @ApiOperation({
+    summary: 'Submit mentor feedback',
+    description: 'Creates mentor feedback for a submission. For projects, grade is required.',
+  })
+  @ApiResponse({ status: 201, description: 'Mentor feedback created successfully' })
+  @ApiResponse({ status: 400, description: 'Invalid feedback data or missing grade for project' })
+  @ApiResponse({ status: 403, description: 'User is not the assigned mentor' })
+  @ApiResponse({ status: 404, description: 'Submission not found' })
+  submitMentorFeedback(
+    @Param('id') id: string,
+    @Body() createMentorFeedbackDto: CreateMentorFeedbackDto,
+    @Query('mentorId') mentorId: string,
+  ) {
+    return this.submissionsService.submitMentorFeedback(id, mentorId, createMentorFeedbackDto);
   }
 
   @Get(':id/feedback')

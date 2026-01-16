@@ -82,6 +82,9 @@ export class Submission {
   @Column({ default: 'draft' })
   status: string; // 'draft' | 'submitted' | 'under_review' | 'approved' | 'rejected'
 
+  @Column({ nullable: true })
+  grade: string; // 'accepted' | 'accepted_with_comments' | 'needs_work' (for project submissions)
+
   @Column({ type: 'integer', nullable: true })
   score: number; // 0-100
 

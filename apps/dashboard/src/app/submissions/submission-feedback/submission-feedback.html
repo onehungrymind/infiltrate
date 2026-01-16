@@ -1,6 +1,12 @@
 <div class="feedback-container">
   <div class="feedback-header">
     <h2 class="feedback-title">Feedback</h2>
+    @if (grade) {
+      <div class="grade-badge" [style.background-color]="getGradeColor(grade)">
+        <mat-icon class="grade-icon">{{ getGradeIcon(grade) }}</mat-icon>
+        <span>{{ formatGrade(grade) }}</span>
+      </div>
+    }
   </div>
 
   @if (loading) {

@@ -1,5 +1,5 @@
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
-import { Submission, Feedback } from '@kasita/common-models';
+import { Submission, Feedback, CreateMentorFeedbackDto } from '@kasita/common-models';
 
 export const SubmissionsActions = createActionGroup({
   source: 'Submissions API',
@@ -58,5 +58,14 @@ export const SubmissionsActions = createActionGroup({
     'Load Feedback': props<{ submissionId: string }>(),
     'Load Feedback Success': props<{ submissionId: string; feedback: Feedback[] }>(),
     'Load Feedback Failure': props<{ error: string | null }>(),
+
+    // Mentor actions
+    'Load Mentor Submissions': props<{ mentorId: string; status?: string }>(),
+    'Load Mentor Submissions Success': props<{ submissions: Submission[] }>(),
+    'Load Mentor Submissions Failure': props<{ error: string | null }>(),
+
+    'Submit Mentor Feedback': props<{ submissionId: string; mentorId: string; feedback: CreateMentorFeedbackDto }>(),
+    'Submit Mentor Feedback Success': props<{ feedback: Feedback; submission: Submission }>(),
+    'Submit Mentor Feedback Failure': props<{ error: string | null }>(),
   },
 });

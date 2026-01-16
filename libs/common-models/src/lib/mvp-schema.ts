@@ -56,6 +56,8 @@ export interface BaseEntity {
 
   export type FeedbackSource = 'ai' | 'mentor';
 
+  export type ProjectGrade = 'accepted' | 'accepted_with_comments' | 'needs_work';
+
   // ============================================================================
   // CORE ENTITIES
   // ============================================================================
@@ -76,6 +78,7 @@ export interface BaseEntity {
    */
   export interface LearningPath extends BaseEntity {
     userId: string;
+    mentorId?: string;               // Assigned mentor user ID
     name: string;                    // "React Server Components"
     domain: string;                  // "Web Development"
     targetSkill: string;             // "Build production RSC app"
@@ -305,6 +308,7 @@ export interface BaseEntity {
     urlMetadata?: UrlMetadata;       // Metadata when contentType='url'
     fileMetadata?: FileMetadata;     // Metadata when contentType='file'
     status: SubmissionStatus;
+    grade?: ProjectGrade;            // Mentor grade for project submissions
     score?: number;                  // 0-100 after review
     submittedAt?: Date;
     reviewedAt?: Date;
@@ -340,16 +344,18 @@ export interface BaseEntity {
   
   export interface CreateLearningPathDto {
     userId: string;
+    mentorId?: string;
     name: string;
     domain: string;
     targetSkill: string;
   }
-  
+
   export interface UpdateLearningPathDto {
     name?: string;
     domain?: string;
     targetSkill?: string;
     status?: PathStatus;
+    mentorId?: string;
   }
 
   export interface CreatePrincipleDto {
@@ -618,6 +624,14 @@ export interface BaseEntity {
 
   export interface RequestFeedbackDto {
     rubricCriteria?: string[];
+  }
+
+  export interface CreateMentorFeedbackDto {
+    overallScore: number;
+    rubricBreakdown: RubricScore[];
+    suggestions: string[];
+    content: string;
+    grade?: ProjectGrade;  // Required for project submissions
   }
 
   export interface StudyStats {

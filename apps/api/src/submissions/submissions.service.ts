@@ -1,14 +1,16 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, In } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import Anthropic from '@anthropic-ai/sdk';
 import { Submission } from './entities/submission.entity';
 import { Feedback, RubricScore } from './entities/feedback.entity';
 import { KnowledgeUnit } from '../knowledge-units/entities/knowledge-unit.entity';
+import { LearningPath } from '../learning-paths/entities/learning-path.entity';
 import { CreateSubmissionDto } from './dto/create-submission.dto';
 import { UpdateSubmissionDto } from './dto/update-submission.dto';
 import { RequestFeedbackDto } from './dto/request-feedback.dto';
+import { CreateMentorFeedbackDto } from './dto/create-mentor-feedback.dto';
 import { EVALUATE_SUBMISSION_PROMPT, DEFAULT_RUBRIC_CRITERIA } from './prompts/evaluate-submission.prompt';
 
 @Injectable()
@@ -22,6 +24,8 @@ export class SubmissionsService {
     private readonly feedbackRepository: Repository<Feedback>,
     @InjectRepository(KnowledgeUnit)
     private readonly knowledgeUnitRepository: Repository<KnowledgeUnit>,
+    @InjectRepository(LearningPath)
+    private readonly learningPathRepository: Repository<LearningPath>,
     private readonly configService: ConfigService,
   ) {
     const apiKey = this.configService.get<string>('ANTHROPIC_API_KEY');
@@ -285,5 +289,97 @@ export class SubmissionsService {
     } catch (error) {
       throw new BadRequestException('Failed to parse AI feedback response');
     }
+  }
+
+  // ==================== Mentor Feedback ====================
+
+  /**
+   * Find all submissions for paths assigned to a mentor
+   */
+  async findByMentor(mentorId: string, status?: string): Promise<Submission[]> {
+    // First get all learning paths assigned to this mentor
+    const paths = await this.learningPathRepository.find({
+      where: { mentorId },
+    });
+
+    const pathIds = paths.map((p) => p.id);
+
+    if (pathIds.length === 0) {
+      return [];
+    }
+
+    const queryBuilder = this.submissionRepository
+      .createQueryBuilder('submission')
+      .leftJoinAndSelect('submission.feedback', 'feedback')
+      .leftJoinAndSelect('submission.challenge', 'challenge')
+      .leftJoinAndSelect('submission.project', 'project')
+      .where('submission.pathId IN (:...pathIds)', { pathIds })
+      .andWhere('submission.status != :draft', { draft: 'draft' });
+
+    if (status) {
+      queryBuilder.andWhere('submission.status = :status', { status });
+    }
+
+    return queryBuilder.orderBy('submission.submittedAt', 'DESC').getMany();
+  }
+
+  /**
+   * Submit mentor feedback for a submission
+   */
+  async submitMentorFeedback(
+    submissionId: string,
+    mentorId: string,
+    dto: CreateMentorFeedbackDto,
+  ): Promise<{ feedback: Feedback; submission: Submission }> {
+    const submission = await this.findOne(submissionId);
+
+    // Verify submission is in a reviewable state
+    if (submission.status === 'draft') {
+      throw new BadRequestException('Cannot review a draft submission');
+    }
+
+    // Verify mentor is assigned to this path
+    const learningPath = await this.learningPathRepository.findOne({
+      where: { id: submission.pathId },
+    });
+
+    if (!learningPath || learningPath.mentorId !== mentorId) {
+      throw new ForbiddenException('You are not the assigned mentor for this learning path');
+    }
+
+    // For project submissions, grade is required
+    if (submission.projectId && !dto.grade) {
+      throw new BadRequestException('Grade is required for project submissions');
+    }
+
+    // Create feedback record
+    const feedback = this.feedbackRepository.create({
+      submissionId,
+      source: 'mentor',
+      reviewerId: mentorId,
+      overallScore: dto.overallScore,
+      rubricBreakdown: dto.rubricBreakdown,
+      suggestions: dto.suggestions,
+      content: dto.content,
+    });
+    await this.feedbackRepository.save(feedback);
+
+    // Update submission
+    submission.score = dto.overallScore;
+    submission.reviewedAt = new Date();
+
+    // Set grade for projects
+    if (submission.projectId && dto.grade) {
+      submission.grade = dto.grade;
+      // Update status based on grade
+      submission.status = dto.grade === 'needs_work' ? 'rejected' : 'approved';
+    } else {
+      // For challenges, just mark as approved if score is passing
+      submission.status = dto.overallScore >= 70 ? 'approved' : 'rejected';
+    }
+
+    await this.submissionRepository.save(submission);
+
+    return { feedback, submission };
   }
 }

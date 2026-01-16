@@ -29,6 +29,72 @@
     </div>
   </form>
 
+  <!-- Mentor Assignment - only show for existing learning paths -->
+  @if (learningPath?.id) {
+    <div class="mentor-section">
+      <h3 class="section-title">
+        <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
+        </svg>
+        Mentor Assignment
+      </h3>
+      <p class="section-description">Assign a mentor to review submissions and provide feedback for this learning path.</p>
+
+      <div class="mentor-selector">
+        <mat-form-field appearance="outline" class="mentor-field">
+          <mat-label>Select Mentor</mat-label>
+          <mat-select [value]="selectedMentorId()" (selectionChange)="onMentorChange($event.value)">
+            <mat-option [value]="null">No Mentor Assigned</mat-option>
+            @for (user of allUsers(); track user.id) {
+              <mat-option [value]="user.id">
+                {{ user.name || user.email }}
+                @if (user.role) {
+                  <span class="user-role">({{ user.role }})</span>
+                }
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <button
+          type="button"
+          class="detail-button detail-button-primary"
+          [disabled]="isAssigningMentor() || !hasMentorChanged()"
+          (click)="assignMentor()"
+        >
+          @if (isAssigningMentor()) {
+            <span class="generating-spinner"></span>
+            Saving...
+          } @else {
+            Save Mentor
+          }
+        </button>
+      </div>
+
+      @if (mentorMessage()) {
+        <div class="pipeline-message" [class.success]="mentorMessage()?.type === 'success'" [class.error]="mentorMessage()?.type === 'error'">
+          @if (mentorMessage()?.type === 'success') {
+            <svg class="message-icon" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+            </svg>
+          } @else {
+            <svg class="message-icon" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+            </svg>
+          }
+          <span>{{ mentorMessage()?.text }}</span>
+        </div>
+      }
+
+      @if (getCurrentMentor(); as mentor) {
+        <div class="current-mentor">
+          <span class="mentor-label">Current Mentor:</span>
+          <span class="mentor-name">{{ mentor.name || mentor.email }}</span>
+        </div>
+      }
+    </div>
+  }
+
   <!-- Pipeline Tabs - only show for existing learning paths -->
   @if (learningPath?.id) {
     <div class="pipeline-tabs-container">

@@ -201,7 +201,8 @@
 .list-empty-icon {
   width: 48px;
   height: 48px;
-  margin-bottom: 16px;
+  margin: 0 auto 16px auto;
+  display: block;
   opacity: 0.5;
 }
 

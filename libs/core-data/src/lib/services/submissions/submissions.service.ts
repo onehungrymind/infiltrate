@@ -5,6 +5,7 @@ import {
   Feedback,
   CreateSubmissionDto,
   UpdateSubmissionDto,
+  CreateMentorFeedbackDto,
 } from '@kasita/common-models';
 import {
   extractDtoProperties,
@@ -130,6 +131,21 @@ export class SubmissionsService {
     return this.http.post<{ title?: string; description?: string; platform?: string; repoStats?: { stars?: number; language?: string; lastCommit?: Date } }>(
       `${this.getUrl()}/url-metadata`,
       { url }
+    );
+  }
+
+  findByMentor(mentorId: string, status?: string) {
+    let url = `${this.getUrl()}/mentor/${mentorId}`;
+    if (status) {
+      url += `?status=${status}`;
+    }
+    return this.http.get<Submission[]>(url);
+  }
+
+  submitMentorFeedback(submissionId: string, mentorId: string, feedback: CreateMentorFeedbackDto) {
+    return this.http.post<{ feedback: Feedback; submission: Submission }>(
+      `${this.getUrlWithId(submissionId)}/feedback/mentor?mentorId=${mentorId}`,
+      feedback
     );
   }
 
