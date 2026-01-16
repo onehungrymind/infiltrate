@@ -20,7 +20,10 @@
             "input": "apps/dashboard/public"
           }
         ],
-        "styles": ["apps/dashboard/src/styles.scss"]
+        "styles": [
+          "node_modules/angular-calendar/css/angular-calendar.css",
+          "apps/dashboard/src/styles.scss"
+        ]
       },
       "configurations": {
         "production": {
