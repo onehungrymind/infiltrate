@@ -16,27 +16,27 @@ export const seedPayload = {
   ],
   learningPaths: [
     {
-      userId: 'demo-user-1',
       mentorId: 'mentor-1', // Will be replaced with actual mentor ID
       name: 'React Server Components',
       domain: 'Web Development',
       targetSkill: 'Build production-ready RSC applications',
       status: 'in-progress' as const,
+      visibility: 'shared' as const,
     },
     {
-      userId: 'demo-user-1',
       mentorId: 'mentor-1', // Will be replaced with actual mentor ID
       name: 'Machine Learning Fundamentals',
       domain: 'Data Science',
       targetSkill: 'Understand core ML concepts and algorithms',
       status: 'not-started' as const,
+      visibility: 'public' as const,
     },
     {
-      userId: 'demo-user-2',
       name: 'TypeScript Advanced Patterns',
       domain: 'Web Development',
       targetSkill: 'Master advanced TypeScript features',
       status: 'in-progress' as const,
+      visibility: 'private' as const,
     },
   ],
   principles: [

@@ -1,10 +1,13 @@
 import { Column, CreateDateColumn, Entity, JoinColumn,ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
+import { Enrollment } from '../../enrollments/entities/enrollment.entity';
 import { KnowledgeUnit } from '../../knowledge-units/entities/knowledge-unit.entity';
 import { Principle } from '../../principles/entities/principle.entity';
 import { RawContent } from '../../raw-content/entities/raw-content.entity';
 import { SourcePathLink } from '../../source-configs/entities/source-path-link.entity';
 import { User } from '../../users/entities/user.entity';
+
+export type PathVisibility = 'private' | 'shared' | 'public';
 
 @Entity('learning_paths')
 export class LearningPath {
@@ -12,7 +15,11 @@ export class LearningPath {
   id: string;
 
   @Column()
-  userId: string;
+  creatorId: string;
+
+  @ManyToOne(() => User, { onDelete: 'SET NULL', nullable: true })
+  @JoinColumn({ name: 'creatorId' })
+  creator: User;
 
   @Column({ nullable: true })
   mentorId: string;
@@ -20,6 +27,9 @@ export class LearningPath {
   @ManyToOne(() => User, { onDelete: 'SET NULL', nullable: true })
   @JoinColumn({ name: 'mentorId' })
   mentor: User;
+
+  @Column({ default: 'private' })
+  visibility: PathVisibility;
 
   @Column()
   name: string;
@@ -44,6 +54,9 @@ export class LearningPath {
 
   @OneToMany(() => RawContent, content => content.learningPath)
   rawContent: RawContent[];
+
+  @OneToMany(() => Enrollment, enrollment => enrollment.learningPath)
+  enrollments: Enrollment[];
 
   @CreateDateColumn()
   createdAt: Date;

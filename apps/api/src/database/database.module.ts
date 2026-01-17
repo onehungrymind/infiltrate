@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { Challenge } from '../challenges/entities/challenge.entity';
 import { DataSource } from '../data-sources/entities/data-source.entity';
+import { Enrollment } from '../enrollments/entities/enrollment.entity';
 import { KnowledgeUnit } from '../knowledge-units/entities/knowledge-unit.entity';
 import { LearningPath } from '../learning-paths/entities/learning-path.entity';
 import { Principle } from '../principles/entities/principle.entity';
@@ -33,6 +34,7 @@ import { SeederService } from './seeder.service';
       Project,
       Submission,
       Feedback,
+      Enrollment,
     ]),
   ],
   controllers: [SeedController],

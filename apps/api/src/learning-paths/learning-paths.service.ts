@@ -16,7 +16,8 @@ export class LearningPathsService {
   async create(createLearningPathDto: CreateLearningPathDto): Promise<LearningPath> {
     const learningPath = this.learningPathRepository.create({
       ...createLearningPathDto,
-      status: createLearningPathDto.status || 'not-started',
+      status: (createLearningPathDto.status as LearningPath['status']) || 'not-started',
+      visibility: createLearningPathDto.visibility || 'private',
     });
     return await this.learningPathRepository.save(learningPath);
   }
@@ -53,6 +54,30 @@ export class LearningPathsService {
   async findByMentor(mentorId: string): Promise<LearningPath[]> {
     return await this.learningPathRepository.find({
       where: { mentorId },
+      order: { createdAt: 'DESC' },
+    });
+  }
+
+  async findByCreator(creatorId: string): Promise<LearningPath[]> {
+    return await this.learningPathRepository.find({
+      where: { creatorId },
+      order: { createdAt: 'DESC' },
+    });
+  }
+
+  async findPublicPaths(): Promise<LearningPath[]> {
+    return await this.learningPathRepository.find({
+      where: { visibility: 'public' },
+      order: { createdAt: 'DESC' },
+    });
+  }
+
+  async findSharedPaths(): Promise<LearningPath[]> {
+    return await this.learningPathRepository.find({
+      where: [
+        { visibility: 'public' },
+        { visibility: 'shared' },
+      ],
       order: { createdAt: 'DESC' },
     });
   }

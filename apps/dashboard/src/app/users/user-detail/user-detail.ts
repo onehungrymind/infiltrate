@@ -5,9 +5,11 @@ import { User } from '@kasita/common-models';
 import { initializeEntity, toSchema, userFields } from '@kasita/core-data';
 import { MaterialModule } from '@kasita/material';
 
+import { UserEnrollments } from '../user-enrollments/user-enrollments';
+
 @Component({
   selector: 'app-user-detail',
-  imports: [CommonModule, MaterialModule, Field],
+  imports: [CommonModule, MaterialModule, Field, UserEnrollments],
   templateUrl: './user-detail.html',
   styleUrl: './user-detail.scss',
 })

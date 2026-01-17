@@ -157,4 +157,9 @@
       </button>
     </div>
   </form>
+
+  <!-- Enrollment Management (only for existing users) -->
+  @if (user?.id) {
+    <app-user-enrollments [user]="user"></app-user-enrollments>
+  }
 </div>

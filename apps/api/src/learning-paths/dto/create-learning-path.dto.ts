@@ -1,16 +1,23 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsIn,IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
+import { PathVisibility } from '../entities/learning-path.entity';
+
 export class CreateLearningPathDto {
-  @ApiProperty()
+  @ApiProperty({ description: 'Creator user ID' })
   @IsString()
   @IsNotEmpty()
-  userId: string;
+  creatorId: string;
 
   @ApiPropertyOptional({ description: 'Mentor user ID' })
   @IsOptional()
   @IsString()
   mentorId?: string;
+
+  @ApiPropertyOptional({ example: 'private', enum: ['private', 'shared', 'public'] })
+  @IsOptional()
+  @IsIn(['private', 'shared', 'public'])
+  visibility?: PathVisibility;
 
   @ApiProperty({ example: 'React Server Components' })
   @IsString()

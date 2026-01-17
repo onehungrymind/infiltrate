@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -39,6 +40,7 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 @NgModule({
   imports: [
     CommonModule,
+    DragDropModule,
     MatButtonModule,
     MatCardModule,
     MatInputModule,
@@ -76,6 +78,7 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
   ],
   exports: [
     CommonModule,
+    DragDropModule,
     MatButtonModule,
     MatCardModule,
     MatInputModule,

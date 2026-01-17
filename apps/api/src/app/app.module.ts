@@ -9,6 +9,8 @@ import { Challenge } from '../challenges/entities/challenge.entity';
 import { DataSourcesModule } from '../data-sources/data-sources.module';
 import { DataSource } from '../data-sources/entities/data-source.entity';
 import { DatabaseModule } from '../database/database.module';
+import { Enrollment } from '../enrollments/entities/enrollment.entity';
+import { EnrollmentsModule } from '../enrollments/enrollments.module';
 import { IngestionModule } from '../ingestion/ingestion.module';
 import { GraphSearch } from '../knowledge-graph/entities/graph-search.entity';
 import { KnowledgeGraphModule } from '../knowledge-graph/knowledge-graph.module';
@@ -55,7 +57,7 @@ import { AppService } from './app.service';
       database: process.env.DATABASE_URL?.replace('file:', '') || 'kasita.db',
       synchronize: process.env.NODE_ENV !== 'production', // Auto-sync in dev
       logging: false, // Disable SQL logging for better performance
-      entities: [LearningPath, Source, SourcePathLink, RawContent, KnowledgeUnit, UserProgress, User, DataSource, GraphSearch, NotebookProgress, Principle, Submission, Feedback, Challenge, Project, ProjectPrinciple],
+      entities: [LearningPath, Source, SourcePathLink, RawContent, KnowledgeUnit, UserProgress, User, DataSource, GraphSearch, NotebookProgress, Principle, Submission, Feedback, Challenge, Project, ProjectPrinciple, Enrollment],
     }),
     LearningPathsModule,
     SourceConfigsModule,
@@ -74,6 +76,7 @@ import { AppService } from './app.service';
     SubmissionsModule,
     ChallengesModule,
     ProjectsModule,
+    EnrollmentsModule,
   ],
   controllers: [AppController],
   providers: [AppService, ProgressGateway],

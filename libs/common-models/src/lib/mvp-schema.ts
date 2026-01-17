@@ -40,11 +40,15 @@ export interface BaseEntity {
   
   export type ScheduleFrequency = 'daily' | 'weekly' | 'monthly' | 'manual';
   
-  export type UserRole = 'guest' | 'user' | 'manager' | 'admin';
+  export type UserRole = 'guest' | 'user' | 'mentor' | 'manager' | 'admin';
 
   export type PrincipleDifficulty = 'foundational' | 'intermediate' | 'advanced';
 
   export type PrincipleStatus = 'pending' | 'in_progress' | 'mastered';
+
+  export type EnrollmentStatus = 'active' | 'completed' | 'dropped';
+
+  export type PathVisibility = 'private' | 'shared' | 'public';
 
   // Legacy content types for challenge constraints
   export type ChallengeContentType = 'code' | 'written' | 'project';
@@ -77,12 +81,25 @@ export interface BaseEntity {
    * A learning path - user's learning goal
    */
   export interface LearningPath extends BaseEntity {
-    userId: string;
+    creatorId: string;               // Creator user ID (renamed from userId)
     mentorId?: string;               // Assigned mentor user ID
+    visibility: PathVisibility;      // 'private' | 'shared' | 'public'
     name: string;                    // "React Server Components"
     domain: string;                  // "Web Development"
     targetSkill: string;             // "Build production RSC app"
     status: PathStatus;
+  }
+
+  /**
+   * Enrollment - links a user to a learning path
+   */
+  export interface Enrollment extends BaseEntity {
+    userId: string;
+    pathId: string;
+    mentorId?: string;               // Assigned mentor user ID for this enrollment
+    status: EnrollmentStatus;        // 'active' | 'completed' | 'dropped'
+    enrolledAt?: Date;
+    completedAt?: Date;
   }
 
   /**
@@ -343,8 +360,9 @@ export interface BaseEntity {
   // ============================================================================
   
   export interface CreateLearningPathDto {
-    userId: string;
+    creatorId: string;
     mentorId?: string;
+    visibility?: PathVisibility;
     name: string;
     domain: string;
     targetSkill: string;
@@ -356,6 +374,20 @@ export interface BaseEntity {
     targetSkill?: string;
     status?: PathStatus;
     mentorId?: string;
+    visibility?: PathVisibility;
+  }
+
+  export interface CreateEnrollmentDto {
+    userId: string;
+    pathId: string;
+    mentorId?: string;
+    status?: EnrollmentStatus;
+  }
+
+  export interface UpdateEnrollmentDto {
+    status?: EnrollmentStatus;
+    mentorId?: string | null;
+    completedAt?: Date;
   }
 
   export interface CreatePrincipleDto {

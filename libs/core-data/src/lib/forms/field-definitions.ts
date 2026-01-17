@@ -44,6 +44,18 @@ export const learningPathFields: FieldDef[] = [
       { value: 'completed', label: 'Completed' },
     ],
   },
+  {
+    name: 'visibility',
+    label: 'Visibility',
+    type: 'select',
+    required: false,
+    options: [
+      { value: 'private', label: 'Private (Only you)' },
+      { value: 'shared', label: 'Shared (Enrolled users)' },
+      { value: 'public', label: 'Public (Everyone)' },
+    ],
+    helpText: 'Controls who can see and enroll in this learning path',
+  },
 ];
 
 /**
@@ -494,6 +506,7 @@ export const userFields: FieldDef[] = [
     options: [
       { value: 'guest', label: 'Guest' },
       { value: 'user', label: 'User' },
+      { value: 'mentor', label: 'Mentor' },
       { value: 'manager', label: 'Manager' },
       { value: 'admin', label: 'Admin' },
     ],

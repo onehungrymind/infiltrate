@@ -322,3 +322,36 @@ export {
   linkPrinciple,
   unlinkPrinciple,
 };
+
+/* Enrollments */
+import * as EnrollmentsActions from './lib/enrollments/enrollments.actions';
+import * as EnrollmentsFeature from './lib/enrollments/enrollments.feature';
+import * as EnrollmentsEffects from './lib/enrollments/enrollments.effects';
+import { EnrollmentsFacade } from './lib/enrollments/enrollments.facade';
+import { enrollmentsFeature } from './lib/enrollments/enrollments.feature';
+import {
+  loadEnrollments,
+  loadEnrollmentsByUser,
+  loadEnrollmentsByPath,
+  checkEnrollment,
+  enroll,
+  updateEnrollment,
+  unenroll,
+  loadLeaderboard,
+} from './lib/enrollments/enrollments.effects';
+
+export {
+  enrollmentsFeature,
+  EnrollmentsFacade,
+  EnrollmentsActions,
+  EnrollmentsFeature,
+  EnrollmentsEffects,
+  loadEnrollments,
+  loadEnrollmentsByUser,
+  loadEnrollmentsByPath,
+  checkEnrollment,
+  enroll,
+  updateEnrollment,
+  unenroll,
+  loadLeaderboard,
+};

@@ -1,0 +1,122 @@
+<div class="enrollments-container">
+  <h3 class="enrollments-title">Learning Path Enrollments</h3>
+
+  @if (!user?.id) {
+    <p class="no-user">Select a user to manage enrollments</p>
+  } @else {
+    <div class="lists-container" cdkDropListGroup>
+      <!-- Available Learning Paths -->
+      <div class="list-section">
+        <h4 class="list-title">
+          <mat-icon>school</mat-icon>
+          Available Paths
+          <span class="count">({{ availablePaths().length }})</span>
+        </h4>
+        <div
+          cdkDropList
+          id="available-list"
+          [cdkDropListData]="availablePaths()"
+          class="path-list"
+          (cdkDropListDropped)="onDrop($any($event))"
+        >
+          @for (path of availablePaths(); track path.id) {
+            <div class="path-item" cdkDrag>
+              <div class="path-drag-handle" cdkDragHandle>
+                <mat-icon>drag_indicator</mat-icon>
+              </div>
+              <div class="path-content">
+                <span class="path-name">{{ path.name }}</span>
+                <span class="path-domain">{{ path.domain }}</span>
+              </div>
+              <div class="path-visibility">
+                @switch (path.visibility) {
+                  @case ('public') {
+                    <mat-icon matTooltip="Public">public</mat-icon>
+                  }
+                  @case ('shared') {
+                    <mat-icon matTooltip="Shared">group</mat-icon>
+                  }
+                  @default {
+                    <mat-icon matTooltip="Private">lock</mat-icon>
+                  }
+                }
+              </div>
+              <div class="path-placeholder" *cdkDragPlaceholder></div>
+            </div>
+          } @empty {
+            <div class="empty-list">
+              <mat-icon>check_circle</mat-icon>
+              <span>All paths enrolled</span>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Enrolled Learning Paths with Mentor Assignment -->
+      <div class="list-section enrolled-section">
+        <h4 class="list-title enrolled">
+          <mat-icon>assignment_turned_in</mat-icon>
+          Enrolled Paths & Mentors
+          <span class="count">({{ enrolledPaths().length }})</span>
+        </h4>
+        <div
+          cdkDropList
+          id="enrolled-list"
+          [cdkDropListData]="enrolledPaths()"
+          class="path-list enrolled"
+          (cdkDropListDropped)="onDrop($any($event))"
+        >
+          @for (path of enrolledPaths(); track path.id) {
+            <div class="path-item enrolled with-mentor" cdkDrag>
+              <div class="path-drag-handle" cdkDragHandle>
+                <mat-icon>drag_indicator</mat-icon>
+              </div>
+              <div class="path-row">
+                <div class="path-info">
+                  <span class="path-name">{{ path.name }}</span>
+                  <span class="path-domain">{{ path.domain }}</span>
+                </div>
+                <div class="mentor-select-wrapper">
+                  <mat-icon class="mentor-icon">person</mat-icon>
+                  <select
+                    class="mentor-select"
+                    (change)="onMentorChange(path, $any($event.target).value || null)"
+                    [disabled]="savingMentorForPath() === path.id"
+                  >
+                    <option value="" [selected]="!path.enrollment?.mentorId">No Mentor</option>
+                    @for (u of allUsers(); track u.id) {
+                      <option [value]="u.id" [selected]="path.enrollment?.mentorId === u.id">
+                        {{ u.name || u.email }}{{ u.role === 'mentor' ? ' (mentor)' : '' }}
+                      </option>
+                    }
+                  </select>
+                  @if (savingMentorForPath() === path.id) {
+                    <mat-spinner diameter="16" class="saving-spinner"></mat-spinner>
+                  }
+                </div>
+              </div>
+              <div class="path-placeholder" *cdkDragPlaceholder></div>
+            </div>
+          } @empty {
+            <div class="empty-list">
+              <mat-icon>inbox</mat-icon>
+              <span>No enrollments yet</span>
+              <span class="hint">Drag paths here to enroll</span>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <p class="help-text">
+      <mat-icon>info</mat-icon>
+      Drag learning paths between lists to enroll/unenroll. Select a mentor from the dropdown for each enrolled path.
+    </p>
+
+    @if (message(); as msg) {
+      <div class="message" [class.success]="msg.type === 'success'" [class.error]="msg.type === 'error'">
+        {{ msg.text }}
+      </div>
+    }
+  }
+</div>

@@ -4,6 +4,7 @@ import * as bcrypt from 'bcrypt';
 import { Repository } from 'typeorm';
 
 import { Challenge } from '../challenges/entities/challenge.entity';
+import { Enrollment } from '../enrollments/entities/enrollment.entity';
 import { KnowledgeUnit } from '../knowledge-units/entities/knowledge-unit.entity';
 import { LearningPath } from '../learning-paths/entities/learning-path.entity';
 import { Principle } from '../principles/entities/principle.entity';
@@ -46,6 +47,8 @@ export class SeederService {
     private submissionsRepository: Repository<Submission>,
     @InjectRepository(Feedback)
     private feedbackRepository: Repository<Feedback>,
+    @InjectRepository(Enrollment)
+    private enrollmentsRepository: Repository<Enrollment>,
   ) {}
 
   async seed(): Promise<void> {
@@ -71,6 +74,10 @@ export class SeederService {
     // 1) Seed Learning Paths (linked to users and mentors)
     const learningPaths = await this.seedLearningPaths(users);
     this.logger.log(`📚 Seeded ${learningPaths.length} learning paths`);
+
+    // 1.5) Seed Enrollments (linking users to paths)
+    const enrollments = await this.seedEnrollments(users, learningPaths);
+    this.logger.log(`📋 Seeded ${enrollments.length} enrollments`);
 
     // 2) Seed Principles (linked to learning paths)
     const principles = await this.seedPrinciples(learningPaths);
@@ -130,20 +137,42 @@ export class SeederService {
   }
 
   private async seedLearningPaths(users: User[]): Promise<LearningPath[]> {
-    const regularUser = users.find(u => u.role === 'user') || users[0];
     const mentorUser = users.find(u => u.role === 'mentor');
 
     const learningPaths = await this.learningPathsRepository.save(
       seedPayload.learningPaths.map(path => ({
-        ...path,
-        userId: regularUser?.id || 'demo-user-1',
-        // Assign mentor if path has mentorId in payload
-        mentorId: path.mentorId ? mentorUser?.id : undefined,
+        name: path.name,
+        domain: path.domain,
+        targetSkill: path.targetSkill,
+        creatorId: mentorUser?.id || users[0]?.id || 'demo-user-1',
+        visibility: path.visibility || 'private',
         status: path.status || 'not-started',
       })),
     );
 
     return learningPaths;
+  }
+
+  private async seedEnrollments(users: User[], learningPaths: LearningPath[]): Promise<Enrollment[]> {
+    const regularUser = users.find(u => u.role === 'user') || users[0];
+    const mentorUser = users.find(u => u.role === 'mentor');
+    const enrollments: Enrollment[] = [];
+
+    // Enroll the regular user in the first two learning paths
+    for (let i = 0; i < Math.min(2, learningPaths.length); i++) {
+      const enrollment = this.enrollmentsRepository.create({
+        userId: regularUser?.id || 'demo-user-1',
+        pathId: learningPaths[i].id,
+        // Assign mentor to the first enrollment
+        mentorId: i === 0 && mentorUser ? mentorUser.id : undefined,
+        status: 'active',
+        enrolledAt: new Date(),
+      });
+      const saved = await this.enrollmentsRepository.save(enrollment);
+      enrollments.push(saved);
+    }
+
+    return enrollments;
   }
 
   private async seedPrinciples(learningPaths: LearningPath[]): Promise<Principle[]> {
@@ -394,6 +423,7 @@ export class SeederService {
     await this.rawContentRepository.clear();
     await this.sourcePathLinksRepository.clear();
     await this.sourcesRepository.clear();
+    await this.enrollmentsRepository.clear();
     await this.learningPathsRepository.clear();
     await this.usersRepository.clear();
     this.logger.log('🧹 Cleared existing data');

@@ -10,6 +10,7 @@ import { provideRouter } from '@angular/router';
 import { API_URL, authInterceptor, errorInterceptor, GlobalErrorHandler } from '@kasita/core-data';
 import {
   challengesFeature,
+  checkEnrollment,
   createChallenge,
   createDataSource,
   createKnowledgeUnit,
@@ -31,6 +32,8 @@ import {
   deleteSubmission,
   deleteUser,
   deleteUserProgress,
+  enroll,
+  enrollmentsFeature,
   knowledgeUnitsFeature,
   learningPathsFeature,
   linkPrinciple,
@@ -41,10 +44,15 @@ import {
   loadDataSource,
   // Data Sources Effects
   loadDataSources,
+  // Enrollments Effects
+  loadEnrollments,
+  loadEnrollmentsByPath,
+  loadEnrollmentsByUser,
   loadFeedback,
   loadKnowledgeUnit,
   // Knowledge Units Effects
   loadKnowledgeUnits,
+  loadLeaderboard,
   loadLearningPath,
   // Learning Paths Effects
   loadLearningPaths,
@@ -79,9 +87,11 @@ import {
   submissionsFeature,
   submitForReview,
   submitMentorFeedback,
+  unenroll,
   unlinkPrinciple,
   updateChallenge,
   updateDataSource,
+  updateEnrollment,
   updateKnowledgeUnit,
   updateLearningPath,
   updatePrinciple,
@@ -120,6 +130,7 @@ export const appConfig: ApplicationConfig = {
       submissions: submissionsFeature.reducer,
       challenges: challengesFeature.reducer,
       projects: projectsFeature.reducer,
+      enrollments: enrollmentsFeature.reducer,
     }),
     provideEffects({
       // Learning Paths
@@ -195,6 +206,15 @@ export const appConfig: ApplicationConfig = {
       deleteProject,
       linkPrinciple,
       unlinkPrinciple,
+      // Enrollments
+      loadEnrollments,
+      loadEnrollmentsByUser,
+      loadEnrollmentsByPath,
+      checkEnrollment,
+      enroll,
+      updateEnrollment,
+      unenroll,
+      loadLeaderboard,
     }),
     provideStoreDevtools({
       maxAge: 25,

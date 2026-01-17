@@ -56,3 +56,6 @@ export * from './lib/services/challenges/challenges.service';
 
 /* Projects */
 export * from './lib/services/projects/projects.service';
+
+/* Enrollments */
+export * from './lib/services/enrollments/enrollments.service';
