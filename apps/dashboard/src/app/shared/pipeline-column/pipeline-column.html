@@ -1,0 +1,56 @@
+<div class="pipeline-column">
+  <div class="column-header">
+    <div class="title-row">
+      <h3 class="column-title">{{ title }}</h3>
+      @if (itemCount > 0) {
+        <span class="count-badge">{{ itemCount }}</span>
+      }
+    </div>
+    @if (showAction || showSecondaryAction) {
+      <div class="action-row">
+        @if (showAction) {
+          <button
+            class="action-btn"
+            [class.loading]="isLoading"
+            [class.with-secondary]="showSecondaryAction"
+            [disabled]="isLoading || !isEnabled"
+            (click)="onAction()"
+          >
+            <span class="btn-icon-wrapper">
+              @if (isLoading) {
+                <app-dot-spinner [size]="18" color="currentColor"></app-dot-spinner>
+              } @else {
+                <mat-icon>{{ actionIcon }}</mat-icon>
+              }
+            </span>
+            <span>{{ actionLabel }}</span>
+          </button>
+        }
+        @if (showSecondaryAction) {
+          <button
+            class="secondary-action-btn"
+            (click)="onSecondaryAction()"
+            title="Add new"
+          >
+            <mat-icon>{{ secondaryActionIcon }}</mat-icon>
+          </button>
+        }
+      </div>
+    }
+  </div>
+  <div class="column-content">
+    @if (isLoading && itemCount === 0) {
+      <div class="column-loading">
+        <app-dot-spinner [size]="32" color="#6366f1"></app-dot-spinner>
+        <span>Loading...</span>
+      </div>
+    } @else if (itemCount === 0) {
+      <div class="column-empty">
+        <mat-icon class="empty-icon">{{ emptyIcon }}</mat-icon>
+        <span class="empty-text">{{ emptyMessage }}</span>
+      </div>
+    } @else {
+      <ng-content></ng-content>
+    }
+  </div>
+</div>

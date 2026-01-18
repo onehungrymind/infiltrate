@@ -18,6 +18,11 @@ export class RawContentController {
     return this.rawContentService.findAll();
   }
 
+  @Get('path/:pathId')
+  findByPath(@Param('pathId') pathId: string) {
+    return this.rawContentService.findByPath(pathId);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.rawContentService.findOne(id);

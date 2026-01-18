@@ -8,6 +8,7 @@ import {
   selectRawContentLoaded,
   selectRawContentError,
   selectSelectedRawContent,
+  selectRawContentByPathId,
 } from './raw-content.feature';
 import { filter } from 'rxjs';
 
@@ -32,6 +33,10 @@ export class RawContentFacade {
     ),
   );
 
+  selectRawContentByPath(pathId: string) {
+    return this.store.select(selectRawContentByPathId(pathId));
+  }
+
   resetSelectedRawContent() {
     this.dispatch(RawContentActions.resetSelectedRawContent());
   }
@@ -46,6 +51,10 @@ export class RawContentFacade {
 
   loadRawContentItem(rawContentId: string) {
     this.dispatch(RawContentActions.loadRawContentItem({ rawContentId }));
+  }
+
+  loadRawContentByPath(pathId: string) {
+    this.dispatch(RawContentActions.loadRawContentByPath({ pathId }));
   }
 
   saveRawContent(rawContent: RawContent) {

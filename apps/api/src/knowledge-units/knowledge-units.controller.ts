@@ -18,6 +18,11 @@ export class KnowledgeUnitsController {
     return this.knowledgeUnitsService.findAll();
   }
 
+  @Get('path/:pathId')
+  findByPath(@Param('pathId') pathId: string) {
+    return this.knowledgeUnitsService.findByPath(pathId);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.knowledgeUnitsService.findOne(id);

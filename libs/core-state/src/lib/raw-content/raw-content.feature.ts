@@ -44,6 +44,11 @@ const rawContentReducer = createReducer(
     ...state,
     error: null,
   })),
+  on(RawContentActions.loadRawContentByPath, (state) => ({
+    ...state,
+    loaded: false,
+    error: null,
+  })),
 
   // Selection / Reset
   on(RawContentActions.selectRawContent, (state, { selectedId }) => ({
@@ -72,6 +77,13 @@ const rawContentReducer = createReducer(
       error: null,
     }),
   ),
+  on(RawContentActions.loadRawContentByPathSuccess, (state, { rawContent }) =>
+    rawContentAdapter.setAll(rawContent, {
+      ...state,
+      loaded: true,
+      error: null,
+    }),
+  ),
   on(RawContentActions.createRawContentSuccess, (state, { rawContent }) =>
     rawContentAdapter.addOne(rawContent, { ...state, error: null }),
   ),
@@ -92,6 +104,7 @@ const rawContentReducer = createReducer(
   on(
     RawContentActions.loadRawContentFailure,
     RawContentActions.loadRawContentItemFailure,
+    RawContentActions.loadRawContentByPathFailure,
     RawContentActions.createRawContentFailure,
     RawContentActions.updateRawContentFailure,
     RawContentActions.deleteRawContentFailure,
@@ -118,6 +131,11 @@ export const rawContentFeature = createFeature({
       (entities, id) => (id ? (entities[id] ?? null) : null),
     );
 
+    const selectRawContentByPathId = (pathId: string) =>
+      createSelector(selectAll, (rawContent) =>
+        rawContent.filter((r) => r.pathId === pathId),
+      );
+
     return {
       // Adapter-powered
       selectAllRawContent: selectAll,
@@ -136,6 +154,7 @@ export const rawContentFeature = createFeature({
       ),
       selectSelectedId,
       selectSelectedRawContent,
+      selectRawContentByPathId,
     };
   },
 });
@@ -150,4 +169,5 @@ export const {
   selectRawContentError,
   selectSelectedId,
   selectSelectedRawContent,
+  selectRawContentByPathId,
 } = rawContentFeature;

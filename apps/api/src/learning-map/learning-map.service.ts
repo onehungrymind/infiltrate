@@ -1,5 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk';
-import { BadRequestException,Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { exec } from 'child_process';
@@ -30,6 +30,7 @@ import { SourcesService } from '../source-configs/sources.service';
 
 @Injectable()
 export class LearningMapService {
+  private readonly logger = new Logger(LearningMapService.name);
   private anthropic: Anthropic;
 
   constructor(
@@ -611,14 +612,19 @@ export class LearningMapService {
     sourcesProcessed: number;
     itemsIngested: number;
   }> {
+    this.logger.log(`[INGEST] Starting ingestion for path: ${pathId}`);
+
     // Verify the learning path exists
     const learningPath = await this.learningPathRepository.findOne({
       where: { id: pathId },
     });
 
     if (!learningPath) {
+      this.logger.error(`[INGEST] Learning path not found: ${pathId}`);
       throw new NotFoundException(`Learning path ${pathId} not found`);
     }
+
+    this.logger.log(`[INGEST] Found learning path: "${learningPath.name}"`);
 
     // Check if there are enabled sources for this path (with source data)
     const enabledSourceLinks = await this.sourcePathLinkRepository.find({
@@ -627,6 +633,7 @@ export class LearningMapService {
     });
 
     if (enabledSourceLinks.length === 0) {
+      this.logger.warn(`[INGEST] No enabled sources found for path: ${pathId}`);
       throw new BadRequestException(
         `No enabled sources found for this learning path. Add sources first.`
       );
@@ -637,13 +644,21 @@ export class LearningMapService {
       .filter(link => link.source?.url)
       .map(link => link.source.url);
 
+    this.logger.log(`[INGEST] Found ${enabledSourceLinks.length} enabled sources:`);
+    sourceUrls.forEach((url, i) => {
+      this.logger.log(`[INGEST]   ${i + 1}. ${url}`);
+    });
+
     // Count raw content before ingestion
     const rawContentBefore = await this.rawContentRepository.count({
       where: { pathId },
     });
+    this.logger.log(`[INGEST] Raw content before: ${rawContentBefore} items`);
 
     // Get the API URL from config
     const apiUrl = this.configService.get<string>('API_URL') || 'http://localhost:3333/api';
+    this.logger.log(`[INGEST] Using API URL: ${apiUrl}`);
+    this.logger.log(`[INGEST] Running Patchbay ingestion subprocess...`);
 
     try {
       // Run the Patchbay ingestion command with sources passed directly
@@ -661,12 +676,20 @@ export class LearningMapService {
         }
       );
 
+      if (stdout) {
+        this.logger.log(`[INGEST] Patchbay stdout:\n${stdout}`);
+      }
+      if (stderr) {
+        this.logger.warn(`[INGEST] Patchbay stderr:\n${stderr}`);
+      }
+
       // Count raw content after ingestion
       const rawContentAfter = await this.rawContentRepository.count({
         where: { pathId },
       });
 
       const itemsIngested = rawContentAfter - rawContentBefore;
+      this.logger.log(`[INGEST] Completed! Raw content after: ${rawContentAfter} items (+${itemsIngested} new)`);
 
       return {
         status: 'completed',
@@ -676,6 +699,10 @@ export class LearningMapService {
       };
     } catch (error: any) {
       const errorMessage = error.stderr || error.message || 'Unknown error';
+      this.logger.error(`[INGEST] Failed: ${errorMessage}`);
+      if (error.stdout) {
+        this.logger.error(`[INGEST] stdout before failure:\n${error.stdout}`);
+      }
       throw new BadRequestException(`Ingestion failed: ${errorMessage}`);
     }
   }
@@ -690,14 +717,19 @@ export class LearningMapService {
     rawContentProcessed: number;
     knowledgeUnitsGenerated: number;
   }> {
+    this.logger.log(`[SYNTHESIZE] Starting synthesis for path: ${pathId}`);
+
     // Verify the learning path exists
     const learningPath = await this.learningPathRepository.findOne({
       where: { id: pathId },
     });
 
     if (!learningPath) {
+      this.logger.error(`[SYNTHESIZE] Learning path not found: ${pathId}`);
       throw new NotFoundException(`Learning path ${pathId} not found`);
     }
+
+    this.logger.log(`[SYNTHESIZE] Found learning path: "${learningPath.name}"`);
 
     // Check if there's raw content to synthesize
     const rawContentCount = await this.rawContentRepository.count({
@@ -705,18 +737,30 @@ export class LearningMapService {
     });
 
     if (rawContentCount === 0) {
+      this.logger.warn(`[SYNTHESIZE] No raw content found for path: ${pathId}`);
       throw new BadRequestException(
         `No raw content found for this learning path. Run ingestion first.`
       );
     }
 
+    this.logger.log(`[SYNTHESIZE] Found ${rawContentCount} raw content items to process`);
+
     // Count knowledge units before synthesis
     const unitsBefore = await this.knowledgeUnitRepository.count({
       where: { pathId },
     });
+    this.logger.log(`[SYNTHESIZE] Knowledge units before: ${unitsBefore}`);
+
+    // Also count ALL knowledge units to check if they're being saved with wrong pathId
+    const totalUnits = await this.knowledgeUnitRepository.count();
+    this.logger.log(`[SYNTHESIZE] Total knowledge units in DB (all paths): ${totalUnits}`);
 
     // Get the API URL from config
     const apiUrl = this.configService.get<string>('API_URL') || 'http://localhost:3333/api';
+    this.logger.log(`[SYNTHESIZE] Using API URL: ${apiUrl}`);
+    this.logger.log(`[SYNTHESIZE] Running Synthesizer subprocess (10 min timeout)...`);
+
+    const startTime = Date.now();
 
     try {
       // Run the Synthesizer process command
@@ -733,12 +777,26 @@ export class LearningMapService {
         }
       );
 
+      const elapsedSeconds = ((Date.now() - startTime) / 1000).toFixed(1);
+
+      if (stdout) {
+        this.logger.log(`[SYNTHESIZE] Synthesizer stdout:\n${stdout}`);
+      }
+      if (stderr) {
+        this.logger.warn(`[SYNTHESIZE] Synthesizer stderr:\n${stderr}`);
+      }
+
       // Count knowledge units after synthesis
       const unitsAfter = await this.knowledgeUnitRepository.count({
         where: { pathId },
       });
 
+      // Also count ALL knowledge units to check if they're being saved with wrong pathId
+      const totalUnitsAfter = await this.knowledgeUnitRepository.count();
+      this.logger.log(`[SYNTHESIZE] Total knowledge units in DB (all paths) after: ${totalUnitsAfter} (was ${totalUnits})`);
+
       const unitsGenerated = unitsAfter - unitsBefore;
+      this.logger.log(`[SYNTHESIZE] Completed in ${elapsedSeconds}s! Knowledge units for this path: ${unitsAfter} (+${unitsGenerated} new)`);
 
       return {
         status: 'completed',
@@ -747,7 +805,15 @@ export class LearningMapService {
         knowledgeUnitsGenerated: unitsGenerated,
       };
     } catch (error: any) {
+      const elapsedSeconds = ((Date.now() - startTime) / 1000).toFixed(1);
       const errorMessage = error.stderr || error.message || 'Unknown error';
+      this.logger.error(`[SYNTHESIZE] Failed after ${elapsedSeconds}s: ${errorMessage}`);
+      if (error.stdout) {
+        this.logger.error(`[SYNTHESIZE] stdout before failure:\n${error.stdout}`);
+      }
+      if (error.killed) {
+        this.logger.error(`[SYNTHESIZE] Process was killed (likely timeout)`);
+      }
       throw new BadRequestException(`Synthesis failed: ${errorMessage}`);
     }
   }

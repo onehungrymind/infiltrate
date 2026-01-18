@@ -36,6 +36,7 @@ import { knowledgeUnitsFeature } from './lib/knowledge-units/knowledge-units.fea
 import {
   loadKnowledgeUnits,
   loadKnowledgeUnit,
+  loadKnowledgeUnitsByPath,
   createKnowledgeUnit,
   updateKnowledgeUnit,
   deleteKnowledgeUnit,
@@ -49,6 +50,7 @@ export {
   KnowledgeUnitsEffects,
   loadKnowledgeUnits,
   loadKnowledgeUnit,
+  loadKnowledgeUnitsByPath,
   createKnowledgeUnit,
   updateKnowledgeUnit,
   deleteKnowledgeUnit,
@@ -92,6 +94,7 @@ import { rawContentFeature } from './lib/raw-content/raw-content.feature';
 import {
   loadRawContent,
   loadRawContentItem,
+  loadRawContentByPath,
   createRawContent,
   updateRawContent,
   deleteRawContent,
@@ -105,6 +108,7 @@ export {
   RawContentEffects,
   loadRawContent,
   loadRawContentItem,
+  loadRawContentByPath,
   createRawContent,
   updateRawContent,
   deleteRawContent,

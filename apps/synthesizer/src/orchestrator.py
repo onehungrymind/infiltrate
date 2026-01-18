@@ -102,14 +102,14 @@ class SynthesisOrchestrator:
         all_units = []
         unit_source_mapping = {}  # Maps unit.id to list of source IDs (API raw content IDs)
         
-        # Extract pathId from processed content metadata (if available)
-        # ProcessedContent should have preserved pathId from raw content
-        path_id = None
-        if processed_batch.items:
+        # Get pathId - prioritize DEFAULT_PATH_ID env var over metadata
+        # This ensures we use the pathId from the current synthesis request
+        path_id = os.getenv("DEFAULT_PATH_ID")
+        if not path_id and processed_batch.items:
             first_processed = processed_batch.items[0]
-            path_id = first_processed.metadata.get('pathId') or os.getenv("DEFAULT_PATH_ID")
-        else:
-            path_id = os.getenv("DEFAULT_PATH_ID")
+            path_id = first_processed.metadata.get('pathId')
+
+        logger.info(f"Using pathId: {path_id}")
         
         for cluster in cluster_batch.clusters:
             logger.info(f"\nProcessing cluster {cluster.cluster_id} ({cluster.size} items)...")

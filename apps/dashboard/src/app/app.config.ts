@@ -52,6 +52,7 @@ import {
   loadKnowledgeUnit,
   // Knowledge Units Effects
   loadKnowledgeUnits,
+  loadKnowledgeUnitsByPath,
   loadLeaderboard,
   loadLearningPath,
   // Learning Paths Effects
@@ -67,6 +68,7 @@ import {
   loadProjectsByPath,
   // Raw Content Effects
   loadRawContent,
+  loadRawContentByPath,
   loadRawContentItem,
   loadSubmission,
   // Submissions Effects
@@ -142,6 +144,7 @@ export const appConfig: ApplicationConfig = {
       // Knowledge Units
       loadKnowledgeUnits,
       loadKnowledgeUnit,
+      loadKnowledgeUnitsByPath,
       createKnowledgeUnit,
       updateKnowledgeUnit,
       deleteKnowledgeUnit,
@@ -155,6 +158,7 @@ export const appConfig: ApplicationConfig = {
       // Raw Content
       loadRawContent,
       loadRawContentItem,
+      loadRawContentByPath,
       createRawContent,
       updateRawContent,
       deleteRawContent,

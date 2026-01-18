@@ -52,6 +52,10 @@ export class RawContentService {
     return this.http.get<RawContent>(this.getUrlWithId(id));
   }
 
+  findByPath(pathId: string) {
+    return this.http.get<RawContent[]>(`${this.getUrl()}/path/${pathId}`);
+  }
+
   create(rawContent: RawContent) {
     const createDto = toCreateRawContentDto(rawContent);
     return this.http.post(this.getUrl(), createDto);

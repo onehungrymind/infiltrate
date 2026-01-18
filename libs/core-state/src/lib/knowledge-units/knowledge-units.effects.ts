@@ -32,6 +32,32 @@ export const loadKnowledgeUnits = createEffect(
   { functional: true },
 );
 
+export const loadKnowledgeUnitsByPath = createEffect(
+  (
+    actions$ = inject(Actions),
+    knowledgeUnitsService = inject(KnowledgeUnitsService),
+  ) => {
+    return actions$.pipe(
+      ofType(KnowledgeUnitsActions.loadKnowledgeUnitsByPath),
+      exhaustMap((action) => {
+        return knowledgeUnitsService.findByPath(action.pathId).pipe(
+          map((knowledgeUnits: KnowledgeUnit[]) =>
+            KnowledgeUnitsActions.loadKnowledgeUnitsByPathSuccess({ knowledgeUnits }),
+          ),
+          catchError((error) =>
+            of(
+              KnowledgeUnitsActions.loadKnowledgeUnitsByPathFailure({
+                error: formatErrorMessage(error),
+              }),
+            ),
+          ),
+        );
+      }),
+    );
+  },
+  { functional: true },
+);
+
 export const loadKnowledgeUnit = createEffect(
   (
     actions$ = inject(Actions),

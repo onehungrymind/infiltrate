@@ -25,6 +25,13 @@ export class RawContentService {
     return await this.rawContentRepository.find();
   }
 
+  async findByPath(pathId: string): Promise<RawContent[]> {
+    return this.rawContentRepository.find({
+      where: { pathId },
+      order: { createdAt: 'DESC' },
+    });
+  }
+
   async findOne(id: string): Promise<RawContent> {
     const rawContent = await this.rawContentRepository.findOne({ where: { id } });
     if (!rawContent) {

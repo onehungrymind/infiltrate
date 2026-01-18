@@ -17,8 +17,10 @@ export class LearningPathsList {
   @Input() learningPaths: LearningPath[] = [];
   @Input() selectedLearningPath: LearningPath | null = null;
   @Input() readonly = false;
+  @Input() compact = false;
   @Output() selected = new EventEmitter();
   @Output() deleted = new EventEmitter();
+  @Output() edited = new EventEmitter<LearningPath>();
   
   isSelected(learningPath: LearningPath): boolean {
     return this.selectedLearningPath?.id === learningPath.id;
@@ -39,5 +41,10 @@ export class LearningPathsList {
         this.deleted.emit(learningPath);
       }
     });
+  }
+
+  onEdit(learningPath: LearningPath, event: Event) {
+    event.stopPropagation();
+    this.edited.emit(learningPath);
   }
 }

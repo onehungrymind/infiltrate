@@ -8,6 +8,7 @@ import {
   selectKnowledgeUnitsLoaded,
   selectKnowledgeUnitsError,
   selectSelectedKnowledgeUnit,
+  selectKnowledgeUnitsByPathId,
 } from './knowledge-units.feature';
 import { filter } from 'rxjs';
 
@@ -32,6 +33,10 @@ export class KnowledgeUnitFacade {
     ),
   );
 
+  selectKnowledgeUnitsByPath(pathId: string) {
+    return this.store.select(selectKnowledgeUnitsByPathId(pathId));
+  }
+
   resetSelectedKnowledgeUnit() {
     this.dispatch(KnowledgeUnitsActions.resetSelectedKnowledgeUnit());
   }
@@ -46,6 +51,10 @@ export class KnowledgeUnitFacade {
 
   loadKnowledgeUnit(knowledgeUnitId: string) {
     this.dispatch(KnowledgeUnitsActions.loadKnowledgeUnit({ knowledgeUnitId }));
+  }
+
+  loadKnowledgeUnitsByPath(pathId: string) {
+    this.dispatch(KnowledgeUnitsActions.loadKnowledgeUnitsByPath({ pathId }));
   }
 
   saveKnowledgeUnit(knowledgeUnit: KnowledgeUnit) {

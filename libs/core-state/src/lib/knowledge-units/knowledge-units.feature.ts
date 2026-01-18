@@ -45,6 +45,11 @@ const knowledgeUnitsReducer = createReducer(
     loaded: false,
     error: null,
   })),
+  on(KnowledgeUnitsActions.loadKnowledgeUnitsByPath, (state) => ({
+    ...state,
+    loaded: false,
+    error: null,
+  })),
 
   // Selection / Reset
   on(KnowledgeUnitsActions.selectKnowledgeUnit, (state, { selectedId }) => ({
@@ -83,6 +88,15 @@ const knowledgeUnitsReducer = createReducer(
       }),
   ),
   on(
+    KnowledgeUnitsActions.loadKnowledgeUnitsByPathSuccess,
+    (state, { knowledgeUnits }) =>
+      knowledgeUnitsAdapter.setAll(knowledgeUnits, {
+        ...state,
+        loaded: true,
+        error: null,
+      }),
+  ),
+  on(
     KnowledgeUnitsActions.createKnowledgeUnitSuccess,
     (state, { knowledgeUnit }) =>
       knowledgeUnitsAdapter.addOne(knowledgeUnit, { ...state, error: null }),
@@ -108,6 +122,7 @@ const knowledgeUnitsReducer = createReducer(
   on(
     KnowledgeUnitsActions.loadKnowledgeUnitsFailure,
     KnowledgeUnitsActions.loadKnowledgeUnitFailure,
+    KnowledgeUnitsActions.loadKnowledgeUnitsByPathFailure,
     KnowledgeUnitsActions.createKnowledgeUnitFailure,
     KnowledgeUnitsActions.updateKnowledgeUnitFailure,
     KnowledgeUnitsActions.deleteKnowledgeUnitFailure,
@@ -134,6 +149,11 @@ export const knowledgeUnitsFeature = createFeature({
       (entities, id) => (id ? (entities[id] ?? null) : null),
     );
 
+    const selectKnowledgeUnitsByPathId = (pathId: string) =>
+      createSelector(selectAll, (knowledgeUnits) =>
+        knowledgeUnits.filter((k) => k.pathId === pathId),
+      );
+
     return {
       // Adapter-powered
       selectAllKnowledgeUnits: selectAll,
@@ -152,6 +172,7 @@ export const knowledgeUnitsFeature = createFeature({
       ),
       selectSelectedId,
       selectSelectedKnowledgeUnit,
+      selectKnowledgeUnitsByPathId,
     };
   },
 });
@@ -166,4 +187,5 @@ export const {
   selectKnowledgeUnitsError,
   selectSelectedId,
   selectSelectedKnowledgeUnit,
+  selectKnowledgeUnitsByPathId,
 } = knowledgeUnitsFeature;

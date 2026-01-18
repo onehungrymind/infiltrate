@@ -31,6 +31,13 @@ export class KnowledgeUnitsService {
     return await this.knowledgeUnitRepository.find();
   }
 
+  async findByPath(pathId: string): Promise<KnowledgeUnit[]> {
+    return this.knowledgeUnitRepository.find({
+      where: { pathId },
+      order: { createdAt: 'DESC' },
+    });
+  }
+
   async findOne(id: string): Promise<KnowledgeUnit> {
     const knowledgeUnit = await this.knowledgeUnitRepository.findOne({ where: { id } });
     if (!knowledgeUnit) {

@@ -1,5 +1,5 @@
-import { Body,Controller, Post } from '@nestjs/common';
-import { ApiOperation, ApiResponse,ApiTags } from '@nestjs/swagger';
+import { Body, Controller, ParseArrayPipe, Post } from '@nestjs/common';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { Public } from '../auth/decorators/public.decorator';
 import { CreateKnowledgeUnitDto } from '../knowledge-units/dto/create-knowledge-unit.dto';
@@ -36,7 +36,8 @@ export class IngestionController {
     type: [RawContent],
   })
   async ingestRawContentBatch(
-    @Body() createRawContentDtos: CreateRawContentDto[],
+    @Body(new ParseArrayPipe({ items: CreateRawContentDto }))
+    createRawContentDtos: CreateRawContentDto[],
   ): Promise<RawContent[]> {
     return await this.ingestionService.ingestRawContentBatch(
       createRawContentDtos,
@@ -68,7 +69,8 @@ export class IngestionController {
     type: [KnowledgeUnit],
   })
   async ingestKnowledgeUnitsBatch(
-    @Body() createKnowledgeUnitDtos: CreateKnowledgeUnitDto[],
+    @Body(new ParseArrayPipe({ items: CreateKnowledgeUnitDto }))
+    createKnowledgeUnitDtos: CreateKnowledgeUnitDto[],
   ): Promise<KnowledgeUnit[]> {
     return await this.ingestionService.ingestKnowledgeUnitsBatch(
       createKnowledgeUnitDtos,

@@ -59,6 +59,10 @@ export class KnowledgeUnitsService {
     return this.http.get<KnowledgeUnit>(this.getUrlWithId(id));
   }
 
+  findByPath(pathId: string) {
+    return this.http.get<KnowledgeUnit[]>(`${this.getUrl()}/path/${pathId}`);
+  }
+
   create(knowledgeUnit: KnowledgeUnit) {
     const createDto = toCreateKnowledgeUnitDto(knowledgeUnit);
     return this.http.post(this.getUrl(), createDto);

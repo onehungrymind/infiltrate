@@ -1,0 +1,23 @@
+<div class="pipeline-progress">
+  @for (stage of stages; track stage.id; let i = $index; let last = $last) {
+    <div class="stage" [class]="'stage-' + getStageStatus(stage.id)">
+      <div class="stage-icon-container">
+        @if (getStageStatus(stage.id) === 'completed') {
+          <mat-icon class="stage-icon completed-icon">check_circle</mat-icon>
+        } @else if (getStageStatus(stage.id) === 'current') {
+          <mat-spinner diameter="24" class="stage-spinner"></mat-spinner>
+        } @else if (getStageStatus(stage.id) === 'error') {
+          <mat-icon class="stage-icon error-icon">error</mat-icon>
+        } @else {
+          <mat-icon class="stage-icon pending-icon">{{ stage.icon }}</mat-icon>
+        }
+      </div>
+      <span class="stage-label">{{ stage.label }}</span>
+    </div>
+    @if (!last) {
+      <div class="stage-connector" [class.completed]="isCompleted(stage.id)">
+        <mat-icon>chevron_right</mat-icon>
+      </div>
+    }
+  }
+</div>

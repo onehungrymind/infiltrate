@@ -32,6 +32,32 @@ export const loadRawContent = createEffect(
   { functional: true },
 );
 
+export const loadRawContentByPath = createEffect(
+  (
+    actions$ = inject(Actions),
+    rawContentService = inject(RawContentService),
+  ) => {
+    return actions$.pipe(
+      ofType(RawContentActions.loadRawContentByPath),
+      exhaustMap((action) => {
+        return rawContentService.findByPath(action.pathId).pipe(
+          map((rawContent: RawContent[]) =>
+            RawContentActions.loadRawContentByPathSuccess({ rawContent }),
+          ),
+          catchError((error) =>
+            of(
+              RawContentActions.loadRawContentByPathFailure({
+                error: error?.message || 'Failed to load raw content by path',
+              }),
+            ),
+          ),
+        );
+      }),
+    );
+  },
+  { functional: true },
+);
+
 export const loadRawContentItem = createEffect(
   (
     actions$ = inject(Actions),
