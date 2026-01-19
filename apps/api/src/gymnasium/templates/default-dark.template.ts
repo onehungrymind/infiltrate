@@ -365,10 +365,10 @@ pre {
   font-family: 'Source Code Pro', monospace;
   background: var(--bg-code);
   border: 1px solid var(--border-color);
-  border-radius: 8px;
-  padding: 1.25rem 1.5rem;
+  border-radius: 0 0 8px 8px;
+  padding: 1rem 0;
   overflow-x: auto;
-  margin-bottom: 1.5rem;
+  margin: 0;
   font-size: 0.875rem;
   line-height: 1.6;
   position: relative;
@@ -379,25 +379,148 @@ pre code {
   padding: 0;
   color: var(--text-primary);
   font-size: inherit;
+  display: block;
 }
 
 .code-block {
   position: relative;
   margin-bottom: 1.5rem;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  background: var(--bg-code);
+}
+
+.code-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-secondary);
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.8rem;
+}
+
+.code-filename {
+  color: var(--text-secondary);
+  font-family: 'Source Code Pro', monospace;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.code-filename::before {
+  content: '';
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  background: var(--accent-yellow);
+  border-radius: 2px;
+  opacity: 0.7;
 }
 
 .code-label {
-  position: absolute;
-  top: 0;
-  right: 0;
   background: var(--accent-yellow);
   color: var(--bg-primary);
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   font-weight: 600;
-  padding: 0.25rem 0.75rem;
-  border-radius: 0 8px 0 8px;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+}
+
+/* Code lines structure */
+.code-lines {
+  font-family: 'Source Code Pro', monospace;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  background: var(--bg-code);
+  padding: 1rem 0;
+}
+
+.code-row {
+  display: flex;
+  flex-direction: row;
+}
+
+.code-row.highlighted {
+  background: rgba(255, 204, 0, 0.1);
+  border-left: 3px solid var(--accent-yellow);
+}
+
+.code-row .ln {
+  flex: 0 0 3em;
+  padding-right: 1em;
+  color: var(--text-tertiary);
+  text-align: right;
+  user-select: none;
+  opacity: 0.5;
+}
+
+.code-row .lc {
+  flex: 1;
+  padding-left: 1em;
+  white-space: pre;
+  color: var(--text-primary);
+  border-left: 1px solid var(--border-color);
+}
+
+
+/* Syntax highlighting colors */
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+  color: #6e7681;
+}
+
+.token.punctuation {
+  color: #8b949e;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+  color: #79c0ff;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+  color: #a5d6ff;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+  color: #8b949e;
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+  color: #ff7b72;
+}
+
+.token.function,
+.token.class-name {
+  color: #d2a8ff;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+  color: #ffa657;
 }
 
 /* Command blocks */
@@ -704,7 +827,6 @@ export const DEFAULT_DARK_TEMPLATE = `<!DOCTYPE html>
   </style>
 </head>
 <body>
-
   <!-- Cover Page -->
   <section class="cover">
     {{#if session.badgeText}}
@@ -768,6 +890,7 @@ export const DEFAULT_DARK_TEMPLATE = `<!DOCTYPE html>
     <div class="footer-logo">Gymnasium Session</div>
     <p>Generated on {{generatedAt}}</p>
   </footer>
+
 
 </body>
 </html>`;
