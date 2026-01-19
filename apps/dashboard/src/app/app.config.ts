@@ -104,6 +104,20 @@ import {
   updateUserProgress,
   userProgressFeature,
   usersFeature,
+  // Gymnasium
+  gymnasiumFeature,
+  loadSessions,
+  loadPublicSessions,
+  loadSession,
+  renderSession,
+  createGymnasiumSession,
+  updateGymnasiumSession,
+  deleteGymnasiumSession,
+  publishSession,
+  unpublishSession,
+  generateSession,
+  loadTemplates,
+  loadDefaultTemplate,
 } from '@kasita/core-state';
 import { provideEffects } from '@ngrx/effects';
 import { provideStore } from '@ngrx/store';
@@ -133,6 +147,7 @@ export const appConfig: ApplicationConfig = {
       challenges: challengesFeature.reducer,
       projects: projectsFeature.reducer,
       enrollments: enrollmentsFeature.reducer,
+      gymnasium: gymnasiumFeature.reducer,
     }),
     provideEffects({
       // Learning Paths
@@ -219,6 +234,19 @@ export const appConfig: ApplicationConfig = {
       updateEnrollment,
       unenroll,
       loadLeaderboard,
+      // Gymnasium
+      loadSessions,
+      loadPublicSessions,
+      loadSession,
+      renderSession,
+      createGymnasiumSession,
+      updateGymnasiumSession,
+      deleteGymnasiumSession,
+      publishSession,
+      unpublishSession,
+      generateSession,
+      loadTemplates,
+      loadDefaultTemplate,
     }),
     provideStoreDevtools({
       maxAge: 25,

@@ -1,0 +1,147 @@
+<div class="generator-container">
+  <p class="generator-subtitle">Use AI to create a comprehensive practice session</p>
+
+  <div class="generator-form">
+    <!-- Topic Section -->
+    <div class="form-section">
+      <h3 class="section-title">Topic</h3>
+      <div class="form-group">
+        <label class="form-label" for="topic">What should this session teach? *</label>
+        <input
+          id="topic"
+          type="text"
+          class="form-input"
+          [(ngModel)]="topic"
+          placeholder="e.g., Kubernetes Pod Management, React Hooks, SQL Joins"
+        />
+        <p class="form-hint">Be specific about the topic and what learners should master</p>
+      </div>
+    </div>
+
+    <!-- Settings Section -->
+    <div class="form-section">
+      <h3 class="section-title">Settings</h3>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="difficulty">Difficulty</label>
+          <select id="difficulty" class="form-select" [(ngModel)]="difficulty">
+            @for (d of difficulties; track d.value) {
+              <option [value]="d.value">{{ d.label }}</option>
+            }
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="length">Length</label>
+          <select id="length" class="form-select" [(ngModel)]="estimatedLength">
+            @for (length of lengthOptions; track length) {
+              <option [value]="length">{{ length }}</option>
+            }
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="tone">Tone</label>
+          <select id="tone" class="form-select" [(ngModel)]="tone">
+            @for (t of tones; track t.value) {
+              <option [value]="t.value">{{ t.label }}</option>
+            }
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Visibility Section -->
+    <div class="form-section">
+      <h3 class="section-title">Visibility</h3>
+      <div class="visibility-options">
+        @for (v of visibilities; track v.value) {
+          <label class="visibility-option" [class.selected]="visibility === v.value">
+            <input
+              type="radio"
+              name="visibility"
+              [value]="v.value"
+              [(ngModel)]="visibility"
+            />
+            <div class="visibility-content">
+              <span class="visibility-label">{{ v.label }}</span>
+              <span class="visibility-description">{{ v.description }}</span>
+            </div>
+            <mat-icon class="visibility-icon">
+              {{ v.value === 'private' ? 'lock' : v.value === 'unlisted' ? 'link' : 'public' }}
+            </mat-icon>
+          </label>
+        }
+      </div>
+    </div>
+
+    <!-- Optional Details Section -->
+    <div class="form-section">
+      <h3 class="section-title">Optional Details</h3>
+      <div class="form-group">
+        <label class="form-label" for="audience">Target Audience</label>
+        <input
+          id="audience"
+          type="text"
+          class="form-input"
+          [(ngModel)]="targetAudience"
+          placeholder="e.g., Junior developers, DevOps engineers"
+        />
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="focus">Focus Areas</label>
+        <input
+          id="focus"
+          type="text"
+          class="form-input"
+          [(ngModel)]="focusAreas"
+          placeholder="e.g., best practices, troubleshooting, performance"
+        />
+        <p class="form-hint">Comma-separated list of areas to emphasize</p>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="language">Code Language</label>
+        <input
+          id="language"
+          type="text"
+          class="form-input"
+          [(ngModel)]="codeLanguage"
+          placeholder="e.g., TypeScript, Python, Bash"
+        />
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="form-actions">
+      <button
+        type="button"
+        class="btn btn-secondary"
+        (click)="cancel()"
+        [disabled]="generating"
+      >
+        Cancel
+      </button>
+      <button
+        type="button"
+        class="btn btn-primary"
+        (click)="generate()"
+        [disabled]="!topic.trim() || generating"
+      >
+        @if (generating) {
+          <mat-spinner diameter="18" class="btn-icon"></mat-spinner>
+          Generating...
+        } @else {
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="btn-icon">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456z" />
+          </svg>
+          Generate Session
+        }
+      </button>
+    </div>
+
+    @if (generating) {
+      <div class="generating-notice">
+        <mat-spinner diameter="20"></mat-spinner>
+        <span>AI is crafting your practice session. This may take a moment...</span>
+      </div>
+    }
+  </div>
+</div>

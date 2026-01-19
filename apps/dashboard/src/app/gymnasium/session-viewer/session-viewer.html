@@ -1,0 +1,40 @@
+<div class="session-viewer">
+  @if (session) {
+    <div class="viewer-toolbar">
+      <div class="session-info">
+        <span class="domain">{{ session.domain }}</span>
+        <span class="difficulty">{{ session.difficulty }}</span>
+        <span class="duration">{{ session.estimatedMinutes }} min</span>
+      </div>
+      <div class="actions">
+        @if (session.slug) {
+          <button mat-icon-button (click)="copyLink()" title="Copy shareable link">
+            <mat-icon>link</mat-icon>
+          </button>
+        }
+        <button mat-icon-button (click)="openInNewTab()" title="Open in new window">
+          <mat-icon>open_in_new</mat-icon>
+        </button>
+        <button mat-icon-button (click)="downloadHtml()" title="Download HTML">
+          <mat-icon>download</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <div class="viewer-content">
+      @if (loading()) {
+        <div class="loading">
+          <mat-spinner diameter="40"></mat-spinner>
+          <span>Rendering session...</span>
+        </div>
+      } @else {
+        <div #iframeContainer class="iframe-container"></div>
+      }
+    </div>
+  } @else {
+    <div class="no-session">
+      <mat-icon>fitness_center</mat-icon>
+      <p>Select a session to view</p>
+    </div>
+  }
+</div>

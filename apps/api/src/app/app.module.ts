@@ -11,6 +11,9 @@ import { DataSource } from '../data-sources/entities/data-source.entity';
 import { DatabaseModule } from '../database/database.module';
 import { Enrollment } from '../enrollments/entities/enrollment.entity';
 import { EnrollmentsModule } from '../enrollments/enrollments.module';
+import { Session } from '../gymnasium/entities/session.entity';
+import { SessionTemplate } from '../gymnasium/entities/session-template.entity';
+import { GymnasiumModule } from '../gymnasium/gymnasium.module';
 import { IngestionModule } from '../ingestion/ingestion.module';
 import { GraphSearch } from '../knowledge-graph/entities/graph-search.entity';
 import { KnowledgeGraphModule } from '../knowledge-graph/knowledge-graph.module';
@@ -57,7 +60,7 @@ import { AppService } from './app.service';
       database: process.env.DATABASE_URL?.replace('file:', '') || 'kasita.db',
       synchronize: process.env.NODE_ENV !== 'production', // Auto-sync in dev
       logging: false, // Disable SQL logging for better performance
-      entities: [LearningPath, Source, SourcePathLink, RawContent, KnowledgeUnit, UserProgress, User, DataSource, GraphSearch, NotebookProgress, Principle, Submission, Feedback, Challenge, Project, ProjectPrinciple, Enrollment],
+      entities: [LearningPath, Source, SourcePathLink, RawContent, KnowledgeUnit, UserProgress, User, DataSource, GraphSearch, NotebookProgress, Principle, Submission, Feedback, Challenge, Project, ProjectPrinciple, Enrollment, Session, SessionTemplate],
     }),
     LearningPathsModule,
     SourceConfigsModule,
@@ -77,6 +80,7 @@ import { AppService } from './app.service';
     ChallengesModule,
     ProjectsModule,
     EnrollmentsModule,
+    GymnasiumModule,
   ],
   controllers: [AppController],
   providers: [AppService, ProgressGateway],

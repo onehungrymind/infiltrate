@@ -10,3 +10,6 @@ export * from './lib/flashcard.model';
 
 // Learning Map types
 export * from './lib/learning-map.types';
+
+// Gymnasium types
+export * from './lib/gymnasium';

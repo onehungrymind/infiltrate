@@ -1,0 +1,92 @@
+<div class="gymnasium-container">
+  <!-- Header -->
+  <div class="gymnasium-header">
+    <div class="header-left">
+      <h1 class="page-title">Gymnasium</h1>
+      @if (selectedSession()) {
+        <span class="selected-session-name">{{ selectedSession()?.title }}</span>
+      }
+    </div>
+    <div class="header-right">
+      <button class="generate-btn" (click)="openGenerator()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="btn-icon">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456z" />
+        </svg>
+        <span>Generate Session</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Sessions List Column -->
+    <div class="sessions-column">
+      <div class="column-header">
+        <span class="column-title">Sessions</span>
+        <span class="column-count">{{ sessions().length }}</span>
+      </div>
+
+      <app-search-filter-bar
+        [filterConfigs]="filterConfigs()"
+        (searchChange)="onSearchFilterChange($event)"
+      />
+
+      <div class="column-content">
+        @if (loading()) {
+          <div class="loading-state">
+            <mat-spinner diameter="24"></mat-spinner>
+            <span>Loading...</span>
+          </div>
+        } @else if (error()) {
+          <div class="error-state">
+            <mat-icon>error_outline</mat-icon>
+            <span>{{ error() }}</span>
+          </div>
+        } @else {
+          <app-sessions-list
+            [sessions]="sessions()"
+            [selectedSession]="selectedSession()"
+            (selected)="selectSession($event)"
+            (deleted)="deleteSession($event)"
+          />
+        }
+      </div>
+    </div>
+
+    <!-- Generator Panel (slides out) -->
+    <div class="editor-panel" [class.open]="isGenerating()">
+      <div class="editor-panel-inner">
+        <div class="editor-header">
+          <h3>Generate New Session</h3>
+          <button class="close-btn" (click)="closeGenerator()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+        <div class="editor-content">
+          @if (isGenerating()) {
+            <app-session-generator
+              [generating]="generating()"
+              (generated)="onSessionGenerated()"
+              (cancelled)="closeGenerator()"
+            />
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Viewer Area -->
+    <div class="viewer-area">
+      @if (selectedSession()) {
+        <app-session-viewer
+          [session]="selectedSession()"
+        />
+      } @else {
+        <div class="empty-viewer">
+          <mat-icon>fitness_center</mat-icon>
+          <h3>Select a session</h3>
+          <p>Choose a session from the list to view its content</p>
+        </div>
+      }
+    </div>
+  </div>
+</div>

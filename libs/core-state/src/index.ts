@@ -359,3 +359,44 @@ export {
   unenroll,
   loadLeaderboard,
 };
+
+/* Gymnasium */
+import * as GymnasiumActions from './lib/gymnasium/gymnasium.actions';
+import * as GymnasiumFeature from './lib/gymnasium/gymnasium.feature';
+import * as GymnasiumEffects from './lib/gymnasium/gymnasium.effects';
+import { GymnasiumFacade } from './lib/gymnasium/gymnasium.facade';
+import { gymnasiumFeature } from './lib/gymnasium/gymnasium.feature';
+import {
+  loadSessions,
+  loadPublicSessions,
+  loadSession,
+  renderSession,
+  createSession as createGymnasiumSession,
+  updateSession as updateGymnasiumSession,
+  deleteSession as deleteGymnasiumSession,
+  publishSession,
+  unpublishSession,
+  generateSession,
+  loadTemplates,
+  loadDefaultTemplate,
+} from './lib/gymnasium/gymnasium.effects';
+
+export {
+  gymnasiumFeature,
+  GymnasiumFacade,
+  GymnasiumActions,
+  GymnasiumFeature,
+  GymnasiumEffects,
+  loadSessions,
+  loadPublicSessions,
+  loadSession,
+  renderSession,
+  createGymnasiumSession,
+  updateGymnasiumSession,
+  deleteGymnasiumSession,
+  publishSession,
+  unpublishSession,
+  generateSession,
+  loadTemplates,
+  loadDefaultTemplate,
+};

@@ -158,4 +158,9 @@ export const appRoutes: Route[] = [
     loadComponent: () => import('./mentor-dashboard/mentor-dashboard').then((m) => m.MentorDashboard),
     canActivate: [authGuard],
   },
+  {
+    path: 'gymnasium',
+    loadComponent: () => import('./gymnasium/gymnasium').then((m) => m.Gymnasium),
+    canActivate: [authGuard],
+  },
 ];

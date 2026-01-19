@@ -96,6 +96,7 @@
     "cytoscape-fcose": "^2.2.0",
     "d3": "^7.9.0",
     "date-fns": "^4.1.0",
+    "handlebars": "^4.7.8",
     "libsql": "^0.5.22",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
