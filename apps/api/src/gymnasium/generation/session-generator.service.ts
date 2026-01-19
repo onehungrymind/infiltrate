@@ -136,16 +136,130 @@ export class SessionGeneratorService {
     // Try to find JSON in the response (in case there's extra text)
     const jsonMatch = text.match(/\{[\s\S]*\}/);
     if (jsonMatch) {
+      let jsonStr = jsonMatch[0];
+
+      // Try to parse as-is first
       try {
-        return JSON.parse(jsonMatch[0]);
+        return JSON.parse(jsonStr);
       } catch (e) {
-        this.logger.error('Failed to parse extracted JSON', e);
+        this.logger.warn('Initial JSON parse failed, attempting repair...');
+      }
+
+      // Attempt to repair common JSON errors from AI
+      jsonStr = this.repairJson(jsonStr);
+
+      try {
+        return JSON.parse(jsonStr);
+      } catch (e) {
+        this.logger.error('Failed to parse repaired JSON', e);
+        // Log a snippet around the error position for debugging
+        if (e instanceof SyntaxError && e.message.includes('position')) {
+          const posMatch = e.message.match(/position (\d+)/);
+          if (posMatch) {
+            const pos = parseInt(posMatch[1], 10);
+            const start = Math.max(0, pos - 50);
+            const end = Math.min(jsonStr.length, pos + 50);
+            this.logger.error(
+              `JSON context around error: ...${jsonStr.slice(start, end)}...`,
+            );
+          }
+        }
       }
     }
 
     throw new BadRequestException(
       'Could not parse AI response as JSON. The AI may have returned invalid content.',
     );
+  }
+
+  /**
+   * Attempt to repair common JSON errors produced by AI
+   */
+  private repairJson(json: string): string {
+    let repaired = json;
+
+    // Fix 1: Remove trailing commas before ] or }
+    repaired = repaired.replace(/,(\s*[\]}])/g, '$1');
+
+    // Fix 2: Add missing commas between array elements
+    // Pattern: }\s*{ or ]\s*[ or "\s*" (when they should be separated by commas)
+    // This handles objects in arrays: }{ -> },{
+    repaired = repaired.replace(/\}(\s*)\{/g, '},$1{');
+
+    // Fix 3: Handle missing commas between array elements that are strings
+    // Pattern: "value"\n"nextValue" -> "value",\n"nextValue"
+    repaired = repaired.replace(/"(\s*)\n(\s*)"/g, '",$1\n$2"');
+
+    // Fix 4: Handle missing commas after numbers/booleans/null before next element
+    // "key": value\n"nextKey" -> "key": value,\n"nextKey"
+    repaired = repaired.replace(
+      /(\d|true|false|null)(\s*)\n(\s*)"([^"]+)":/g,
+      '$1,$2\n$3"$4":',
+    );
+
+    // Fix 5: Handle missing commas between array elements (][ -> ],[)
+    repaired = repaired.replace(/\](\s*)\[/g, '],$1[');
+
+    // Fix 6: Remove any BOM or special characters at the start
+    repaired = repaired.replace(/^\uFEFF/, '');
+
+    // Fix 7: Handle unescaped newlines within strings (common in prose blocks)
+    // This is tricky - we need to escape literal newlines that are inside string values
+    repaired = this.escapeNewlinesInStrings(repaired);
+
+    return repaired;
+  }
+
+  /**
+   * Escape literal newlines inside JSON string values
+   */
+  private escapeNewlinesInStrings(json: string): string {
+    const result: string[] = [];
+    let inString = false;
+    let escaped = false;
+
+    for (let i = 0; i < json.length; i++) {
+      const char = json[i];
+
+      if (escaped) {
+        result.push(char);
+        escaped = false;
+        continue;
+      }
+
+      if (char === '\\') {
+        result.push(char);
+        escaped = true;
+        continue;
+      }
+
+      if (char === '"') {
+        inString = !inString;
+        result.push(char);
+        continue;
+      }
+
+      if (inString && char === '\n') {
+        // Replace literal newline with escaped newline
+        result.push('\\n');
+        continue;
+      }
+
+      if (inString && char === '\r') {
+        // Skip carriage returns, they'll be handled with \n
+        continue;
+      }
+
+      if (inString && char === '\t') {
+        // Escape tabs
+        result.push('\\t');
+        continue;
+      }
+
+      result.push(char);
+    }
+
+    return result.join('');
   }
 
   /**
