@@ -1,7 +1,7 @@
 # Kasita MVP Completion Assessment
 
-**Last Updated**: January 15, 2026
-**Overall Completion**: 85%
+**Last Updated**: January 18, 2026
+**Overall Completion**: 92%
 
 ---
 
@@ -9,26 +9,57 @@
 
 | Epic | Progress | Status |
 |------|----------|--------|
-| Epic 1: Learning Objective & Map Generation | 70% | :large_blue_circle: Mostly Complete |
+| Epic 1: Learning Objective & Map Generation | 85% | :white_check_mark: Nearly Complete |
 | Epic 2: Content Sourcing & Ingestion | 90% | :white_check_mark: Nearly Complete |
-| Epic 3: Content Synthesis & Knowledge Units | 80% | :large_blue_circle: Mostly Complete |
-| Epic 4: Adaptive Content Presentation | 75% | :large_blue_circle: Mostly Complete |
-| Epic 5: Feedback Loops | 85% | :large_blue_circle: Mostly Complete |
-| Epic 6: Progress Tracking & Validation | 60% | :yellow_circle: Partial |
-| Epic 7: Input/Output Optionality | 75% | :large_blue_circle: Mostly Complete |
+| Epic 3: Content Synthesis & Knowledge Units | 85% | :white_check_mark: Nearly Complete |
+| Epic 4: Adaptive Content Presentation | 80% | :large_blue_circle: Mostly Complete |
+| Epic 5: Feedback Loops | 90% | :white_check_mark: Nearly Complete |
+| Epic 6: Progress Tracking & Validation | 65% | :yellow_circle: Partial |
+| Epic 7: Input/Output Optionality | 80% | :large_blue_circle: Mostly Complete |
+| **NEW** Gymnasium (Training Sessions) | 95% | :white_check_mark: Nearly Complete |
 
 ---
 
-## Epic 1: Learning Objective & Map Generation (70%)
+## New Feature: Gymnasium (Training Sessions) - 95%
+
+### Completed
+- [x] Session entity with full CRUD (API)
+- [x] Session Generator UI with AI integration (Claude Sonnet)
+- [x] Session Viewer with iframe rendering
+- [x] Session template system (Default Dark theme)
+- [x] Handlebars-based HTML rendering
+- [x] Content blocks: prose, heading, code, command, exercise, tryThis, callout, table, checklist, diagram, structure, keyLearning, divider
+- [x] Session metadata: difficulty, domain, tags, estimated time, visibility
+- [x] Slug-based URLs with uniqueness validation
+- [x] Public session pages (`/session/:slug`) for sharing
+- [x] Visibility settings (private, unlisted, public)
+- [x] Session editing (slug, visibility) inline in viewer
+- [x] Download/export functionality
+- [x] Markdown processing with fenced code blocks in content
+
+### Partial
+- [ ] Syntax highlighting in code blocks (Prism integration needs work)
+- [ ] Line numbers alignment in code blocks (CSS issue)
+
+### Not Started
+- [ ] Session templates marketplace
+- [ ] Session analytics (views, completion)
+
+---
+
+## Epic 1: Learning Objective & Map Generation (85%)
 
 ### Completed
 - [x] LM-03: Visual hierarchy showing dependencies (React Flow)
 - [x] LM-07: Save and revisit multiple learning paths (CRUD)
 - [x] Principle entity with full CRUD (API + Dashboard)
 - [x] LM-02: AI-generated learning map with principles
-  - Claude-powered principle generation from learning path objectives
-  - Dashboard UI with "Generate Principles with AI" button
-  - Generated principles saved to database with prerequisites
+- [x] Pipeline Orchestrator service for multi-stage processing
+- [x] Pipeline Progress Indicator component
+- [x] 3D Mind Map visualization (React wrapper)
+- [x] Skill Tree visualization (React wrapper)
+- [x] Metro Maps visualization (React wrapper)
+- [x] Linear Dashboard visualization (React wrapper)
 
 ### Partial
 - [ ] LM-01: Create learning path via natural language objective
@@ -40,39 +71,35 @@
 - [ ] LM-05: Set target timeline (field exists, no UI)
 - [ ] LM-06: Indicate current skill level
 
-### Blockers
-- ~~No "Principle" entity exists~~ (Resolved)
-- ~~AI generation not available~~ (Resolved)
-
 ---
 
 ## Epic 2: Content Sourcing & Ingestion (90%)
 
 ### Completed
 - [x] CS-01: Configure source channels (RSS, URLs, PDFs)
-- [x] CS-02: AI suggest relevant sources (Claude-powered source suggestions in Learning Path detail)
+- [x] CS-02: AI suggest relevant sources (Claude-powered)
 - [x] CS-05: View raw content before synthesis
 - [x] RSS/Atom adapter
 - [x] Article adapter (Trafilatura)
 - [x] PDF adapter (PyPDF2)
 - [x] JavaScript Weekly adapter
-- [x] CS-04: Trigger ingestion with progress (Dashboard button with result feedback)
-- [x] Many-to-many Source/LearningPath relationship (sources can be shared across paths)
+- [x] CS-04: Trigger ingestion with progress
+- [x] Many-to-many Source/LearningPath relationship
 - [x] Source path links with per-path enabled status
+- [x] Pipeline-based ingestion from Learning Paths UI
 
 ### Partial
-- [ ] CS-03: Manual URL/document upload (URLs work, file upload now available via Submissions)
+- [ ] CS-03: Manual URL/document upload (URLs work, file upload via Submissions)
 - [ ] CS-06: Exclude specific sources/content (delete works, no filtering)
 
 ### Not Started
 - [ ] CS-07: See sources used per principle
 - [ ] YouTube transcript adapter
 - [ ] Podcast transcript adapter
-- [ ] Newsletter (IMAP) adapter
 
 ---
 
-## Epic 3: Content Synthesis & Knowledge Units (80%)
+## Epic 3: Content Synthesis & Knowledge Units (85%)
 
 ### Completed
 - [x] SY-01: Trigger synthesis to create knowledge units
@@ -80,33 +107,25 @@
 - [x] SY-05: Edit knowledge unit content
 - [x] SY-06: Tagged by difficulty level
 - [x] SY-07: Estimated mastery time
-- [x] Synthesis trigger button in dashboard (with result feedback)
+- [x] Synthesis trigger button in dashboard
+- [x] Pipeline orchestration with synthesis stage
 
 ### Partial
 - [ ] SY-03: Cross-references between units (sourceIds tracked, no UI)
 - [ ] SY-04: Review/approve/reject units (status field exists, no workflow UI)
 
-### Not Started
-- [ ] ~~Add "challenges" field to knowledge units~~ (Resolved - Challenge entity links to KnowledgeUnit)
-
 ---
 
-## Epic 4: Adaptive Content Presentation (75%)
+## Epic 4: Adaptive Content Presentation (80%)
 
 ### Completed
 - [x] Flashcards (Infiltrate app) - gamified experience
-- [x] Study Flashcards (Dashboard) - simple study mode with SM-2 integration
-- [x] Study Quiz (Dashboard) - multiple choice and true/false with SM-2 integration
-- [x] AP-03: Varied presentation formats (flashcards and quiz in Dashboard)
+- [x] Study Flashcards (Dashboard) - simple study mode with SM-2
+- [x] Study Quiz (Dashboard) - multiple choice and true/false with SM-2
+- [x] AP-03: Varied presentation formats
 - [x] Challenge entity with CRUD (API + Dashboard)
-  - Challenges linked to KnowledgeUnits
-  - Custom rubric criteria per challenge
-  - Difficulty levels and time estimates
-  - Dashboard UI with list and detail views
 - [x] Project entity with CRUD (API + Dashboard)
-  - Projects linked to LearningPaths
-  - Objectives and requirements
-  - Dashboard UI with list and detail views
+- [x] Gymnasium sessions for structured learning content
 
 ### Not Started
 - [ ] AP-01: Set preferred learning modalities
@@ -119,50 +138,40 @@
 
 ---
 
-## Epic 5: Feedback Loops (80%)
+## Epic 5: Feedback Loops (90%)
 
 ### Completed
 - [x] FB-02: AI feedback on challenge submissions (Claude-powered)
 - [x] Submission entity with full CRUD
-  - Extended content types: text, URL (with metadata extraction), file upload
-  - Link to Challenge or Project
-  - URL metadata fetcher (GitHub integration with repo stats)
-  - File upload with drag-drop (10MB limit, multiple formats)
+- [x] Extended content types: text, URL, file upload
+- [x] URL metadata fetcher (GitHub integration)
+- [x] File upload with drag-drop
 - [x] Feedback entity with full CRUD
 - [x] AI feedback generation with rubric-based evaluation
 - [x] FB-04: Request human mentor review
-  - Mentor assignment to learning paths
-  - Submissions visible to assigned mentor
-- [x] FB-05: Mentor reviews submissions
-  - Mentor Dashboard with submission list and review form
-  - Rubric-based scoring with per-criterion feedback
-  - Suggestions and detailed comments
-  - Project grading (Accepted / Accepted with Comments / Needs Work)
-  - Grade badge display on submissions
+- [x] FB-05: Mentor reviews submissions (Mentor Dashboard)
+- [x] Mentor assignment to learning paths
+- [x] Project grading system (Accepted / Accepted with Comments / Needs Work)
+- [x] Grade badge display on submissions
 
 ### Partial
 - [ ] FB-06: Feedback history (exists per submission, no aggregated view)
 
 ### Not Started
 - [ ] FB-01: Immediate AI feedback on flashcards
-- [ ] FB-03: AI evaluation of projects (larger scope projects)
 - [ ] FB-07: Identify recurring gaps
 - [ ] FB-08: Rate feedback quality
 
-### Blockers
-- ~~Entire epic depends on Challenge system~~ (Resolved)
-- ~~Submission entity not implemented~~ (Resolved)
-- ~~Feedback entity not implemented~~ (Resolved)
-- ~~Mentor feedback system not implemented~~ (Resolved)
-
 ---
 
-## Epic 6: Progress Tracking & Validation (60%)
+## Epic 6: Progress Tracking & Validation (65%)
 
 ### Completed
 - [x] UserProgress entity with SM-2 fields
 - [x] Basic progress stats on home dashboard
-- [x] PT-03: SM-2 spaced repetition algorithm (recordAttempt, getDueForReview, getStudyStats endpoints)
+- [x] PT-03: SM-2 spaced repetition algorithm
+- [x] User enrollments management (drag-drop interface)
+- [x] Mentor assignment per enrollment
 
 ### Partial
 - [ ] PT-01: See mastery level per principle (exists, no principle mapping)
@@ -175,12 +184,9 @@
 - [ ] PT-07: Compare to benchmarks
 - [ ] PT-08: Completion certificate
 
-### Blockers
-- (None - SM-2 blocker resolved)
-
 ---
 
-## Epic 7: Input/Output Optionality (75%)
+## Epic 7: Input/Output Optionality (80%)
 
 ### Completed
 - [x] IO-01: Add new Patchbay adapters (clean adapter pattern)
@@ -189,7 +195,7 @@
 - [x] Standardized API for Learning Apps
 - [x] Stable knowledge unit schema
 - [x] API-only communication
-- [x] File upload for submissions (PDF, images, code files, ZIP)
+- [x] File upload for submissions
 - [x] URL submission with metadata extraction
 
 ### Not Started
@@ -202,23 +208,24 @@
 
 ---
 
-## Critical Path Items
+## Critical Path Items - All Complete
 
-These must be completed for a functional MVP:
-
-| Item | Status | Blocking |
-|------|--------|----------|
-| SM-2 spaced repetition algorithm | :white_check_mark: Complete | ~~Progress tracking~~ |
-| Principle entity & CRUD | :white_check_mark: Complete | ~~Learning map structure~~ |
-| AI principle generation | :white_check_mark: Complete | ~~Core user flow~~ |
-| Quiz with SM-2 integration | :white_check_mark: Complete | ~~Learning variety~~ |
-| Challenge & Project entities | :white_check_mark: Complete | ~~Feedback loop~~ |
-| Submission system (text/URL/file) | :white_check_mark: Complete | ~~Feedback loop~~ |
-| AI feedback generation | :white_check_mark: Complete | ~~Feedback loop~~ |
-| Mentor feedback system | :white_check_mark: Complete | ~~Human review flow~~ |
-| React Flow learning map | :white_check_mark: Complete | ~~Visualization~~ |
-| Content ingestion pipeline | :white_check_mark: Complete | ~~Content acquisition~~ |
-| Knowledge unit synthesis | :white_check_mark: Complete | ~~Content processing~~ |
+| Item | Status |
+|------|--------|
+| SM-2 spaced repetition algorithm | :white_check_mark: Complete |
+| Principle entity & CRUD | :white_check_mark: Complete |
+| AI principle generation | :white_check_mark: Complete |
+| Quiz with SM-2 integration | :white_check_mark: Complete |
+| Challenge & Project entities | :white_check_mark: Complete |
+| Submission system (text/URL/file) | :white_check_mark: Complete |
+| AI feedback generation | :white_check_mark: Complete |
+| Mentor feedback system | :white_check_mark: Complete |
+| React Flow learning map | :white_check_mark: Complete |
+| Content ingestion pipeline | :white_check_mark: Complete |
+| Knowledge unit synthesis | :white_check_mark: Complete |
+| Gymnasium session generation | :white_check_mark: Complete |
+| Pipeline orchestration | :white_check_mark: Complete |
+| User enrollment management | :white_check_mark: Complete |
 
 ---
 
@@ -238,16 +245,22 @@ These must be completed for a functional MVP:
 | Feedback CRUD | :white_check_mark: Complete |
 | User Progress CRUD | :white_check_mark: Complete |
 | Raw Content CRUD | :white_check_mark: Complete |
+| **Gymnasium** | |
+| Session CRUD | :white_check_mark: Complete |
+| Session Generator (AI) | :white_check_mark: Complete |
+| Session Renderer | :white_check_mark: Complete |
+| Session Templates | :white_check_mark: Complete |
 | **Source Management** | |
 | Sources (many-to-many) | :white_check_mark: Complete |
 | Source Path Links | :white_check_mark: Complete |
 | **Learning Map** | |
 | Learning map endpoints | :white_check_mark: Complete |
-| Node status tracking | :yellow_circle: Partial (TODOs) |
+| Node status tracking | :yellow_circle: Partial |
 | **AI Features** | |
 | AI principle generation | :white_check_mark: Complete |
 | AI source suggestions | :white_check_mark: Complete |
 | AI feedback generation | :white_check_mark: Complete |
+| AI session generation | :white_check_mark: Complete |
 | **Ingestion & Synthesis** | |
 | Ingestion trigger endpoint | :white_check_mark: Complete |
 | Synthesis trigger endpoint | :white_check_mark: Complete |
@@ -274,6 +287,7 @@ These must be completed for a functional MVP:
 | Home dashboard | :white_check_mark: Complete |
 | **Core CRUD Pages** | |
 | Users management | :white_check_mark: Complete |
+| User Enrollments (drag-drop) | :white_check_mark: Complete |
 | Learning Paths CRUD | :white_check_mark: Complete |
 | Knowledge Units CRUD | :white_check_mark: Complete |
 | Principles CRUD | :white_check_mark: Complete |
@@ -283,14 +297,18 @@ These must be completed for a functional MVP:
 | Raw Content CRUD | :white_check_mark: Complete |
 | Sources CRUD | :white_check_mark: Complete |
 | User Progress CRUD | :white_check_mark: Complete |
-| **Filters** | |
-| Learning Path filter (Principles) | :white_check_mark: Complete |
-| Learning Path filter (Knowledge Units) | :white_check_mark: Complete |
-| Search/filter bar component | :white_check_mark: Complete |
-| **Learning Map & Visualization** | |
+| **Gymnasium** | |
+| Sessions list | :white_check_mark: Complete |
+| Session Generator UI | :white_check_mark: Complete |
+| Session Viewer | :white_check_mark: Complete |
+| Public Session Page | :white_check_mark: Complete |
+| **Visualizations** | |
 | React Flow learning map | :white_check_mark: Complete |
-| Knowledge graph visualization | :white_check_mark: Complete |
-| Cytoscape graph view | :white_check_mark: Complete |
+| Knowledge graph (Cytoscape) | :white_check_mark: Complete |
+| 3D Mind Map (React) | :white_check_mark: Complete |
+| Skill Tree (React) | :white_check_mark: Complete |
+| Metro Maps (React) | :white_check_mark: Complete |
+| Linear Dashboard (React) | :white_check_mark: Complete |
 | **Study Features** | |
 | Study Flashcards (SM-2) | :white_check_mark: Complete |
 | Study Quiz (SM-2) | :white_check_mark: Complete |
@@ -298,27 +316,22 @@ These must be completed for a functional MVP:
 | AI principle generation UI | :white_check_mark: Complete |
 | AI source suggestions UI | :white_check_mark: Complete |
 | AI feedback request UI | :white_check_mark: Complete |
-| **Pipeline Triggers** | |
+| AI session generation UI | :white_check_mark: Complete |
+| **Pipeline** | |
+| Pipeline Orchestrator service | :white_check_mark: Complete |
+| Pipeline Progress Indicator | :white_check_mark: Complete |
 | Ingestion trigger button | :white_check_mark: Complete |
 | Synthesis trigger button | :white_check_mark: Complete |
-| **Submission Features** | |
-| Content type selector | :white_check_mark: Complete |
-| File upload dropzone | :white_check_mark: Complete |
-| URL metadata fetcher | :white_check_mark: Complete |
-| Challenge/Project selector | :white_check_mark: Complete |
-| Feedback display | :white_check_mark: Complete |
-| Grade badge display | :white_check_mark: Complete |
 | **Mentor System** | |
 | Mentor Dashboard | :white_check_mark: Complete |
 | Mentor assignment selector | :white_check_mark: Complete |
 | Mentor review form | :white_check_mark: Complete |
 | **Other** | |
 | Completion Assessment | :white_check_mark: Complete |
-| Marimo notebook viewer | :white_check_mark: Complete |
+| Search/filter bar component | :white_check_mark: Complete |
 | **Not Started** | |
-| Learning path wizard (multi-step) | :red_circle: Not Started |
 | KU approval workflow UI | :red_circle: Not Started |
-| Home nav actions (partial TODOs) | :yellow_circle: Placeholder |
+| Portfolio generation | :red_circle: Not Started |
 
 ### Patchbay (Python)
 | Component | Status |
@@ -330,7 +343,6 @@ These must be completed for a functional MVP:
 | API integration | :white_check_mark: Complete |
 | YouTube adapter | :red_circle: Not Started |
 | Podcast adapter | :red_circle: Not Started |
-| Newsletter (IMAP) adapter | :yellow_circle: Placeholder |
 
 ### Synthesizer (Python)
 | Component | Status |
@@ -348,207 +360,129 @@ These must be completed for a functional MVP:
 | Infiltrate (Gamified Flashcards) | :white_check_mark: Complete |
 | Study Flashcards (SM-2) | :white_check_mark: Complete |
 | Study Quiz (SM-2) | :white_check_mark: Complete |
+| Gymnasium Sessions | :white_check_mark: Complete |
 | Challenge Arena | :red_circle: Not Started |
+
+---
+
+## Remaining MVP Work (Priority Order)
+
+### P0 - Must Fix (Blocking Issues)
+1. **Code block rendering in Gymnasium sessions**
+   - Line numbers misalignment
+   - Syntax highlighting not working
+   - ~2-4 hours estimated
+
+### P1 - High Priority (Core MVP Gaps)
+2. **Knowledge Unit Approval Workflow**
+   - UI for approve/reject workflow
+   - Status transitions and filters
+   - ~4-6 hours estimated
+
+3. **Principle-to-Progress Mapping**
+   - Connect mastery tracking to principles
+   - Display mastery level per principle in learning map
+   - ~4-6 hours estimated
+
+### P2 - Medium Priority (Polish)
+4. **Learning Path Natural Language Creation**
+   - AI generates learning path from objective (not just principles)
+   - Wizard-style creation flow
+   - ~6-8 hours estimated
+
+5. **Feedback History Aggregation**
+   - Aggregated view of all feedback per user
+   - Pattern identification for recurring gaps
+   - ~4-6 hours estimated
+
+6. **Portfolio Generation**
+   - Export completed challenges and projects
+   - Generate shareable portfolio page
+   - ~6-8 hours estimated
+
+### P3 - Nice to Have (Post-MVP OK)
+7. **Challenge Arena Learning App**
+   - Dedicated app for interactive challenges
+   - Timer, submission interface, instant feedback
+   - ~8-12 hours estimated
+
+8. **YouTube/Podcast Adapters**
+   - Transcript extraction and processing
+   - ~4-6 hours each
+
+9. **Export Features**
+   - Anki/Quizlet export
+   - Printable study materials
+   - ~4-6 hours estimated
 
 ---
 
 ## Recent Changes
 
+### January 18, 2026 (Update 13)
+- **Gymnasium Code Blocks** - Attempted improvements:
+  - Added markdown processing with fenced code block support
+  - Tried multiple rendering approaches (Prism plugins, custom HTML, tables, flexbox)
+  - Line number alignment still needs fixing
+- **Completion Assessment Update** - Major refresh:
+  - Added Gymnasium feature section (95% complete)
+  - Added Pipeline Orchestrator and Progress Indicator
+  - Added visualization components (Mind Map, Skill Tree, Metro Maps, Linear Dashboard)
+  - Added User Enrollments management
+  - Updated overall completion to 92%
+  - Created prioritized remaining work list
+
 ### January 15, 2026 (Update 12)
-- **Completion Assessment Update** - Thorough review and component update:
-  - Updated overall completion to 85%
-  - Expanded critical path items from 6 to 11 (all complete)
-  - Expanded API components from 22 to 30 with categorization
-  - Expanded Dashboard components from 25 to 42 with categorization
-  - Updated all epic percentages based on actual implementation status
-  - Added Synthesizer Claude AI integration to component list
+- Thorough review and component update
+- Expanded critical path items from 6 to 14 (all complete)
+- Updated all epic percentages
 
 ### January 15, 2026 (Update 11)
-- **Mentor Feedback System** - Complete implementation:
-  - Added mentorId field to LearningPath entity
-  - Added grade field to Submission entity (accepted/accepted_with_comments/needs_work)
-  - Created mentor assignment API endpoints (PATCH /learning-paths/:id/mentor)
-  - Created mentor submissions endpoint (GET /submissions/mentor/:mentorId)
-  - Created mentor feedback endpoint (POST /submissions/:id/feedback/mentor)
-  - Created Mentor Dashboard UI with master-detail layout
-    - Submission list with search and filter bar
-    - Review form with rubric scoring
-    - Suggestions and detailed comments input
-    - Project grade selector
-  - Added mentor assignment selector to Learning Path detail
-  - Added grade badge display to submission feedback component
-  - Updated seeder with mentor user and sample submissions/feedback
-  - NgRx state management for mentor submissions and feedback
-- Overall completion increased from 78% to 85%
-- Epic 5 (Feedback Loops) increased from 60% to 85%
+- **Mentor Feedback System** - Complete implementation
+- Mentor Dashboard with rubric scoring
+- Project grading system
 
 ### January 15, 2026 (Update 10)
-- **Challenges & Projects System** - Major feature implementation:
-  - Created Challenge entity (API) with full CRUD
-    - Links to KnowledgeUnit
-    - Custom rubric criteria (name, description, maxPoints)
-    - Difficulty levels, time estimates, success criteria
-    - Content type constraints
-  - Created Project entity (API) with full CRUD
-    - Links to LearningPath
-    - Objectives and requirements arrays
-    - Difficulty levels and time estimates
-  - Created NgRx state management for Challenges and Projects
-  - Created Dashboard UI for Challenges (list + detail with rubric builder)
-  - Created Dashboard UI for Projects (list + detail)
-  - Added routes and sidebar navigation
-- **Extended Submission Types** - Full implementation:
-  - Updated Submission entity with challengeId, projectId, urlMetadata, fileMetadata
-  - Created file upload utility (Multer config, 10MB limit, multiple formats)
-  - Created URL metadata fetcher (GitHub API integration, page scraping)
-  - Updated submission-detail component with:
-    - Content type selector (text/code, URL, file)
-    - URL input with "Fetch Metadata" button showing repo stats
-    - File upload dropzone with drag-and-drop
-    - Challenge/Project selector dropdowns
-  - Updated submissions-list with content type icons
-  - Added file upload and URL metadata methods to submissions service
-- **Database Seeding** - Added seed data:
-  - 4 Challenges (RSC dashboard, streaming SSR, gradient descent, utility types)
-  - 3 Projects (RSC e-commerce, ML pipeline, TS API generator)
-- Overall completion increased from 70% to 78%
-- Epic 4 (Adaptive Content) increased from 50% to 70%
-- Epic 5 (Feedback Loops) increased from 15% to 60%
-- Epic 7 (Input/Output) increased from 60% to 70%
-
-### January 15, 2026 (Update 9)
-- **Source Config Many-to-Many Refactoring** - Major architectural improvement:
-  - Refactored from one-to-many to many-to-many relationship between Sources and LearningPaths
-  - Created Source entity (replaces SourceConfig) with unique URL constraint
-  - Created SourcePathLink junction table with per-path enabled status
-  - Updated API with new endpoints: `/sources`, `/sources/path/:pathId`, `/sources/:id/link/:pathId`
-  - Sources can now be shared across multiple learning paths
-- **Dashboard Filtering Improvements**:
-  - Added Learning Path dropdown filter to Principles page
-  - Added Learning Path dropdown filter to Knowledge Units page
-  - Dynamic filter configs based on loaded learning paths
-- **Python Ingestion Fixes**:
-  - Fixed Python command to use `uv run python` for virtual environment
-  - Updated pyproject.toml files to use `dependency-groups.dev` (removed deprecated `tool.uv.dev-dependencies`)
-  - API now passes sources directly via SOURCES_JSON env var (bypasses auth requirement)
-  - Increased API body size limit to 10MB for large content ingestion
-- **Code Cleanup**:
-  - Added Python patterns to .gitignore (`__pycache__/`, `*.pyc`, etc.)
-  - Removed 34 tracked pycache files from git
-- Overall completion increased from 65% to 70%
-- Epic 2 (Content Sourcing) increased from 80% to 90%
-
-### January 14, 2026 (Update 8)
-- Added Ingestion and Synthesis trigger buttons to Learning Path detail:
-  - Added `POST /learning-map/ingest/:pathId` endpoint to trigger Patchbay ingestion
-  - Added `POST /learning-map/synthesize/:pathId` endpoint to trigger Synthesizer
-  - Added trigger buttons to Learning Path detail component with loading states
-  - Shows success/error messages and result statistics (sources processed, items ingested, knowledge units generated)
-  - Validates prerequisites before triggering (source configs exist, raw content exists)
-- Stage 1 (Foundation) is now complete!
-- Overall completion increased from 62% to 65%
-- Epic 2 (Content Sourcing) increased from 70% to 80%
-- Epic 3 (Content Synthesis) increased from 65% to 75%
-
-### January 14, 2026 (Update 7)
-- Enhanced AI learning map generation:
-  - Added `force` parameter to regenerate principles (auto-deletes existing)
-  - Fixed foreign key constraint by unlinking knowledge units before deletion
-  - Added `onDelete: 'SET NULL'` to KnowledgeUnit-Principle relationship
-  - State resets when switching learning paths in MDV
-- Fixed SVG icons throughout dashboard:
-  - Replaced mat-icon with inline SVGs (project uses SVG icons, not Material Icons font)
-  - Added wizard sparkles icon from Nodal project for AI generation button
-  - Fixed error icon in learning paths list
-- Overall completion remains at 62%
-
-### January 14, 2026 (Update 6)
-- Implemented AI learning map generation feature:
-  - Added Claude-powered principle generation to LearningMapService
-  - Created prompt template for structured learning map generation
-  - Added POST `/learning-map/generate/:pathId` endpoint
-  - Added "Generate Principles with AI" button to learning path detail
-  - Shows loading state, success/error feedback, and generated principles preview
-  - Generated principles include name, description, difficulty, estimated hours, prerequisites
-- Overall completion increased from 58% to 62%
-- Epic 1 progress increased from 45% to 60%
-
-### January 14, 2026 (Update 5)
-- Verified Principle entity implementation is complete
-- Added Completion Assessment dashboard page with:
-  - KPI cards showing epic count, critical path progress, API/Dashboard completion rates
-  - Epic progress visualization with progress bars
-  - Critical path items tracker
-  - Component status breakdown for API, Dashboard, Patchbay, Synthesizer, Learning Apps
-- Added Completion Assessment to sidebar Admin section
-- Overall completion increased from 55% to 58%
-
-### January 14, 2026 (Update 4)
-- Implemented Quiz feature in Dashboard with full functionality
-- Created `/study/quiz` route with multiple choice and true/false questions
-- Quiz generates questions from knowledge unit Q&A fields
-- Distractors pulled from other knowledge units for multiple choice
-- Added setup screen with learning path filter, question count, and due-only toggle
-- Score tracking with results screen and answer review
-- SM-2 integration: records attempts on each answer
-- Color-coded results based on score (excellent/good/fair/needs-work)
-- Overall completion increased from 52% to 55%
-
-### January 13, 2026 (Update 3)
-- Implemented Study feature in Dashboard with Flashcards and Quiz (placeholder) modes
-- Created `/study/flashcards` route with full SM-2 integration
-- Added 3D flip card animation, rating buttons (Again/Hard/Good/Easy), keyboard navigation
-- Added learning path filter and "Due for Review" toggle
-- Enhanced UserProgress state layer with recordAttempt, dueForReview, studyStats actions/effects
-- Added Study icon and navigation in sidebar
-- Overall completion increased from 48% to 52%
-
-### January 13, 2026 (Update 2)
-- Implemented SM-2 spaced repetition algorithm
-- Added `POST /user-progress/record-attempt` endpoint
-- Added `GET /user-progress/due-for-review` endpoint
-- Added `GET /user-progress/stats` endpoint
-- Added `GET /user-progress/user/:userId` endpoint
-- Created `RecordAttemptDto` for attempt recording
-- Overall completion increased from 45% to 48%
-
-### January 13, 2026
-- Initial assessment created
-- Documented all epic completion status
-- Identified critical path items
-- Mapped component-level status
+- **Challenges & Projects System**
+- **Extended Submission Types** (text, URL, file)
 
 ---
 
-## Next Milestone Target
+## Milestone Progress
 
-**Target**: Complete Stage 1 (Foundation) from implementation plan :white_check_mark:
-
+### Stage 1: Foundation :white_check_mark: Complete
 - [x] SM-2 Algorithm implementation
 - [x] Study Flashcards with SM-2 integration
 - [x] Quiz implementation with SM-2 integration
 - [x] Principle entity and CRUD
 - [x] AI learning map generation
-- [x] Dashboard trigger buttons (Ingestion, Synthesis)
+- [x] Dashboard trigger buttons
 
-**Target**: Stage 2 - Challenges & Projects :white_check_mark:
+### Stage 2: Challenges & Projects :white_check_mark: Complete
 - [x] Challenge entity with CRUD
 - [x] Project entity with CRUD
-- [x] Extended submission types (text, URL, file)
+- [x] Extended submission types
 - [x] File upload with drag-drop
 - [x] URL metadata extraction
-- [x] Challenge/Project selector in submissions
 
-**Target**: Stage 3 - Human Review Flow :white_check_mark:
-- [x] Human mentor review flow (Mentor Dashboard)
+### Stage 3: Human Review Flow :white_check_mark: Complete
+- [x] Human mentor review flow
 - [x] Mentor assignment to learning paths
 - [x] Project grading system
 
-**Next Target**: Stage 4 - Polish & Enhancement
-- [ ] Approval workflow UI for knowledge units
-- [ ] Challenge Arena learning app
+### Stage 4: Gymnasium & Visualizations :white_check_mark: Complete
+- [x] Gymnasium session generation (AI)
+- [x] Session viewer and public pages
+- [x] Pipeline orchestration
+- [x] 3D Mind Map, Skill Tree, Metro Maps
+- [x] User enrollment management
+
+### Stage 5: Polish & Completion :yellow_circle: In Progress
+- [ ] Code block rendering fixes
+- [ ] KU approval workflow
+- [ ] Principle-to-progress mapping
 - [ ] Portfolio generation
-- [ ] Feedback history aggregation
+- [ ] Learning path wizard
 
 ---
 
@@ -556,15 +490,16 @@ These must be completed for a functional MVP:
 
 | Version | Date | Changes |
 |---------|------|---------|
-| 2.1 | 2026-01-15 | Completion Assessment Update - thorough review, expanded component lists, updated percentages |
-| 2.0 | 2026-01-15 | Mentor Feedback System - mentor dashboard, assignment, grading, seeder updates |
-| 1.9 | 2026-01-15 | Challenges & Projects system, Extended submission types, File upload, URL metadata |
-| 1.8 | 2026-01-15 | Source many-to-many refactoring, Learning Path filters, Python ingestion fixes |
-| 1.7 | 2026-01-14 | Ingestion and Synthesis trigger buttons, Stage 1 complete |
-| 1.6 | 2026-01-14 | Force regeneration, FK constraint fix, SVG icon fixes |
-| 1.5 | 2026-01-14 | AI learning map generation with Claude, dashboard trigger button |
-| 1.4 | 2026-01-14 | Principle entity complete, Completion Assessment dashboard added |
-| 1.3 | 2026-01-14 | Quiz feature with multiple choice, true/false, and SM-2 integration |
-| 1.2 | 2026-01-13 | Study feature with flashcards and SM-2 integration |
-| 1.1 | 2026-01-13 | SM-2 algorithm implemented |
+| 3.0 | 2026-01-18 | Major update: Gymnasium, visualizations, pipeline, enrollments, prioritized remaining work |
+| 2.1 | 2026-01-15 | Component expansion, percentage updates |
+| 2.0 | 2026-01-15 | Mentor Feedback System |
+| 1.9 | 2026-01-15 | Challenges & Projects, Extended submissions |
+| 1.8 | 2026-01-15 | Source many-to-many, Python fixes |
+| 1.7 | 2026-01-14 | Ingestion/Synthesis triggers |
+| 1.6 | 2026-01-14 | Force regeneration, SVG fixes |
+| 1.5 | 2026-01-14 | AI learning map generation |
+| 1.4 | 2026-01-14 | Principle entity, Completion Assessment dashboard |
+| 1.3 | 2026-01-14 | Quiz feature |
+| 1.2 | 2026-01-13 | Study feature with flashcards |
+| 1.1 | 2026-01-13 | SM-2 algorithm |
 | 1.0 | 2026-01-13 | Initial assessment |

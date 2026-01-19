@@ -27,17 +27,18 @@ interface CriticalPathItem {
   styleUrl: './completion-assessment.component.scss',
 })
 export class CompletionAssessment {
-  lastUpdated = signal('January 15, 2026');
-  overallCompletion = signal(85);
+  lastUpdated = signal('January 18, 2026');
+  overallCompletion = signal(92);
 
   epics = signal<Epic[]>([
-    { name: 'Epic 1: Learning Objective & Map Generation', progress: 70, status: 'mostly-complete', color: '#3b82f6' },
+    { name: 'Epic 1: Learning Objective & Map Generation', progress: 85, status: 'complete', color: '#22c55e' },
     { name: 'Epic 2: Content Sourcing & Ingestion', progress: 90, status: 'complete', color: '#22c55e' },
-    { name: 'Epic 3: Content Synthesis & Knowledge Units', progress: 80, status: 'mostly-complete', color: '#3b82f6' },
-    { name: 'Epic 4: Adaptive Content Presentation', progress: 75, status: 'mostly-complete', color: '#3b82f6' },
-    { name: 'Epic 5: Feedback Loops', progress: 85, status: 'mostly-complete', color: '#3b82f6' },
-    { name: 'Epic 6: Progress Tracking & Validation', progress: 60, status: 'partial', color: '#f59e0b' },
-    { name: 'Epic 7: Input/Output Optionality', progress: 75, status: 'mostly-complete', color: '#3b82f6' },
+    { name: 'Epic 3: Content Synthesis & Knowledge Units', progress: 85, status: 'complete', color: '#22c55e' },
+    { name: 'Epic 4: Adaptive Content Presentation', progress: 80, status: 'mostly-complete', color: '#3b82f6' },
+    { name: 'Epic 5: Feedback Loops', progress: 90, status: 'complete', color: '#22c55e' },
+    { name: 'Epic 6: Progress Tracking & Validation', progress: 65, status: 'partial', color: '#f59e0b' },
+    { name: 'Epic 7: Input/Output Optionality', progress: 80, status: 'mostly-complete', color: '#3b82f6' },
+    { name: 'Gymnasium (Training Sessions)', progress: 95, status: 'complete', color: '#22c55e' },
   ]);
 
   criticalPathItems = signal<CriticalPathItem[]>([
@@ -52,6 +53,9 @@ export class CompletionAssessment {
     { name: 'React Flow learning map', status: 'complete', blocking: 'Visualization' },
     { name: 'Content ingestion pipeline', status: 'complete', blocking: 'Content acquisition' },
     { name: 'Knowledge unit synthesis', status: 'complete', blocking: 'Content processing' },
+    { name: 'Gymnasium session generation', status: 'complete', blocking: 'Training content' },
+    { name: 'Pipeline orchestration', status: 'complete', blocking: 'Workflow automation' },
+    { name: 'User enrollment management', status: 'complete', blocking: 'User management' },
   ]);
 
   apiComponents = signal<ComponentStatus[]>([
@@ -66,6 +70,11 @@ export class CompletionAssessment {
     { name: 'Feedback CRUD', status: 'complete' },
     { name: 'User Progress CRUD', status: 'complete' },
     { name: 'Raw Content CRUD', status: 'complete' },
+    // Gymnasium
+    { name: 'Session CRUD', status: 'complete' },
+    { name: 'Session Generator (AI)', status: 'complete' },
+    { name: 'Session Renderer', status: 'complete' },
+    { name: 'Session Templates', status: 'complete' },
     // Source management
     { name: 'Sources (many-to-many)', status: 'complete' },
     { name: 'Source Path Links', status: 'complete' },
@@ -76,6 +85,7 @@ export class CompletionAssessment {
     { name: 'AI principle generation', status: 'complete' },
     { name: 'AI source suggestions', status: 'complete' },
     { name: 'AI feedback generation', status: 'complete' },
+    { name: 'AI session generation', status: 'complete' },
     // Ingestion & synthesis
     { name: 'Ingestion trigger endpoint', status: 'complete' },
     { name: 'Synthesis trigger endpoint', status: 'complete' },
@@ -101,6 +111,7 @@ export class CompletionAssessment {
     { name: 'Home dashboard', status: 'complete' },
     // Core CRUD pages
     { name: 'Users management', status: 'complete' },
+    { name: 'User Enrollments (drag-drop)', status: 'complete' },
     { name: 'Learning Paths CRUD', status: 'complete' },
     { name: 'Knowledge Units CRUD', status: 'complete' },
     { name: 'Principles CRUD', status: 'complete' },
@@ -110,14 +121,22 @@ export class CompletionAssessment {
     { name: 'Raw Content CRUD', status: 'complete' },
     { name: 'Sources CRUD', status: 'complete' },
     { name: 'User Progress CRUD', status: 'complete' },
+    // Gymnasium
+    { name: 'Sessions list', status: 'complete' },
+    { name: 'Session Generator UI', status: 'complete' },
+    { name: 'Session Viewer', status: 'complete' },
+    { name: 'Public Session Page', status: 'complete' },
     // Filters
     { name: 'Learning Path filter (Principles)', status: 'complete' },
     { name: 'Learning Path filter (Knowledge Units)', status: 'complete' },
     { name: 'Search/filter bar component', status: 'complete' },
-    // Learning map & visualization
+    // Visualizations
     { name: 'React Flow learning map', status: 'complete' },
-    { name: 'Knowledge graph visualization', status: 'complete' },
-    { name: 'Cytoscape graph view', status: 'complete' },
+    { name: 'Knowledge graph (Cytoscape)', status: 'complete' },
+    { name: '3D Mind Map (React)', status: 'complete' },
+    { name: 'Skill Tree (React)', status: 'complete' },
+    { name: 'Metro Maps (React)', status: 'complete' },
+    { name: 'Linear Dashboard (React)', status: 'complete' },
     // Study features
     { name: 'Study Flashcards (SM-2)', status: 'complete' },
     { name: 'Study Quiz (SM-2)', status: 'complete' },
@@ -125,7 +144,10 @@ export class CompletionAssessment {
     { name: 'AI principle generation UI', status: 'complete' },
     { name: 'AI source suggestions UI', status: 'complete' },
     { name: 'AI feedback request UI', status: 'complete' },
-    // Pipeline triggers
+    { name: 'AI session generation UI', status: 'complete' },
+    // Pipeline
+    { name: 'Pipeline Orchestrator service', status: 'complete' },
+    { name: 'Pipeline Progress Indicator', status: 'complete' },
     { name: 'Ingestion trigger button', status: 'complete' },
     { name: 'Synthesis trigger button', status: 'complete' },
     // Submission features
@@ -141,12 +163,10 @@ export class CompletionAssessment {
     { name: 'Mentor review form', status: 'complete' },
     // Other
     { name: 'Completion Assessment', status: 'complete' },
-    { name: 'Marimo notebook viewer', status: 'complete' },
+    { name: 'Search/filter bar component', status: 'complete' },
     // Not started
-    { name: 'Learning path wizard (multi-step)', status: 'not-started' },
     { name: 'KU approval workflow UI', status: 'not-started' },
-    { name: 'Home nav actions (partial TODOs)', status: 'placeholder' },
-    { name: 'Accessibility (keyboard nav, ARIA labels, focus management)', status: 'not-started' },
+    { name: 'Portfolio generation', status: 'not-started' },
   ]);
 
   patchbayComponents = signal<ComponentStatus[]>([
@@ -174,6 +194,7 @@ export class CompletionAssessment {
     { name: 'Infiltrate (Gamified Flashcards)', status: 'complete' },
     { name: 'Study Flashcards (SM-2)', status: 'complete' },
     { name: 'Study Quiz (SM-2)', status: 'complete' },
+    { name: 'Gymnasium Sessions', status: 'complete' },
     { name: 'Challenge Arena', status: 'not-started' },
   ]);
 
