@@ -65,12 +65,18 @@ export class LearningPathDetail {
       return;
     }
 
+    // Ensure user is authenticated before creating
+    const currentUser = this.authService.getCurrentUser();
+    if (!currentUser?.id) {
+      console.error('Cannot create learning path: user not authenticated');
+      return;
+    }
+
     // Get form values from the entity signal (Signal Forms sync bidirectionally)
     const formValue = this.entity();
 
     const currentPath = this.learningPath;
-    const currentUser = this.authService.getCurrentUser();
-    const creatorId = currentUser?.id || '';
+    const creatorId = currentUser.id;
 
     // Create or update based on whether item has an id
     const entity: LearningPath = {

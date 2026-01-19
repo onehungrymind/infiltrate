@@ -51,7 +51,9 @@ export const ENTITY_DTO_KEYS = {
     'parsingInstructions',
   ] as const,
   LEARNING_PATHS: [
-    'userId',
+    'creatorId',
+    'mentorId',
+    'visibility',
     'name',
     'domain',
     'targetSkill',

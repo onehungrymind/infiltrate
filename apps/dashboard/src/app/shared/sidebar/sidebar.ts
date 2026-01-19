@@ -208,14 +208,15 @@ export class Sidebar implements OnInit, OnDestroy {
     {
       title: 'Admin',
       routes: [
-        { label: 'Users', path: '/users', icon: 'users' },
         { label: 'Learning Paths', path: '/learning-paths', icon: 'learning-path' },
+        { label: 'Challenges', path: '/challenges', icon: 'challenges' },
+        { label: 'Projects', path: '/projects', icon: 'projects' },
+        { label: 'Users', path: '/users', icon: 'users' },
+        // Pipeline data (integrated into Learning Paths dashboard)
         { label: 'Principles', path: '/principles', icon: 'principles' },
         { label: 'Source Configs', path: '/source-configs', icon: 'source-config' },
         { label: 'Raw Content', path: '/raw-content', icon: 'raw-content' },
         { label: 'Knowledge Units', path: '/knowledge-units', icon: 'knowledge-unit' },
-        { label: 'Challenges', path: '/challenges', icon: 'challenges' },
-        { label: 'Projects', path: '/projects', icon: 'projects' },
       ],
       collapsed: false,
     },
