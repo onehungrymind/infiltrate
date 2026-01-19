@@ -1,0 +1,16 @@
+<div class="session-page">
+  @if (loading() && !htmlLoaded()) {
+    <div class="loading-state">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Loading session...</p>
+    </div>
+  } @else if (error()) {
+    <div class="error-state">
+      <mat-icon>error_outline</mat-icon>
+      <h2>Session Not Found</h2>
+      <p>{{ error() }}</p>
+    </div>
+  } @else {
+    <div class="iframe-container" #iframeContainer></div>
+  }
+</div>

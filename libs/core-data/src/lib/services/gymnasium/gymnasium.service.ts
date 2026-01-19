@@ -51,6 +51,21 @@ export class GymnasiumService {
     return this.http.get<Session>(`${this.getUrl()}/sessions/${id}`);
   }
 
+  findSessionBySlug(slug: string) {
+    return this.http.get<Session>(`${this.getUrl()}/sessions/by-slug/${slug}`);
+  }
+
+  renderSessionBySlug(slug: string, templateId?: string) {
+    const url = `${this.getUrl()}/sessions/by-slug/${slug}/render`;
+    if (templateId) {
+      return this.http.get(url, {
+        params: { template: templateId },
+        responseType: 'text',
+      });
+    }
+    return this.http.get(url, { responseType: 'text' });
+  }
+
   getSessionRaw(id: string) {
     return this.http.get<Session>(`${this.getUrl()}/sessions/${id}/raw`);
   }

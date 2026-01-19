@@ -11,6 +11,7 @@ import {
   selectSelectedSession,
   selectTotalCount,
   selectSessionHtml,
+  selectSessionHtmlBySlug,
   selectSessionsByDomain,
   selectPublicSessions,
   selectTemplates,
@@ -60,6 +61,10 @@ export class GymnasiumFacade {
     return this.store.select(selectSessionHtml(sessionId));
   }
 
+  selectSessionHtmlBySlug(slug: string) {
+    return this.store.select(selectSessionHtmlBySlug(slug));
+  }
+
   resetSelectedSession() {
     this.dispatch(GymnasiumActions.resetSelectedSession());
   }
@@ -80,8 +85,16 @@ export class GymnasiumFacade {
     this.dispatch(GymnasiumActions.loadSession({ sessionId }));
   }
 
+  loadSessionBySlug(slug: string) {
+    this.dispatch(GymnasiumActions.loadSessionBySlug({ slug }));
+  }
+
   renderSession(sessionId: string, templateId?: string) {
     this.dispatch(GymnasiumActions.renderSession({ sessionId, templateId }));
+  }
+
+  renderSessionBySlug(slug: string, templateId?: string) {
+    this.dispatch(GymnasiumActions.renderSessionBySlug({ slug, templateId }));
   }
 
   saveSession(session: Session) {

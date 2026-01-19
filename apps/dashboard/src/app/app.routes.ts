@@ -13,6 +13,11 @@ export const appRoutes: Route[] = [
     loadComponent: () => import('./login/login').then((m) => m.Login),
   },
   {
+    path: 'session/:slug',
+    loadComponent: () => import('./session-page/session-page').then((m) => m.SessionPage),
+    // No authGuard - sessions can be public
+  },
+  {
     path: 'curriculum',
     loadComponent: () => import('./curriculum/curriculum').then((m) => m.Curriculum),
     canActivate: [authGuard],

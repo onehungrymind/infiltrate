@@ -1,45 +1,62 @@
 import {
   Component,
-  effect,
   ElementRef,
+  EventEmitter,
   inject,
   Input,
+  OnChanges,
+  Output,
   signal,
+  SimpleChanges,
   ViewChild,
 } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { Session } from '@kasita/common-models';
+import { FormsModule } from '@angular/forms';
+import { Session, SessionVisibility } from '@kasita/common-models';
 import { GymnasiumFacade } from '@kasita/core-state';
 import { MaterialModule } from '@kasita/material';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'app-session-viewer',
-  imports: [MaterialModule],
+  imports: [MaterialModule, FormsModule],
   templateUrl: './session-viewer.html',
   styleUrl: './session-viewer.scss',
 })
-export class SessionViewer {
+export class SessionViewer implements OnChanges {
   private gymnasiumFacade = inject(GymnasiumFacade);
-  private sanitizer = inject(DomSanitizer);
 
   @Input() session: Session | null = null;
+  @Output() sessionUpdated = new EventEmitter<void>();
   @ViewChild('iframeContainer') iframeContainer!: ElementRef<HTMLDivElement>;
 
   loading = signal(false);
-  htmlContent = signal<SafeHtml | null>(null);
+  saving = signal(false);
 
-  private sessionId = signal<string | null>(null);
+  // Editable fields
+  editSlug = '';
+  editVisibility: SessionVisibility = 'private';
 
-  constructor() {
-    // Watch for session changes and load rendered HTML
-    effect(() => {
-      const session = this.session;
-      if (session?.id && session.id !== this.sessionId()) {
-        this.sessionId.set(session.id);
-        this.loadRenderedHtml(session.id);
-      }
-    });
+  visibilityOptions: { value: SessionVisibility; label: string; icon: string }[] = [
+    { value: 'private', label: 'Private', icon: 'lock' },
+    { value: 'unlisted', label: 'Unlisted', icon: 'link' },
+    { value: 'public', label: 'Public', icon: 'public' },
+  ];
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['session'] && this.session) {
+      // Reset form fields when session changes
+      this.editSlug = this.session.slug || '';
+      this.editVisibility = this.session.visibility || 'private';
+      this.loadRenderedHtml(this.session.id);
+    }
+  }
+
+  get isDirty(): boolean {
+    if (!this.session) return false;
+    return (
+      this.editSlug !== (this.session.slug || '') ||
+      this.editVisibility !== (this.session.visibility || 'private')
+    );
   }
 
   private async loadRenderedHtml(sessionId: string) {
@@ -50,14 +67,12 @@ export class SessionViewer {
     this.gymnasiumFacade.selectSessionHtml(sessionId).subscribe((html) => {
       if (html) {
         this.loading.set(false);
-        // Use an iframe to render the HTML with its own styles
         this.renderInIframe(html);
       }
     });
   }
 
   private renderInIframe(html: string) {
-    // Wait for ViewChild to be available
     setTimeout(() => {
       if (this.iframeContainer?.nativeElement) {
         const container = this.iframeContainer.nativeElement;
@@ -81,30 +96,43 @@ export class SessionViewer {
     }, 0);
   }
 
-  openInNewTab() {
-    if (!this.session) return;
+  saveChanges() {
+    if (!this.session || !this.isDirty) return;
 
-    // Use slug if available, otherwise fall back to id
-    const identifier = this.session.slug || this.session.id;
-    const endpoint = this.session.slug ? 'by-slug' : 'sessions';
-    const url = this.session.slug
-      ? `/api/gymnasium/sessions/by-slug/${identifier}/render`
-      : `/api/gymnasium/sessions/${identifier}/render`;
+    this.saving.set(true);
+    this.gymnasiumFacade.updateSession(this.session.id, {
+      slug: this.editSlug,
+      visibility: this.editVisibility,
+    });
+
+    // Listen for success (take 1 to avoid memory leak)
+    this.gymnasiumFacade.mutations$.pipe(take(1)).subscribe(() => {
+      this.saving.set(false);
+      this.sessionUpdated.emit();
+    });
+  }
+
+  resetChanges() {
+    if (!this.session) return;
+    this.editSlug = this.session.slug || '';
+    this.editVisibility = this.session.visibility || 'private';
+  }
+
+  openInNewTab() {
+    if (!this.editSlug) return;
+    const url = `/session/${this.editSlug}`;
     window.open(url, '_blank');
   }
 
   downloadHtml() {
     if (!this.session) return;
-
-    // Trigger download
     const url = `/api/gymnasium/sessions/${this.session.id}/export`;
     window.open(url, '_blank');
   }
 
   copyLink() {
-    if (!this.session?.slug) return;
-
-    const url = `${window.location.origin}/api/gymnasium/sessions/by-slug/${this.session.slug}/render`;
+    if (!this.editSlug) return;
+    const url = `${window.location.origin}/session/${this.editSlug}`;
     navigator.clipboard.writeText(url).then(() => {
       // Could add a toast notification here
     });

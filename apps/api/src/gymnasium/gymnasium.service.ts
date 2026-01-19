@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Like, FindOptionsWhere } from 'typeorm';
 
@@ -181,6 +181,24 @@ export class GymnasiumService {
     updateSessionDto: UpdateSessionDto,
   ): Promise<Session> {
     const session = await this.findSessionById(id);
+
+    // Handle slug update with validation
+    if (updateSessionDto.slug !== undefined) {
+      const newSlug = this.generateSlug(updateSessionDto.slug);
+
+      // Check if slug is different and already taken by another session
+      if (newSlug !== session.slug) {
+        const existing = await this.sessionRepository.findOne({
+          where: { slug: newSlug },
+        });
+
+        if (existing && existing.id !== id) {
+          throw new ConflictException(`Slug "${newSlug}" is already in use`);
+        }
+
+        updateSessionDto.slug = newSlug;
+      }
+    }
 
     Object.assign(session, updateSessionDto);
 

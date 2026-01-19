@@ -13,6 +13,7 @@ export interface GymnasiumState extends EntityState<Session> {
   generating: boolean;
   total: number;
   renderedHtml: { [sessionId: string]: string };
+  renderedHtmlBySlug: { [slug: string]: string };
   templates: SessionTemplate[];
   templatesLoaded: boolean;
   defaultTemplate: SessionTemplate | null;
@@ -30,6 +31,7 @@ export const initialGymnasiumState: GymnasiumState =
     generating: false,
     total: 0,
     renderedHtml: {},
+    renderedHtmlBySlug: {},
     templates: [],
     templatesLoaded: false,
     defaultTemplate: null,
@@ -109,11 +111,29 @@ const gymnasiumReducer = createReducer(
       error: null,
     }),
   ),
+  on(GymnasiumActions.loadSessionBySlug, (state) => ({
+    ...state,
+    loading: true,
+    error: null,
+  })),
+  on(GymnasiumActions.loadSessionBySlugSuccess, (state, { session }) =>
+    sessionsAdapter.upsertOne(session, {
+      ...state,
+      loaded: true,
+      loading: false,
+      selectedId: session.id,
+      error: null,
+    }),
+  ),
 
   // Render Success
   on(GymnasiumActions.renderSessionSuccess, (state, { sessionId, html }) => ({
     ...state,
     renderedHtml: { ...state.renderedHtml, [sessionId]: html },
+  })),
+  on(GymnasiumActions.renderSessionBySlugSuccess, (state, { slug, html }) => ({
+    ...state,
+    renderedHtmlBySlug: { ...state.renderedHtmlBySlug, [slug]: html },
   })),
 
   // CRUD Success
@@ -177,7 +197,9 @@ const gymnasiumReducer = createReducer(
     GymnasiumActions.loadSessionsFailure,
     GymnasiumActions.loadPublicSessionsFailure,
     GymnasiumActions.loadSessionFailure,
+    GymnasiumActions.loadSessionBySlugFailure,
     GymnasiumActions.renderSessionFailure,
+    GymnasiumActions.renderSessionBySlugFailure,
     GymnasiumActions.createSessionFailure,
     GymnasiumActions.updateSessionFailure,
     GymnasiumActions.deleteSessionFailure,
@@ -213,8 +235,16 @@ export const gymnasiumFeature = createFeature({
       (s) => s.renderedHtml,
     );
 
+    const selectRenderedHtmlBySlug = createSelector(
+      selectGymnasiumState,
+      (s) => s.renderedHtmlBySlug,
+    );
+
     const selectSessionHtml = (sessionId: string) =>
       createSelector(selectRenderedHtml, (htmlMap) => htmlMap[sessionId] || null);
+
+    const selectSessionHtmlBySlug = (slug: string) =>
+      createSelector(selectRenderedHtmlBySlug, (htmlMap) => htmlMap[slug] || null);
 
     const selectSessionsByDomain = (domain: string) =>
       createSelector(selectAll, (sessions) =>
@@ -253,7 +283,9 @@ export const gymnasiumFeature = createFeature({
       selectSelectedId,
       selectSelectedSession,
       selectRenderedHtml,
+      selectRenderedHtmlBySlug,
       selectSessionHtml,
+      selectSessionHtmlBySlug,
       selectSessionsByDomain,
       selectPublicSessions,
       selectTemplates: createSelector(
@@ -285,7 +317,9 @@ export const {
   selectSelectedId,
   selectSelectedSession,
   selectRenderedHtml,
+  selectRenderedHtmlBySlug,
   selectSessionHtml,
+  selectSessionHtmlBySlug,
   selectSessionsByDomain,
   selectPublicSessions,
   selectTemplates,

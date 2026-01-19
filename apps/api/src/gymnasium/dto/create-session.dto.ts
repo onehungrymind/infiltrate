@@ -22,6 +22,11 @@ export class CreateSessionDto {
   @IsNotEmpty()
   title: string;
 
+  @ApiPropertyOptional({ example: 'kubernetes-fundamentals' })
+  @IsOptional()
+  @IsString()
+  slug?: string;
+
   @ApiPropertyOptional({ example: "A Practitioner's Guide" })
   @IsOptional()
   @IsString()

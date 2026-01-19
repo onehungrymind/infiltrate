@@ -79,6 +79,7 @@
       @if (selectedSession()) {
         <app-session-viewer
           [session]="selectedSession()"
+          (sessionUpdated)="onSessionUpdated()"
         />
       } @else {
         <div class="empty-viewer">

@@ -132,4 +132,9 @@ export class Gymnasium implements OnInit {
   onSessionGenerated() {
     // Generator will close when generation succeeds via subscription
   }
+
+  onSessionUpdated() {
+    // Session was updated - list will auto-refresh via mutations$ subscription
+    // Could add a toast notification here
+  }
 }

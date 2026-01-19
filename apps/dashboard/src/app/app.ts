@@ -22,7 +22,7 @@ export class App implements OnInit, OnDestroy {
   private layoutService = inject(LayoutService);
   private destroy$ = new Subject<void>();
   
-  protected isLoginPage = signal(false);
+  protected isStandalonePage = signal(false);
   protected isSidebarCollapsed = false;
 
   constructor() {
@@ -30,15 +30,22 @@ export class App implements OnInit, OnDestroy {
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe(() => {
-        this.isLoginPage.set(this.router.url === '/login' || this.router.url.startsWith('/login'));
+        this.checkStandalonePage();
       });
+  }
+
+  private checkStandalonePage() {
+    const url = this.router.url;
+    // Pages that should not show sidebar/header
+    const standaloneRoutes = ['/login', '/session/'];
+    this.isStandalonePage.set(standaloneRoutes.some(route => url === route || url.startsWith(route)));
   }
 
   ngOnInit(): void {
     // Initialize theme on app start
     this.themeService.theme();
     // Check initial route
-    this.isLoginPage.set(this.router.url === '/login' || this.router.url.startsWith('/login'));
+    this.checkStandalonePage();
 
     // Subscribe to sidebar collapsed state
     this.layoutService.isSidebarCollapsed$

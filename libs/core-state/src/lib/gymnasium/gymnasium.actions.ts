@@ -23,6 +23,16 @@ export const GymnasiumActions = createActionGroup({
     'Load Session Success': props<{ session: Session }>(),
     'Load Session Failure': props<{ error: string | null }>(),
 
+    // Load session by slug
+    'Load Session By Slug': props<{ slug: string }>(),
+    'Load Session By Slug Success': props<{ session: Session }>(),
+    'Load Session By Slug Failure': props<{ error: string | null }>(),
+
+    // Render session by slug (get HTML)
+    'Render Session By Slug': props<{ slug: string; templateId?: string }>(),
+    'Render Session By Slug Success': props<{ slug: string; html: string }>(),
+    'Render Session By Slug Failure': props<{ error: string | null }>(),
+
     // Render session (get HTML)
     'Render Session': props<{ sessionId: string; templateId?: string }>(),
     'Render Session Success': props<{ sessionId: string; html: string }>(),

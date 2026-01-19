@@ -17,7 +17,7 @@ export class Session {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ unique: true })
+  @Column({ nullable: true })
   slug: string;
 
   // === Metadata ===

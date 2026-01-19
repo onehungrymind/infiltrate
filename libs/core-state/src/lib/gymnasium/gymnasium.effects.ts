@@ -87,6 +87,61 @@ export const loadSession = createEffect(
   { functional: true },
 );
 
+export const loadSessionBySlug = createEffect(
+  (
+    actions$ = inject(Actions),
+    gymnasiumService = inject(GymnasiumService),
+  ) => {
+    return actions$.pipe(
+      ofType(GymnasiumActions.loadSessionBySlug),
+      exhaustMap((action) =>
+        gymnasiumService.findSessionBySlug(action.slug).pipe(
+          map((session: Session) =>
+            GymnasiumActions.loadSessionBySlugSuccess({ session }),
+          ),
+          catchError((error) =>
+            of(
+              GymnasiumActions.loadSessionBySlugFailure({
+                error: formatErrorMessage(error),
+              }),
+            ),
+          ),
+        ),
+      ),
+    );
+  },
+  { functional: true },
+);
+
+export const renderSessionBySlug = createEffect(
+  (
+    actions$ = inject(Actions),
+    gymnasiumService = inject(GymnasiumService),
+  ) => {
+    return actions$.pipe(
+      ofType(GymnasiumActions.renderSessionBySlug),
+      exhaustMap((action) =>
+        gymnasiumService.renderSessionBySlug(action.slug, action.templateId).pipe(
+          map((html: string) =>
+            GymnasiumActions.renderSessionBySlugSuccess({
+              slug: action.slug,
+              html,
+            }),
+          ),
+          catchError((error) =>
+            of(
+              GymnasiumActions.renderSessionBySlugFailure({
+                error: formatErrorMessage(error),
+              }),
+            ),
+          ),
+        ),
+      ),
+    );
+  },
+  { functional: true },
+);
+
 export const renderSession = createEffect(
   (
     actions$ = inject(Actions),

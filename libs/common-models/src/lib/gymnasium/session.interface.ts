@@ -107,6 +107,7 @@ export interface SessionProgress {
 
 export interface CreateSessionDto {
   title: string;
+  slug?: string;
   subtitle?: string;
   description: string;
   domain: string;
@@ -121,6 +122,7 @@ export interface CreateSessionDto {
 
 export interface UpdateSessionDto {
   title?: string;
+  slug?: string;
   subtitle?: string;
   description?: string;
   domain?: string;
