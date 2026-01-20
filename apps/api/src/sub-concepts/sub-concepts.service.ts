@@ -42,9 +42,9 @@ export class SubConceptsService {
     return subConcept;
   }
 
-  async findByPrinciple(principleId: string): Promise<SubConcept[]> {
+  async findByConcept(conceptId: string): Promise<SubConcept[]> {
     return await this.subConceptRepository.find({
-      where: { principleId },
+      where: { conceptId },
       order: { order: 'ASC', createdAt: 'ASC' },
       relations: ['knowledgeUnits', 'decorations'],
     });

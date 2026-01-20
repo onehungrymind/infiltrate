@@ -48,14 +48,14 @@ const subConceptsReducer = createReducer(
     loaded: false,
     error: null,
   })),
-  on(SubConceptsActions.loadSubConceptsByPrinciple, (state) => ({
+  on(SubConceptsActions.loadSubConceptsByConcept, (state) => ({
     ...state,
     loaded: false,
     error: null,
   })),
 
   // AI generation flags
-  on(SubConceptsActions.decomposePrinciple, (state) => ({
+  on(SubConceptsActions.decomposeConcept, (state) => ({
     ...state,
     generating: true,
     error: null,
@@ -94,7 +94,7 @@ const subConceptsReducer = createReducer(
       }),
   ),
   on(
-    SubConceptsActions.loadSubConceptsByPrincipleSuccess,
+    SubConceptsActions.loadSubConceptsByConceptSuccess,
     (state, { subConcepts }) =>
       subConceptsAdapter.setAll(subConcepts, {
         ...state,
@@ -135,7 +135,7 @@ const subConceptsReducer = createReducer(
 
   // AI generation success
   on(
-    SubConceptsActions.decomposePrincipleSuccess,
+    SubConceptsActions.decomposeConceptSuccess,
     (state, { subConcepts }) =>
       subConceptsAdapter.addMany(subConcepts, {
         ...state,
@@ -156,11 +156,11 @@ const subConceptsReducer = createReducer(
   on(
     SubConceptsActions.loadSubConceptsFailure,
     SubConceptsActions.loadSubConceptFailure,
-    SubConceptsActions.loadSubConceptsByPrincipleFailure,
+    SubConceptsActions.loadSubConceptsByConceptFailure,
     SubConceptsActions.createSubConceptFailure,
     SubConceptsActions.updateSubConceptFailure,
     SubConceptsActions.deleteSubConceptFailure,
-    SubConceptsActions.decomposePrincipleFailure,
+    SubConceptsActions.decomposeConceptFailure,
     SubConceptsActions.generateStructuredKUFailure,
     SubConceptsActions.addDecorationFailure,
     SubConceptsActions.removeDecorationFailure,
@@ -187,9 +187,9 @@ export const subConceptsFeature = createFeature({
       (entities, id) => (id ? (entities[id] ?? null) : null),
     );
 
-    const selectSubConceptsByPrincipleId = (principleId: string) =>
+    const selectSubConceptsByConceptId = (conceptId: string) =>
       createSelector(selectAll, (subConcepts) =>
-        subConcepts.filter((sc) => sc.principleId === principleId),
+        subConcepts.filter((sc) => sc.conceptId === conceptId),
       );
 
     return {
@@ -214,7 +214,7 @@ export const subConceptsFeature = createFeature({
       ),
       selectSelectedId,
       selectSelectedSubConcept,
-      selectSubConceptsByPrincipleId,
+      selectSubConceptsByConceptId,
     };
   },
 });
@@ -230,5 +230,5 @@ export const {
   selectSubConceptsGenerating,
   selectSelectedId,
   selectSelectedSubConcept,
-  selectSubConceptsByPrincipleId,
+  selectSubConceptsByConceptId,
 } = subConceptsFeature;

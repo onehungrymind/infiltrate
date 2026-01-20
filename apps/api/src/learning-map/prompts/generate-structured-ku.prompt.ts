@@ -3,7 +3,7 @@ export const GENERATE_STRUCTURED_KU_PROMPT = `You are an expert instructional de
 Sub-concept Information:
 - Name: {subConceptName}
 - Description: {subConceptDescription}
-- Parent Principle: {principleName}
+- Parent Concept: {conceptName}
 - Domain: {domain}
 
 CRITICAL: You MUST generate exactly 5 KUs, one for each type below. Do NOT create variations of the same question.
@@ -16,7 +16,7 @@ Generate these 5 DISTINCT knowledge units:
 
 2. MECHANISM KU (cognitiveLevel: "understand", difficulty: "intermediate")
    - Question asks: "How does [concept] work?" or "Explain the process of..."
-   - Tests understanding of underlying principles, steps, or mechanisms
+   - Tests understanding of underlying concepts, steps, or mechanisms
 
 3. APPLICATION KU (cognitiveLevel: "apply", difficulty: "intermediate")
    - Question asks: "When would you use..." or "How would you implement..."

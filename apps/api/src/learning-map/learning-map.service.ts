@@ -6,8 +6,8 @@ import { exec } from 'child_process';
 import { Repository } from 'typeorm';
 import { promisify } from 'util';
 
-import { DECOMPOSE_PRINCIPLE_PROMPT } from './prompts/decompose-principle.prompt';
-import { GENERATE_PRINCIPLES_PROMPT } from './prompts/generate-principles.prompt';
+import { DECOMPOSE_CONCEPT_PROMPT } from './prompts/decompose-concept.prompt';
+import { GENERATE_CONCEPTS_PROMPT } from './prompts/generate-concepts.prompt';
 import { GENERATE_STRUCTURED_KU_PROMPT } from './prompts/generate-structured-ku.prompt';
 import { SUGGEST_SOURCES_PROMPT } from './prompts/suggest-sources.prompt';
 
@@ -19,13 +19,13 @@ import {
   LearningPathMap,
   NodeDetails,
   NodeStatus,
-  PrincipleNodeData,
+  ConceptNodeData,
 } from '@kasita/common-models';
 
 import { KnowledgeUnit } from '../knowledge-units/entities/knowledge-unit.entity';
 import { LearningPath } from '../learning-paths/entities/learning-path.entity';
 import { NotebookProgress } from '../notebooks/entities/notebook-progress.entity';
-import { Principle } from '../principles/entities/principle.entity';
+import { Concept } from '../concepts/entities/concept.entity';
 import { RawContent } from '../raw-content/entities/raw-content.entity';
 import { SourcePathLink } from '../source-configs/entities/source-path-link.entity';
 import { SourcesService } from '../source-configs/sources.service';
@@ -41,8 +41,8 @@ export class LearningMapService {
     private readonly learningPathRepository: Repository<LearningPath>,
     @InjectRepository(NotebookProgress)
     private readonly notebookProgressRepository: Repository<NotebookProgress>,
-    @InjectRepository(Principle)
-    private readonly principleRepository: Repository<Principle>,
+    @InjectRepository(Concept)
+    private readonly conceptRepository: Repository<Concept>,
     @InjectRepository(KnowledgeUnit)
     private readonly knowledgeUnitRepository: Repository<KnowledgeUnit>,
     @InjectRepository(SourcePathLink)
@@ -134,7 +134,7 @@ export class LearningMapService {
    * Get principle-based learning map for a learning path
    * This creates a visualization of principles and their prerequisites
    */
-  async getPrincipleMap(pathId: string): Promise<LearningPathMap> {
+  async getConceptMap(pathId: string): Promise<LearningPathMap> {
     // Fetch the learning path
     const learningPath = await this.learningPathRepository.findOne({
       where: { id: pathId },
@@ -145,33 +145,33 @@ export class LearningMapService {
     }
 
     // Fetch all principles for this learning path
-    const principles = await this.principleRepository.find({
+    const concepts = await this.conceptRepository.find({
       where: { pathId },
       order: { order: 'ASC' },
     });
 
-    if (principles.length === 0) {
+    if (concepts.length === 0) {
       throw new NotFoundException(`No principles found for learning path ${pathId}`);
     }
 
     // Count knowledge units per principle
-    const knowledgeUnitCounts = await this.getKnowledgeUnitCounts(principles.map(p => p.id));
+    const knowledgeUnitCounts = await this.getKnowledgeUnitCounts(concepts.map(p => p.id));
 
-    // Convert principles to learning map nodes
-    const nodes = this.convertPrinciplesToNodes(principles, knowledgeUnitCounts);
+    // Convert concepts to learning map nodes
+    const nodes = this.convertConceptsToNodes(concepts, knowledgeUnitCounts);
 
     // Generate edges from prerequisites
-    const edges = this.generatePrerequisiteEdges(principles);
+    const edges = this.generatePrerequisiteEdges(concepts);
 
     // Calculate layout positions using hierarchical layout
-    this.calculateHierarchicalLayout(nodes, principles);
+    this.calculateHierarchicalLayout(nodes, concepts);
 
     // Calculate metadata
     const completedNodes = nodes.filter(
       n => n.status === 'completed' || n.status === 'mastered'
     ).length;
 
-    const totalEstimatedHours = principles.reduce(
+    const totalEstimatedHours = concepts.reduce(
       (sum, p) => sum + (p.estimatedHours || 0),
       0
     );
@@ -197,74 +197,74 @@ export class LearningMapService {
     id: string;
     name: string;
     domain: string;
-    principleCount: number;
+    conceptCount: number;
   }>> {
     const learningPaths = await this.learningPathRepository.find();
 
     const result = await Promise.all(
       learningPaths.map(async (path) => {
-        const principleCount = await this.principleRepository.count({
+        const conceptCount = await this.conceptRepository.count({
           where: { pathId: path.id },
         });
         return {
           id: path.id,
           name: path.name,
           domain: path.domain,
-          principleCount,
+          conceptCount,
         };
       })
     );
 
     // Only return paths that have principles
-    return result.filter(p => p.principleCount > 0);
+    return result.filter(p => p.conceptCount > 0);
   }
 
   /**
    * Get knowledge unit counts per principle
    */
-  private async getKnowledgeUnitCounts(principleIds: string[]): Promise<Record<string, number>> {
+  private async getKnowledgeUnitCounts(conceptIds: string[]): Promise<Record<string, number>> {
     const counts: Record<string, number> = {};
 
-    for (const principleId of principleIds) {
+    for (const conceptId of conceptIds) {
       const count = await this.knowledgeUnitRepository.count({
-        where: { principleId },
+        where: { conceptId },
       });
-      counts[principleId] = count;
+      counts[conceptId] = count;
     }
 
     return counts;
   }
 
   /**
-   * Convert Principle entities to LearningMapNode format
+   * Convert Concept entities to LearningMapNode format
    */
-  private convertPrinciplesToNodes(
-    principles: Principle[],
+  private convertConceptsToNodes(
+    concepts: Concept[],
     knowledgeUnitCounts: Record<string, number>,
   ): LearningMapNode[] {
-    return principles.map((principle) => {
-      // Map principle status to node status
+    return concepts.map((concept) => {
+      // Map concept status to node status
       const statusMap: Record<string, NodeStatus> = {
         pending: 'not-started',
         in_progress: 'in-progress',
         mastered: 'completed',
       };
 
-      const nodeData: PrincipleNodeData = {
-        title: principle.name,
-        description: principle.description,
-        difficulty: principle.difficulty as 'foundational' | 'intermediate' | 'advanced',
-        estimatedHours: principle.estimatedHours || 0,
-        prerequisites: principle.prerequisites || [],
-        order: principle.order || 0,
-        knowledgeUnitCount: knowledgeUnitCounts[principle.id] || 0,
+      const nodeData: ConceptNodeData = {
+        title: concept.name,
+        description: concept.description,
+        difficulty: concept.difficulty as 'foundational' | 'intermediate' | 'advanced',
+        estimatedHours: concept.estimatedHours || 0,
+        prerequisites: concept.prerequisites || [],
+        order: concept.order || 0,
+        knowledgeUnitCount: knowledgeUnitCounts[concept.id] || 0,
       };
 
       return {
-        id: principle.id,
-        type: 'principle' as const,
-        label: principle.name,
-        status: statusMap[principle.status] || 'not-started',
+        id: concept.id,
+        type: 'concept' as const,
+        label: concept.name,
+        status: statusMap[concept.status] || 'not-started',
         position: { x: 0, y: 0 }, // Will be calculated by layout
         data: nodeData,
       };
@@ -272,21 +272,21 @@ export class LearningMapService {
   }
 
   /**
-   * Generate edges from principle prerequisites
+   * Generate edges from concept prerequisites
    */
-  private generatePrerequisiteEdges(principles: Principle[]): LearningMapEdge[] {
+  private generatePrerequisiteEdges(concepts: Concept[]): LearningMapEdge[] {
     const edges: LearningMapEdge[] = [];
-    const principleIds = new Set(principles.map(p => p.id));
+    const conceptIds = new Set(concepts.map(c => c.id));
 
-    for (const principle of principles) {
-      if (principle.prerequisites && principle.prerequisites.length > 0) {
-        for (const prereqId of principle.prerequisites) {
+    for (const concept of concepts) {
+      if (concept.prerequisites && concept.prerequisites.length > 0) {
+        for (const prereqId of concept.prerequisites) {
           // Only create edges for prerequisites that exist in this path
-          if (principleIds.has(prereqId)) {
+          if (conceptIds.has(prereqId)) {
             edges.push({
-              id: `edge-${prereqId}-${principle.id}`,
+              id: `edge-${prereqId}-${concept.id}`,
               source: prereqId,
-              target: principle.id,
+              target: concept.id,
               type: 'prerequisite',
             });
           }
@@ -303,9 +303,9 @@ export class LearningMapService {
    */
   private calculateHierarchicalLayout(
     nodes: LearningMapNode[],
-    principles: Principle[],
+    concepts: Concept[],
   ): void {
-    // Group principles by difficulty level
+    // Group concepts by difficulty level
     const difficultyOrder = ['foundational', 'intermediate', 'advanced'];
     const nodesByDifficulty: Record<string, LearningMapNode[]> = {
       foundational: [],
@@ -314,8 +314,8 @@ export class LearningMapService {
     };
 
     for (const node of nodes) {
-      const principle = principles.find(p => p.id === node.id);
-      const difficulty = principle?.difficulty || 'foundational';
+      const concept = concepts.find(c => c.id === node.id);
+      const difficulty = concept?.difficulty || 'foundational';
       if (nodesByDifficulty[difficulty]) {
         nodesByDifficulty[difficulty].push(node);
       }
@@ -336,9 +336,9 @@ export class LearningMapService {
 
       // Sort by order within each difficulty level
       rowNodes.sort((a, b) => {
-        const principleA = principles.find(p => p.id === a.id);
-        const principleB = principles.find(p => p.id === b.id);
-        return (principleA?.order || 0) - (principleB?.order || 0);
+        const conceptA = concepts.find(c => c.id === a.id);
+        const conceptB = concepts.find(c => c.id === b.id);
+        return (conceptA?.order || 0) - (conceptB?.order || 0);
       });
 
       // Center the row
@@ -355,13 +355,13 @@ export class LearningMapService {
   }
 
   /**
-   * Generate principles for a learning path using AI
-   * @param pathId - The learning path ID to generate principles for
-   * @param force - If true, delete existing principles before generating new ones
-   * @returns The generated principles and updated learning path map
+   * Generate concepts for a learning path using AI
+   * @param pathId - The learning path ID to generate concepts for
+   * @param force - If true, delete existing concepts before generating new ones
+   * @returns The generated concepts and updated learning path map
    */
-  async generatePrinciplesWithAI(pathId: string, force = false): Promise<{
-    principles: Principle[];
+  async generateConceptsWithAI(pathId: string, force = false): Promise<{
+    concepts: Concept[];
     message: string;
   }> {
     if (!this.anthropic) {
@@ -379,33 +379,33 @@ export class LearningMapService {
       throw new NotFoundException(`Learning path ${pathId} not found`);
     }
 
-    // Check if principles already exist
-    const existingPrinciples = await this.principleRepository.find({
+    // Check if concepts already exist
+    const existingConcepts = await this.conceptRepository.find({
       where: { pathId },
     });
 
-    if (existingPrinciples.length > 0) {
+    if (existingConcepts.length > 0) {
       if (force) {
-        // First, unlink any knowledge units from these principles
-        const principleIds = existingPrinciples.map(p => p.id);
+        // First, unlink any knowledge units from these concepts
+        const conceptIds = existingConcepts.map(p => p.id);
         await this.knowledgeUnitRepository
           .createQueryBuilder()
           .update()
-          .set({ principleId: null })
-          .where('principleId IN (:...ids)', { ids: principleIds })
+          .set({ conceptId: null })
+          .where('conceptId IN (:...ids)', { ids: conceptIds })
           .execute();
 
-        // Then delete existing principles
-        await this.principleRepository.remove(existingPrinciples);
+        // Then delete existing concepts
+        await this.conceptRepository.remove(existingConcepts);
       } else {
         throw new BadRequestException(
-          `Learning path already has ${existingPrinciples.length} principles. Delete them first to regenerate.`
+          `Learning path already has ${existingConcepts.length} concepts. Delete them first to regenerate.`
         );
       }
     }
 
-    // Generate principles using Claude
-    const generatedData = await this.generatePrinciplesFromClaude(
+    // Generate concepts using Claude
+    const generatedData = await this.generateConceptsFromClaude(
       learningPath.name,
       learningPath.domain,
       learningPath.targetSkill
@@ -414,61 +414,61 @@ export class LearningMapService {
     // Create a map of temporary IDs to real UUIDs
     const idMap = new Map<string, string>();
 
-    // First pass: create all principles to get their UUIDs
-    const savedPrinciples: Principle[] = [];
+    // First pass: create all concepts to get their UUIDs
+    const savedConcepts: Concept[] = [];
 
-    for (const principleData of generatedData.principles) {
-      const principle = this.principleRepository.create({
+    for (const conceptData of generatedData.concepts) {
+      const concept = this.conceptRepository.create({
         pathId,
-        name: principleData.name,
-        description: principleData.description,
-        difficulty: principleData.difficulty,
-        estimatedHours: principleData.estimatedHours || 1,
+        name: conceptData.name,
+        description: conceptData.description,
+        difficulty: conceptData.difficulty,
+        estimatedHours: conceptData.estimatedHours || 1,
         prerequisites: [], // Will update in second pass
-        order: principleData.order || 0,
+        order: conceptData.order || 0,
         status: 'pending',
       });
 
-      const saved = await this.principleRepository.save(principle);
-      savedPrinciples.push(saved);
-      idMap.set(principleData.id, saved.id);
+      const saved = await this.conceptRepository.save(concept);
+      savedConcepts.push(saved);
+      idMap.set(conceptData.id, saved.id);
     }
 
     // Second pass: update prerequisites with real UUIDs
-    for (let i = 0; i < generatedData.principles.length; i++) {
-      const principleData = generatedData.principles[i];
-      const savedPrinciple = savedPrinciples[i];
+    for (let i = 0; i < generatedData.concepts.length; i++) {
+      const conceptData = generatedData.concepts[i];
+      const savedConcept = savedConcepts[i];
 
-      if (principleData.prerequisites && principleData.prerequisites.length > 0) {
-        const realPrerequisites = principleData.prerequisites
+      if (conceptData.prerequisites && conceptData.prerequisites.length > 0) {
+        const realPrerequisites = conceptData.prerequisites
           .map((prereqId: string) => idMap.get(prereqId))
           .filter((id: string | undefined): id is string => id !== undefined);
 
-        savedPrinciple.prerequisites = realPrerequisites;
-        await this.principleRepository.save(savedPrinciple);
+        savedConcept.prerequisites = realPrerequisites;
+        await this.conceptRepository.save(savedConcept);
       }
     }
 
-    // Reload all principles with updated prerequisites
-    const finalPrinciples = await this.principleRepository.find({
+    // Reload all concepts with updated prerequisites
+    const finalConcepts = await this.conceptRepository.find({
       where: { pathId },
       order: { order: 'ASC' },
     });
 
     return {
-      principles: finalPrinciples,
-      message: `Successfully generated ${finalPrinciples.length} principles for "${learningPath.name}"`,
+      concepts: finalConcepts,
+      message: `Successfully generated ${finalConcepts.length} concepts for "${learningPath.name}"`,
     };
   }
 
   /**
-   * Call Claude API to generate principles
+   * Call Claude API to generate concepts
    */
-  private async generatePrinciplesFromClaude(
+  private async generateConceptsFromClaude(
     name: string,
     domain: string,
     targetSkill: string
-  ): Promise<{ principles: Array<{
+  ): Promise<{ concepts: Array<{
     id: string;
     name: string;
     description: string;
@@ -477,7 +477,7 @@ export class LearningMapService {
     prerequisites: string[];
     order: number;
   }> }> {
-    const prompt = GENERATE_PRINCIPLES_PROMPT
+    const prompt = GENERATE_CONCEPTS_PROMPT
       .replace('{name}', name)
       .replace('{domain}', domain)
       .replace('{targetSkill}', targetSkill);
@@ -495,17 +495,24 @@ export class LearningMapService {
 
     // Parse JSON (handle potential markdown wrapping)
     let jsonText = content.text.trim();
+    this.logger.log(`[GENERATE_CONCEPTS] Raw AI response (first 500 chars): ${jsonText.substring(0, 500)}`);
+
     if (jsonText.startsWith('```')) {
-      jsonText = jsonText.replace(/```json\n?|\n?```/g, '');
+      jsonText = jsonText.replace(/```json\n?|\n?```/g, '').trim();
+      this.logger.log(`[GENERATE_CONCEPTS] After removing markdown: ${jsonText.substring(0, 500)}`);
     }
 
     try {
       const data = JSON.parse(jsonText);
-      if (!data.principles || !Array.isArray(data.principles)) {
+      this.logger.log(`[GENERATE_CONCEPTS] Parsed data keys: ${Object.keys(data).join(', ')}`);
+      if (!data.concepts || !Array.isArray(data.concepts)) {
+        this.logger.error(`[GENERATE_CONCEPTS] Invalid structure. Has concepts: ${!!data.concepts}, Is array: ${Array.isArray(data.concepts)}`);
         throw new Error('Invalid response structure');
       }
       return data;
     } catch (error) {
+      this.logger.error(`[GENERATE_CONCEPTS] Parse error: ${error instanceof Error ? error.message : 'Unknown'}`);
+      this.logger.error(`[GENERATE_CONCEPTS] JSON text was: ${jsonText.substring(0, 1000)}`);
       throw new BadRequestException(
         `Failed to parse AI response: ${error instanceof Error ? error.message : 'Unknown error'}`
       );
@@ -824,11 +831,11 @@ export class LearningMapService {
   }
 
   /**
-   * Decompose a principle into sub-concepts using AI
-   * @param principleId - The principle ID to decompose
+   * Decompose a concept into sub-concepts using AI
+   * @param conceptId - The concept ID to decompose
    * @returns The generated sub-concepts
    */
-  async decomposeIntoSubConcepts(principleId: string): Promise<{
+  async decomposeIntoSubConcepts(conceptId: string): Promise<{
     subConcepts: SubConcept[];
     message: string;
   }> {
@@ -838,35 +845,35 @@ export class LearningMapService {
       );
     }
 
-    // Fetch the principle with its learning path
-    const principle = await this.principleRepository.findOne({
-      where: { id: principleId },
+    // Fetch the concept with its learning path
+    const concept = await this.conceptRepository.findOne({
+      where: { id: conceptId },
       relations: ['learningPath'],
     });
 
-    if (!principle) {
-      throw new NotFoundException(`Principle ${principleId} not found`);
+    if (!concept) {
+      throw new NotFoundException(`Concept ${conceptId} not found`);
     }
 
     // Check if sub-concepts already exist
     const existingSubConcepts = await this.subConceptRepository.find({
-      where: { principleId },
+      where: { conceptId },
     });
 
     if (existingSubConcepts.length > 0) {
       throw new BadRequestException(
-        `Principle already has ${existingSubConcepts.length} sub-concepts. Delete them first to regenerate.`
+        `Concept already has ${existingSubConcepts.length} sub-concepts. Delete them first to regenerate.`
       );
     }
 
     // Get domain from learning path
-    const domain = principle.learningPath?.domain || 'general';
+    const domain = concept.learningPath?.domain || 'general';
 
     // Generate sub-concepts using Claude
-    const prompt = DECOMPOSE_PRINCIPLE_PROMPT
-      .replace('{name}', principle.name)
-      .replace('{description}', principle.description)
-      .replace('{difficulty}', principle.difficulty)
+    const prompt = DECOMPOSE_CONCEPT_PROMPT
+      .replace('{name}', concept.name)
+      .replace('{description}', concept.description)
+      .replace('{difficulty}', concept.difficulty)
       .replace('{domain}', domain);
 
     const response = await this.anthropic.messages.create({
@@ -902,7 +909,7 @@ export class LearningMapService {
     const savedSubConcepts: SubConcept[] = [];
     for (const subConceptData of generatedData.subConcepts) {
       const subConcept = this.subConceptRepository.create({
-        principleId,
+        conceptId,
         name: subConceptData.name,
         description: subConceptData.description,
         order: subConceptData.order || 0,
@@ -913,7 +920,7 @@ export class LearningMapService {
 
     return {
       subConcepts: savedSubConcepts,
-      message: `Successfully generated ${savedSubConcepts.length} sub-concepts for "${principle.name}"`,
+      message: `Successfully generated ${savedSubConcepts.length} sub-concepts for "${concept.name}"`,
     };
   }
 
@@ -932,25 +939,25 @@ export class LearningMapService {
       );
     }
 
-    // Fetch the sub-concept with its principle and learning path
+    // Fetch the sub-concept with its concept and learning path
     const subConcept = await this.subConceptRepository.findOne({
       where: { id: subConceptId },
-      relations: ['principle', 'principle.learningPath'],
+      relations: ['concept', 'concept.learningPath'],
     });
 
     if (!subConcept) {
       throw new NotFoundException(`SubConcept ${subConceptId} not found`);
     }
 
-    const principle = subConcept.principle;
-    const learningPath = principle?.learningPath;
+    const parentConcept = subConcept.concept;
+    const learningPath = parentConcept?.learningPath;
     const domain = learningPath?.domain || 'general';
 
     // Generate structured KUs using Claude
     const prompt = GENERATE_STRUCTURED_KU_PROMPT
       .replace('{subConceptName}', subConcept.name)
       .replace('{subConceptDescription}', subConcept.description)
-      .replace('{principleName}', principle?.name || 'Unknown')
+      .replace('{conceptName}', parentConcept?.name || 'Unknown')
       .replace('{domain}', domain);
 
     const response = await this.anthropic.messages.create({
@@ -1010,7 +1017,7 @@ export class LearningMapService {
 
       const knowledgeUnit = this.knowledgeUnitRepository.create({
         pathId: learningPath?.id || '',
-        principleId: principle?.id,
+        conceptId: parentConcept?.id,
         subConceptId: subConcept.id,
         type: 'structured',
         concept: kuData.concept,

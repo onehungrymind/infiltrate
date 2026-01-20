@@ -1,29 +1,36 @@
 # Kasita MVP Completion Assessment
 
-**Last Updated**: January 19, 2026
-**Overall Completion**: 55%
+**Last Updated**: January 19, 2026 (Evening)
+**Overall Completion**: 68%
 
 ---
 
 ## Executive Summary
 
-Kasita has excellent **components** (ingestion, synthesis, SM-2, visualizations, gymnasium sessions) but lacks the **integration layer** that connects them into a coherent learning experience. The current state is essentially an admin/authoring tool, not a learner-facing application.
+Kasita has made **significant progress** on the Knowledge Architecture gap. The system now has a clear hierarchical structure:
+
+```
+Learning Path → Concepts → Sub-concepts → Knowledge Units
+```
+
+This semantic hierarchy enables curriculum design, progress rollup, and structured learning paths.
 
 ### What We Have
-- Full CRUD for all entities (Learning Paths, Principles, KUs, Challenges, Projects, Submissions, etc.)
-- AI-powered content generation (principles, sources, feedback, gymnasium sessions)
+- Full CRUD for all entities (Learning Paths, Concepts, Sub-concepts, KUs, Challenges, Projects, Submissions, etc.)
+- **Knowledge Architecture**: Clear hierarchy with Concepts → Sub-concepts → KUs
+- **"Build Learning Path" button**: One-click AI generation of full path structure
+- AI-powered content generation (concepts, sub-concepts, KUs, sources, feedback, gymnasium sessions)
 - Content pipeline (ingest → synthesize → knowledge units)
 - Study tools (flashcards, quizzes with SM-2)
 - Multiple visualizations (React Flow, Skill Tree, Metro Maps, Mind Map, etc.)
 - Mentor feedback system
 
 ### What's Missing
-- **Knowledge Architecture**: No semantic link between KUs and Principles
-- **Curriculum Structure**: No way to sequence content or define prerequisites
 - **Learner Experience**: No guided learning UI - only admin CRUD screens
 - **Progress Rollup**: SM-2 tracks items, not curriculum completion
 - **Mastery Model**: No way to prove competency or gate progress
 - **Quality Control**: No KU approval workflow
+- **Background Jobs**: Long-running pipeline needs resilience
 
 ---
 
@@ -33,65 +40,121 @@ Kasita has excellent **components** (ingestion, synthesis, SM-2, visualizations,
 |------|----------|--------|
 | Content Components | 85% | :white_check_mark: Strong |
 | Admin/Authoring Tools | 90% | :white_check_mark: Strong |
-| AI Integration | 85% | :white_check_mark: Strong |
-| Knowledge Architecture | 15% | :red_circle: Critical Gap |
-| Curriculum Design | 10% | :red_circle: Critical Gap |
+| AI Integration | 90% | :white_check_mark: Strong |
+| Knowledge Architecture | 75% | :white_check_mark: Major Progress |
+| Curriculum Design | 50% | :yellow_circle: Partial |
 | Learner Experience | 20% | :red_circle: Critical Gap |
 | Progress & Mastery | 30% | :yellow_circle: Partial |
 | Content Quality Control | 25% | :yellow_circle: Partial |
 
 ---
 
-## Critical Gaps (New Requirements)
+## Today's Progress (January 19, 2026 Evening)
 
-### Gap 1: Knowledge Architecture (15%)
+### Completed: Principles → Concepts Rename
 
-**The Problem**: Knowledge Units and Principles exist in parallel, not hierarchically. There's no semantic link saying "understanding KU-47, KU-52, and KU-89 means you understand Principle-12."
+Renamed "Principles" to "Concepts" throughout the entire codebase for semantic clarity:
 
-**Current State**:
+- **Backend**: Entity, module, service, controller, DTOs all renamed
+- **Frontend**: NgRx state (actions, effects, feature, facade), components, routes
+- **Common Models**: Type definitions updated
+- **Navigation**: `/principles` route → `/concepts`
+
+This establishes the correct hierarchy:
+- **Learning Path**: The overall learning objective
+- **Concept**: A core idea or skill to master (was "Principle")
+- **Sub-concept**: A decomposed part of a concept
+- **Knowledge Unit**: Atomic learning content
+
+### Completed: Knowledge Architecture
+
+The hierarchical structure is now fully implemented:
+
+```
+Learning Path
+├── Concept 1
+│   ├── Sub-concept 1.1
+│   │   ├── KU 1.1.1
+│   │   ├── KU 1.1.2
+│   │   └── KU 1.1.3
+│   ├── Sub-concept 1.2
+│   │   └── ...
+│   └── Sub-concept 1.3
+├── Concept 2
+│   └── ...
+└── Concept N
+```
+
+**Database relationships**:
+- `Concept.pathId` → Learning Path
+- `SubConcept.conceptId` → Concept
+- `KnowledgeUnit.subConceptId` → Sub-concept (for structured KUs)
+- `KnowledgeUnit.conceptId` → Concept (optional, for linking)
+
+### Completed: "Build Learning Path" Super Button
+
+One-click AI generation of full path structure:
+
+1. **Generate Concepts** (8-15 concepts with prerequisites)
+2. **Decompose each Concept** → Sub-concepts (3-5 per concept)
+3. **Generate KUs for each Sub-concept** (3-5 per sub-concept)
+
+**Pipeline UI shows**:
+- Stage progress: Concepts → Sub-concepts → KUs
+- Current operation: "Decomposing concept 3/10: Server Actions"
+- Real-time updates as each stage completes
+
+**Current limitation**: Pipeline runs in frontend, browser refresh kills it. Identified need for background job queue.
+
+### Completed: Simplified Seeder
+
+Seeder now only seeds foundation data:
+- Users (test user + mentor)
+- Learning Paths (3 sample paths)
+- Enrollments
+
+All downstream content (concepts, sub-concepts, KUs) is generated via AI through the "Build Learning Path" button.
+
+---
+
+## Gap Status (Updated)
+
+### Gap 1: Knowledge Architecture (75%) ↑ from 15%
+
+**MAJOR PROGRESS**
+
+- [x] Concept entity with CRUD (renamed from Principle)
+- [x] Sub-concept entity with CRUD
 - [x] KU entity with CRUD
-- [x] Principle entity with CRUD
-- [x] Both linked to Learning Path
-- [ ] KU → Principle mapping (which KUs satisfy which principle?)
-- [ ] Principle → KU requirements (what must you learn for this principle?)
-- [ ] Coverage visibility (which principles have sufficient KUs?)
-
-**Required Work**:
-1. Add `principleId` or many-to-many relationship to Knowledge Units
-2. UI for mapping KUs to Principles
-3. Coverage report showing principles with/without adequate KU coverage
-4. Validation that a principle has minimum KU coverage before being "teachable"
+- [x] Concept → Sub-concept → KU hierarchy
+- [x] KU `subConceptId` and `conceptId` fields
+- [x] AI generation for all levels
+- [x] Prerequisites field on Concepts
+- [ ] Coverage visibility UI (which concepts have sufficient KUs?)
+- [ ] Validation that a concept has minimum KU coverage
 
 ---
 
-### Gap 2: Curriculum Design & Sequencing (10%)
+### Gap 2: Curriculum Design & Sequencing (50%) ↑ from 10%
 
-**The Problem**: Visualizations (metro map, skill tree, etc.) are read-only displays. There's no way to author a curriculum with sequencing, prerequisites, or structure.
+**GOOD PROGRESS**
 
-**Current State**:
-- [x] Multiple visualization components
-- [x] Learning Path entity
-- [x] Principle entity with ordering
-- [ ] Prerequisite relationships between principles
-- [ ] Module/unit grouping of principles
-- [ ] Sequencing rules (learn A before B)
-- [ ] Curriculum builder/editor UI
-- [ ] Prerequisite enforcement
-
-**Required Work**:
-1. Add `prerequisites` field to Principle (array of principle IDs)
-2. Add `module` or grouping concept (optional)
-3. Curriculum builder UI to define sequence and dependencies
-4. Topological sort for valid learning order
-5. Gate enforcement (can't access Principle B until Principle A complete)
+- [x] Prerequisites field on Concepts (array of concept IDs)
+- [x] Order field on Concepts
+- [x] Order field on Sub-concepts
+- [x] AI generates prerequisites automatically
+- [x] Hierarchical display in Learning Paths view
+- [ ] Prerequisite enforcement (gate access)
+- [ ] Curriculum builder/editor UI for manual sequencing
+- [ ] Topological sort visualization
+- [ ] Module grouping (optional)
 
 ---
 
-### Gap 3: Learner Experience (20%)
+### Gap 3: Learner Experience (20%) - Unchanged
 
-**The Problem**: The entire dashboard is admin-focused. A learner has no dedicated interface showing their curriculum, progress, and next actions.
+**Still critical gap**
 
-**Current State**:
 - [x] Study Flashcards page
 - [x] Study Quiz page
 - [x] Gymnasium sessions (standalone)
@@ -99,128 +162,74 @@ Kasita has excellent **components** (ingestion, synthesis, SM-2, visualizations,
 - [ ] "My Learning" dashboard for enrolled learners
 - [ ] Guided learning flow ("what should I do next?")
 - [ ] Curriculum progress view
-- [ ] Module/principle navigation for learners
-- [ ] Integration of study tools into curriculum flow
-
-**Required Work**:
-1. Learner dashboard showing enrolled paths
-2. Curriculum view with progress per module/principle
-3. "Next up" recommendation based on schedule and mastery
-4. Unified learning flow: Read KUs → Practice (flashcards/quiz) → Apply (challenge) → Validate
-5. Session completion tracking for Gymnasium
+- [ ] Concept/sub-concept navigation for learners
 
 ---
 
-### Gap 4: Progress & Mastery Model (30%)
+### Gap 4: Progress & Mastery Model (30%) - Unchanged
 
-**The Problem**: SM-2 tracks individual item recall. There's no rollup to principle mastery, module completion, or curriculum progress.
-
-**Current State**:
 - [x] UserProgress entity with SM-2 fields
 - [x] Item-level tracking (flashcard/quiz attempts)
-- [x] Basic stats on home dashboard
-- [ ] Principle mastery calculation (aggregate of KU mastery)
-- [ ] Module completion tracking
+- [ ] Concept mastery calculation (aggregate of KU mastery)
+- [ ] Sub-concept completion tracking
 - [ ] Curriculum progress percentage
-- [ ] Mastery thresholds (80% of KUs mastered = principle complete?)
-- [ ] Time tracking (time invested vs. estimated)
-
-**Required Work**:
-1. Define mastery model: What does "mastered KU" mean? (SM-2 interval > X? Score > Y?)
-2. Principle mastery = f(KU mastery for mapped KUs)
-3. Module completion = f(principle mastery for grouped principles)
-4. Path completion = f(module completion)
-5. Progress rollup queries and UI components
+- [ ] Mastery thresholds
 
 ---
 
-### Gap 5: Content Quality Control (25%)
+### Gap 5: Content Quality Control (25%) - Unchanged
 
-**The Problem**: KUs are AI-generated with no review gate. Low-quality content could reach learners.
-
-**Current State**:
 - [x] KU `status` field exists
 - [x] KU CRUD with editing
 - [ ] KU approval workflow UI
-- [ ] Quality review queue for new KUs
-- [ ] Reject/revise flow
-- [ ] Content coverage report (which paths have approved KUs?)
-
-**Required Work**:
-1. KU approval workflow UI (pending → approved/rejected)
-2. Review queue for mentors/admins
-3. Filter to only show approved KUs to learners
-4. Bulk approval tools
+- [ ] Review queue for new KUs
+- [ ] Filter to only show approved KUs to learners
 
 ---
 
-### Gap 6: Schedule & Deadline Integration (5%)
+### Gap 6: Background Job Processing (NEW - 0%)
 
-**The Problem**: No way to assign dates to curriculum items or track against deadlines.
+**Identified during "Build Learning Path" implementation**
 
-**Current State**:
-- [x] Calendar component exists (unused)
-- [x] `targetDate` field on Learning Path
-- [ ] Module/principle deadlines
-- [ ] Schedule view (what's due this week?)
-- [ ] Deadline warnings
-- [ ] Pace tracking (ahead/behind schedule)
+- [ ] Job queue for long-running operations
+- [ ] Progress tracking that survives browser refresh
+- [ ] Parallel execution of concept decomposition
+- [ ] Parallel execution of KU generation
+- [ ] Status polling endpoint
+- [ ] Error recovery and retry
 
-**Required Work**:
-1. Add deadline fields to modules/principles
-2. Schedule view showing upcoming deadlines
-3. Integration with learner dashboard
-4. Notifications for approaching deadlines
-
----
-
-### Gap 7: Assessment & Competency (20%)
-
-**The Problem**: How do you prove mastery? Flashcards test recall, not application. Challenges exist but aren't tied to principles.
-
-**Current State**:
-- [x] Challenge/Project entities
-- [x] Submission system
-- [x] AI and mentor feedback
-- [x] Grading system
-- [ ] Challenge → Principle mapping
-- [ ] Mastery gates (complete Challenge X to prove Principle Y)
-- [ ] Competency portfolio
-- [ ] Certificate generation
-
-**Required Work**:
-1. Link Challenges to Principles they assess
-2. Define mastery requirements per principle (pass Challenge X OR score 90% on quiz)
-3. Portfolio generation from completed work
-4. Certificate/credential system
+**Options identified**:
+- BullMQ + Redis (robust, needs infrastructure)
+- Database-backed job queue (simple, no Redis)
+- Serverless functions (scalable, different deploy)
 
 ---
 
 ## Revised Epic Status
 
-### Epic 1: Learning Objective & Map Generation (60%)
-Previously 85%. Reduced because visualizations exist but curriculum authoring doesn't.
+### Epic 1: Learning Objective & Map Generation (75%) ↑ from 60%
+Knowledge architecture implemented. Curriculum authoring partially complete.
 
 ### Epic 2: Content Sourcing & Ingestion (90%)
 Unchanged. Pipeline works well.
 
-### Epic 3: Content Synthesis & Knowledge Units (70%)
-Previously 85%. Reduced because KU→Principle mapping is missing.
+### Epic 3: Content Synthesis & Knowledge Units (85%) ↑ from 70%
+Full hierarchy in place. AI generates structured KUs from sub-concepts.
 
 ### Epic 4: Adaptive Content Presentation (50%)
-Previously 80%. Reduced because content isn't integrated into a learning flow.
+Unchanged. Content isn't integrated into a learning flow yet.
 
 ### Epic 5: Feedback Loops (75%)
-Previously 90%. Reduced because feedback isn't tied to mastery progression.
+Unchanged. Feedback isn't tied to mastery progression.
 
 ### Epic 6: Progress Tracking & Validation (35%)
-Previously 65%. Reduced because there's no curriculum-level tracking.
+Unchanged. No curriculum-level tracking yet.
 
 ### Epic 7: Input/Output Optionality (80%)
 Unchanged. Adapter architecture is solid.
 
 ### Gymnasium (Training Sessions) (90%)
-Previously 95%. Minor rendering issues.
+Unchanged. Minor rendering issues.
 
 ---
 
@@ -233,7 +242,9 @@ Previously 95%. Minor rendering issues.
 | JWT Authentication | :white_check_mark: | Login, roles |
 | Content Ingestion Pipeline | :white_check_mark: | RSS, PDF, Article |
 | Knowledge Unit Synthesis | :white_check_mark: | Claude AI |
-| AI Principle Generation | :white_check_mark: | Claude AI |
+| **AI Concept Generation** | :white_check_mark: | Claude AI |
+| **AI Sub-concept Decomposition** | :white_check_mark: | Claude AI |
+| **AI Structured KU Generation** | :white_check_mark: | Claude AI |
 | AI Source Suggestions | :white_check_mark: | Claude AI |
 | AI Feedback Generation | :white_check_mark: | Claude AI |
 | AI Session Generation | :white_check_mark: | Gymnasium |
@@ -244,88 +255,95 @@ Previously 95%. Minor rendering issues.
 | Mentor Dashboard | :white_check_mark: | Review, grade |
 | Visualizations | :white_check_mark: | 6 different types |
 | User Enrollments | :white_check_mark: | Drag-drop |
-| Pipeline Orchestrator | :white_check_mark: | Multi-stage |
+| **Build Learning Path Pipeline** | :white_check_mark: | One-click generation |
+| **Knowledge Hierarchy** | :white_check_mark: | Concepts → Sub-concepts → KUs |
+
+### Partially Complete
+| Component | Status | Notes |
+|-----------|--------|-------|
+| Prerequisite System | :yellow_circle: | Field exists, no enforcement |
+| Curriculum Builder | :yellow_circle: | AI generates, no manual editor |
 
 ### Missing Integration Layer
 | Component | Status | Notes |
 |-----------|--------|-------|
-| KU → Principle Mapping | :red_circle: | No relationship |
-| Curriculum Builder | :red_circle: | Visualizations are read-only |
-| Prerequisite System | :red_circle: | No sequencing |
 | Learner Dashboard | :red_circle: | Only admin CRUD |
 | Progress Rollup | :red_circle: | Only item-level |
 | Mastery Gates | :red_circle: | No enforcement |
 | KU Approval Workflow | :red_circle: | Status field only |
 | Schedule Integration | :red_circle: | Calendar unused |
 | Competency Proof | :red_circle: | No portfolio/cert |
+| Background Job Queue | :red_circle: | Long pipelines fragile |
 
 ---
 
-## Priority Roadmap
+## Priority Roadmap (Updated)
 
 ### P0 - Foundation (Required for any user testing)
 
-1. **KU → Principle Mapping**
-   - Add relationship
-   - Basic mapping UI
-   - This unlocks everything else
+1. ~~**Knowledge Architecture**~~ :white_check_mark: DONE
+   - Concepts → Sub-concepts → KUs hierarchy implemented
+   - AI generation at all levels
 
 2. **Learner Dashboard (MVP)**
    - Show enrolled paths
-   - Show principles with mapped KUs
+   - Show concepts with sub-concepts and KUs
    - Link to existing study tools
 
 3. **Basic Progress Rollup**
-   - Calculate principle mastery from KU progress
+   - Calculate concept mastery from KU progress
    - Display on learner dashboard
 
 ### P1 - Core Experience
 
-4. **Curriculum Sequencing**
-   - Prerequisites field
-   - Ordering UI
-   - Basic gate enforcement
+4. **Background Job Processing**
+   - Move pipeline to backend job queue
+   - Progress survives browser refresh
+   - Parallel execution for speed
 
-5. **KU Approval Workflow**
+5. **Prerequisite Enforcement**
+   - Gate access to concepts based on prerequisites
+   - Visual indication of locked/unlocked
+
+6. **KU Approval Workflow**
    - Review queue
    - Approve/reject actions
    - Filter unapproved from learners
 
-6. **Challenge → Principle Mapping**
+### P2 - Polish
+
+7. **Challenge → Concept Mapping**
    - Link challenges to what they assess
    - Show in curriculum view
 
-### P2 - Polish
-
-7. **Schedule Integration**
-   - Deadlines on principles
+8. **Schedule Integration**
+   - Deadlines on concepts
    - "This week" view
-   - Pace tracking
 
-8. **Portfolio & Certificates**
+9. **Portfolio & Certificates**
    - Export completed work
    - Generate credentials
-
-9. **Cohort Management**
-   - Group enrollments
-   - Class progress view
 
 ---
 
 ## Honest Assessment
 
-**What we built**: A powerful content authoring and management system with excellent AI integration.
+**What we built today**:
+- Complete knowledge architecture with semantic hierarchy
+- One-click "Build Learning Path" that generates concepts, sub-concepts, and KUs
+- Clean codebase with consistent naming (Concepts, not Principles)
 
-**What we haven't built**: A learning experience. A student cannot currently:
-- See a structured curriculum
-- Know what to learn next
-- Track progress toward mastery
-- Prove competency
-- Follow a guided path
+**What we haven't built**:
+- A learning experience for students
+- Progress tracking beyond individual items
+- Resilient background processing for long operations
 
-**The gap**: Components are 85% done. Integration is 20% done. The overall product is ~55% complete for an MVP learning platform.
+**The gap**: Components are 85% done. Knowledge Architecture jumped from 15% to 75%. Integration (learner experience) remains at 20%. The overall product is ~68% complete for an MVP learning platform.
 
-**Path forward**: Focus on the integration layer. The components are solid - they just need to be connected into a coherent experience.
+**Path forward**:
+1. Background job processing (resilience)
+2. Learner dashboard (user experience)
+3. Progress rollup (completion tracking)
 
 ---
 
@@ -333,6 +351,7 @@ Previously 95%. Minor rendering issues.
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 5.0 | 2026-01-19 (evening) | Knowledge Architecture complete (75%), "Build Learning Path" button, Principles→Concepts rename, overall 68% |
 | 4.0 | 2026-01-19 | Major recalibration: identified critical gaps, revised to 55% |
 | 3.0 | 2026-01-18 | Gymnasium, visualizations, pipeline (92%) |
 | 2.0 | 2026-01-15 | Mentor feedback, challenges, projects |

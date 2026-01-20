@@ -58,33 +58,34 @@ export {
   deleteKnowledgeUnit,
 };
 
-/* Principles */
-import * as PrinciplesActions from './lib/principles/principles.actions';
-import * as PrinciplesFeature from './lib/principles/principles.feature';
-import * as PrinciplesEffects from './lib/principles/principles.effects';
-import { PrincipleFacade } from './lib/principles/principles.facade';
-import { principlesFeature } from './lib/principles/principles.feature';
+/* Concepts */
+import * as ConceptsActions from './lib/concepts/concepts.actions';
+import * as ConceptsFeature from './lib/concepts/concepts.feature';
+import * as ConceptsEffects from './lib/concepts/concepts.effects';
+import { ConceptFacade } from './lib/concepts/concepts.facade';
+import { conceptsFeature } from './lib/concepts/concepts.feature';
 import {
-  loadPrinciples,
-  loadPrinciple,
-  loadPrinciplesByPath,
-  createPrinciple,
-  updatePrinciple,
-  deletePrinciple,
-} from './lib/principles/principles.effects';
+  loadConcepts,
+  loadConcept,
+  loadConceptsByPath,
+  createConcept,
+  updateConcept,
+  deleteConcept,
+} from './lib/concepts/concepts.effects';
 
 export {
-  principlesFeature,
-  PrincipleFacade,
-  PrinciplesActions,
-  PrinciplesFeature,
-  PrinciplesEffects,
-  loadPrinciples,
-  loadPrinciple,
-  loadPrinciplesByPath,
-  createPrinciple,
-  updatePrinciple,
-  deletePrinciple,
+  conceptsFeature,
+  ConceptFacade,
+  ConceptFacade as ConceptsFacade,
+  ConceptsActions,
+  ConceptsFeature,
+  ConceptsEffects,
+  loadConcepts,
+  loadConcept,
+  loadConceptsByPath,
+  createConcept,
+  updateConcept,
+  deleteConcept,
 };
 
 /* RawContent */
@@ -309,8 +310,8 @@ import {
   createProject,
   updateProject,
   deleteProject,
-  linkPrinciple,
-  unlinkPrinciple,
+  linkConcept,
+  unlinkConcept,
 } from './lib/projects/projects.effects';
 
 export {
@@ -325,8 +326,8 @@ export {
   createProject,
   updateProject,
   deleteProject,
-  linkPrinciple,
-  unlinkPrinciple,
+  linkConcept,
+  unlinkConcept,
 };
 
 /* Enrollments */
@@ -416,11 +417,11 @@ import { subConceptsFeature } from './lib/sub-concepts/sub-concepts.feature';
 import {
   loadSubConcepts,
   loadSubConcept,
-  loadSubConceptsByPrinciple,
+  loadSubConceptsByConcept,
   createSubConcept,
   updateSubConcept,
   deleteSubConcept,
-  decomposePrinciple,
+  decomposeConcept,
   generateStructuredKU,
   addDecoration,
   removeDecoration,
@@ -434,11 +435,11 @@ export {
   SubConceptsEffects,
   loadSubConcepts,
   loadSubConcept,
-  loadSubConceptsByPrinciple,
+  loadSubConceptsByConcept,
   createSubConcept,
   updateSubConcept,
   deleteSubConcept,
-  decomposePrinciple,
+  decomposeConcept,
   generateStructuredKU,
   addDecoration,
   removeDecoration,

@@ -3,18 +3,18 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { CreateProjectDto } from './dto/create-project.dto';
-import { LinkPrincipleDto, UpdateProjectPrincipleDto } from './dto/link-principle.dto';
+import { LinkConceptDto, UpdateProjectConceptDto } from './dto/link-concept.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { Project } from './entities/project.entity';
-import { ProjectPrinciple } from './entities/project-principle.entity';
+import { ProjectConcept } from './entities/project-concept.entity';
 
 @Injectable()
 export class ProjectsService {
   constructor(
     @InjectRepository(Project)
     private readonly projectRepository: Repository<Project>,
-    @InjectRepository(ProjectPrinciple)
-    private readonly projectPrincipleRepository: Repository<ProjectPrinciple>,
+    @InjectRepository(ProjectConcept)
+    private readonly projectConceptRepository: Repository<ProjectConcept>,
   ) {}
 
   async create(createProjectDto: CreateProjectDto): Promise<Project> {
@@ -42,14 +42,14 @@ export class ProjectsService {
 
     return await this.projectRepository.find({
       where,
-      relations: ['projectPrinciples', 'projectPrinciples.principle'],
+      relations: ['projectConcepts', 'projectConcepts.concept'],
     });
   }
 
   async findOne(id: string): Promise<Project> {
     const project = await this.projectRepository.findOne({
       where: { id },
-      relations: ['learningPath', 'projectPrinciples', 'projectPrinciples.principle'],
+      relations: ['learningPath', 'projectConcepts', 'projectConcepts.concept'],
     });
     if (!project) {
       throw new NotFoundException(`Project with ID ${id} not found`);
@@ -60,7 +60,7 @@ export class ProjectsService {
   async findByPath(pathId: string): Promise<Project[]> {
     return await this.projectRepository.find({
       where: { pathId },
-      relations: ['projectPrinciples', 'projectPrinciples.principle'],
+      relations: ['projectConcepts', 'projectConcepts.concept'],
       order: { createdAt: 'ASC' },
     });
   }
@@ -76,73 +76,73 @@ export class ProjectsService {
     await this.projectRepository.remove(project);
   }
 
-  // ProjectPrinciple methods
+  // ProjectConcept methods
 
-  async linkPrinciple(projectId: string, linkPrincipleDto: LinkPrincipleDto): Promise<ProjectPrinciple> {
+  async linkConcept(projectId: string, linkConceptDto: LinkConceptDto): Promise<ProjectConcept> {
     // Verify project exists
     await this.findOne(projectId);
 
     // Check if link already exists
-    const existingLink = await this.projectPrincipleRepository.findOne({
+    const existingLink = await this.projectConceptRepository.findOne({
       where: {
         projectId,
-        principleId: linkPrincipleDto.principleId,
+        conceptId: linkConceptDto.conceptId,
       },
     });
 
     if (existingLink) {
       throw new ConflictException(
-        `Principle ${linkPrincipleDto.principleId} is already linked to project ${projectId}`,
+        `Concept ${linkConceptDto.conceptId} is already linked to project ${projectId}`,
       );
     }
 
-    const projectPrinciple = this.projectPrincipleRepository.create({
+    const projectConcept = this.projectConceptRepository.create({
       projectId,
-      principleId: linkPrincipleDto.principleId,
-      weight: linkPrincipleDto.weight,
-      rubricCriteria: linkPrincipleDto.rubricCriteria || [],
+      conceptId: linkConceptDto.conceptId,
+      weight: linkConceptDto.weight,
+      rubricCriteria: linkConceptDto.rubricCriteria || [],
     });
 
-    return await this.projectPrincipleRepository.save(projectPrinciple);
+    return await this.projectConceptRepository.save(projectConcept);
   }
 
-  async updateProjectPrinciple(
+  async updateProjectConcept(
     projectId: string,
-    principleId: string,
-    updateDto: UpdateProjectPrincipleDto,
-  ): Promise<ProjectPrinciple> {
-    const projectPrinciple = await this.projectPrincipleRepository.findOne({
-      where: { projectId, principleId },
+    conceptId: string,
+    updateDto: UpdateProjectConceptDto,
+  ): Promise<ProjectConcept> {
+    const projectConcept = await this.projectConceptRepository.findOne({
+      where: { projectId, conceptId },
     });
 
-    if (!projectPrinciple) {
+    if (!projectConcept) {
       throw new NotFoundException(
-        `Link between project ${projectId} and principle ${principleId} not found`,
+        `Link between project ${projectId} and concept ${conceptId} not found`,
       );
     }
 
-    Object.assign(projectPrinciple, updateDto);
-    return await this.projectPrincipleRepository.save(projectPrinciple);
+    Object.assign(projectConcept, updateDto);
+    return await this.projectConceptRepository.save(projectConcept);
   }
 
-  async unlinkPrinciple(projectId: string, principleId: string): Promise<void> {
-    const projectPrinciple = await this.projectPrincipleRepository.findOne({
-      where: { projectId, principleId },
+  async unlinkConcept(projectId: string, conceptId: string): Promise<void> {
+    const projectConcept = await this.projectConceptRepository.findOne({
+      where: { projectId, conceptId },
     });
 
-    if (!projectPrinciple) {
+    if (!projectConcept) {
       throw new NotFoundException(
-        `Link between project ${projectId} and principle ${principleId} not found`,
+        `Link between project ${projectId} and concept ${conceptId} not found`,
       );
     }
 
-    await this.projectPrincipleRepository.remove(projectPrinciple);
+    await this.projectConceptRepository.remove(projectConcept);
   }
 
-  async getProjectPrinciples(projectId: string): Promise<ProjectPrinciple[]> {
-    return await this.projectPrincipleRepository.find({
+  async getProjectConcepts(projectId: string): Promise<ProjectConcept[]> {
+    return await this.projectConceptRepository.find({
       where: { projectId },
-      relations: ['principle'],
+      relations: ['concept'],
     });
   }
 }

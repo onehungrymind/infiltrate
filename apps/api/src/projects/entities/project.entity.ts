@@ -10,7 +10,7 @@ import {
 } from 'typeorm';
 
 import { LearningPath } from '../../learning-paths/entities/learning-path.entity';
-import { ProjectPrinciple } from './project-principle.entity';
+import { ProjectConcept } from './project-concept.entity';
 
 @Entity('projects')
 export class Project {
@@ -45,8 +45,8 @@ export class Project {
   @Column({ default: true })
   isActive: boolean;
 
-  @OneToMany(() => ProjectPrinciple, (pp) => pp.project)
-  projectPrinciples: ProjectPrinciple[];
+  @OneToMany(() => ProjectConcept, (pp) => pp.project)
+  projectConcepts: ProjectConcept[];
 
   @CreateDateColumn()
   createdAt: Date;

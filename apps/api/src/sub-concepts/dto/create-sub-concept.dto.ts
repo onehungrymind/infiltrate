@@ -5,7 +5,7 @@ export class CreateSubConceptDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  principleId: string;
+  conceptId: string;
 
   @ApiProperty({ example: 'Component Composition' })
   @IsString()

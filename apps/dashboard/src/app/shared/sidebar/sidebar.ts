@@ -71,7 +71,7 @@ const studyIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="
   <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />
 </svg>`;
 
-const principlesIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+const conceptsIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
   <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
 </svg>`;
 
@@ -225,7 +225,7 @@ export class Sidebar implements OnInit, OnDestroy {
         { label: 'Projects', path: '/projects', icon: 'projects' },
         { label: 'Users', path: '/users', icon: 'users' },
         // Pipeline data (integrated into Learning Paths dashboard)
-        { label: 'Principles', path: '/principles', icon: 'principles' },
+        { label: 'Concepts', path: '/concepts', icon: 'concepts' },
         { label: 'Source Configs', path: '/source-configs', icon: 'source-config' },
         { label: 'Raw Content', path: '/raw-content', icon: 'raw-content' },
         { label: 'Knowledge Units', path: '/knowledge-units', icon: 'knowledge-unit' },
@@ -306,8 +306,8 @@ export class Sidebar implements OnInit, OnDestroy {
       case 'study':
         iconHtml = studyIcon;
         break;
-      case 'principles':
-        iconHtml = principlesIcon;
+      case 'concepts':
+        iconHtml = conceptsIcon;
         break;
       case 'assessment':
         iconHtml = assessmentIcon;

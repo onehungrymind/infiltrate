@@ -22,15 +22,15 @@ interface SubConceptFormEntity {
 })
 export class SubConceptDetail {
   private _subConcept = signal<SubConcept | null>(null);
-  private _principleId = signal<string | null>(null);
+  private _conceptId = signal<string | null>(null);
   originalTitle = signal('');
 
   metaInfo = signal(subConceptFields);
   entity = signal<SubConceptFormEntity>(initializeEntity(subConceptFields) as SubConceptFormEntity);
   dynamicForm = form(this.entity, toSchema(this.metaInfo()));
 
-  @Input() set principleId(value: string | null) {
-    this._principleId.set(value);
+  @Input() set conceptId(value: string | null) {
+    this._conceptId.set(value);
   }
 
   @Input() set subConcept(value: SubConcept | null) {
@@ -65,13 +65,13 @@ export class SubConceptDetail {
 
     const formValue = this.entity();
     const currentSubConcept = this.subConcept;
-    const principleId = this._principleId();
+    const conceptId = this._conceptId();
 
     const entity: SubConcept = {
       name: formValue.name || '',
       description: formValue.description || '',
       order: formValue.order || 0,
-      principleId: currentSubConcept?.principleId || principleId || '',
+      conceptId: currentSubConcept?.conceptId || conceptId || '',
       ...(currentSubConcept?.id ? {
         id: currentSubConcept.id,
         createdAt: currentSubConcept.createdAt,

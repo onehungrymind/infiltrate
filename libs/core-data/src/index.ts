@@ -21,8 +21,8 @@ export * from './lib/services/learning-paths/learning-paths.service';
 /* KnowledgeUnits */
 export * from './lib/services/knowledge-units/knowledge-units.service';
 
-/* Principles */
-export * from './lib/services/principles/principles.service';
+/* Concepts */
+export * from './lib/services/concepts/concepts.service';
 
 /* RawContent */
 export * from './lib/services/raw-content/raw-content.service';

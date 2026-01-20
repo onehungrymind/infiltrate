@@ -1,11 +1,11 @@
 import { Component, computed, effect, inject, OnInit, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { KnowledgeUnit, LearningPath, Principle, SubConcept } from '@kasita/common-models';
+import { Concept, KnowledgeUnit, LearningPath, SubConcept } from '@kasita/common-models';
 import { LearningMapService } from '@kasita/core-data';
 import {
+  ConceptsFacade,
   KnowledgeUnitFacade,
   LearningPathsFacade,
-  PrincipleFacade,
   SubConceptsFacade,
 } from '@kasita/core-state';
 import { MaterialModule } from '@kasita/material';
@@ -15,7 +15,7 @@ import { PipelineProgressIndicator, PipelineStage } from '../shared/pipeline-pro
 import { KnowledgeUnitDetail } from './knowledge-unit-detail/knowledge-unit-detail';
 import { LearningPathDetail } from './learning-path-detail/learning-path-detail';
 import { LearningPathsList } from './learning-paths-list/learning-paths-list';
-import { PrincipleDetail } from './principle-detail/principle-detail';
+import { ConceptDetail } from './concept-detail/concept-detail';
 import { SubConceptDetail } from './sub-concept-detail/sub-concept-detail';
 import { PipelineOrchestratorService } from './services/pipeline-orchestrator.service';
 
@@ -24,7 +24,7 @@ import { PipelineOrchestratorService } from './services/pipeline-orchestrator.se
   imports: [
     LearningPathsList,
     LearningPathDetail,
-    PrincipleDetail,
+    ConceptDetail,
     SubConceptDetail,
     KnowledgeUnitDetail,
     MaterialModule,
@@ -36,7 +36,7 @@ import { PipelineOrchestratorService } from './services/pipeline-orchestrator.se
 })
 export class LearningPaths implements OnInit {
   private learningPathsFacade = inject(LearningPathsFacade);
-  private principleFacade = inject(PrincipleFacade);
+  private conceptsFacade = inject(ConceptsFacade);
   private subConceptsFacade = inject(SubConceptsFacade);
   private knowledgeUnitFacade = inject(KnowledgeUnitFacade);
   private learningMapService = inject(LearningMapService);
@@ -48,23 +48,23 @@ export class LearningPaths implements OnInit {
   learningPathsLoaded = toSignal(this.learningPathsFacade.loaded$, { initialValue: false });
   learningPathsError = toSignal(this.learningPathsFacade.error$, { initialValue: null });
 
-  // Principles - filtered by selected path
-  allPrinciples = toSignal(this.principleFacade.allPrinciples$, { initialValue: [] as Principle[] });
-  principles = computed(() => {
+  // Concepts - filtered by selected path
+  allConcepts = toSignal(this.conceptsFacade.allConcepts$, { initialValue: [] as Concept[] });
+  concepts = computed(() => {
     const pathId = this.selectedLearningPath()?.id;
     if (!pathId) return [];
-    return this.allPrinciples().filter(p => p.pathId === pathId);
+    return this.allConcepts().filter(p => p.pathId === pathId);
   });
 
-  // Selected Principle for sub-concepts
-  selectedPrinciple = signal<Principle | null>(null);
+  // Selected Concept for sub-concepts
+  selectedConcept = signal<Concept | null>(null);
 
-  // SubConcepts - filtered by selected principle
+  // SubConcepts - filtered by selected concept
   allSubConcepts = toSignal(this.subConceptsFacade.allSubConcepts$, { initialValue: [] as SubConcept[] });
   subConcepts = computed(() => {
-    const principleId = this.selectedPrinciple()?.id;
-    if (!principleId) return [];
-    return this.allSubConcepts().filter(sc => sc.principleId === principleId);
+    const conceptId = this.selectedConcept()?.id;
+    if (!conceptId) return [];
+    return this.allSubConcepts().filter(sc => sc.conceptId === conceptId);
   });
 
   // Selected SubConcept for structured KUs
@@ -83,17 +83,17 @@ export class LearningPaths implements OnInit {
 
   // Writable signals for pipeline columns
   learningPathsSignal = signal<LearningPath[]>([]);
-  principlesSignal = signal<Principle[]>([]);
+  conceptsSignal = signal<Concept[]>([]);
   subConceptsSignal = signal<SubConcept[]>([]);
   structuredKnowledgeUnitsSignal = signal<KnowledgeUnit[]>([]);
 
   // Loading states
-  loadingPrinciples = signal(false);
+  loadingConcepts = signal(false);
   loadingSubConcepts = signal(false);
   loadingKnowledgeUnits = signal(false);
 
   // Action states (generating, decomposing, etc.)
-  generatingPrinciples = signal(false);
+  generatingConcepts = signal(false);
   decomposing = signal(false);
   generatingKU = signal(false);
 
@@ -102,16 +102,17 @@ export class LearningPaths implements OnInit {
   currentStage = this.pipelineOrchestrator.currentStage;
   completedStages = this.pipelineOrchestrator.completedStages;
   errorStage = this.pipelineOrchestrator.errorStage;
+  currentProgress = this.pipelineOrchestrator.currentProgress;
 
-  // Pipeline stages definition (Assembly Flow)
+  // Pipeline stages definition (Build Learning Path)
   pipelineStages: PipelineStage[] = [
-    { id: 'principles', label: 'Principles', icon: 'lightbulb' },
-    { id: 'decompose', label: 'Decompose', icon: 'account_tree' },
-    { id: 'generate', label: 'Generate KUs', icon: 'auto_awesome' },
+    { id: 'concepts', label: 'Concepts', icon: 'lightbulb' },
+    { id: 'sub-concepts', label: 'Sub-concepts', icon: 'account_tree' },
+    { id: 'knowledge-units', label: 'KUs', icon: 'psychology' },
   ];
 
   // Enabled states for actions
-  canGeneratePrinciples = signal(true);
+  canGenerateConcepts = signal(true);
   canDecompose = signal(true);
   canGenerateKU = signal(true);
   canRunPipeline = signal(true);
@@ -122,9 +123,9 @@ export class LearningPaths implements OnInit {
   isEditingPath = signal(false);
   editingPath = signal<LearningPath | null>(null);
 
-  // Inline editing state - Principles
-  isEditingPrinciple = signal(false);
-  editingPrinciple = signal<Principle | null>(null);
+  // Inline editing state - Concepts
+  isEditingConcept = signal(false);
+  editingConcept = signal<Concept | null>(null);
 
   // Inline editing state - Sub-concepts
   isEditingSubConcept = signal(false);
@@ -143,7 +144,7 @@ export class LearningPaths implements OnInit {
     });
 
     effect(() => {
-      this.principlesSignal.set(this.principles());
+      this.conceptsSignal.set(this.concepts());
     });
 
     effect(() => {
@@ -165,19 +166,19 @@ export class LearningPaths implements OnInit {
     // Update enabled states
     effect(() => {
       const hasPath = !!this.selectedLearningPath()?.id;
-      const hasPrinciple = !!this.selectedPrinciple()?.id;
+      const hasConcept = !!this.selectedConcept()?.id;
       const hasSubConcept = !!this.selectedSubConcept()?.id;
-      this.canGeneratePrinciples.set(hasPath && !this.generatingPrinciples());
-      this.canDecompose.set(hasPrinciple && !this.decomposing());
+      this.canGenerateConcepts.set(hasPath && !this.generatingConcepts());
+      this.canDecompose.set(hasConcept && !this.decomposing());
       this.canGenerateKU.set(hasSubConcept && !this.generatingKU());
       this.canRunPipeline.set(hasPath && !this.isRunning());
     });
 
-    // Load sub-concepts when principle is selected
+    // Load sub-concepts when concept is selected
     effect(() => {
-      const principleId = this.selectedPrinciple()?.id;
-      if (principleId) {
-        this.subConceptsFacade.loadSubConceptsByPrinciple(principleId);
+      const conceptId = this.selectedConcept()?.id;
+      if (conceptId) {
+        this.subConceptsFacade.loadSubConceptsByConcept(conceptId);
       }
     });
 
@@ -204,10 +205,10 @@ export class LearningPaths implements OnInit {
   }
 
   loadPathData(pathId: string) {
-    // Load principles
-    this.loadingPrinciples.set(true);
-    this.principleFacade.loadPrinciplesByPath(pathId);
-    setTimeout(() => this.loadingPrinciples.set(false), 500);
+    // Load concepts
+    this.loadingConcepts.set(true);
+    this.conceptsFacade.loadConceptsByPath(pathId);
+    setTimeout(() => this.loadingConcepts.set(false), 500);
 
     // Load knowledge units (structured type)
     this.loadingKnowledgeUnits.set(true);
@@ -215,7 +216,7 @@ export class LearningPaths implements OnInit {
     setTimeout(() => this.loadingKnowledgeUnits.set(false), 500);
 
     // Clear selections when path changes
-    this.selectedPrinciple.set(null);
+    this.selectedConcept.set(null);
     this.selectedSubConcept.set(null);
   }
 
@@ -253,28 +254,28 @@ export class LearningPaths implements OnInit {
   }
 
   // ==================
-  // Principle Editing
+  // Concept Editing
   // ==================
-  editPrinciple(principle: Principle) {
+  editConcept(concept: Concept) {
     this.closeAllEditors();
-    this.editingPrinciple.set(principle);
-    this.isEditingPrinciple.set(true);
+    this.editingConcept.set(concept);
+    this.isEditingConcept.set(true);
   }
 
-  createNewPrinciple() {
+  createNewConcept() {
     this.closeAllEditors();
-    this.editingPrinciple.set(null);
-    this.isEditingPrinciple.set(true);
+    this.editingConcept.set(null);
+    this.isEditingConcept.set(true);
   }
 
-  savePrinciple(principle: Principle) {
-    this.principleFacade.savePrinciple(principle);
-    this.closePrincipleEditor();
+  saveConcept(concept: Concept) {
+    this.conceptsFacade.saveConcept(concept);
+    this.closeConceptEditor();
   }
 
-  closePrincipleEditor() {
-    this.isEditingPrinciple.set(false);
-    this.editingPrinciple.set(null);
+  closeConceptEditor() {
+    this.isEditingConcept.set(false);
+    this.editingConcept.set(null);
   }
 
   // ===================
@@ -332,21 +333,21 @@ export class LearningPaths implements OnInit {
   // =================
   closeAllEditors() {
     this.closePathEditor();
-    this.closePrincipleEditor();
+    this.closeConceptEditor();
     this.closeSubConceptEditor();
     this.closeKnowledgeUnitEditor();
   }
 
   // =================
-  // Principle Selection (for Assembly Flow)
+  // Concept Selection (for Assembly Flow)
   // =================
-  selectPrinciple(principle: Principle) {
-    this.selectedPrinciple.set(principle);
+  selectConcept(concept: Concept) {
+    this.selectedConcept.set(concept);
     this.selectedSubConcept.set(null);
   }
 
-  clearSelectedPrinciple() {
-    this.selectedPrinciple.set(null);
+  clearSelectedConcept() {
+    this.selectedConcept.set(null);
     this.selectedSubConcept.set(null);
   }
 
@@ -363,14 +364,14 @@ export class LearningPaths implements OnInit {
   }
 
   // =================
-  // AI Generation: Decompose Principle
+  // AI Generation: Decompose Concept
   // =================
-  decomposePrinciple() {
-    const principleId = this.selectedPrinciple()?.id;
-    if (!principleId) return;
+  decomposeConcept() {
+    const conceptId = this.selectedConcept()?.id;
+    if (!conceptId) return;
 
     this.decomposing.set(true);
-    this.learningMapService.decomposePrinciple(principleId).subscribe({
+    this.learningMapService.decomposeConcept(conceptId).subscribe({
       next: (result) => {
         this.decomposing.set(false);
         // Add the returned sub-concepts directly to the store instead of reloading
@@ -407,18 +408,18 @@ export class LearningPaths implements OnInit {
   }
 
   // Pipeline actions
-  generatePrinciples() {
+  generateConcepts() {
     const pathId = this.selectedLearningPath()?.id;
     if (!pathId) return;
 
-    this.generatingPrinciples.set(true);
-    this.learningMapService.generatePrinciples(pathId).subscribe({
+    this.generatingConcepts.set(true);
+    this.learningMapService.generateConcepts(pathId).subscribe({
       next: () => {
-        this.generatingPrinciples.set(false);
-        this.principleFacade.loadPrinciplesByPath(pathId);
+        this.generatingConcepts.set(false);
+        this.conceptsFacade.loadConceptsByPath(pathId);
       },
       error: () => {
-        this.generatingPrinciples.set(false);
+        this.generatingConcepts.set(false);
       },
     });
   }
@@ -427,10 +428,10 @@ export class LearningPaths implements OnInit {
     const pathId = this.selectedLearningPath()?.id;
     if (!pathId) return;
 
-    // For the Assembly Flow, we run: Generate Principles → Decompose → Generate KUs
-    // This is a simplified orchestration for the content pipeline
-    this.pipelineOrchestrator.runFullPipeline(pathId).subscribe({
+    // Build complete learning path: Concepts → Sub-concepts → Knowledge Units
+    this.pipelineOrchestrator.buildCompleteLearningPath(pathId).subscribe({
       next: (result) => {
+        console.log(`[Pipeline] ${result.stage}: ${result.message}`);
         // Reload data after each stage completes
         if (result.success) {
           this.loadPathData(pathId);
@@ -439,6 +440,7 @@ export class LearningPaths implements OnInit {
       complete: () => {
         // Final reload when pipeline completes
         this.loadPathData(pathId);
+        console.log('[Pipeline] Complete learning path build finished!');
       },
     });
   }

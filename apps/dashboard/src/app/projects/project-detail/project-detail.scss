@@ -118,21 +118,21 @@
   }
 }
 
-// Principles Section Styles
-.principles-section {
+// Concepts Section Styles
+.concepts-section {
   background: rgba(255, 255, 255, 0.5);
   border-radius: 8px;
   padding: 16px;
   border: 1px solid rgba(224, 228, 240, 0.3);
 }
 
-.principles-list {
+.concepts-list {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.principle-item {
+.concept-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -142,13 +142,13 @@
   border: 1px solid rgba(224, 228, 240, 0.3);
 }
 
-.principle-name {
+.concept-name {
   font-size: 13px;
   font-weight: 500;
   color: #1a1a2e;
 }
 
-.principle-difficulty {
+.concept-difficulty {
   font-size: 11px;
   font-weight: 500;
   text-transform: capitalize;

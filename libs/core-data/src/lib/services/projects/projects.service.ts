@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import {
   Project,
-  ProjectPrinciple,
+  ProjectConcept,
   CreateProjectDto,
   UpdateProjectDto,
 } from '@kasita/common-models';
@@ -78,23 +78,23 @@ export class ProjectsService {
     return this.http.delete(this.getUrlWithId(project.id));
   }
 
-  // Principle linking methods
-  linkPrinciple(projectId: string, principleId: string, weight: number) {
-    return this.http.post<ProjectPrinciple>(
-      `${this.getUrlWithId(projectId)}/principles`,
-      { principleId, weight },
+  // Concept linking methods
+  linkConcept(projectId: string, conceptId: string, weight: number) {
+    return this.http.post<ProjectConcept>(
+      `${this.getUrlWithId(projectId)}/concepts`,
+      { conceptId, weight },
     );
   }
 
-  unlinkPrinciple(projectId: string, principleId: string) {
+  unlinkConcept(projectId: string, conceptId: string) {
     return this.http.delete(
-      `${this.getUrlWithId(projectId)}/principles/${principleId}`,
+      `${this.getUrlWithId(projectId)}/concepts/${conceptId}`,
     );
   }
 
-  getProjectPrinciples(projectId: string) {
-    return this.http.get<ProjectPrinciple[]>(
-      `${this.getUrlWithId(projectId)}/principles`,
+  getProjectConcepts(projectId: string) {
+    return this.http.get<ProjectConcept[]>(
+      `${this.getUrlWithId(projectId)}/concepts`,
     );
   }
 

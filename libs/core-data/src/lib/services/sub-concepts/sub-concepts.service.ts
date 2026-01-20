@@ -24,13 +24,13 @@ export class SubConceptsService {
     return this.http.get<SubConcept>(this.getUrlWithId(id));
   }
 
-  findByPrinciple(principleId: string) {
-    return this.http.get<SubConcept[]>(`${this.getUrl()}/principle/${principleId}`);
+  findByConcept(conceptId: string) {
+    return this.http.get<SubConcept[]>(`${this.getUrl()}/concept/${conceptId}`);
   }
 
   create(subConcept: SubConcept) {
     const createDto: CreateSubConceptDto = {
-      principleId: subConcept.principleId,
+      conceptId: subConcept.conceptId,
       name: subConcept.name,
       description: subConcept.description,
       order: subConcept.order,

@@ -24,11 +24,11 @@ import { LearningPath } from '../learning-paths/entities/learning-path.entity';
 import { LearningPathsModule } from '../learning-paths/learning-paths.module';
 import { NotebookProgress } from '../notebooks/entities/notebook-progress.entity';
 import { NotebooksModule } from '../notebooks/notebooks.module';
-import { Principle } from '../principles/entities/principle.entity';
-import { PrinciplesModule } from '../principles/principles.module';
+import { Concept } from '../concepts/entities/concept.entity';
+import { ConceptsModule } from '../concepts/concepts.module';
 import { ProgressGateway } from '../progress/progress.gateway';
 import { Project } from '../projects/entities/project.entity';
-import { ProjectPrinciple } from '../projects/entities/project-principle.entity';
+import { ProjectConcept } from '../projects/entities/project-concept.entity';
 import { ProjectsModule } from '../projects/projects.module';
 import { RawContent } from '../raw-content/entities/raw-content.entity';
 import { RawContentModule } from '../raw-content/raw-content.module';
@@ -63,7 +63,7 @@ import { AppService } from './app.service';
       database: process.env.DATABASE_URL?.replace('file:', '') || 'kasita.db',
       synchronize: process.env.NODE_ENV !== 'production', // Auto-sync in dev
       logging: false, // Disable SQL logging for better performance
-      entities: [LearningPath, Source, SourcePathLink, RawContent, KnowledgeUnit, UserProgress, User, DataSource, GraphSearch, NotebookProgress, Principle, Submission, Feedback, Challenge, Project, ProjectPrinciple, Enrollment, Session, SessionTemplate, SubConcept, SubConceptDecoration],
+      entities: [LearningPath, Source, SourcePathLink, RawContent, KnowledgeUnit, UserProgress, User, DataSource, GraphSearch, NotebookProgress, Concept, Submission, Feedback, Challenge, Project, ProjectConcept, Enrollment, Session, SessionTemplate, SubConcept, SubConceptDecoration],
     }),
     LearningPathsModule,
     SourceConfigsModule,
@@ -78,7 +78,7 @@ import { AppService } from './app.service';
     KnowledgeGraphModule,
     NotebooksModule,
     LearningMapModule,
-    PrinciplesModule,
+    ConceptsModule,
     SubmissionsModule,
     ChallengesModule,
     ProjectsModule,

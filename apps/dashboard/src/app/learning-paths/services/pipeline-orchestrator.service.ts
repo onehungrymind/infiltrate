@@ -1,8 +1,9 @@
 import { Injectable, inject, signal } from '@angular/core';
-import { LearningMapService } from '@kasita/core-data';
-import { Observable, concat, of, tap, catchError, finalize, map, delay } from 'rxjs';
+import { LearningMapService, ConceptsService, SubConceptsService } from '@kasita/core-data';
+import { Observable, concat, of, tap, catchError, finalize, map, delay, from, concatMap } from 'rxjs';
+import { Concept, SubConcept } from '@kasita/common-models';
 
-export type PipelineStageId = 'principles' | 'sources' | 'ingest' | 'synthesize';
+export type PipelineStageId = 'concepts' | 'sub-concepts' | 'knowledge-units' | 'sources' | 'ingest' | 'synthesize';
 
 export interface PipelineResult {
   stage: PipelineStageId;
@@ -16,6 +17,8 @@ export interface PipelineResult {
 })
 export class PipelineOrchestratorService {
   private learningMapService = inject(LearningMapService);
+  private conceptsService = inject(ConceptsService);
+  private subConceptsService = inject(SubConceptsService);
 
   // State
   isRunning = signal(false);
@@ -24,6 +27,9 @@ export class PipelineOrchestratorService {
   errorStage = signal<PipelineStageId | null>(null);
   lastError = signal<string | null>(null);
 
+  // Progress tracking for sub-stages
+  currentProgress = signal<string>('');
+
   // Reset state
   reset() {
     this.isRunning.set(false);
@@ -31,6 +37,7 @@ export class PipelineOrchestratorService {
     this.completedStages.set([]);
     this.errorStage.set(null);
     this.lastError.set(null);
+    this.currentProgress.set('');
   }
 
   // Run a single pipeline stage
@@ -85,7 +92,7 @@ export class PipelineOrchestratorService {
     this.isRunning.set(true);
 
     return concat(
-      this.runStage('principles', () => this.learningMapService.generatePrinciples(pathId)),
+      this.runStage('concepts', () => this.learningMapService.generateConcepts(pathId)),
       this.runStage('sources', () => this.suggestAndAddAllSources(pathId)),
       this.runStage('ingest', () => this.learningMapService.triggerIngestion(pathId)),
       this.runStage('synthesize', () => this.learningMapService.triggerSynthesis(pathId)),
@@ -142,8 +149,8 @@ export class PipelineOrchestratorService {
   }
 
   // Run a single stage independently
-  runPrinciples(pathId: string): Observable<PipelineResult> {
-    return this.runStage('principles', () => this.learningMapService.generatePrinciples(pathId));
+  runConcepts(pathId: string): Observable<PipelineResult> {
+    return this.runStage('concepts', () => this.learningMapService.generateConcepts(pathId));
   }
 
   runSuggestSources(pathId: string): Observable<PipelineResult> {
@@ -156,5 +163,137 @@ export class PipelineOrchestratorService {
 
   runSynthesis(pathId: string): Observable<PipelineResult> {
     return this.runStage('synthesize', () => this.learningMapService.triggerSynthesis(pathId));
+  }
+
+  /**
+   * Build complete learning path structure:
+   * 1. Generate concepts for the path
+   * 2. Decompose each concept into sub-concepts
+   * 3. Generate knowledge units for each sub-concept
+   */
+  buildCompleteLearningPath(pathId: string): Observable<PipelineResult> {
+    this.reset();
+    this.isRunning.set(true);
+
+    return new Observable<PipelineResult>((subscriber) => {
+      // Step 1: Generate concepts
+      this.currentStage.set('concepts');
+      this.currentProgress.set('Generating concepts...');
+
+      this.learningMapService.generateConcepts(pathId, true).subscribe({
+        next: (conceptResult) => {
+          const concepts = conceptResult.concepts;
+          this.completedStages.update(s => [...s, 'concepts']);
+          subscriber.next({
+            stage: 'concepts',
+            success: true,
+            message: `Generated ${concepts.length} concepts`,
+            data: concepts,
+          });
+
+          if (concepts.length === 0) {
+            this.isRunning.set(false);
+            subscriber.complete();
+            return;
+          }
+
+          // Step 2: Decompose each concept into sub-concepts
+          this.currentStage.set('sub-concepts');
+          const allSubConcepts: SubConcept[] = [];
+          let conceptIndex = 0;
+
+          const decomposeNext = () => {
+            if (conceptIndex >= concepts.length) {
+              // Done with all concepts
+              this.completedStages.update(s => [...s, 'sub-concepts']);
+              subscriber.next({
+                stage: 'sub-concepts',
+                success: true,
+                message: `Generated ${allSubConcepts.length} sub-concepts from ${concepts.length} concepts`,
+                data: allSubConcepts,
+              });
+
+              if (allSubConcepts.length === 0) {
+                this.isRunning.set(false);
+                subscriber.complete();
+                return;
+              }
+
+              // Step 3: Generate KUs for each sub-concept
+              this.currentStage.set('knowledge-units');
+              let subConceptIndex = 0;
+              let totalKUs = 0;
+
+              const generateKUNext = () => {
+                if (subConceptIndex >= allSubConcepts.length) {
+                  // Done with all sub-concepts
+                  this.completedStages.update(s => [...s, 'knowledge-units']);
+                  subscriber.next({
+                    stage: 'knowledge-units',
+                    success: true,
+                    message: `Generated ${totalKUs} knowledge units from ${allSubConcepts.length} sub-concepts`,
+                  });
+                  this.isRunning.set(false);
+                  this.currentStage.set(null);
+                  this.currentProgress.set('');
+                  subscriber.complete();
+                  return;
+                }
+
+                const subConcept = allSubConcepts[subConceptIndex];
+                this.currentProgress.set(`Generating KUs for sub-concept ${subConceptIndex + 1}/${allSubConcepts.length}: ${subConcept.name}`);
+
+                this.learningMapService.generateStructuredKU(subConcept.id).subscribe({
+                  next: (kuResult) => {
+                    totalKUs += kuResult.knowledgeUnits.length;
+                    subConceptIndex++;
+                    generateKUNext();
+                  },
+                  error: (err) => {
+                    // Log error but continue with next sub-concept
+                    console.error(`Failed to generate KUs for ${subConcept.name}:`, err);
+                    subConceptIndex++;
+                    generateKUNext();
+                  },
+                });
+              };
+
+              generateKUNext();
+              return;
+            }
+
+            const concept = concepts[conceptIndex];
+            this.currentProgress.set(`Decomposing concept ${conceptIndex + 1}/${concepts.length}: ${concept.name}`);
+
+            this.learningMapService.decomposeConcept(concept.id).subscribe({
+              next: (decomposeResult) => {
+                allSubConcepts.push(...decomposeResult.subConcepts);
+                conceptIndex++;
+                decomposeNext();
+              },
+              error: (err) => {
+                // Log error but continue with next concept
+                console.error(`Failed to decompose ${concept.name}:`, err);
+                conceptIndex++;
+                decomposeNext();
+              },
+            });
+          };
+
+          decomposeNext();
+        },
+        error: (err) => {
+          this.errorStage.set('concepts');
+          this.lastError.set(err.error?.message || err.message || 'Failed to generate concepts');
+          subscriber.next({
+            stage: 'concepts',
+            success: false,
+            message: this.lastError() || 'Failed to generate concepts',
+          });
+          this.isRunning.set(false);
+          subscriber.complete();
+        },
+      });
+    });
   }
 }

@@ -5,7 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { KnowledgeUnit } from '../knowledge-units/entities/knowledge-unit.entity';
 import { LearningPath } from '../learning-paths/entities/learning-path.entity';
 import { NotebookProgress } from '../notebooks/entities/notebook-progress.entity';
-import { Principle } from '../principles/entities/principle.entity';
+import { Concept } from '../concepts/entities/concept.entity';
 import { RawContent } from '../raw-content/entities/raw-content.entity';
 import { Source } from '../source-configs/entities/source.entity';
 import { SourcePathLink } from '../source-configs/entities/source-path-link.entity';
@@ -19,7 +19,7 @@ import { LearningMapService } from './learning-map.service';
     TypeOrmModule.forFeature([
       LearningPath,
       NotebookProgress,
-      Principle,
+      Concept,
       KnowledgeUnit,
       Source,
       SourcePathLink,

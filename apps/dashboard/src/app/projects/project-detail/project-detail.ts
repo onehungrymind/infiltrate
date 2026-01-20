@@ -7,7 +7,7 @@ OnChanges,
   output,
   signal, } from '@angular/core';
 import { form } from '@angular/forms/signals';
-import { LearningPath, Principle,Project } from '@kasita/common-models';
+import { LearningPath, Concept,Project } from '@kasita/common-models';
 import { initializeEntity,projectFields, toSchema } from '@kasita/core-data';
 import { MaterialModule } from '@kasita/material';
 
@@ -22,7 +22,7 @@ import { DynamicForm } from '../../shared/dynamic-form/dynamic-form';
 export class ProjectDetail implements OnChanges {
   project = input<Project | null>(null);
   paths = input<LearningPath[]>([]);
-  principles = input<Principle[]>([]);
+  concepts = input<Concept[]>([]);
 
   saved = output<Project>();
   cancelled = output<void>();
@@ -75,11 +75,11 @@ export class ProjectDetail implements OnChanges {
     this.selectedPathId.set(pathId);
   }
 
-  // Get principles for the selected path
-  pathPrinciples = computed(() => {
+  // Get concepts for the selected path
+  pathConcepts = computed(() => {
     const pathId = this.selectedPathId();
     if (!pathId) return [];
-    return this.principles().filter(p => p.pathId === pathId);
+    return this.concepts().filter(p => p.pathId === pathId);
   });
 
   onSubmit(event: Event) {

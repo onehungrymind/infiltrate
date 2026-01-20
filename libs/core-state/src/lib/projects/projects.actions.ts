@@ -1,5 +1,5 @@
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
-import { Project, ProjectPrinciple } from '@kasita/common-models';
+import { Project, ProjectConcept } from '@kasita/common-models';
 
 export const ProjectsActions = createActionGroup({
   source: 'Projects API',
@@ -36,13 +36,13 @@ export const ProjectsActions = createActionGroup({
     'Delete Project Success': props<{ project: Project }>(),
     'Delete Project Failure': props<{ error: string | null }>(),
 
-    // Principle linking
-    'Link Principle': props<{ projectId: string; principleId: string; weight: number }>(),
-    'Link Principle Success': props<{ projectPrinciple: ProjectPrinciple }>(),
-    'Link Principle Failure': props<{ error: string | null }>(),
+    // Concept linking
+    'Link Concept': props<{ projectId: string; conceptId: string; weight: number }>(),
+    'Link Concept Success': props<{ projectConcept: ProjectConcept }>(),
+    'Link Concept Failure': props<{ error: string | null }>(),
 
-    'Unlink Principle': props<{ projectId: string; principleId: string }>(),
-    'Unlink Principle Success': props<{ projectId: string; principleId: string }>(),
-    'Unlink Principle Failure': props<{ error: string | null }>(),
+    'Unlink Concept': props<{ projectId: string; conceptId: string }>(),
+    'Unlink Concept Success': props<{ projectId: string; conceptId: string }>(),
+    'Unlink Concept Failure': props<{ error: string | null }>(),
   },
 });

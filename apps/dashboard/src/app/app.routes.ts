@@ -77,9 +77,9 @@ export const appRoutes: Route[] = [
     canActivate: [authGuard],
   },
   {
-    path: 'principles',
+    path: 'concepts',
     loadComponent: () =>
-      import('./principles/principles').then((m) => m.Principles),
+      import('./concepts/concepts').then((m) => m.Concepts),
     canActivate: [authGuard],
   },
   {

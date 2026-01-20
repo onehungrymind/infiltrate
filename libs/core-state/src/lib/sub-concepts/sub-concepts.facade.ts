@@ -9,7 +9,7 @@ import {
   selectSubConceptsError,
   selectSubConceptsGenerating,
   selectSelectedSubConcept,
-  selectSubConceptsByPrincipleId,
+  selectSubConceptsByConceptId,
 } from './sub-concepts.feature';
 import { filter } from 'rxjs';
 
@@ -38,13 +38,13 @@ export class SubConceptsFacade {
   aiGenerationComplete$ = this.actions$.pipe(
     filter(
       (action) =>
-        action.type === SubConceptsActions.decomposePrincipleSuccess.type ||
+        action.type === SubConceptsActions.decomposeConceptSuccess.type ||
         action.type === SubConceptsActions.generateStructuredKUSuccess.type,
     ),
   );
 
-  selectSubConceptsByPrinciple(principleId: string) {
-    return this.store.select(selectSubConceptsByPrincipleId(principleId));
+  selectSubConceptsByConcept(conceptId: string) {
+    return this.store.select(selectSubConceptsByConceptId(conceptId));
   }
 
   resetSelectedSubConcept() {
@@ -63,8 +63,8 @@ export class SubConceptsFacade {
     this.dispatch(SubConceptsActions.loadSubConcept({ subConceptId }));
   }
 
-  loadSubConceptsByPrinciple(principleId: string) {
-    this.dispatch(SubConceptsActions.loadSubConceptsByPrinciple({ principleId }));
+  loadSubConceptsByConcept(conceptId: string) {
+    this.dispatch(SubConceptsActions.loadSubConceptsByConcept({ conceptId }));
   }
 
   saveSubConcept(subConcept: SubConcept) {
@@ -88,8 +88,8 @@ export class SubConceptsFacade {
   }
 
   // AI generation methods
-  decomposePrinciple(principleId: string) {
-    this.dispatch(SubConceptsActions.decomposePrinciple({ principleId }));
+  decomposeConcept(conceptId: string) {
+    this.dispatch(SubConceptsActions.decomposeConcept({ conceptId }));
   }
 
   generateStructuredKU(subConceptId: string) {
@@ -110,7 +110,7 @@ export class SubConceptsFacade {
    * This avoids needing to reload from the API
    */
   addSubConceptsToStore(subConcepts: SubConcept[], message = '') {
-    this.dispatch(SubConceptsActions.decomposePrincipleSuccess({ subConcepts, message }));
+    this.dispatch(SubConceptsActions.decomposeConceptSuccess({ subConcepts, message }));
   }
 
   dispatch(action: Action) {

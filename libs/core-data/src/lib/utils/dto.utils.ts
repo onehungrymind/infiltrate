@@ -62,7 +62,7 @@ export const ENTITY_DTO_KEYS = {
 
   KNOWLEDGE_UNITS: [
     'pathId',
-    'principleId',
+    'conceptId',
     'concept',
     'question',
     'answer',
@@ -118,7 +118,7 @@ export const ENTITY_DTO_KEYS = {
     'role',
   ] as const,
 
-  PRINCIPLES: [
+  CONCEPTS: [
     'pathId',
     'name',
     'description',

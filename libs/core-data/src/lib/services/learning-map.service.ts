@@ -8,7 +8,7 @@ import {
   LearningMapProgress,
   NodeProgress,
   NodeDetails,
-  Principle,
+  Concept,
   SubConcept,
   KnowledgeUnit,
 } from '@kasita/common-models';
@@ -99,46 +99,46 @@ export class LearningMapService {
   }
 
   /**
-   * Get principle-based learning map for a learning path
+   * Get concept-based learning map for a learning path
    */
-  getPrincipleMap(pathId: string): Observable<LearningPathMap | null> {
+  getConceptMap(pathId: string): Observable<LearningPathMap | null> {
     return this.http.get<LearningPathMap>(
-      `${this.apiUrl}/learning-map/principles/${pathId}`
+      `${this.apiUrl}/learning-map/concepts/${pathId}`
     ).pipe(
       catchError(() => of(null))
     );
   }
 
   /**
-   * Get all learning paths with principle counts for the selector
+   * Get all learning paths with concept counts for the selector
    */
   getLearningPathsForMap(): Observable<Array<{
     id: string;
     name: string;
     domain: string;
-    principleCount: number;
+    conceptCount: number;
   }>> {
     return this.http.get<Array<{
       id: string;
       name: string;
       domain: string;
-      principleCount: number;
+      conceptCount: number;
     }>>(`${this.apiUrl}/learning-map/learning-paths`).pipe(
       catchError(() => of([]))
     );
   }
 
   /**
-   * Generate principles for a learning path using AI
+   * Generate concepts for a learning path using AI
    * @param pathId - The learning path ID
-   * @param force - If true, delete existing principles before generating
+   * @param force - If true, delete existing concepts before generating
    */
-  generatePrinciples(pathId: string, force = true): Observable<{
-    principles: Principle[];
+  generateConcepts(pathId: string, force = true): Observable<{
+    concepts: Concept[];
     message: string;
   }> {
     return this.http.post<{
-      principles: Principle[];
+      concepts: Concept[];
       message: string;
     }>(`${this.apiUrl}/learning-map/generate/${pathId}`, { force });
   }
@@ -418,17 +418,17 @@ export class LearningMapService {
   }
 
   /**
-   * Decompose a principle into sub-concepts using AI
-   * @param principleId - The principle ID to decompose
+   * Decompose a concept into sub-concepts using AI
+   * @param conceptId - The concept ID to decompose
    */
-  decomposePrinciple(principleId: string): Observable<{
+  decomposeConcept(conceptId: string): Observable<{
     subConcepts: SubConcept[];
     message: string;
   }> {
     return this.http.post<{
       subConcepts: SubConcept[];
       message: string;
-    }>(`${this.apiUrl}/learning-map/principles/${principleId}/decompose`, {});
+    }>(`${this.apiUrl}/learning-map/concepts/${conceptId}/decompose`, {});
   }
 
   /**

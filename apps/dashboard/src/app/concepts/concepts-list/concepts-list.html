@@ -1,0 +1,61 @@
+<div class="list-container">
+  <div class="list-header">
+    <h1 class="list-title">Concepts</h1>
+  </div>
+
+  @for (concept of concepts; track concept.id) {
+    <div
+      class="list-item"
+      [class.active]="isSelected(concept)"
+      (click)="selected.emit(concept)"
+    >
+      <div class="list-item-content">
+        <div class="list-item-main">
+          <h3 class="list-item-title">
+            {{ concept.name || 'Untitled' }}
+          </h3>
+          @if (concept.description) {
+            <p class="list-item-meta">
+              {{ concept.description | slice:0:80 }}{{ concept.description.length > 80 ? '...' : '' }}
+            </p>
+          }
+          <div class="list-item-badges">
+            <span
+              class="difficulty-badge"
+              [style.background-color]="getDifficultyColor(concept.difficulty)"
+            >
+              {{ concept.difficulty }}
+            </span>
+            @if (concept.status) {
+              <span class="status-badge">
+                {{ concept.status | titlecase }}
+              </span>
+            }
+          </div>
+        </div>
+        @if (!readonly) {
+          <button
+            class="list-item-delete"
+            (click)="onDelete(concept); $event.stopImmediatePropagation()"
+            type="button"
+            aria-label="Delete concept"
+          >
+            <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+              fill="currentColor" viewBox="0 0 24 24">
+              <path fill-rule="evenodd"
+                d="M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z"
+                clip-rule="evenodd" />
+            </svg>
+          </button>
+        }
+      </div>
+    </div>
+  }
+
+  @if (concepts.length === 0) {
+    <div class="list-empty">
+      <mat-icon class="list-empty-icon">inbox</mat-icon>
+      <p class="list-empty-text">No concepts found</p>
+    </div>
+  }
+</div>

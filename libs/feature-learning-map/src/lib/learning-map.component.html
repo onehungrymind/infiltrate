@@ -18,7 +18,7 @@
           class="filter-select">
           @for (path of availablePaths(); track path.id) {
           <option [ngValue]="path.id">
-            {{ path.name }} ({{ path.principleCount }} principles)
+            {{ path.name }} ({{ path.conceptCount }} concepts)
           </option>
           }
         </select>
@@ -115,7 +115,7 @@
       <div class="panel-body">
         <p class="panel-description">{{ getNodeDescription() }}</p>
 
-        <!-- Metadata for principles -->
+        <!-- Metadata for concepts -->
         @if (getNodeMetadata().length > 0) {
         <div class="node-metadata">
           @for (meta of getNodeMetadata(); track meta.label) {
@@ -132,7 +132,7 @@
             type="button"
             class="action-button primary"
             (click)="navigateToNode(selectedNode()!)">
-            @if (selectedNode()!.type === 'principle') {
+            @if (selectedNode()!.type === 'concept') {
               View Units
             } @else {
               Open

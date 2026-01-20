@@ -1,6 +1,6 @@
 import { inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { Project, ProjectPrinciple } from '@kasita/common-models';
+import { Project, ProjectConcept } from '@kasita/common-models';
 import { ProjectsService, formatErrorMessage } from '@kasita/core-data';
 import { of } from 'rxjs';
 import { catchError, exhaustMap, map } from 'rxjs/operators';
@@ -164,21 +164,21 @@ export const deleteProject = createEffect(
   { functional: true },
 );
 
-export const linkPrinciple = createEffect(
+export const linkConcept = createEffect(
   (
     actions$ = inject(Actions),
     projectsService = inject(ProjectsService),
   ) => {
     return actions$.pipe(
-      ofType(ProjectsActions.linkPrinciple),
+      ofType(ProjectsActions.linkConcept),
       exhaustMap((action) => {
-        return projectsService.linkPrinciple(action.projectId, action.principleId, action.weight).pipe(
-          map((projectPrinciple: ProjectPrinciple) =>
-            ProjectsActions.linkPrincipleSuccess({ projectPrinciple }),
+        return projectsService.linkConcept(action.projectId, action.conceptId, action.weight).pipe(
+          map((projectConcept: ProjectConcept) =>
+            ProjectsActions.linkConceptSuccess({ projectConcept }),
           ),
           catchError((error) =>
             of(
-              ProjectsActions.linkPrincipleFailure({
+              ProjectsActions.linkConceptFailure({
                 error: formatErrorMessage(error),
               }),
             ),
@@ -190,24 +190,24 @@ export const linkPrinciple = createEffect(
   { functional: true },
 );
 
-export const unlinkPrinciple = createEffect(
+export const unlinkConcept = createEffect(
   (
     actions$ = inject(Actions),
     projectsService = inject(ProjectsService),
   ) => {
     return actions$.pipe(
-      ofType(ProjectsActions.unlinkPrinciple),
+      ofType(ProjectsActions.unlinkConcept),
       exhaustMap((action) => {
-        return projectsService.unlinkPrinciple(action.projectId, action.principleId).pipe(
+        return projectsService.unlinkConcept(action.projectId, action.conceptId).pipe(
           map(() =>
-            ProjectsActions.unlinkPrincipleSuccess({
+            ProjectsActions.unlinkConceptSuccess({
               projectId: action.projectId,
-              principleId: action.principleId,
+              conceptId: action.conceptId,
             }),
           ),
           catchError((error) =>
             of(
-              ProjectsActions.unlinkPrincipleFailure({
+              ProjectsActions.unlinkConceptFailure({
                 error: formatErrorMessage(error),
               }),
             ),

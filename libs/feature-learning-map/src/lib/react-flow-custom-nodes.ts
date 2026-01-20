@@ -15,12 +15,12 @@ export async function createCustomNodeComponents() {
     // Status-based border colors (as per requirements)
     const statusBorders: Record<string, string> = {
       'completed': '#10b981',      // Green
-      'mastered': '#10b981',       // Green (for principles)
+      'mastered': '#10b981',       // Green (for concepts)
       'in-progress': '#3b82f6',    // Blue
-      'in_progress': '#3b82f6',    // Blue (underscore variant for principles)
+      'in_progress': '#3b82f6',    // Blue (underscore variant for concepts)
       'locked': '#d1d5db',         // Gray
       'not-started': '#d1d5db',    // Gray
-      'pending': '#d1d5db',        // Gray (for principles)
+      'pending': '#d1d5db',        // Gray (for concepts)
     };
 
     // Type-specific overrides for active states
@@ -29,7 +29,7 @@ export async function createCustomNodeComponents() {
       'demonstration': '#eab308',  // Gold for demonstration
     };
 
-    // Difficulty-based colors for principles
+    // Difficulty-based colors for concepts
     const difficultyColors: Record<string, string> = {
       'foundational': '#22c55e',   // Green
       'intermediate': '#f59e0b',   // Orange/Amber
@@ -39,8 +39,8 @@ export async function createCustomNodeComponents() {
     // Determine border color based on status and type
     let borderColor = statusBorders[status] || '#d1d5db';
 
-    // For principles, use difficulty-based coloring when in-progress or pending
-    if (nodeType === 'principle' && data?.difficulty) {
+    // For concepts, use difficulty-based coloring when in-progress or pending
+    if (nodeType === 'concept' && data?.difficulty) {
       if (status === 'in-progress' || status === 'in_progress' || status === 'pending') {
         borderColor = difficultyColors[data.difficulty] || borderColor;
       }
@@ -190,6 +190,6 @@ export async function createCustomNodeComponents() {
     'custom-checkpoint': CustomNode,
     'custom-knowledge-transfer': CustomNode,
     'custom-demonstration': CustomNode,
-    'custom-principle': CustomNode,
+    'custom-concept': CustomNode,
   };
 }

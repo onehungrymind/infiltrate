@@ -29,8 +29,8 @@ export class ProjectsFacade {
         action.type === ProjectsActions.createProject.type ||
         action.type === ProjectsActions.updateProject.type ||
         action.type === ProjectsActions.deleteProject.type ||
-        action.type === ProjectsActions.linkPrinciple.type ||
-        action.type === ProjectsActions.unlinkPrinciple.type,
+        action.type === ProjectsActions.linkConcept.type ||
+        action.type === ProjectsActions.unlinkConcept.type,
     ),
   );
 
@@ -78,12 +78,12 @@ export class ProjectsFacade {
     this.dispatch(ProjectsActions.deleteProject({ project }));
   }
 
-  linkPrinciple(projectId: string, principleId: string, weight: number) {
-    this.dispatch(ProjectsActions.linkPrinciple({ projectId, principleId, weight }));
+  linkConcept(projectId: string, conceptId: string, weight: number) {
+    this.dispatch(ProjectsActions.linkConcept({ projectId, conceptId, weight }));
   }
 
-  unlinkPrinciple(projectId: string, principleId: string) {
-    this.dispatch(ProjectsActions.unlinkPrinciple({ projectId, principleId }));
+  unlinkConcept(projectId: string, conceptId: string) {
+    this.dispatch(ProjectsActions.unlinkConcept({ projectId, conceptId }));
   }
 
   dispatch(action: Action) {

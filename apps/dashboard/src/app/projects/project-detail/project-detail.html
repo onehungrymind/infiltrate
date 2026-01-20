@@ -40,19 +40,19 @@
           [dynamicForm]="dynamicForm"
         />
 
-        <!-- Linked Principles Info -->
-        @if (project()?.id && pathPrinciples().length > 0) {
-          <div class="detail-section principles-section">
-            <h3 class="detail-section-title">Available Principles</h3>
+        <!-- Linked Concepts Info -->
+        @if (project()?.id && pathConcepts().length > 0) {
+          <div class="detail-section concepts-section">
+            <h3 class="detail-section-title">Available Concepts</h3>
             <p class="section-help">
-              Principles from this learning path that can be linked to this project
+              Concepts from this learning path that can be linked to this project
             </p>
-            <div class="principles-list">
-              @for (principle of pathPrinciples(); track principle.id) {
-                <div class="principle-item">
-                  <span class="principle-name">{{ principle.name }}</span>
-                  <span class="principle-difficulty" [style.color]="getDifficultyColor(principle.difficulty)">
-                    {{ principle.difficulty | titlecase }}
+            <div class="concepts-list">
+              @for (concept of pathConcepts(); track concept.id) {
+                <div class="concept-item">
+                  <span class="concept-name">{{ concept.name }}</span>
+                  <span class="concept-difficulty" [style.color]="getDifficultyColor(concept.difficulty)">
+                    {{ concept.difficulty | titlecase }}
                   </span>
                 </div>
               }

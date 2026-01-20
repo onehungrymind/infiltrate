@@ -106,12 +106,12 @@ const projectsReducer = createReducer(
     }),
   ),
 
-  // Principle linking success - reload project to get updated principles
-  on(ProjectsActions.linkPrincipleSuccess, (state) => ({
+  // Concept linking success - reload project to get updated principles
+  on(ProjectsActions.linkConceptSuccess, (state) => ({
     ...state,
     error: null,
   })),
-  on(ProjectsActions.unlinkPrincipleSuccess, (state) => ({
+  on(ProjectsActions.unlinkConceptSuccess, (state) => ({
     ...state,
     error: null,
   })),
@@ -124,8 +124,8 @@ const projectsReducer = createReducer(
     ProjectsActions.createProjectFailure,
     ProjectsActions.updateProjectFailure,
     ProjectsActions.deleteProjectFailure,
-    ProjectsActions.linkPrincipleFailure,
-    ProjectsActions.unlinkPrincipleFailure,
+    ProjectsActions.linkConceptFailure,
+    ProjectsActions.unlinkConceptFailure,
     onFailure,
   ),
 );

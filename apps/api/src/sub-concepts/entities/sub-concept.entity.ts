@@ -1,7 +1,7 @@
 import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
 import { KnowledgeUnit } from '../../knowledge-units/entities/knowledge-unit.entity';
-import { Principle } from '../../principles/entities/principle.entity';
+import { Concept } from '../../concepts/entities/concept.entity';
 import { SubConceptDecoration } from './sub-concept-decoration.entity';
 
 @Entity('sub_concepts')
@@ -10,10 +10,10 @@ export class SubConcept {
   id: string;
 
   @Column()
-  principleId: string;
+  conceptId: string;
 
-  @ManyToOne(() => Principle, principle => principle.subConcepts, { onDelete: 'CASCADE' })
-  principle: Principle;
+  @ManyToOne(() => Concept, concept => concept.subConcepts, { onDelete: 'CASCADE' })
+  concept: Concept;
 
   @Column()
   name: string;

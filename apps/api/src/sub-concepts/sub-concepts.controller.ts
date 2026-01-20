@@ -32,11 +32,11 @@ export class SubConceptsController {
     return this.subConceptsService.findOne(id);
   }
 
-  @Get('principle/:principleId')
-  @ApiOperation({ summary: 'Get all sub-concepts for a principle' })
-  @ApiResponse({ status: 200, description: 'List of sub-concepts for the principle' })
-  findByPrinciple(@Param('principleId') principleId: string) {
-    return this.subConceptsService.findByPrinciple(principleId);
+  @Get('concept/:conceptId')
+  @ApiOperation({ summary: 'Get all sub-concepts for a concept' })
+  @ApiResponse({ status: 200, description: 'List of sub-concepts for the concept' })
+  findByConcept(@Param('conceptId') conceptId: string) {
+    return this.subConceptsService.findByConcept(conceptId);
   }
 
   @Patch(':id')

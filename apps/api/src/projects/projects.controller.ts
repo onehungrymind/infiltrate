@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 
 import { CreateProjectDto } from './dto/create-project.dto';
-import { LinkPrincipleDto, UpdateProjectPrincipleDto } from './dto/link-principle.dto';
+import { LinkConceptDto, UpdateProjectConceptDto } from './dto/link-concept.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { ProjectsService } from './projects.service';
 
@@ -54,29 +54,29 @@ export class ProjectsController {
     return this.projectsService.remove(id);
   }
 
-  // Project-Principle linking endpoints
+  // Project-Concept linking endpoints
 
-  @Post(':id/principles')
-  linkPrinciple(@Param('id') id: string, @Body() linkPrincipleDto: LinkPrincipleDto) {
-    return this.projectsService.linkPrinciple(id, linkPrincipleDto);
+  @Post(':id/concepts')
+  linkConcept(@Param('id') id: string, @Body() linkConceptDto: LinkConceptDto) {
+    return this.projectsService.linkConcept(id, linkConceptDto);
   }
 
-  @Get(':id/principles')
-  getProjectPrinciples(@Param('id') id: string) {
-    return this.projectsService.getProjectPrinciples(id);
+  @Get(':id/concepts')
+  getProjectConcepts(@Param('id') id: string) {
+    return this.projectsService.getProjectConcepts(id);
   }
 
-  @Patch(':id/principles/:principleId')
-  updateProjectPrinciple(
+  @Patch(':id/concepts/:conceptId')
+  updateProjectConcept(
     @Param('id') id: string,
-    @Param('principleId') principleId: string,
-    @Body() updateDto: UpdateProjectPrincipleDto,
+    @Param('conceptId') conceptId: string,
+    @Body() updateDto: UpdateProjectConceptDto,
   ) {
-    return this.projectsService.updateProjectPrinciple(id, principleId, updateDto);
+    return this.projectsService.updateProjectConcept(id, conceptId, updateDto);
   }
 
-  @Delete(':id/principles/:principleId')
-  unlinkPrinciple(@Param('id') id: string, @Param('principleId') principleId: string) {
-    return this.projectsService.unlinkPrinciple(id, principleId);
+  @Delete(':id/concepts/:conceptId')
+  unlinkConcept(@Param('id') id: string, @Param('conceptId') conceptId: string) {
+    return this.projectsService.unlinkConcept(id, conceptId);
   }
 }

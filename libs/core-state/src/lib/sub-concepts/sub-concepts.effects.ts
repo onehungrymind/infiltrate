@@ -58,21 +58,21 @@ export const loadSubConcept = createEffect(
   { functional: true },
 );
 
-export const loadSubConceptsByPrinciple = createEffect(
+export const loadSubConceptsByConcept = createEffect(
   (
     actions$ = inject(Actions),
     subConceptsService = inject(SubConceptsService),
   ) => {
     return actions$.pipe(
-      ofType(SubConceptsActions.loadSubConceptsByPrinciple),
+      ofType(SubConceptsActions.loadSubConceptsByConcept),
       exhaustMap((action) => {
-        return subConceptsService.findByPrinciple(action.principleId).pipe(
+        return subConceptsService.findByConcept(action.conceptId).pipe(
           map((subConcepts: SubConcept[]) =>
-            SubConceptsActions.loadSubConceptsByPrincipleSuccess({ subConcepts }),
+            SubConceptsActions.loadSubConceptsByConceptSuccess({ subConcepts }),
           ),
           catchError((error) =>
             of(
-              SubConceptsActions.loadSubConceptsByPrincipleFailure({
+              SubConceptsActions.loadSubConceptsByConceptFailure({
                 error: formatErrorMessage(error),
               }),
             ),
@@ -163,21 +163,21 @@ export const deleteSubConcept = createEffect(
 );
 
 // AI generation effects
-export const decomposePrinciple = createEffect(
+export const decomposeConcept = createEffect(
   (
     actions$ = inject(Actions),
     learningMapService = inject(LearningMapService),
   ) => {
     return actions$.pipe(
-      ofType(SubConceptsActions.decomposePrinciple),
+      ofType(SubConceptsActions.decomposeConcept),
       exhaustMap((action) => {
-        return learningMapService.decomposePrinciple(action.principleId).pipe(
+        return learningMapService.decomposeConcept(action.conceptId).pipe(
           map((response: { subConcepts: SubConcept[]; message: string }) =>
-            SubConceptsActions.decomposePrincipleSuccess(response),
+            SubConceptsActions.decomposeConceptSuccess(response),
           ),
           catchError((error) =>
             of(
-              SubConceptsActions.decomposePrincipleFailure({
+              SubConceptsActions.decomposeConceptFailure({
                 error: formatErrorMessage(error),
               }),
             ),

@@ -70,10 +70,10 @@ export class LearningMapComponent implements OnInit, OnDestroy {
     id: string;
     name: string;
     domain: string;
-    principleCount: number;
+    conceptCount: number;
   }>>([]);
   selectedPathId = signal<string | null>(null);
-  viewMode = signal<'principles' | 'mock'>('principles');
+  viewMode = signal<'concepts' | 'mock'>('concepts');
 
   // Computed values
   nodes = computed(() => this.learningPath()?.nodes || []);
@@ -108,7 +108,7 @@ export class LearningMapComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Load available learning paths that have principles
+   * Load available learning paths that have concepts
    */
   loadAvailablePaths(): void {
     this.loading.set(true);
@@ -119,7 +119,7 @@ export class LearningMapComponent implements OnInit, OnDestroy {
           // Auto-select the first path
           this.selectPath(paths[0].id);
         } else {
-          // No paths with principles, fall back to mock data
+          // No paths with concepts, fall back to mock data
           this.viewMode.set('mock');
           this.loadMockData();
           this.loading.set(false);
@@ -135,33 +135,33 @@ export class LearningMapComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Select a learning path and load its principle map
+   * Select a learning path and load its concept map
    */
   selectPath(pathId: string): void {
     this.selectedPathId.set(pathId);
-    this.viewMode.set('principles');
+    this.viewMode.set('concepts');
     this.loadPrincipleMap(pathId);
   }
 
   /**
-   * Load the principle map for a learning path
+   * Load the concept map for a learning path
    */
   loadPrincipleMap(pathId: string): void {
     this.loading.set(true);
     this.error.set(null);
     this.selectedNode.set(null);
 
-    this.learningMapService.getPrincipleMap(pathId).subscribe({
+    this.learningMapService.getConceptMap(pathId).subscribe({
       next: (map) => {
         if (map) {
           this.learningPath.set(map);
         } else {
-          this.error.set('No principles found for this learning path');
+          this.error.set('No concepts found for this learning path');
         }
         this.loading.set(false);
       },
       error: (err) => {
-        this.error.set(err?.error?.message || 'Failed to load principle map');
+        this.error.set(err?.error?.message || 'Failed to load concept map');
         this.loading.set(false);
       },
     });
@@ -222,9 +222,9 @@ export class LearningMapComponent implements OnInit, OnDestroy {
       case 'checkpoint':
         this.router.navigate(['/challenges'], { queryParams: { checkpointId: node.id } });
         break;
-      case 'principle':
-        // Navigate to knowledge units filtered by this principle
-        this.router.navigate(['/knowledge-units'], { queryParams: { principleId: node.id } });
+      case 'concept':
+        // Navigate to knowledge units filtered by this concept
+        this.router.navigate(['/knowledge-units'], { queryParams: { conceptId: node.id } });
         break;
     }
   }
@@ -235,14 +235,14 @@ export class LearningMapComponent implements OnInit, OnDestroy {
 
     const data = node.data as unknown as Record<string, unknown>;
 
-    if (node.type === 'outcome' || node.type === 'module' || node.type === 'principle') {
+    if (node.type === 'outcome' || node.type === 'module' || node.type === 'concept') {
       return (data['description'] as string) || '';
     }
     return node.label;
   }
 
   /**
-   * Get additional info for the selected node (for principles, show difficulty and knowledge unit count)
+   * Get additional info for the selected node (for concepts, show difficulty and knowledge unit count)
    */
   getNodeMetadata(): { label: string; value: string }[] {
     const node = this.selectedNode();
@@ -251,7 +251,7 @@ export class LearningMapComponent implements OnInit, OnDestroy {
     const data = node.data as unknown as Record<string, unknown>;
     const metadata: { label: string; value: string }[] = [];
 
-    if (node.type === 'principle') {
+    if (node.type === 'concept') {
       if (data['difficulty']) {
         metadata.push({ label: 'Difficulty', value: data['difficulty'] as string });
       }
@@ -309,7 +309,7 @@ export class LearningMapComponent implements OnInit, OnDestroy {
       next: () => {
         // Reload the current view
         const pathId = this.selectedPathId();
-        if (pathId && this.viewMode() === 'principles') {
+        if (pathId && this.viewMode() === 'concepts') {
           this.loadPrincipleMap(pathId);
         } else {
           this.loadMockData();

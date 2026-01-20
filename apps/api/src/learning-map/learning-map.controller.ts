@@ -87,30 +87,30 @@ export class LearningMapController {
     return await this.learningMapService.getEstimatedTimeToCompletion(outcomeId);
   }
 
-  @Get('principles/:pathId')
-  @ApiOperation({ summary: 'Get principle-based learning map for a learning path' })
-  @ApiResponse({ status: 200, description: 'Principle map retrieved successfully' })
-  async getPrincipleMap(@Param('pathId') pathId: string) {
-    return await this.learningMapService.getPrincipleMap(pathId);
+  @Get('concepts/:pathId')
+  @ApiOperation({ summary: 'Get concept-based learning map for a learning path' })
+  @ApiResponse({ status: 200, description: 'Concept map retrieved successfully' })
+  async getConceptMap(@Param('pathId') pathId: string) {
+    return await this.learningMapService.getConceptMap(pathId);
   }
 
   @Get('learning-paths')
-  @ApiOperation({ summary: 'Get all learning paths with principle counts' })
+  @ApiOperation({ summary: 'Get all learning paths with concept counts' })
   @ApiResponse({ status: 200, description: 'Learning paths retrieved successfully' })
   async getLearningPathsForMap() {
     return await this.learningMapService.getLearningPathsForMap();
   }
 
   @Post('generate/:pathId')
-  @ApiOperation({ summary: 'Generate principles for a learning path using AI' })
-  @ApiResponse({ status: 201, description: 'Principles generated successfully' })
-  @ApiResponse({ status: 400, description: 'Bad request - path already has principles or AI not configured' })
+  @ApiOperation({ summary: 'Generate concepts for a learning path using AI' })
+  @ApiResponse({ status: 201, description: 'Concepts generated successfully' })
+  @ApiResponse({ status: 400, description: 'Bad request - path already has concepts or AI not configured' })
   @ApiResponse({ status: 404, description: 'Learning path not found' })
-  async generatePrinciples(
+  async generateConcepts(
     @Param('pathId') pathId: string,
     @Body() body: { force?: boolean } = {},
   ) {
-    return await this.learningMapService.generatePrinciplesWithAI(pathId, body.force);
+    return await this.learningMapService.generateConceptsWithAI(pathId, body.force);
   }
 
   @Post('ingest/:pathId')
@@ -152,13 +152,13 @@ export class LearningMapController {
     return await this.learningMapService.addSuggestedSource(pathId, body);
   }
 
-  @Post('principles/:id/decompose')
-  @ApiOperation({ summary: 'Decompose a principle into sub-concepts using AI' })
+  @Post('concepts/:id/decompose')
+  @ApiOperation({ summary: 'Decompose a concept into sub-concepts using AI' })
   @ApiResponse({ status: 201, description: 'Sub-concepts generated successfully' })
   @ApiResponse({ status: 400, description: 'Bad request - AI not configured or sub-concepts already exist' })
-  @ApiResponse({ status: 404, description: 'Principle not found' })
-  async decomposePrinciple(@Param('id') principleId: string) {
-    return await this.learningMapService.decomposeIntoSubConcepts(principleId);
+  @ApiResponse({ status: 404, description: 'Concept not found' })
+  async decomposeConcept(@Param('id') conceptId: string) {
+    return await this.learningMapService.decomposeIntoSubConcepts(conceptId);
   }
 
   @Post('sub-concepts/:id/generate-ku')

@@ -11,7 +11,7 @@ export type NodeType =
   | 'checkpoint'
   | 'knowledge-transfer'
   | 'demonstration'
-  | 'principle';
+  | 'concept';
 
 export type NodeStatus =
   | 'not-started'
@@ -80,7 +80,7 @@ export type NodeData =
   | CheckpointNodeData
   | KnowledgeTransferNodeData
   | DemonstrationNodeData
-  | PrincipleNodeData;
+  | ConceptNodeData;
 
 export interface OutcomeNodeData {
   title: string;
@@ -138,12 +138,12 @@ export interface DemonstrationNodeData {
   validatedAt?: Date;
 }
 
-export interface PrincipleNodeData {
+export interface ConceptNodeData {
   title: string;
   description: string;
   difficulty: 'foundational' | 'intermediate' | 'advanced';
   estimatedHours: number;
-  prerequisites: string[]; // principle IDs
+  prerequisites: string[]; // concept IDs
   order: number;
   knowledgeUnitCount?: number;
   masteredAt?: Date;

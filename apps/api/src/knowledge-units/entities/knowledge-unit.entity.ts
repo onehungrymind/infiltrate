@@ -1,7 +1,7 @@
 import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany,PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
 import { LearningPath } from '../../learning-paths/entities/learning-path.entity';
-import { Principle } from '../../principles/entities/principle.entity';
+import { Concept } from '../../concepts/entities/concept.entity';
 import { SubConcept } from '../../sub-concepts/entities/sub-concept.entity';
 import { UserProgress } from '../../user-progress/entities/user-progress.entity';
 
@@ -17,10 +17,10 @@ export class KnowledgeUnit {
   learningPath: LearningPath;
 
   @Column({ nullable: true })
-  principleId: string;
+  conceptId: string;
 
-  @ManyToOne(() => Principle, principle => principle.knowledgeUnits, { nullable: true, onDelete: 'SET NULL' })
-  principle: Principle;
+  @ManyToOne(() => Concept, c => c.knowledgeUnits, { nullable: true, onDelete: 'SET NULL' })
+  parentConcept: Concept;
 
   @Column({ default: 'discovered' })
   type: string; // 'structured' | 'discovered'

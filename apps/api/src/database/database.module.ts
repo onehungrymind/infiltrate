@@ -6,11 +6,12 @@ import { DataSource } from '../data-sources/entities/data-source.entity';
 import { Enrollment } from '../enrollments/entities/enrollment.entity';
 import { KnowledgeUnit } from '../knowledge-units/entities/knowledge-unit.entity';
 import { LearningPath } from '../learning-paths/entities/learning-path.entity';
-import { Principle } from '../principles/entities/principle.entity';
+import { Concept } from '../concepts/entities/concept.entity';
 import { Project } from '../projects/entities/project.entity';
 import { RawContent } from '../raw-content/entities/raw-content.entity';
 import { Source } from '../source-configs/entities/source.entity';
 import { SourcePathLink } from '../source-configs/entities/source-path-link.entity';
+import { SubConcept } from '../sub-concepts/entities/sub-concept.entity';
 import { Feedback } from '../submissions/entities/feedback.entity';
 import { Submission } from '../submissions/entities/submission.entity';
 import { UserProgress } from '../user-progress/entities/user-progress.entity';
@@ -23,7 +24,8 @@ import { SeederService } from './seeder.service';
     TypeOrmModule.forFeature([
       LearningPath,
       KnowledgeUnit,
-      Principle,
+      Concept,
+      SubConcept,
       RawContent,
       Source,
       SourcePathLink,

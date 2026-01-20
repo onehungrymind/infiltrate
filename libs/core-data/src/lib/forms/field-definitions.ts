@@ -1,5 +1,5 @@
 import { FieldDef } from './field-def';
-import { DifficultyLevel, CognitiveLevel, PathStatus, SourceType, ParsingMode, ScheduleFrequency, PrincipleDifficulty, PrincipleStatus } from '@kasita/common-models';
+import { DifficultyLevel, CognitiveLevel, PathStatus, SourceType, ParsingMode, ScheduleFrequency, ConceptDifficulty, ConceptStatus } from '@kasita/common-models';
 
 /**
  * Field definitions for LearningPath entity
@@ -59,10 +59,10 @@ export const learningPathFields: FieldDef[] = [
 ];
 
 /**
- * Field definitions for Principle entity
+ * Field definitions for Concept entity
  * Note: pathId is handled separately, not in form
  */
-export const principleFields: FieldDef[] = [
+export const conceptFields: FieldDef[] = [
   {
     name: 'name',
     label: 'Name',
@@ -80,7 +80,7 @@ export const principleFields: FieldDef[] = [
     minLength: 1,
     maxLength: 2000,
     rows: 4,
-    placeholder: 'Brief description of this principle',
+    placeholder: 'Brief description of this concept',
   },
   {
     name: 'estimatedHours',
@@ -90,7 +90,7 @@ export const principleFields: FieldDef[] = [
     min: 0.5,
     max: 100,
     placeholder: '1',
-    helpText: 'Estimated time to master this principle',
+    helpText: 'Estimated time to master this concept',
   },
   {
     name: 'difficulty',
@@ -109,8 +109,8 @@ export const principleFields: FieldDef[] = [
     type: 'textarea',
     required: false,
     rows: 2,
-    placeholder: 'One principle ID per line',
-    helpText: 'Enter prerequisite principle IDs, one per line',
+    placeholder: 'One concept ID per line',
+    helpText: 'Enter prerequisite concept IDs, one per line',
   },
   {
     name: 'order',
@@ -753,7 +753,7 @@ export const submissionFields: FieldDef[] = [
 
 /**
  * Field definitions for SubConcept entity
- * Note: principleId is handled separately
+ * Note: conceptId is handled separately
  */
 export const subConceptFields: FieldDef[] = [
   {
@@ -783,7 +783,7 @@ export const subConceptFields: FieldDef[] = [
     min: 0,
     max: 1000,
     placeholder: '0',
-    helpText: 'Display order within the principle',
+    helpText: 'Display order within the concept',
   },
 ];
 

@@ -2,19 +2,24 @@
   <!-- Pipeline Header -->
   <div class="pipeline-header">
     <div class="header-left">
-      <h1 class="page-title">Content Pipeline</h1>
+      <h1 class="page-title">Learning Paths</h1>
       @if (selectedLearningPath()) {
         <span class="selected-path-name">{{ selectedLearningPath()?.name }}</span>
       }
     </div>
     <div class="header-right">
       @if (isRunning()) {
-        <app-pipeline-progress-indicator
-          [stages]="pipelineStages"
-          [currentStage]="currentStage"
-          [completedStages]="completedStages"
-          [errorStage]="errorStage"
-        ></app-pipeline-progress-indicator>
+        <div class="pipeline-status">
+          <app-pipeline-progress-indicator
+            [stages]="pipelineStages"
+            [currentStage]="currentStage"
+            [completedStages]="completedStages"
+            [errorStage]="errorStage"
+          ></app-pipeline-progress-indicator>
+          @if (currentProgress()) {
+            <span class="progress-text">{{ currentProgress() }}</span>
+          }
+        </div>
       }
       <button
         class="run-pipeline-btn"
@@ -23,10 +28,10 @@
       >
         @if (isRunning()) {
           <mat-spinner diameter="18" class="btn-spinner"></mat-spinner>
-          <span>Running...</span>
+          <span>Building...</span>
         } @else {
-          <mat-icon>play_arrow</mat-icon>
-          <span>Run Full Pipeline</span>
+          <mat-icon>auto_awesome</mat-icon>
+          <span>Build Learning Path</span>
         }
       </button>
     </div>
@@ -89,35 +94,35 @@
       </div>
     </div>
 
-    <!-- Column 2: Principles -->
+    <!-- Column 2: Concepts -->
     <app-pipeline-column
-      title="Principles"
+      title="Concepts"
       actionLabel="Generate"
       actionIcon="auto_awesome"
-      [items]="principlesSignal"
-      [loading]="generatingPrinciples"
-      [enabled]="canGeneratePrinciples"
+      [items]="conceptsSignal"
+      [loading]="generatingConcepts"
+      [enabled]="canGenerateConcepts"
       [showSecondaryAction]="true"
-      emptyMessage="Select a path to see principles"
+      emptyMessage="Select a path to see concepts"
       emptyIcon="lightbulb"
-      (action)="generatePrinciples()"
-      (secondaryAction)="createNewPrinciple()"
+      (action)="generateConcepts()"
+      (secondaryAction)="createNewConcept()"
     >
-      @for (principle of principles(); track principle.id) {
+      @for (concept of concepts(); track concept.id) {
         <div
           class="item-card"
-          [class.selected]="selectedPrinciple()?.id === principle.id"
-          (click)="selectPrinciple(principle)"
+          [class.selected]="selectedConcept()?.id === concept.id"
+          (click)="selectConcept(concept)"
         >
-          <div class="item-title">{{ principle.name }}</div>
-          @if (principle.description) {
-            <div class="item-description">{{ principle.description }}</div>
+          <div class="item-title">{{ concept.name }}</div>
+          @if (concept.description) {
+            <div class="item-description">{{ concept.description }}</div>
           }
           <div class="item-meta">
-            <span class="difficulty-badge" [class]="'difficulty-' + principle.difficulty">
-              {{ principle.difficulty }}
+            <span class="difficulty-badge" [class]="'difficulty-' + concept.difficulty">
+              {{ concept.difficulty }}
             </span>
-            <button class="edit-btn" (click)="editPrinciple(principle); $event.stopPropagation()">
+            <button class="edit-btn" (click)="editConcept(concept); $event.stopPropagation()">
               <mat-icon>edit</mat-icon>
             </button>
           </div>
@@ -125,23 +130,23 @@
       }
     </app-pipeline-column>
 
-    <!-- Principle Editor Panel -->
-    <div class="editor-panel" [class.open]="isEditingPrinciple()">
+    <!-- Concept Editor Panel -->
+    <div class="editor-panel" [class.open]="isEditingConcept()">
       <div class="editor-panel-inner">
         <div class="editor-header">
-          <h3>{{ editingPrinciple() ? 'Edit Principle' : 'New Principle' }}</h3>
-          <button class="close-btn" (click)="closePrincipleEditor()">
+          <h3>{{ editingConcept() ? 'Edit Concept' : 'New Concept' }}</h3>
+          <button class="close-btn" (click)="closeConceptEditor()">
             <mat-icon>close</mat-icon>
           </button>
         </div>
         <div class="editor-content">
-          @if (isEditingPrinciple()) {
-            <app-principle-detail
-              [principle]="editingPrinciple()"
+          @if (isEditingConcept()) {
+            <app-concept-detail
+              [concept]="editingConcept()"
               [pathId]="selectedLearningPath()?.id || null"
-              (saved)="savePrinciple($event)"
-              (cancelled)="closePrincipleEditor()"
-            ></app-principle-detail>
+              (saved)="saveConcept($event)"
+              (cancelled)="closeConceptEditor()"
+            ></app-concept-detail>
           }
         </div>
       </div>
@@ -156,9 +161,9 @@
       [loading]="decomposing"
       [enabled]="canDecompose"
       [showSecondaryAction]="true"
-      emptyMessage="Select a principle to see sub-concepts"
+      emptyMessage="Select a concept to see sub-concepts"
       emptyIcon="category"
-      (action)="decomposePrinciple()"
+      (action)="decomposeConcept()"
       (secondaryAction)="createNewSubConcept()"
     >
       @for (subConcept of subConcepts(); track subConcept.id) {
@@ -193,7 +198,7 @@
           @if (isEditingSubConcept()) {
             <app-sub-concept-detail
               [subConcept]="editingSubConcept()"
-              [principleId]="selectedPrinciple()?.id || null"
+              [conceptId]="selectedConcept()?.id || null"
               (saved)="saveSubConcept($event)"
               (cancelled)="closeSubConceptEditor()"
             ></app-sub-concept-detail>

@@ -1,7 +1,7 @@
 import { Component, computed,inject, OnInit, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { LearningPath, Principle, Project } from '@kasita/common-models';
-import { LearningPathsFacade, PrincipleFacade,ProjectsFacade } from '@kasita/core-state';
+import { LearningPath, Concept, Project } from '@kasita/common-models';
+import { LearningPathsFacade, ConceptsFacade,ProjectsFacade } from '@kasita/core-state';
 import { MaterialModule } from '@kasita/material';
 
 import {
@@ -30,7 +30,7 @@ import { ProjectsList } from './projects-list/projects-list';
 export class Projects implements OnInit {
   private projectsFacade = inject(ProjectsFacade);
   private learningPathsFacade = inject(LearningPathsFacade);
-  private principleFacade = inject(PrincipleFacade);
+  private conceptsFacade = inject(ConceptsFacade);
 
   private allProjects = toSignal(this.projectsFacade.allProjects$, {
     initialValue: [] as Project[],
@@ -38,8 +38,8 @@ export class Projects implements OnInit {
   private allPaths = toSignal(this.learningPathsFacade.allLearningPaths$, {
     initialValue: [] as LearningPath[],
   });
-  private allPrinciples = toSignal(this.principleFacade.allPrinciples$, {
-    initialValue: [] as Principle[],
+  private allConcepts = toSignal(this.conceptsFacade.allConcepts$, {
+    initialValue: [] as Concept[],
   });
   selectedProject = toSignal(this.projectsFacade.selectedProject$, {
     initialValue: null,
@@ -56,8 +56,8 @@ export class Projects implements OnInit {
   // Get paths for dropdown
   paths = computed(() => this.allPaths());
 
-  // Get principles for linking
-  principles = computed(() => this.allPrinciples());
+  // Get concepts for linking
+  concepts = computed(() => this.allConcepts());
 
   // Dynamic filter configuration
   filterConfigs = computed<FilterConfig[]>(() => {
@@ -106,7 +106,7 @@ export class Projects implements OnInit {
 
   ngOnInit(): void {
     this.learningPathsFacade.loadLearningPaths();
-    this.principleFacade.loadPrinciples();
+    this.conceptsFacade.loadConcepts();
     this.reset();
   }
 

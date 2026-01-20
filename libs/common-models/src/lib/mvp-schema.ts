@@ -42,9 +42,9 @@ export interface BaseEntity {
   
   export type UserRole = 'guest' | 'user' | 'mentor' | 'manager' | 'admin';
 
-  export type PrincipleDifficulty = 'foundational' | 'intermediate' | 'advanced';
+  export type ConceptDifficulty = 'foundational' | 'intermediate' | 'advanced';
 
-  export type PrincipleStatus = 'pending' | 'in_progress' | 'mastered';
+  export type ConceptStatus = 'pending' | 'in_progress' | 'mastered';
 
   export type KnowledgeUnitType = 'structured' | 'discovered';
 
@@ -105,28 +105,28 @@ export interface BaseEntity {
   }
 
   /**
-   * A principle - core concept within a learning path
+   * A concept - core concept within a learning path
    */
-  export interface Principle extends BaseEntity {
+  export interface Concept extends BaseEntity {
     pathId: string;                  // Links to LearningPath
     name: string;                    // "Server Components"
     description: string;             // Brief explanation
     estimatedHours: number;          // Time to master
-    difficulty: PrincipleDifficulty; // 'foundational' | 'intermediate' | 'advanced'
-    prerequisites: string[];         // IDs of prerequisite principles
+    difficulty: ConceptDifficulty;   // 'foundational' | 'intermediate' | 'advanced'
+    prerequisites: string[];         // IDs of prerequisite concepts
     order: number;                   // Display order in learning map
-    status: PrincipleStatus;         // 'pending' | 'in_progress' | 'mastered'
+    status: ConceptStatus;           // 'pending' | 'in_progress' | 'mastered'
   }
 
   /**
-   * A sub-concept - intermediate layer between principle and knowledge units
-   * Used in the Assembly Flow to break down principles into smaller teachable units
+   * A sub-concept - intermediate layer between concept and knowledge units
+   * Used in the Assembly Flow to break down concepts into smaller teachable units
    */
   export interface SubConcept extends BaseEntity {
-    principleId: string;             // Links to Principle
+    conceptId: string;               // Links to Concept
     name: string;                    // "Component Composition"
     description: string;             // What this sub-concept covers
-    order: number;                   // Display order within principle
+    order: number;                   // Display order within concept
   }
 
   /**
@@ -176,13 +176,13 @@ export interface BaseEntity {
   }
 
   /**
-   * Junction table: Project ↔ Principle (many-to-many)
+   * Junction table: Project ↔ Concept (many-to-many)
    */
-  export interface ProjectPrinciple extends BaseEntity {
+  export interface ProjectConcept extends BaseEntity {
     projectId: string;
-    principleId: string;
+    conceptId: string;
     weight: number;                  // % of total grade (0-100)
-    rubricCriteria: RubricCriterion[]; // Criteria for this principle
+    rubricCriteria: RubricCriterion[]; // Criteria for this concept
   }
 
   /**
@@ -285,7 +285,7 @@ export interface BaseEntity {
    */
   export interface KnowledgeUnit extends BaseEntity {
     pathId: string;
-    principleId?: string;            // Optional link to Principle
+    conceptId?: string;              // Optional link to Concept
     type: KnowledgeUnitType;         // 'structured' | 'discovered'
     subConceptId?: string;           // Optional link to SubConcept (for structured KUs)
 
@@ -413,28 +413,28 @@ export interface BaseEntity {
     completedAt?: Date;
   }
 
-  export interface CreatePrincipleDto {
+  export interface CreateConceptDto {
     pathId: string;
     name: string;
     description: string;
     estimatedHours?: number;
-    difficulty?: PrincipleDifficulty;
+    difficulty?: ConceptDifficulty;
     prerequisites?: string[];
     order?: number;
   }
 
-  export interface UpdatePrincipleDto {
+  export interface UpdateConceptDto {
     name?: string;
     description?: string;
     estimatedHours?: number;
-    difficulty?: PrincipleDifficulty;
+    difficulty?: ConceptDifficulty;
     prerequisites?: string[];
     order?: number;
-    status?: PrincipleStatus;
+    status?: ConceptStatus;
   }
 
   export interface CreateSubConceptDto {
-    principleId: string;
+    conceptId: string;
     name: string;
     description: string;
     order?: number;
@@ -521,7 +521,7 @@ export interface BaseEntity {
   
   export interface CreateKnowledgeUnitDto {
     pathId: string;
-    principleId?: string;
+    conceptId?: string;
     type?: KnowledgeUnitType;
     subConceptId?: string;
     concept: string;
@@ -539,7 +539,7 @@ export interface BaseEntity {
   }
 
   export interface UpdateKnowledgeUnitDto {
-    principleId?: string;
+    conceptId?: string;
     type?: KnowledgeUnitType;
     subConceptId?: string;
     concept?: string;
@@ -682,14 +682,14 @@ export interface BaseEntity {
     isActive?: boolean;
   }
 
-  // ProjectPrinciple DTO for linking principles to projects
-  export interface LinkPrincipleDto {
-    principleId: string;
+  // ProjectConcept DTO for linking concepts to projects
+  export interface LinkConceptDto {
+    conceptId: string;
     weight: number;
     rubricCriteria?: RubricCriterion[];
   }
 
-  export interface UpdateProjectPrincipleDto {
+  export interface UpdateProjectConceptDto {
     weight?: number;
     rubricCriteria?: RubricCriterion[];
   }
