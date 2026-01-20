@@ -431,6 +431,11 @@
   &:last-child {
     margin-bottom: 0;
   }
+
+  &.completed {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+  }
 }
 
 .priority-badge {
@@ -451,6 +456,11 @@
   font-size: 14px;
   font-weight: 500;
   color: #1f2937;
+
+  &.line-through {
+    text-decoration: line-through;
+    color: #6b7280;
+  }
 }
 
 .priority-desc {

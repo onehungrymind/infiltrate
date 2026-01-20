@@ -36,13 +36,18 @@ interface PriorityItem {
   styleUrl: './completion-assessment.component.scss',
 })
 export class CompletionAssessment {
-  lastUpdated = signal('January 19, 2026');
-  overallCompletion = signal(55);
+  lastUpdated = signal('January 20, 2026');
+  overallCompletion = signal(78);
 
   // Executive summary
   whatWeHave = signal([
-    'Full CRUD for all entities (Learning Paths, Principles, KUs, Challenges, Projects, etc.)',
-    'AI-powered content generation (principles, sources, feedback, gymnasium sessions)',
+    'Full CRUD for all entities (Learning Paths, Concepts, Sub-concepts, KUs, Challenges, Projects, etc.)',
+    'Knowledge Architecture: Clear hierarchy with Concepts → Sub-concepts → KUs',
+    '"Build Learning Path" button: One-click AI generation of full path structure',
+    'BullMQ Pipeline: Background job processing with Redis queue',
+    'WebSocket Real-time Updates: UI updates dynamically as entities are created',
+    'Resilient Pipeline: Survives browser refresh, reconnects to active jobs',
+    'AI-powered content generation (concepts, sub-concepts, KUs, sources, feedback, gymnasium sessions)',
     'Content pipeline (ingest → synthesize → knowledge units)',
     'Study tools (flashcards, quizzes with SM-2)',
     'Multiple visualizations (React Flow, Skill Tree, Metro Maps, Mind Map, etc.)',
@@ -50,8 +55,6 @@ export class CompletionAssessment {
   ]);
 
   whatsMissing = signal([
-    'Knowledge Architecture: No semantic link between KUs and Principles',
-    'Curriculum Structure: No way to sequence content or define prerequisites',
     'Learner Experience: No guided learning UI - only admin CRUD screens',
     'Progress Rollup: SM-2 tracks items, not curriculum completion',
     'Mastery Model: No way to prove competency or gate progress',
@@ -62,9 +65,10 @@ export class CompletionAssessment {
   areaStatus = signal<AreaStatus[]>([
     { name: 'Content Components', progress: 85, status: 'strong', color: '#22c55e' },
     { name: 'Admin/Authoring Tools', progress: 90, status: 'strong', color: '#22c55e' },
-    { name: 'AI Integration', progress: 85, status: 'strong', color: '#22c55e' },
-    { name: 'Knowledge Architecture', progress: 15, status: 'critical-gap', color: '#ef4444' },
-    { name: 'Curriculum Design', progress: 10, status: 'critical-gap', color: '#ef4444' },
+    { name: 'AI Integration', progress: 90, status: 'strong', color: '#22c55e' },
+    { name: 'Knowledge Architecture', progress: 85, status: 'strong', color: '#22c55e' },
+    { name: 'Background Jobs/Pipeline', progress: 85, status: 'strong', color: '#22c55e' },
+    { name: 'Curriculum Design', progress: 50, status: 'partial', color: '#f59e0b' },
     { name: 'Learner Experience', progress: 20, status: 'critical-gap', color: '#ef4444' },
     { name: 'Progress & Mastery', progress: 30, status: 'partial', color: '#f59e0b' },
     { name: 'Content Quality Control', progress: 25, status: 'partial', color: '#f59e0b' },
@@ -72,20 +76,6 @@ export class CompletionAssessment {
 
   // Critical gaps
   criticalGaps = signal<CriticalGap[]>([
-    {
-      name: 'Knowledge Architecture',
-      progress: 15,
-      problem: 'KUs and Principles exist in parallel, not hierarchically. No semantic link.',
-      currentState: ['KU entity with CRUD', 'Principle entity with CRUD', 'Both linked to Learning Path'],
-      missingItems: ['KU → Principle mapping', 'Principle → KU requirements', 'Coverage visibility'],
-    },
-    {
-      name: 'Curriculum Design & Sequencing',
-      progress: 10,
-      problem: 'Visualizations are read-only displays. No way to author curriculum with sequencing.',
-      currentState: ['Multiple visualization components', 'Learning Path entity', 'Principle ordering'],
-      missingItems: ['Prerequisite relationships', 'Module grouping', 'Sequencing rules', 'Curriculum builder UI'],
-    },
     {
       name: 'Learner Experience',
       progress: 20,
@@ -96,9 +86,9 @@ export class CompletionAssessment {
     {
       name: 'Progress & Mastery Model',
       progress: 30,
-      problem: 'SM-2 tracks item recall. No rollup to principle/curriculum mastery.',
+      problem: 'SM-2 tracks item recall. No rollup to concept/curriculum mastery.',
       currentState: ['UserProgress entity with SM-2', 'Item-level tracking', 'Basic stats'],
-      missingItems: ['Principle mastery calculation', 'Module completion', 'Curriculum progress %', 'Mastery thresholds'],
+      missingItems: ['Concept mastery calculation', 'Sub-concept completion', 'Curriculum progress %', 'Mastery thresholds'],
     },
     {
       name: 'Content Quality Control',
@@ -108,18 +98,11 @@ export class CompletionAssessment {
       missingItems: ['KU approval workflow UI', 'Review queue', 'Reject/revise flow', 'Coverage report'],
     },
     {
-      name: 'Schedule & Deadline Integration',
-      progress: 5,
-      problem: 'No way to assign dates to curriculum items.',
-      currentState: ['Calendar component exists', 'targetDate field on Learning Path'],
-      missingItems: ['Module/principle deadlines', 'Schedule view', 'Deadline warnings', 'Pace tracking'],
-    },
-    {
-      name: 'Assessment & Competency',
-      progress: 20,
-      problem: 'No way to prove mastery. Challenges not tied to principles.',
-      currentState: ['Challenge/Project entities', 'Submission system', 'AI/mentor feedback', 'Grading'],
-      missingItems: ['Challenge → Principle mapping', 'Mastery gates', 'Competency portfolio', 'Certificates'],
+      name: 'Curriculum Design & Sequencing',
+      progress: 50,
+      problem: 'Prerequisites exist but are not enforced. No manual curriculum editor.',
+      currentState: ['Prerequisites field on Concepts', 'Order fields', 'AI generates prerequisites', 'Hierarchical display'],
+      missingItems: ['Prerequisite enforcement', 'Curriculum builder UI', 'Topological sort visualization'],
     },
   ]);
 
@@ -129,7 +112,9 @@ export class CompletionAssessment {
     { name: 'JWT Authentication', status: 'complete' },
     { name: 'Content Ingestion Pipeline', status: 'complete' },
     { name: 'Knowledge Unit Synthesis', status: 'complete' },
-    { name: 'AI Principle Generation', status: 'complete' },
+    { name: 'AI Concept Generation', status: 'complete' },
+    { name: 'AI Sub-concept Decomposition', status: 'complete' },
+    { name: 'AI Structured KU Generation', status: 'complete' },
     { name: 'AI Source Suggestions', status: 'complete' },
     { name: 'AI Feedback Generation', status: 'complete' },
     { name: 'AI Session Generation', status: 'complete' },
@@ -140,14 +125,14 @@ export class CompletionAssessment {
     { name: 'Mentor Dashboard', status: 'complete' },
     { name: 'Visualizations (6 types)', status: 'complete' },
     { name: 'User Enrollments', status: 'complete' },
-    { name: 'Pipeline Orchestrator', status: 'complete' },
+    { name: 'Build Learning Path Pipeline', status: 'complete' },
+    { name: 'Knowledge Hierarchy', status: 'complete' },
+    { name: 'BullMQ Job Queue', status: 'complete' },
+    { name: 'WebSocket Real-time Updates', status: 'complete' },
   ]);
 
   // Missing integration layer
   missingIntegration = signal<ComponentStatus[]>([
-    { name: 'KU → Principle Mapping', status: 'missing' },
-    { name: 'Curriculum Builder', status: 'missing' },
-    { name: 'Prerequisite System', status: 'missing' },
     { name: 'Learner Dashboard', status: 'missing' },
     { name: 'Progress Rollup', status: 'missing' },
     { name: 'Mastery Gates', status: 'missing' },
@@ -158,15 +143,15 @@ export class CompletionAssessment {
 
   // Priority roadmap
   priorityRoadmap = signal<PriorityItem[]>([
-    { priority: 'P0', name: 'KU → Principle Mapping', description: 'Add relationship and basic mapping UI', status: 'not-started' },
-    { priority: 'P0', name: 'Learner Dashboard (MVP)', description: 'Show enrolled paths and principles with KUs', status: 'not-started' },
-    { priority: 'P0', name: 'Basic Progress Rollup', description: 'Calculate principle mastery from KU progress', status: 'not-started' },
-    { priority: 'P1', name: 'Curriculum Sequencing', description: 'Prerequisites field and ordering UI', status: 'not-started' },
+    { priority: 'P0', name: 'Knowledge Architecture', description: 'Concepts → Sub-concepts → KUs hierarchy', status: 'complete' },
+    { priority: 'P0', name: 'Background Job Processing', description: 'BullMQ pipeline with WebSocket updates', status: 'complete' },
+    { priority: 'P0', name: 'Learner Dashboard (MVP)', description: 'Show enrolled paths, concepts, KUs with study links', status: 'not-started' },
+    { priority: 'P0', name: 'Basic Progress Rollup', description: 'Calculate concept mastery from KU progress', status: 'not-started' },
+    { priority: 'P1', name: 'Prerequisite Enforcement', description: 'Gate access to concepts based on prerequisites', status: 'not-started' },
     { priority: 'P1', name: 'KU Approval Workflow', description: 'Review queue with approve/reject', status: 'not-started' },
-    { priority: 'P1', name: 'Challenge → Principle Mapping', description: 'Link challenges to principles they assess', status: 'not-started' },
+    { priority: 'P2', name: 'Challenge → Concept Mapping', description: 'Link challenges to concepts they assess', status: 'not-started' },
     { priority: 'P2', name: 'Schedule Integration', description: 'Deadlines and pace tracking', status: 'not-started' },
     { priority: 'P2', name: 'Portfolio & Certificates', description: 'Export work and generate credentials', status: 'not-started' },
-    { priority: 'P2', name: 'Cohort Management', description: 'Group enrollments and class progress', status: 'not-started' },
   ]);
 
   // Computed stats
@@ -250,6 +235,28 @@ export class CompletionAssessment {
         return 'bg-yellow-100 text-yellow-700';
       case 'P2':
         return 'bg-blue-100 text-blue-700';
+    }
+  }
+
+  getPriorityStatusClass(status: PriorityItem['status']): string {
+    switch (status) {
+      case 'complete':
+        return 'bg-green-100 text-green-700';
+      case 'in-progress':
+        return 'bg-blue-100 text-blue-700';
+      case 'not-started':
+        return 'bg-gray-100 text-gray-700';
+    }
+  }
+
+  getPriorityStatusIcon(status: PriorityItem['status']): string {
+    switch (status) {
+      case 'complete':
+        return '✓';
+      case 'in-progress':
+        return '◐';
+      case 'not-started':
+        return '○';
     }
   }
 }

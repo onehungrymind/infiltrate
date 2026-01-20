@@ -1,0 +1,228 @@
+<div class="pipeline-container">
+  <!-- Pipeline Header -->
+  <div class="pipeline-header">
+    <div class="header-left">
+      <h1 class="page-title">Discovery Pipeline</h1>
+      @if (selectedLearningPath()) {
+        <span class="selected-path-name">{{ selectedLearningPath()?.name }}</span>
+      }
+    </div>
+    <div class="header-right">
+      @if (isRunning()) {
+        <app-pipeline-progress-indicator
+          [stages]="pipelineStages"
+          [currentStage]="currentStage"
+          [completedStages]="completedStages"
+          [errorStage]="errorStage"
+        ></app-pipeline-progress-indicator>
+      }
+      <button
+        class="run-pipeline-btn"
+        [disabled]="!canRunPipeline()"
+        (click)="runFullPipeline()"
+      >
+        @if (isRunning()) {
+          <mat-spinner diameter="18" class="btn-spinner"></mat-spinner>
+          <span>Running...</span>
+        } @else {
+          <mat-icon>play_arrow</mat-icon>
+          <span>Run Full Pipeline</span>
+        }
+      </button>
+    </div>
+  </div>
+
+  <!-- Columns Container -->
+  <div class="columns-container">
+    <div class="columns-inner">
+    <!-- Column 1: Learning Paths -->
+    <app-pipeline-column
+      title="Learning Paths"
+      actionLabel="New Path"
+      actionIcon="add"
+      [items]="learningPathsSignal"
+      [loading]="alwaysFalse"
+      [enabled]="alwaysTrue"
+      emptyMessage="No learning paths"
+      emptyIcon="school"
+      (action)="createNewLearningPath()"
+    >
+      @if (!learningPathsLoaded()) {
+        <div class="loading-state">
+          <mat-spinner diameter="24"></mat-spinner>
+        </div>
+      } @else {
+        <app-learning-paths-list
+          [learningPaths]="learningPaths()"
+          [selectedLearningPath]="selectedLearningPath()"
+          [compact]="true"
+          (selected)="selectLearningPath($event)"
+          (deleted)="deleteLearningPath($event)"
+          (edited)="editLearningPath($event)"
+        ></app-learning-paths-list>
+      }
+    </app-pipeline-column>
+
+    <!-- Learning Path Editor Panel -->
+    <div class="editor-panel" [class.open]="isEditingPath()">
+      <div class="editor-panel-inner">
+        <div class="editor-header">
+          <h3>{{ editingPath() ? 'Edit Learning Path' : 'New Learning Path' }}</h3>
+          <button class="close-btn" (click)="closePathEditor()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+        <div class="editor-content">
+          @if (isEditingPath()) {
+            <app-learning-path-detail
+              [learningPath]="editingPath()"
+              (saved)="saveLearningPath($event)"
+              (cancelled)="closePathEditor()"
+            ></app-learning-path-detail>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Column 2: Sources -->
+    <app-pipeline-column
+      title="Sources"
+      actionLabel="Suggest"
+      actionIcon="tips_and_updates"
+      [items]="sourcesSignal"
+      [loading]="suggestingSources"
+      [enabled]="canSuggestSources"
+      [showSecondaryAction]="true"
+      emptyMessage="No sources configured"
+      emptyIcon="link"
+      (action)="suggestSources()"
+      (secondaryAction)="createNewSource()"
+    >
+      @for (source of sources(); track source.id) {
+        <div class="item-card" (click)="editSource(source)">
+          <div class="item-title">{{ source.name }}</div>
+          <div class="item-meta">
+            <span class="source-type">{{ source.type }}</span>
+            @if (!source.enabled) {
+              <span class="source-disabled">Disabled</span>
+            }
+          </div>
+        </div>
+      }
+    </app-pipeline-column>
+
+    <!-- Source Editor Panel -->
+    <div class="editor-panel" [class.open]="isEditingSource()">
+      <div class="editor-panel-inner">
+        <div class="editor-header">
+          <h3>{{ editingSource() ? 'Edit Source' : 'New Source' }}</h3>
+          <button class="close-btn" (click)="closeSourceEditor()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+        <div class="editor-content">
+          @if (isEditingSource()) {
+            <app-source-detail
+              [source]="editingSource()"
+              [pathId]="selectedLearningPath()?.id || null"
+              (saved)="saveSource($event)"
+              (cancelled)="closeSourceEditor()"
+            ></app-source-detail>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Column 3: Raw Content -->
+    <app-pipeline-column
+      title="Raw Content"
+      actionLabel="Ingest"
+      actionIcon="download"
+      [items]="rawContentSignal"
+      [loading]="ingesting"
+      [enabled]="canIngest"
+      emptyMessage="No raw content"
+      emptyIcon="description"
+      (action)="triggerIngestion()"
+    >
+      @for (content of rawContent(); track content.id) {
+        <div class="item-card" (click)="editRawContent(content)">
+          <div class="item-title">{{ content.title || 'Untitled' }}</div>
+          @if (content.sourceType) {
+            <div class="item-meta">
+              <span class="source-type">{{ content.sourceType }}</span>
+            </div>
+          }
+        </div>
+      }
+    </app-pipeline-column>
+
+    <!-- Raw Content Editor Panel -->
+    <div class="editor-panel" [class.open]="isEditingRawContent()">
+      <div class="editor-panel-inner">
+        <div class="editor-header">
+          <h3>Raw Content</h3>
+          <button class="close-btn" (click)="closeRawContentEditor()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+        <div class="editor-content">
+          @if (isEditingRawContent()) {
+            <app-raw-content-detail
+              [rawContent]="editingRawContent()"
+              [pathId]="selectedLearningPath()?.id || null"
+              (cancelled)="closeRawContentEditor()"
+            ></app-raw-content-detail>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Column 4: Knowledge Units -->
+    <app-pipeline-column
+      title="Knowledge Units"
+      actionLabel="Synthesize"
+      actionIcon="auto_awesome"
+      [items]="knowledgeUnitsSignal"
+      [loading]="synthesizing"
+      [enabled]="canSynthesize"
+      emptyMessage="No discovered knowledge units"
+      emptyIcon="psychology"
+      (action)="triggerSynthesis()"
+    >
+      @for (unit of discoveredKnowledgeUnits(); track unit.id) {
+        <div class="item-card" (click)="editKnowledgeUnit(unit)">
+          <div class="item-title">{{ unit.concept }}</div>
+          <div class="item-meta">
+            <span class="unit-type discovered">discovered</span>
+            @if (unit.status) {
+              <span class="unit-status" [class]="'status-' + unit.status">{{ unit.status }}</span>
+            }
+          </div>
+        </div>
+      }
+    </app-pipeline-column>
+
+    <!-- Knowledge Unit Editor Panel -->
+    <div class="editor-panel" [class.open]="isEditingKnowledgeUnit()">
+      <div class="editor-panel-inner">
+        <div class="editor-header">
+          <h3>Knowledge Unit</h3>
+          <button class="close-btn" (click)="closeKnowledgeUnitEditor()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+        <div class="editor-content">
+          @if (isEditingKnowledgeUnit()) {
+            <app-knowledge-unit-detail
+              [knowledgeUnit]="editingKnowledgeUnit()"
+              [pathId]="selectedLearningPath()?.id || null"
+              (cancelled)="closeKnowledgeUnitEditor()"
+            ></app-knowledge-unit-detail>
+          }
+        </div>
+      </div>
+    </div>
+    </div>
+  </div>
+</div>

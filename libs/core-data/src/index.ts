@@ -5,6 +5,7 @@
 export * from './lib/config/api-url.token';
 export * from './lib/services/auth.service';
 export * from './lib/guards/auth.guard';
+export * from './lib/guards/role.guard';
 export * from './lib/interceptors/auth.interceptor';
 export * from './lib/interceptors/error.interceptor';
 export * from './lib/error-handler/global-error-handler';

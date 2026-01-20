@@ -14,9 +14,14 @@ export class AuthService {
 
   async validateUser(email: string, password: string): Promise<any> {
     const user = await this.usersService.findByEmail(email);
+    console.log('Login attempt:', { email, userFound: !!user, hasPassword: !!user?.password });
     if (user && await this.usersService.validatePassword(password, user.password)) {
       const { password: _, ...result } = user;
       return result;
+    }
+    if (user) {
+      const isValid = await this.usersService.validatePassword(password, user.password);
+      console.log('Password validation:', { isValid, passwordLength: user.password?.length });
     }
     return null;
   }

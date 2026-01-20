@@ -1,24 +1,31 @@
 # Kasita MVP Completion Assessment
 
-**Last Updated**: January 19, 2026 (Evening)
-**Overall Completion**: 68%
+**Last Updated**: January 20, 2026
+**Overall Completion**: 78%
 
 ---
 
 ## Executive Summary
 
-Kasita has made **significant progress** on the Knowledge Architecture gap. The system now has a clear hierarchical structure:
+Kasita has made **major progress** on the unified workflow. The "Build Learning Path" pipeline is now resilient and provides real-time feedback:
 
 ```
 Learning Path → Concepts → Sub-concepts → Knowledge Units
+     ↓              ↓            ↓              ↓
+   [Create]    [AI Generate] [AI Decompose] [AI Generate]
+                    ↓              ↓              ↓
+              [WebSocket]   [WebSocket]    [WebSocket]
+                    ↓              ↓              ↓
+              [UI Updates]  [UI Updates]   [UI Updates]
 ```
-
-This semantic hierarchy enables curriculum design, progress rollup, and structured learning paths.
 
 ### What We Have
 - Full CRUD for all entities (Learning Paths, Concepts, Sub-concepts, KUs, Challenges, Projects, Submissions, etc.)
 - **Knowledge Architecture**: Clear hierarchy with Concepts → Sub-concepts → KUs
 - **"Build Learning Path" button**: One-click AI generation of full path structure
+- **BullMQ Pipeline**: Background job processing with Redis queue
+- **WebSocket Real-time Updates**: UI updates dynamically as entities are created
+- **Resilient Pipeline**: Survives browser refresh, reconnects to active jobs
 - AI-powered content generation (concepts, sub-concepts, KUs, sources, feedback, gymnasium sessions)
 - Content pipeline (ingest → synthesize → knowledge units)
 - Study tools (flashcards, quizzes with SM-2)
@@ -30,7 +37,6 @@ This semantic hierarchy enables curriculum design, progress rollup, and structur
 - **Progress Rollup**: SM-2 tracks items, not curriculum completion
 - **Mastery Model**: No way to prove competency or gate progress
 - **Quality Control**: No KU approval workflow
-- **Background Jobs**: Long-running pipeline needs resilience
 
 ---
 
@@ -41,7 +47,8 @@ This semantic hierarchy enables curriculum design, progress rollup, and structur
 | Content Components | 85% | :white_check_mark: Strong |
 | Admin/Authoring Tools | 90% | :white_check_mark: Strong |
 | AI Integration | 90% | :white_check_mark: Strong |
-| Knowledge Architecture | 75% | :white_check_mark: Major Progress |
+| Knowledge Architecture | 85% | :white_check_mark: Strong |
+| **Background Jobs/Pipeline** | 85% | :white_check_mark: **Major Progress** |
 | Curriculum Design | 50% | :yellow_circle: Partial |
 | Learner Experience | 20% | :red_circle: Critical Gap |
 | Progress & Mastery | 30% | :yellow_circle: Partial |
@@ -49,95 +56,118 @@ This semantic hierarchy enables curriculum design, progress rollup, and structur
 
 ---
 
-## Today's Progress (January 19, 2026 Evening)
+## Today's Progress (January 20, 2026)
 
-### Completed: Principles → Concepts Rename
+### Completed: BullMQ Pipeline with WebSocket Real-time Updates
 
-Renamed "Principles" to "Concepts" throughout the entire codebase for semantic clarity:
+Replaced frontend-only pipeline with robust backend job processing:
 
-- **Backend**: Entity, module, service, controller, DTOs all renamed
-- **Frontend**: NgRx state (actions, effects, feature, facade), components, routes
-- **Common Models**: Type definitions updated
-- **Navigation**: `/principles` route → `/concepts`
+**Backend Infrastructure**:
+- BullMQ + Redis job queue for long-running operations
+- Three workers: `build-path`, `decompose-concept`, `generate-ku`
+- Job steps tracked in database with status and progress
+- EventEmitter → WebSocket Gateway for real-time events
 
-This establishes the correct hierarchy:
-- **Learning Path**: The overall learning objective
-- **Concept**: A core idea or skill to master (was "Principle")
-- **Sub-concept**: A decomposed part of a concept
-- **Knowledge Unit**: Atomic learning content
+**WebSocket Implementation**:
+- Socket.io gateway with namespace `/jobs`
+- Room-based subscriptions per job ID
+- Progress events include entity data (concepts, sub-concepts, KUs)
+- Reconnection support - page refresh doesn't lose progress
 
-### Completed: Knowledge Architecture
+**Real-time UI Updates**:
+- Concepts list populates as concepts are generated
+- Sub-concepts appear under selected concept as they're decomposed
+- Knowledge units appear under selected sub-concept as generated
+- Automatic selection follows the build progress
 
-The hierarchical structure is now fully implemented:
+**Key Files Added**:
+- `apps/api/src/jobs/` - Full jobs module with workers
+- `apps/api/src/progress/progress.gateway.ts` - WebSocket gateway
+- `libs/core-data/src/lib/services/websocket/websocket.service.ts` - Frontend WebSocket client
+- `libs/core-state/src/lib/build-jobs/` - NgRx state management
+
+### Architecture Diagram
 
 ```
-Learning Path
-├── Concept 1
-│   ├── Sub-concept 1.1
-│   │   ├── KU 1.1.1
-│   │   ├── KU 1.1.2
-│   │   └── KU 1.1.3
-│   ├── Sub-concept 1.2
-│   │   └── ...
-│   └── Sub-concept 1.3
-├── Concept 2
-│   └── ...
-└── Concept N
+┌─────────────────────────────────────────────────────────────────┐
+│                         Dashboard                                │
+│  ┌──────────────┐   ┌──────────────┐   ┌──────────────────────┐ │
+│  │ Learning     │   │ Concepts     │   │ Sub-concepts / KUs   │ │
+│  │ Path List    │──▶│ List         │──▶│ Lists                │ │
+│  └──────────────┘   └──────────────┘   └──────────────────────┘ │
+│         │                  ▲                     ▲               │
+│         │                  │                     │               │
+│         │         ┌────────┴─────────────────────┘               │
+│         ▼         │     WebSocket (progress events)              │
+│  ┌──────────────┐ │                                              │
+│  │ Build Button │ │                                              │
+│  └──────┬───────┘ │                                              │
+└─────────┼─────────┼──────────────────────────────────────────────┘
+          │         │
+          ▼         │
+┌─────────────────────────────────────────────────────────────────┐
+│                           API                                    │
+│  ┌──────────────┐        ┌──────────────────────────────────┐   │
+│  │ Jobs         │        │ Progress Gateway (WebSocket)     │   │
+│  │ Controller   │        │ - Rooms per job ID               │   │
+│  └──────┬───────┘        │ - Broadcasts progress events     │   │
+│         │                └──────────────▲───────────────────┘   │
+│         ▼                               │                        │
+│  ┌──────────────┐              ┌────────┴────────┐              │
+│  │ Jobs Service │──────────────│ EventEmitter    │              │
+│  └──────┬───────┘              └────────▲────────┘              │
+│         │                               │                        │
+│         ▼                               │                        │
+│  ┌──────────────┐                       │                        │
+│  │ BullMQ Queue │                       │                        │
+│  └──────┬───────┘                       │                        │
+└─────────┼───────────────────────────────┼────────────────────────┘
+          │                               │
+          ▼                               │
+┌─────────────────────────────────────────┼────────────────────────┐
+│                    Redis                │                        │
+│  ┌──────────────────────────────────────┼──────────────────────┐ │
+│  │              Job Queues              │                      │ │
+│  │  ┌────────────┐  ┌────────────┐  ┌───┴────────┐            │ │
+│  │  │ build-path │  │ decompose  │  │ generate-ku │            │ │
+│  │  │   queue    │  │   queue    │  │    queue    │            │ │
+│  │  └─────┬──────┘  └─────┬──────┘  └──────┬─────┘            │ │
+│  └────────┼───────────────┼────────────────┼─────────────────-┘ │
+└───────────┼───────────────┼────────────────┼─────────────────────┘
+            │               │                │
+            ▼               ▼                ▼
+     ┌────────────┐  ┌────────────┐  ┌────────────┐
+     │ BuildPath  │  │ Decompose  │  │ GenerateKU │
+     │   Worker   │─▶│   Worker   │─▶│   Worker   │
+     └────────────┘  └────────────┘  └────────────┘
+            │               │                │
+            └───────────────┴────────────────┘
+                            │
+                   emitProgress() → EventEmitter
 ```
-
-**Database relationships**:
-- `Concept.pathId` → Learning Path
-- `SubConcept.conceptId` → Concept
-- `KnowledgeUnit.subConceptId` → Sub-concept (for structured KUs)
-- `KnowledgeUnit.conceptId` → Concept (optional, for linking)
-
-### Completed: "Build Learning Path" Super Button
-
-One-click AI generation of full path structure:
-
-1. **Generate Concepts** (8-15 concepts with prerequisites)
-2. **Decompose each Concept** → Sub-concepts (3-5 per concept)
-3. **Generate KUs for each Sub-concept** (3-5 per sub-concept)
-
-**Pipeline UI shows**:
-- Stage progress: Concepts → Sub-concepts → KUs
-- Current operation: "Decomposing concept 3/10: Server Actions"
-- Real-time updates as each stage completes
-
-**Current limitation**: Pipeline runs in frontend, browser refresh kills it. Identified need for background job queue.
-
-### Completed: Simplified Seeder
-
-Seeder now only seeds foundation data:
-- Users (test user + mentor)
-- Learning Paths (3 sample paths)
-- Enrollments
-
-All downstream content (concepts, sub-concepts, KUs) is generated via AI through the "Build Learning Path" button.
 
 ---
 
 ## Gap Status (Updated)
 
-### Gap 1: Knowledge Architecture (75%) ↑ from 15%
+### Gap 1: Knowledge Architecture (85%) ↑ from 75%
 
-**MAJOR PROGRESS**
+**COMPLETE**
 
-- [x] Concept entity with CRUD (renamed from Principle)
+- [x] Concept entity with CRUD
 - [x] Sub-concept entity with CRUD
 - [x] KU entity with CRUD
 - [x] Concept → Sub-concept → KU hierarchy
 - [x] KU `subConceptId` and `conceptId` fields
 - [x] AI generation for all levels
 - [x] Prerequisites field on Concepts
+- [x] **Real-time UI updates as entities are created**
 - [ ] Coverage visibility UI (which concepts have sufficient KUs?)
 - [ ] Validation that a concept has minimum KU coverage
 
 ---
 
-### Gap 2: Curriculum Design & Sequencing (50%) ↑ from 10%
-
-**GOOD PROGRESS**
+### Gap 2: Curriculum Design & Sequencing (50%) - Unchanged
 
 - [x] Prerequisites field on Concepts (array of concept IDs)
 - [x] Order field on Concepts
@@ -147,13 +177,12 @@ All downstream content (concepts, sub-concepts, KUs) is generated via AI through
 - [ ] Prerequisite enforcement (gate access)
 - [ ] Curriculum builder/editor UI for manual sequencing
 - [ ] Topological sort visualization
-- [ ] Module grouping (optional)
 
 ---
 
-### Gap 3: Learner Experience (20%) - Unchanged
+### Gap 3: Learner Experience (20%) - Critical Gap
 
-**Still critical gap**
+**Still the main blocker for user testing**
 
 - [x] Study Flashcards page
 - [x] Study Quiz page
@@ -187,34 +216,33 @@ All downstream content (concepts, sub-concepts, KUs) is generated via AI through
 
 ---
 
-### Gap 6: Background Job Processing (NEW - 0%)
+### Gap 6: Background Job Processing (85%) ↑ from 0%
 
-**Identified during "Build Learning Path" implementation**
+**MAJOR PROGRESS**
 
-- [ ] Job queue for long-running operations
-- [ ] Progress tracking that survives browser refresh
-- [ ] Parallel execution of concept decomposition
-- [ ] Parallel execution of KU generation
-- [ ] Status polling endpoint
-- [ ] Error recovery and retry
-
-**Options identified**:
-- BullMQ + Redis (robust, needs infrastructure)
-- Database-backed job queue (simple, no Redis)
-- Serverless functions (scalable, different deploy)
+- [x] BullMQ + Redis job queue
+- [x] Three worker types (build-path, decompose-concept, generate-ku)
+- [x] Job step tracking in database
+- [x] Progress tracking that survives browser refresh
+- [x] WebSocket real-time updates
+- [x] Reconnection to active jobs on page refresh
+- [x] **Real-time UI updates with entity data**
+- [ ] Error recovery and retry UI
+- [ ] Job history/logs view
+- [ ] Cancel job functionality (backend exists, UI incomplete)
 
 ---
 
 ## Revised Epic Status
 
-### Epic 1: Learning Objective & Map Generation (75%) ↑ from 60%
-Knowledge architecture implemented. Curriculum authoring partially complete.
+### Epic 1: Learning Objective & Map Generation (80%) ↑ from 75%
+Knowledge architecture complete. Build pipeline is resilient. Curriculum authoring partially complete.
 
 ### Epic 2: Content Sourcing & Ingestion (90%)
 Unchanged. Pipeline works well.
 
-### Epic 3: Content Synthesis & Knowledge Units (85%) ↑ from 70%
-Full hierarchy in place. AI generates structured KUs from sub-concepts.
+### Epic 3: Content Synthesis & Knowledge Units (90%) ↑ from 85%
+Full hierarchy with real-time generation feedback.
 
 ### Epic 4: Adaptive Content Presentation (50%)
 Unchanged. Content isn't integrated into a learning flow yet.
@@ -242,9 +270,9 @@ Unchanged. Minor rendering issues.
 | JWT Authentication | :white_check_mark: | Login, roles |
 | Content Ingestion Pipeline | :white_check_mark: | RSS, PDF, Article |
 | Knowledge Unit Synthesis | :white_check_mark: | Claude AI |
-| **AI Concept Generation** | :white_check_mark: | Claude AI |
-| **AI Sub-concept Decomposition** | :white_check_mark: | Claude AI |
-| **AI Structured KU Generation** | :white_check_mark: | Claude AI |
+| AI Concept Generation | :white_check_mark: | Claude AI |
+| AI Sub-concept Decomposition | :white_check_mark: | Claude AI |
+| AI Structured KU Generation | :white_check_mark: | Claude AI |
 | AI Source Suggestions | :white_check_mark: | Claude AI |
 | AI Feedback Generation | :white_check_mark: | Claude AI |
 | AI Session Generation | :white_check_mark: | Gymnasium |
@@ -255,14 +283,17 @@ Unchanged. Minor rendering issues.
 | Mentor Dashboard | :white_check_mark: | Review, grade |
 | Visualizations | :white_check_mark: | 6 different types |
 | User Enrollments | :white_check_mark: | Drag-drop |
-| **Build Learning Path Pipeline** | :white_check_mark: | One-click generation |
-| **Knowledge Hierarchy** | :white_check_mark: | Concepts → Sub-concepts → KUs |
+| Build Learning Path Pipeline | :white_check_mark: | One-click generation |
+| Knowledge Hierarchy | :white_check_mark: | Concepts → Sub-concepts → KUs |
+| **BullMQ Job Queue** | :white_check_mark: | Redis-backed, resilient |
+| **WebSocket Real-time Updates** | :white_check_mark: | Live UI updates |
 
 ### Partially Complete
 | Component | Status | Notes |
 |-----------|--------|-------|
 | Prerequisite System | :yellow_circle: | Field exists, no enforcement |
 | Curriculum Builder | :yellow_circle: | AI generates, no manual editor |
+| Job Management UI | :yellow_circle: | Progress shown, no history/cancel |
 
 ### Missing Integration Layer
 | Component | Status | Notes |
@@ -273,7 +304,6 @@ Unchanged. Minor rendering issues.
 | KU Approval Workflow | :red_circle: | Status field only |
 | Schedule Integration | :red_circle: | Calendar unused |
 | Competency Proof | :red_circle: | No portfolio/cert |
-| Background Job Queue | :red_circle: | Long pipelines fragile |
 
 ---
 
@@ -282,24 +312,18 @@ Unchanged. Minor rendering issues.
 ### P0 - Foundation (Required for any user testing)
 
 1. ~~**Knowledge Architecture**~~ :white_check_mark: DONE
-   - Concepts → Sub-concepts → KUs hierarchy implemented
-   - AI generation at all levels
+2. ~~**Background Job Processing**~~ :white_check_mark: DONE
 
-2. **Learner Dashboard (MVP)**
+3. **Learner Dashboard (MVP)** ← NEXT PRIORITY
    - Show enrolled paths
    - Show concepts with sub-concepts and KUs
    - Link to existing study tools
 
-3. **Basic Progress Rollup**
+4. **Basic Progress Rollup**
    - Calculate concept mastery from KU progress
    - Display on learner dashboard
 
 ### P1 - Core Experience
-
-4. **Background Job Processing**
-   - Move pipeline to backend job queue
-   - Progress survives browser refresh
-   - Parallel execution for speed
 
 5. **Prerequisite Enforcement**
    - Gate access to concepts based on prerequisites
@@ -328,22 +352,23 @@ Unchanged. Minor rendering issues.
 
 ## Honest Assessment
 
-**What we built today**:
-- Complete knowledge architecture with semantic hierarchy
-- One-click "Build Learning Path" that generates concepts, sub-concepts, and KUs
-- Clean codebase with consistent naming (Concepts, not Principles)
+**What we built this session**:
+- Complete BullMQ pipeline with three workers
+- WebSocket gateway for real-time progress updates
+- UI that updates dynamically as entities are created during build
+- Reconnection support so page refresh doesn't break active builds
 
 **What we haven't built**:
 - A learning experience for students
 - Progress tracking beyond individual items
-- Resilient background processing for long operations
+- Any way for learners to actually consume the content we generate
 
-**The gap**: Components are 85% done. Knowledge Architecture jumped from 15% to 75%. Integration (learner experience) remains at 20%. The overall product is ~68% complete for an MVP learning platform.
+**The gap**: The authoring/admin side is now at ~90%. The learner experience is at 20%. The overall product is ~78% complete for an MVP learning platform.
 
 **Path forward**:
-1. Background job processing (resilience)
-2. Learner dashboard (user experience)
-3. Progress rollup (completion tracking)
+1. **Learner Dashboard** - Show what's been built in a consumable way
+2. **Progress Rollup** - Track mastery at concept level
+3. **Guided Learning** - "What should I do next?"
 
 ---
 
@@ -351,6 +376,7 @@ Unchanged. Minor rendering issues.
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 6.0 | 2026-01-20 | BullMQ pipeline (85%), WebSocket real-time updates, overall 78% |
 | 5.0 | 2026-01-19 (evening) | Knowledge Architecture complete (75%), "Build Learning Path" button, Principles→Concepts rename, overall 68% |
 | 4.0 | 2026-01-19 | Major recalibration: identified critical gaps, revised to 55% |
 | 3.0 | 2026-01-18 | Gymnasium, visualizations, pipeline (92%) |

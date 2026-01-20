@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnDestroy,OnInit } from '@angular/core';
+import { Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '@kasita/core-data';
@@ -30,10 +30,6 @@ const sourceConfigIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" vi
   <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0Z" />
 </svg>`;
 
-const curriculumIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-  <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
-</svg>`;
-
 const challengesIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
   <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9 9 0 100-18 9 9 0 000 18z" />
   <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a6 6 0 100-12 6 6 0 000 12z" />
@@ -42,7 +38,7 @@ const challengesIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" view
 </svg>`;
 
 const scheduleIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-  <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 005.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+  <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
 </svg>`;
 
 const graphIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -189,60 +185,89 @@ export class Sidebar implements OnInit, OnDestroy {
   private sanitizer = inject(DomSanitizer);
   private destroy$ = new Subject<void>();
 
-  protected sections: NavSection[] = [
-    {
+  // Track collapsed state for each section by title
+  private sectionCollapsedState = signal<Record<string, boolean>>({
+    'Laboratory': true,
+    'Reports': true,
+  });
+
+  protected sections = computed(() => {
+    const user = this.authService.getCurrentUser();
+    const role = user?.role || 'user';
+    const isAdmin = ['admin', 'manager', 'mentor'].includes(role);
+    const collapsedState = this.sectionCollapsedState();
+
+    const sections: NavSection[] = [];
+
+    // Learning section (all users)
+    sections.push({
       routes: [
         { label: 'Home', path: '/', icon: 'home' },
-        { label: 'Schedule', path: '/schedule', icon: 'schedule' },
-        { label: 'Study', path: '/study', icon: 'study' },
-        { label: 'Gymnasium', path: '/gymnasium', icon: 'gymnasium' },
-        { label: 'Curriculum', path: '/curriculum', icon: 'curriculum' },
-        { label: 'Submissions', path: '/submissions', icon: 'submissions' },
-        { label: 'Mentor Dashboard', path: '/mentor-dashboard', icon: 'mentor' },
+        { label: 'My Learning Paths', path: '/student/learning-paths', icon: 'learning-path' },
+        { label: 'Study', path: '/student/study', icon: 'study' },
+        { label: 'Schedule', path: '/student/schedule', icon: 'schedule' },
+        { label: 'Gymnasium', path: '/student/gymnasium', icon: 'gymnasium' },
+        { label: 'Submissions', path: '/student/submissions', icon: 'submissions' },
       ],
       collapsed: false,
-    },
-    {
+    });
+
+    // Laboratory (all users)
+    sections.push({
       title: 'Laboratory',
       routes: [
-        { label: 'Learning Map', path: '/learning-map', icon: 'learning-map' },
-        { label: 'Metro Map', path: '/metro-maps', icon: 'metro-map' },
-        { label: 'Skill Tree', path: '/skill-tree', icon: 'skill-tree' },
-        { label: 'Linear Dashboard', path: '/linear-dashboard', icon: 'linear-dashboard' },
-        { label: 'Mind Map', path: '/mind-map', icon: 'mind-map' },
-        { label: 'Knowledge Graph', path: '/graph', icon: 'graph' },
-        { label: 'Visualization', path: '/visualization/bfs', icon: 'visualization' },
-        { label: 'Notebooks', path: '/notebook', icon: 'notebook' },
+        { label: 'Learning Map', path: '/lab/learning-map', icon: 'learning-map' },
+        { label: 'Metro Map', path: '/lab/metro-maps', icon: 'metro-map' },
+        { label: 'Skill Tree', path: '/lab/skill-tree', icon: 'skill-tree' },
+        { label: 'Linear Dashboard', path: '/lab/linear-dashboard', icon: 'linear-dashboard' },
+        { label: 'Mind Map', path: '/lab/mind-map', icon: 'mind-map' },
+        { label: 'Knowledge Graph', path: '/lab/graph', icon: 'graph' },
+        { label: 'Visualization', path: '/lab/visualization/bfs', icon: 'visualization' },
+        { label: 'Notebooks', path: '/lab/notebook', icon: 'notebook' },
       ],
-      collapsed: false,
-    },
-    {
-      title: 'Admin',
-      routes: [
-        { label: 'Discovery Pipeline', path: '/pipeline', icon: 'pipeline' },
-        { label: 'Learning Paths', path: '/learning-paths', icon: 'learning-path' },
-        { label: 'Challenges', path: '/challenges', icon: 'challenges' },
-        { label: 'Projects', path: '/projects', icon: 'projects' },
-        { label: 'Users', path: '/users', icon: 'users' },
-        // Pipeline data (integrated into Learning Paths dashboard)
-        { label: 'Concepts', path: '/concepts', icon: 'concepts' },
-        { label: 'Source Configs', path: '/source-configs', icon: 'source-config' },
-        { label: 'Raw Content', path: '/raw-content', icon: 'raw-content' },
-        { label: 'Knowledge Units', path: '/knowledge-units', icon: 'knowledge-unit' },
-      ],
-      collapsed: false,
-    },
-    {
-      title: 'Reports',
-      routes: [
-        { label: 'Completion Assessment', path: '/completion-assessment', icon: 'assessment' },
-      ],
-      collapsed: false,
-    },
-  ];
+      collapsed: collapsedState['Laboratory'] ?? true,
+    });
+
+    // Admin section (mentors, managers, admins only)
+    if (isAdmin) {
+      sections.push({
+        title: 'Admin',
+        routes: [
+          { label: 'Discovery Pipeline', path: '/admin/pipeline', icon: 'pipeline' },
+          { label: 'Learning Paths', path: '/admin/learning-paths', icon: 'learning-path' },
+          { label: 'Concepts', path: '/admin/concepts', icon: 'concepts' },
+          { label: 'Knowledge Units', path: '/admin/knowledge-units', icon: 'knowledge-unit' },
+          { label: 'Challenges', path: '/admin/challenges', icon: 'challenges' },
+          { label: 'Projects', path: '/admin/projects', icon: 'projects' },
+          { label: 'Users', path: '/admin/users', icon: 'users' },
+          { label: 'Source Configs', path: '/admin/source-configs', icon: 'source-config' },
+          { label: 'Raw Content', path: '/admin/raw-content', icon: 'raw-content' },
+          { label: 'Mentor Dashboard', path: '/admin/mentor-dashboard', icon: 'mentor' },
+        ],
+        collapsed: collapsedState['Admin'] ?? false,
+      });
+
+      sections.push({
+        title: 'Reports',
+        routes: [
+          { label: 'Completion Assessment', path: '/admin/reports/completion-assessment', icon: 'assessment' },
+        ],
+        collapsed: collapsedState['Reports'] ?? true,
+      });
+    }
+
+    return sections;
+  });
 
   toggleSection(index: number): void {
-    this.sections[index].collapsed = !this.sections[index].collapsed;
+    const sections = this.sections();
+    const section = sections[index];
+    if (section.title) {
+      this.sectionCollapsedState.update(state => ({
+        ...state,
+        [section.title!]: !state[section.title!]
+      }));
+    }
   }
 
   toggleMobileSidebar(): void {
@@ -266,9 +291,6 @@ export class Sidebar implements OnInit, OnDestroy {
     switch (iconName) {
       case 'home':
         iconHtml = homeIcon;
-        break;
-      case 'curriculum':
-        iconHtml = curriculumIcon;
         break;
       case 'challenges':
         iconHtml = challengesIcon;
@@ -348,11 +370,11 @@ export class Sidebar implements OnInit, OnDestroy {
   ngOnInit(): void {
     // Initialize with current state
     this.isSidebarCollapsed = this.layoutService.isSidebarCollapsed;
-    
+
     // Subscribe to sidebar collapsed state changes
     this.layoutService.isSidebarCollapsed$
       .pipe(takeUntil(this.destroy$))
-      .subscribe(collapsed => {
+      .subscribe((collapsed) => {
         this.isSidebarCollapsed = collapsed;
       });
   }
@@ -362,4 +384,3 @@ export class Sidebar implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 }
-

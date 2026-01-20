@@ -15,6 +15,12 @@ export const seedPayload = {
       name: 'Sarah Chen',
       role: 'mentor' as const,
     },
+    {
+      email: 'admin@test.com',
+      password: 'insecure',
+      name: 'Admin User',
+      role: 'admin' as const,
+    },
   ],
   learningPaths: [
     {

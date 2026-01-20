@@ -220,28 +220,28 @@ export class Home implements OnInit {
 
   // Hero actions
   continueLearning(): void {
-    this.router.navigate(['/knowledge-units']);
+    this.router.navigate(['/student/study/flashcards']);
   }
 
   viewAllPaths(): void {
-    this.router.navigate(['/learning-paths']);
+    this.router.navigate(['/student/learning-paths']);
   }
 
   // Outcome phase
   refineOutcome(): void {
     const path = this.currentPath();
     if (path) {
-      this.router.navigate(['/learning-paths']);
+      this.router.navigate(['/student/learning-paths', path.id]);
     }
   }
 
   // Input phase
   viewSource(): void {
-    this.router.navigate(['/source-configs']);
+    this.router.navigate(['/admin/source-configs']);
   }
 
   addSource(): void {
-    this.router.navigate(['/source-configs']);
+    this.router.navigate(['/admin/source-configs']);
   }
 
   synthesize(): void {
@@ -251,11 +251,11 @@ export class Home implements OnInit {
 
   // Consume phase
   studyUnit(): void {
-    this.router.navigate(['/knowledge-units']);
+    this.router.navigate(['/student/study/flashcards']);
   }
 
   viewAllUnits(): void {
-    this.router.navigate(['/knowledge-units']);
+    this.router.navigate(['/admin/knowledge-units']);
   }
 
   // Demonstrate phase
@@ -266,8 +266,7 @@ export class Home implements OnInit {
 
   // Output phase
   startProject(): void {
-    // TODO: Navigate to project
-    console.log('Start project');
+    this.router.navigate(['/admin/projects']);
   }
 
   // Transfer phase
@@ -278,7 +277,7 @@ export class Home implements OnInit {
 
   // CTA
   startStudying(): void {
-    this.router.navigate(['/knowledge-units']);
+    this.router.navigate(['/student/study/flashcards']);
   }
 
   // Helper methods

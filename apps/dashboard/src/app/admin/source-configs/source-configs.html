@@ -1,0 +1,41 @@
+<div class="master-detail-layout">
+  <div class="master-panel">
+    @if (error()) {
+      <div class="error-message">
+        <svg class="error-icon" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+        </svg>
+        <span>{{ error() }}</span>
+      </div>
+    } @else if (!loaded()) {
+      <div class="loading-message">
+        <mat-spinner diameter="40"></mat-spinner>
+        <span>Loading sources...</span>
+      </div>
+    } @else {
+      <app-search-filter-bar
+        placeholder="Search by name or URL..."
+        [filterConfigs]="filterConfigs()"
+        (searchChange)="onSearchFilterChange($event)"
+      ></app-search-filter-bar>
+      <app-sources-list
+        [sources]="sources()"
+        [selectedSource]="selectedSource()"
+        [showEnabled]="!!selectedPathId()"
+        (selected)="selectSource($event)"
+        (deleted)="deleteSource($event)"
+        (toggleEnabled)="toggleEnabled($event)"
+      ></app-sources-list>
+    }
+  </div>
+  <div class="detail-panel">
+    <app-source-detail
+      [source]="selectedSource()"
+      [isEditing]="!!selectedSource()?.id"
+      (saved)="saveSource($event)"
+      (cancelled)="cancel()"
+      (pathLinked)="onPathLinked()"
+      (pathUnlinked)="onPathUnlinked()"
+    ></app-source-detail>
+  </div>
+</div>

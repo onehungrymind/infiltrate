@@ -1,0 +1,22 @@
+<div class="page-container">
+  <div class="list-panel">
+    <app-search-filter-bar
+      [filterConfigs]="filterConfigs()"
+      (searchChange)="onSearchFilterChange($event)"
+    />
+    <app-challenges-list
+      [challenges]="challenges()"
+      [selectedChallenge]="selectedChallenge()"
+      (selected)="selectChallenge($event)"
+      (deleted)="deleteChallenge($event)"
+    />
+  </div>
+  <div class="detail-panel">
+    <app-challenge-detail
+      [challenge]="selectedChallenge()"
+      [units]="units()"
+      (saved)="saveChallenge($event)"
+      (cancelled)="cancel()"
+    />
+  </div>
+</div>

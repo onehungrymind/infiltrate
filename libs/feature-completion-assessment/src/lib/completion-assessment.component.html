@@ -159,10 +159,10 @@
       <div class="priority-section">
         <h4 class="priority-header p0">P0 - Foundation (Required for user testing)</h4>
         @for (item of p0Items(); track item.name) {
-          <div class="priority-item">
-            <span class="priority-badge" [ngClass]="getPriorityClass(item.priority)">{{ item.priority }}</span>
+          <div class="priority-item" [class.completed]="item.status === 'complete'">
+            <span class="status-icon" [ngClass]="getPriorityStatusClass(item.status)">{{ getPriorityStatusIcon(item.status) }}</span>
             <div class="priority-content">
-              <span class="priority-name">{{ item.name }}</span>
+              <span class="priority-name" [class.line-through]="item.status === 'complete'">{{ item.name }}</span>
               <span class="priority-desc">{{ item.description }}</span>
             </div>
           </div>
@@ -172,10 +172,10 @@
       <div class="priority-section">
         <h4 class="priority-header p1">P1 - Core Experience</h4>
         @for (item of p1Items(); track item.name) {
-          <div class="priority-item">
-            <span class="priority-badge" [ngClass]="getPriorityClass(item.priority)">{{ item.priority }}</span>
+          <div class="priority-item" [class.completed]="item.status === 'complete'">
+            <span class="status-icon" [ngClass]="getPriorityStatusClass(item.status)">{{ getPriorityStatusIcon(item.status) }}</span>
             <div class="priority-content">
-              <span class="priority-name">{{ item.name }}</span>
+              <span class="priority-name" [class.line-through]="item.status === 'complete'">{{ item.name }}</span>
               <span class="priority-desc">{{ item.description }}</span>
             </div>
           </div>
@@ -185,10 +185,10 @@
       <div class="priority-section">
         <h4 class="priority-header p2">P2 - Polish</h4>
         @for (item of p2Items(); track item.name) {
-          <div class="priority-item">
-            <span class="priority-badge" [ngClass]="getPriorityClass(item.priority)">{{ item.priority }}</span>
+          <div class="priority-item" [class.completed]="item.status === 'complete'">
+            <span class="status-icon" [ngClass]="getPriorityStatusClass(item.status)">{{ getPriorityStatusIcon(item.status) }}</span>
             <div class="priority-content">
-              <span class="priority-name">{{ item.name }}</span>
+              <span class="priority-name" [class.line-through]="item.status === 'complete'">{{ item.name }}</span>
               <span class="priority-desc">{{ item.description }}</span>
             </div>
           </div>
@@ -247,7 +247,13 @@
   <div class="honest-assessment">
     <h3>Honest Assessment</h3>
     <div class="assessment-content">
-      <p><strong>What we built:</strong> A powerful content authoring and management system with excellent AI integration.</p>
+      <p><strong>What we built this session:</strong></p>
+      <ul>
+        <li>Complete BullMQ pipeline with three workers</li>
+        <li>WebSocket gateway for real-time progress updates</li>
+        <li>UI that updates dynamically as entities are created during build</li>
+        <li>Reconnection support so page refresh doesn't break active builds</li>
+      </ul>
       <p><strong>What we haven't built:</strong> A learning experience. A student cannot currently:</p>
       <ul>
         <li>See a structured curriculum</li>
@@ -256,8 +262,13 @@
         <li>Prove competency</li>
         <li>Follow a guided path</li>
       </ul>
-      <p><strong>The gap:</strong> Components are 85% done. Integration is 20% done. Overall ~55% complete.</p>
-      <p><strong>Path forward:</strong> Focus on the integration layer. The components are solid - they just need to be connected into a coherent experience.</p>
+      <p><strong>The gap:</strong> The authoring/admin side is now at ~90%. The learner experience is at 20%. Overall ~78% complete.</p>
+      <p><strong>Path forward:</strong></p>
+      <ol>
+        <li><strong>Learner Dashboard</strong> - Show what's been built in a consumable way</li>
+        <li><strong>Progress Rollup</strong> - Track mastery at concept level</li>
+        <li><strong>Guided Learning</strong> - "What should I do next?"</li>
+      </ol>
     </div>
   </div>
 

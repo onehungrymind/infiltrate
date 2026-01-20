@@ -1,0 +1,23 @@
+<div class="page-container">
+  <div class="list-panel">
+    <app-search-filter-bar
+      [filterConfigs]="filterConfigs()"
+      (searchChange)="onSearchFilterChange($event)"
+    />
+    <app-projects-list
+      [projects]="projects()"
+      [selectedProject]="selectedProject()"
+      (selected)="selectProject($event)"
+      (deleted)="deleteProject($event)"
+    />
+  </div>
+  <div class="detail-panel">
+    <app-project-detail
+      [project]="selectedProject()"
+      [paths]="paths()"
+      [concepts]="concepts()"
+      (saved)="saveProject($event)"
+      (cancelled)="cancel()"
+    />
+  </div>
+</div>

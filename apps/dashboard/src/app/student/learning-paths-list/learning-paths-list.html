@@ -1,0 +1,85 @@
+<div class="px-4 py-8 sm:px-6 lg:px-8">
+  <!-- Header -->
+  <div class="mb-8">
+    <h1 class="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
+      My Learning Paths
+    </h1>
+    <p class="mt-2 text-sm text-gray-600">
+      Track your progress across all enrolled learning paths
+    </p>
+  </div>
+
+  <!-- Loading state -->
+  @if (loading()) {
+    <div class="flex items-center justify-center py-12">
+      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+    </div>
+  }
+
+  <!-- Empty state -->
+  @if (!loading() && enrolledPaths().length === 0) {
+    <div class="text-center py-12">
+      <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+      </svg>
+      <h3 class="mt-4 text-sm font-medium text-gray-900">No enrolled learning paths</h3>
+      <p class="mt-2 text-sm text-gray-500">Get started by enrolling in a learning path.</p>
+    </div>
+  }
+
+  <!-- Enrolled paths grid -->
+  @if (!loading() && enrolledPaths().length > 0) {
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      @for (item of enrolledPaths(); track item.path.id) {
+        <div class="group relative rounded-xl border border-gray-200 bg-white p-6 shadow-sm hover:shadow-md hover:border-indigo-200 transition-all">
+          <!-- Status badge -->
+          <div class="absolute top-4 right-4">
+            <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize"
+              [ngClass]="getStatusClass(item.enrollment.status)">
+              {{ item.enrollment.status }}
+            </span>
+          </div>
+
+          <!-- Path info -->
+          <div class="mb-4">
+            <p class="text-xs font-medium text-indigo-600 uppercase tracking-wide mb-1">
+              {{ item.path.domain }}
+            </p>
+            <h3 class="text-lg font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors">
+              {{ item.path.name }}
+            </h3>
+            <p class="mt-2 text-sm text-gray-600 line-clamp-2">
+              {{ item.path.targetSkill }}
+            </p>
+          </div>
+
+          <!-- Progress bar -->
+          <div class="mb-4">
+            <div class="flex items-center justify-between text-sm mb-1">
+              <span class="text-gray-600">Progress</span>
+              <span class="font-medium text-gray-900">{{ item.progress }}%</span>
+            </div>
+            <div class="h-2 w-full overflow-hidden rounded-full bg-gray-100">
+              <div class="h-full rounded-full bg-indigo-600 transition-all duration-500"
+                [style.width.%]="item.progress">
+              </div>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="flex gap-3">
+            <button (click)="continueLearning(item.path.id)"
+              class="flex-1 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 transition-colors">
+              Continue
+            </button>
+            <button (click)="viewPath(item.path.id)"
+              class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors">
+              Details
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

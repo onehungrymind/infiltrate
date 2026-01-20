@@ -1,0 +1,175 @@
+<div class="px-4 py-8 sm:px-6 lg:px-8">
+  <!-- Back button and header -->
+  <div class="mb-8">
+    <button (click)="goBack()"
+      class="mb-4 inline-flex items-center text-sm text-gray-600 hover:text-gray-900">
+      <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+      </svg>
+      Back to Learning Paths
+    </button>
+
+    @if (path()) {
+      <div class="flex items-start justify-between">
+        <div>
+          <p class="text-sm font-medium text-indigo-600 uppercase tracking-wide">{{ path()?.domain }}</p>
+          <h1 class="mt-1 text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
+            {{ path()?.name }}
+          </h1>
+          <p class="mt-2 text-sm text-gray-600">{{ path()?.targetSkill }}</p>
+        </div>
+        <div class="text-right">
+          <div class="text-3xl font-bold text-indigo-600">{{ overallProgress() }}%</div>
+          <p class="text-sm text-gray-500">Complete</p>
+        </div>
+      </div>
+
+      <!-- Overall progress bar -->
+      <div class="mt-6">
+        <div class="h-3 w-full overflow-hidden rounded-full bg-gray-100">
+          <div class="h-full rounded-full bg-indigo-600 transition-all duration-500"
+            [style.width.%]="overallProgress()">
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Loading state -->
+  @if (loading()) {
+    <div class="flex items-center justify-center py-12">
+      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+    </div>
+  }
+
+  <!-- Curriculum tree -->
+  @if (!loading()) {
+    <div class="space-y-4">
+      @for (conceptItem of concepts(); track conceptItem.concept.id; let i = $index) {
+        <div class="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+          <!-- Concept header -->
+          <button (click)="toggleConcept(i)"
+            class="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors">
+            <div class="flex items-center gap-4">
+              <div class="flex items-center justify-center h-10 w-10 rounded-full bg-indigo-100 text-indigo-600 font-semibold">
+                {{ i + 1 }}
+              </div>
+              <div class="text-left">
+                <h3 class="font-semibold text-gray-900">{{ conceptItem.concept.name }}</h3>
+                <div class="flex items-center gap-2 mt-1">
+                  <span class="text-xs text-gray-500">
+                    {{ conceptItem.subConcepts.length }} topics
+                  </span>
+                  <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium capitalize"
+                    [ngClass]="getDifficultyClass(conceptItem.concept.difficulty)">
+                    {{ conceptItem.concept.difficulty }}
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center gap-4">
+              <div class="text-right">
+                <div class="text-sm font-medium text-gray-900">{{ conceptItem.progress }}%</div>
+                <div class="w-24 h-1.5 rounded-full bg-gray-100 mt-1">
+                  <div class="h-full rounded-full bg-indigo-600 transition-all"
+                    [style.width.%]="conceptItem.progress"></div>
+                </div>
+              </div>
+              <svg class="h-5 w-5 text-gray-400 transition-transform"
+                [class.rotate-180]="conceptItem.expanded"
+                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </button>
+
+          <!-- Concept content (expanded) -->
+          @if (conceptItem.expanded) {
+            <div class="border-t border-gray-200 bg-gray-50 p-4">
+              <p class="text-sm text-gray-600 mb-4">{{ conceptItem.concept.description }}</p>
+
+              <div class="flex gap-2 mb-4">
+                <button (click)="studyConcept(conceptItem.concept.id)"
+                  class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 transition-colors">
+                  Study Concept
+                </button>
+              </div>
+
+              <!-- Sub-concepts -->
+              <div class="space-y-2">
+                @for (subConceptItem of conceptItem.subConcepts; track subConceptItem.subConcept.id; let j = $index) {
+                  <div class="rounded-lg border border-gray-200 bg-white overflow-hidden">
+                    <!-- Sub-concept header -->
+                    <button (click)="toggleSubConcept(i, j)"
+                      class="w-full flex items-center justify-between p-3 hover:bg-gray-50 transition-colors">
+                      <div class="flex items-center gap-3">
+                        <div class="flex items-center justify-center h-6 w-6 rounded-full bg-gray-100 text-gray-600 text-xs font-medium">
+                          {{ i + 1 }}.{{ j + 1 }}
+                        </div>
+                        <span class="text-sm font-medium text-gray-900">{{ subConceptItem.subConcept.name }}</span>
+                        <span class="text-xs text-gray-500">
+                          ({{ subConceptItem.knowledgeUnits.length }} units)
+                        </span>
+                      </div>
+                      <div class="flex items-center gap-3">
+                        <div class="text-right">
+                          <div class="text-xs font-medium text-gray-600">{{ subConceptItem.progress }}%</div>
+                        </div>
+                        <svg class="h-4 w-4 text-gray-400 transition-transform"
+                          [class.rotate-180]="subConceptItem.expanded"
+                          fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </div>
+                    </button>
+
+                    <!-- Knowledge units (expanded) -->
+                    @if (subConceptItem.expanded) {
+                      <div class="border-t border-gray-200 p-3 space-y-2">
+                        <button (click)="studySubConcept(subConceptItem.subConcept.id)"
+                          class="mb-2 rounded-md bg-indigo-50 px-3 py-1.5 text-xs font-semibold text-indigo-600 hover:bg-indigo-100 transition-colors">
+                          Study Topic
+                        </button>
+
+                        @for (unitItem of subConceptItem.knowledgeUnits; track unitItem.unit.id) {
+                          <div class="flex items-center justify-between p-2 rounded-md bg-gray-50">
+                            <div class="flex-1">
+                              <p class="text-sm text-gray-900">{{ unitItem.unit.question }}</p>
+                            </div>
+                            <span class="ml-3 inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium"
+                              [ngClass]="getMasteryClass(unitItem.userProgress?.masteryLevel)">
+                              {{ unitItem.userProgress?.masteryLevel || 'new' }}
+                            </span>
+                          </div>
+                        }
+
+                        @if (subConceptItem.knowledgeUnits.length === 0) {
+                          <p class="text-sm text-gray-500 italic">No knowledge units yet</p>
+                        }
+                      </div>
+                    }
+                  </div>
+                }
+
+                @if (conceptItem.subConcepts.length === 0) {
+                  <p class="text-sm text-gray-500 italic">No topics defined yet</p>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+      @if (concepts().length === 0) {
+        <div class="text-center py-12 bg-white rounded-xl border border-gray-200">
+          <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          </svg>
+          <h3 class="mt-4 text-sm font-medium text-gray-900">No curriculum defined</h3>
+          <p class="mt-2 text-sm text-gray-500">This learning path doesn't have concepts yet.</p>
+        </div>
+      }
+    </div>
+  }
+</div>
