@@ -120,6 +120,18 @@ import {
   generateSession,
   loadTemplates,
   loadDefaultTemplate,
+  // SubConcepts
+  subConceptsFeature,
+  loadSubConcepts,
+  loadSubConcept,
+  loadSubConceptsByPrinciple,
+  createSubConcept,
+  updateSubConcept,
+  deleteSubConcept,
+  decomposePrinciple,
+  generateStructuredKU,
+  addDecoration,
+  removeDecoration,
 } from '@kasita/core-state';
 import { provideEffects } from '@ngrx/effects';
 import { provideStore } from '@ngrx/store';
@@ -150,6 +162,7 @@ export const appConfig: ApplicationConfig = {
       projects: projectsFeature.reducer,
       enrollments: enrollmentsFeature.reducer,
       gymnasium: gymnasiumFeature.reducer,
+      subConcepts: subConceptsFeature.reducer,
     }),
     provideEffects({
       // Learning Paths
@@ -251,6 +264,17 @@ export const appConfig: ApplicationConfig = {
       generateSession,
       loadTemplates,
       loadDefaultTemplate,
+      // SubConcepts
+      loadSubConcepts,
+      loadSubConcept,
+      loadSubConceptsByPrinciple,
+      createSubConcept,
+      updateSubConcept,
+      deleteSubConcept,
+      decomposePrinciple,
+      generateStructuredKU,
+      addDecoration,
+      removeDecoration,
     }),
     provideStoreDevtools({
       maxAge: 25,

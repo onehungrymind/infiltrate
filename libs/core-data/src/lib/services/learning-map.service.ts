@@ -9,6 +9,8 @@ import {
   NodeProgress,
   NodeDetails,
   Principle,
+  SubConcept,
+  KnowledgeUnit,
 } from '@kasita/common-models';
 
 @Injectable({
@@ -413,5 +415,33 @@ export class LearningMapService {
         )
       )
     );
+  }
+
+  /**
+   * Decompose a principle into sub-concepts using AI
+   * @param principleId - The principle ID to decompose
+   */
+  decomposePrinciple(principleId: string): Observable<{
+    subConcepts: SubConcept[];
+    message: string;
+  }> {
+    return this.http.post<{
+      subConcepts: SubConcept[];
+      message: string;
+    }>(`${this.apiUrl}/learning-map/principles/${principleId}/decompose`, {});
+  }
+
+  /**
+   * Generate a structured knowledge unit for a sub-concept using AI
+   * @param subConceptId - The sub-concept ID
+   */
+  generateStructuredKU(subConceptId: string): Observable<{
+    knowledgeUnit: KnowledgeUnit;
+    message: string;
+  }> {
+    return this.http.post<{
+      knowledgeUnit: KnowledgeUnit;
+      message: string;
+    }>(`${this.apiUrl}/learning-map/sub-concepts/${subConceptId}/generate-ku`, {});
   }
 }

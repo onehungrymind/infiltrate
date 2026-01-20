@@ -151,4 +151,22 @@ export class LearningMapController {
   ) {
     return await this.learningMapService.addSuggestedSource(pathId, body);
   }
+
+  @Post('principles/:id/decompose')
+  @ApiOperation({ summary: 'Decompose a principle into sub-concepts using AI' })
+  @ApiResponse({ status: 201, description: 'Sub-concepts generated successfully' })
+  @ApiResponse({ status: 400, description: 'Bad request - AI not configured or sub-concepts already exist' })
+  @ApiResponse({ status: 404, description: 'Principle not found' })
+  async decomposePrinciple(@Param('id') principleId: string) {
+    return await this.learningMapService.decomposeIntoSubConcepts(principleId);
+  }
+
+  @Post('sub-concepts/:id/generate-ku')
+  @ApiOperation({ summary: 'Generate a structured knowledge unit for a sub-concept using AI' })
+  @ApiResponse({ status: 201, description: 'Knowledge unit generated successfully' })
+  @ApiResponse({ status: 400, description: 'Bad request - AI not configured' })
+  @ApiResponse({ status: 404, description: 'Sub-concept not found' })
+  async generateStructuredKU(@Param('id') subConceptId: string) {
+    return await this.learningMapService.generateStructuredKU(subConceptId);
+  }
 }

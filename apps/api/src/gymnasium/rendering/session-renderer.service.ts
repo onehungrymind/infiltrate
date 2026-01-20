@@ -227,11 +227,7 @@ export class SessionRendererService {
 
   private renderTryThisBlock(block: { type: 'tryThis'; steps: string[] }): string {
     const stepsHtml = block.steps
-      .map(step => {
-        let html = this.escapeHtml(step);
-        html = html.replace(/`(.+?)`/g, '<code>$1</code>');
-        return `<li>${html}</li>`;
-      })
+      .map(step => `<li>${this.processInlineFormatting(step)}</li>`)
       .join('\n');
 
     return `
@@ -260,8 +256,7 @@ export class SessionRendererService {
     const icon = icons[block.variant] || '📝';
     const title = block.title || defaultTitles[block.variant] || 'Note';
 
-    let contentHtml = this.escapeHtml(block.content);
-    contentHtml = contentHtml.replace(/`(.+?)`/g, '<code>$1</code>');
+    let contentHtml = this.processInlineFormatting(block.content);
     contentHtml = contentHtml.replace(/\n/g, '<br>');
 
     return `
@@ -273,12 +268,12 @@ export class SessionRendererService {
 
   private renderTableBlock(block: { type: 'table'; headers: string[]; rows: string[][]; caption?: string }): string {
     const headersHtml = block.headers
-      .map(h => `<th>${this.escapeHtml(h)}</th>`)
+      .map(h => `<th>${this.processInlineFormatting(h)}</th>`)
       .join('');
 
     const rowsHtml = block.rows
       .map(row => {
-        const cells = row.map(cell => `<td>${this.escapeHtml(cell)}</td>`).join('');
+        const cells = row.map(cell => `<td>${this.processInlineFormatting(cell)}</td>`).join('');
         return `<tr>${cells}</tr>`;
       })
       .join('\n');
@@ -295,17 +290,27 @@ export class SessionRendererService {
 </table>`;
   }
 
+  /**
+   * Process inline formatting: escape HTML then apply code/bold/italic
+   */
+  private processInlineFormatting(text: string): string {
+    let html = this.escapeHtml(text);
+    // Inline code
+    html = html.replace(/`(.+?)`/g, '<code>$1</code>');
+    // Bold
+    html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    // Italic
+    html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+    return html;
+  }
+
   private renderChecklistBlock(block: { type: 'checklist'; title?: string; items: string[] }): string {
     const titleHtml = block.title
       ? `<h4>${this.escapeHtml(block.title)}</h4>`
       : '';
 
     const itemsHtml = block.items
-      .map(item => {
-        let html = this.escapeHtml(item);
-        html = html.replace(/`(.+?)`/g, '<code>$1</code>');
-        return `<li>${html}</li>`;
-      })
+      .map(item => `<li>${this.processInlineFormatting(item)}</li>`)
       .join('\n');
 
     return `
@@ -324,11 +329,7 @@ ${titleHtml}
   }
 
   private renderKeyLearningBlock(block: { type: 'keyLearning'; content: string }): string {
-    let html = this.escapeHtml(block.content);
-    html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-    html = html.replace(/`(.+?)`/g, '<code>$1</code>');
-
-    return `<div class="key-learning"><strong>Key Learning:</strong> ${html}</div>`;
+    return `<div class="key-learning"><strong>Key Learning:</strong> ${this.processInlineFormatting(block.content)}</div>`;
   }
 
   private renderDividerBlock(block: { type: 'divider'; label?: string }): string {

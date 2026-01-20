@@ -168,4 +168,9 @@ export const appRoutes: Route[] = [
     loadComponent: () => import('./gymnasium/gymnasium').then((m) => m.Gymnasium),
     canActivate: [authGuard],
   },
+  {
+    path: 'pipeline',
+    loadComponent: () => import('./pipeline/pipeline').then((m) => m.Pipeline),
+    canActivate: [authGuard],
+  },
 ];

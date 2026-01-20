@@ -35,6 +35,9 @@ import { RawContentModule } from '../raw-content/raw-content.module';
 import { Source } from '../source-configs/entities/source.entity';
 import { SourcePathLink } from '../source-configs/entities/source-path-link.entity';
 import { SourceConfigsModule } from '../source-configs/source-configs.module';
+import { SubConcept } from '../sub-concepts/entities/sub-concept.entity';
+import { SubConceptDecoration } from '../sub-concepts/entities/sub-concept-decoration.entity';
+import { SubConceptsModule } from '../sub-concepts/sub-concepts.module';
 import { Feedback } from '../submissions/entities/feedback.entity';
 import { Submission } from '../submissions/entities/submission.entity';
 import { SubmissionsModule } from '../submissions/submissions.module';
@@ -60,7 +63,7 @@ import { AppService } from './app.service';
       database: process.env.DATABASE_URL?.replace('file:', '') || 'kasita.db',
       synchronize: process.env.NODE_ENV !== 'production', // Auto-sync in dev
       logging: false, // Disable SQL logging for better performance
-      entities: [LearningPath, Source, SourcePathLink, RawContent, KnowledgeUnit, UserProgress, User, DataSource, GraphSearch, NotebookProgress, Principle, Submission, Feedback, Challenge, Project, ProjectPrinciple, Enrollment, Session, SessionTemplate],
+      entities: [LearningPath, Source, SourcePathLink, RawContent, KnowledgeUnit, UserProgress, User, DataSource, GraphSearch, NotebookProgress, Principle, Submission, Feedback, Challenge, Project, ProjectPrinciple, Enrollment, Session, SessionTemplate, SubConcept, SubConceptDecoration],
     }),
     LearningPathsModule,
     SourceConfigsModule,
@@ -81,6 +84,7 @@ import { AppService } from './app.service';
     ProjectsModule,
     EnrollmentsModule,
     GymnasiumModule,
+    SubConceptsModule,
   ],
   controllers: [AppController],
   providers: [AppService, ProgressGateway],

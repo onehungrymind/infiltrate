@@ -404,3 +404,40 @@ export {
   loadTemplates,
   loadDefaultTemplate,
 };
+
+/* SubConcepts */
+import * as SubConceptsActions from './lib/sub-concepts/sub-concepts.actions';
+import * as SubConceptsFeature from './lib/sub-concepts/sub-concepts.feature';
+import * as SubConceptsEffects from './lib/sub-concepts/sub-concepts.effects';
+import { SubConceptsFacade } from './lib/sub-concepts/sub-concepts.facade';
+import { subConceptsFeature } from './lib/sub-concepts/sub-concepts.feature';
+import {
+  loadSubConcepts,
+  loadSubConcept,
+  loadSubConceptsByPrinciple,
+  createSubConcept,
+  updateSubConcept,
+  deleteSubConcept,
+  decomposePrinciple,
+  generateStructuredKU,
+  addDecoration,
+  removeDecoration,
+} from './lib/sub-concepts/sub-concepts.effects';
+
+export {
+  subConceptsFeature,
+  SubConceptsFacade,
+  SubConceptsActions,
+  SubConceptsFeature,
+  SubConceptsEffects,
+  loadSubConcepts,
+  loadSubConcept,
+  loadSubConceptsByPrinciple,
+  createSubConcept,
+  updateSubConcept,
+  deleteSubConcept,
+  decomposePrinciple,
+  generateStructuredKU,
+  addDecoration,
+  removeDecoration,
+};

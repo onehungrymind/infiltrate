@@ -1,12 +1,13 @@
 import { Component, computed, effect, inject, OnInit, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { KnowledgeUnit, LearningPath, Principle, RawContent } from '@kasita/common-models';
+import { KnowledgeUnit, LearningPath, Principle, RawContent, SubConcept } from '@kasita/common-models';
 import { LearningMapService } from '@kasita/core-data';
 import {
   KnowledgeUnitFacade,
   LearningPathsFacade,
   PrincipleFacade,
   RawContentFacade,
+  SubConceptsFacade,
 } from '@kasita/core-state';
 import { MaterialModule } from '@kasita/material';
 
@@ -39,6 +40,7 @@ import { SourceDetail, PipelineSource } from './source-detail/source-detail';
 export class LearningPaths implements OnInit {
   private learningPathsFacade = inject(LearningPathsFacade);
   private principleFacade = inject(PrincipleFacade);
+  private subConceptsFacade = inject(SubConceptsFacade);
   private rawContentFacade = inject(RawContentFacade);
   private knowledgeUnitFacade = inject(KnowledgeUnitFacade);
   private learningMapService = inject(LearningMapService);
@@ -56,6 +58,33 @@ export class LearningPaths implements OnInit {
     const pathId = this.selectedLearningPath()?.id;
     if (!pathId) return [];
     return this.allPrinciples().filter(p => p.pathId === pathId);
+  });
+
+  // Selected Principle for sub-concepts
+  selectedPrinciple = signal<Principle | null>(null);
+
+  // SubConcepts - filtered by selected principle
+  allSubConcepts = toSignal(this.subConceptsFacade.allSubConcepts$, { initialValue: [] as SubConcept[] });
+  subConcepts = computed(() => {
+    const principleId = this.selectedPrinciple()?.id;
+    if (!principleId) return [];
+    return this.allSubConcepts().filter(sc => sc.principleId === principleId);
+  });
+
+  // Selected SubConcept for structured KUs
+  selectedSubConcept = signal<SubConcept | null>(null);
+
+  // Structured Knowledge Units - filtered by selected sub-concept
+  structuredKnowledgeUnits = computed(() => {
+    const subConceptId = this.selectedSubConcept()?.id;
+    const pathId = this.selectedLearningPath()?.id;
+    if (!pathId) return [];
+    // Filter for structured KUs linked to the selected sub-concept or show all structured for the path
+    const all = this.allKnowledgeUnits();
+    if (subConceptId) {
+      return all.filter(k => k.subConceptId === subConceptId);
+    }
+    return all.filter(k => k.pathId === pathId && k.type === 'structured');
   });
 
   // Sources for selected path
@@ -80,18 +109,23 @@ export class LearningPaths implements OnInit {
   // Writable signals for pipeline columns
   learningPathsSignal = signal<LearningPath[]>([]);
   principlesSignal = signal<Principle[]>([]);
+  subConceptsSignal = signal<SubConcept[]>([]);
+  structuredKUsSignal = signal<KnowledgeUnit[]>([]);
   sourcesSignal = signal<PipelineSource[]>([]);
   rawContentSignal = signal<RawContent[]>([]);
   knowledgeUnitsSignal = signal<KnowledgeUnit[]>([]);
 
   // Loading states
   loadingPrinciples = signal(false);
+  loadingSubConcepts = signal(false);
   loadingSources = signal(false);
   loadingRawContent = signal(false);
   loadingKnowledgeUnits = signal(false);
 
   // Action states (generating, suggesting, etc.)
   generatingPrinciples = signal(false);
+  decomposingPrinciple = signal(false);
+  generatingStructuredKU = signal(false);
   suggestingSources = signal(false);
   ingesting = signal(false);
   synthesizing = signal(false);
@@ -112,6 +146,8 @@ export class LearningPaths implements OnInit {
 
   // Enabled states for actions
   canGeneratePrinciples = signal(true);
+  canDecomposePrinciple = signal(true);
+  canGenerateStructuredKU = signal(true);
   canSuggestSources = signal(true);
   canIngest = signal(true);
   canSynthesize = signal(true);
@@ -152,6 +188,14 @@ export class LearningPaths implements OnInit {
     });
 
     effect(() => {
+      this.subConceptsSignal.set(this.subConcepts());
+    });
+
+    effect(() => {
+      this.structuredKUsSignal.set(this.structuredKnowledgeUnits());
+    });
+
+    effect(() => {
       this.sourcesSignal.set(this.sources());
     });
 
@@ -176,11 +220,23 @@ export class LearningPaths implements OnInit {
     // Update enabled states
     effect(() => {
       const hasPath = !!this.selectedLearningPath()?.id;
+      const hasPrinciple = !!this.selectedPrinciple()?.id;
+      const hasSubConcept = !!this.selectedSubConcept()?.id;
       this.canGeneratePrinciples.set(hasPath && !this.generatingPrinciples());
+      this.canDecomposePrinciple.set(hasPrinciple && !this.decomposingPrinciple());
+      this.canGenerateStructuredKU.set(hasSubConcept && !this.generatingStructuredKU());
       this.canSuggestSources.set(hasPath && !this.suggestingSources());
       this.canIngest.set(hasPath && !this.ingesting());
       this.canSynthesize.set(hasPath && !this.synthesizing());
       this.canRunPipeline.set(hasPath && !this.isRunning());
+    });
+
+    // Load sub-concepts when principle is selected
+    effect(() => {
+      const principleId = this.selectedPrinciple()?.id;
+      if (principleId) {
+        this.subConceptsFacade.loadSubConceptsByPrinciple(principleId);
+      }
     });
   }
 
@@ -389,6 +445,69 @@ export class LearningPaths implements OnInit {
     this.closeSourceEditor();
     this.closeRawContentEditor();
     this.closeKnowledgeUnitEditor();
+  }
+
+  // =================
+  // Principle Selection (for Assembly Flow)
+  // =================
+  selectPrinciple(principle: Principle) {
+    this.selectedPrinciple.set(principle);
+    this.selectedSubConcept.set(null);
+  }
+
+  clearSelectedPrinciple() {
+    this.selectedPrinciple.set(null);
+    this.selectedSubConcept.set(null);
+  }
+
+  // =================
+  // SubConcept Selection
+  // =================
+  selectSubConcept(subConcept: SubConcept) {
+    this.selectedSubConcept.set(subConcept);
+  }
+
+  clearSelectedSubConcept() {
+    this.selectedSubConcept.set(null);
+  }
+
+  // =================
+  // AI Generation: Decompose Principle
+  // =================
+  decomposePrinciple() {
+    const principleId = this.selectedPrinciple()?.id;
+    if (!principleId) return;
+
+    this.decomposingPrinciple.set(true);
+    this.learningMapService.decomposePrinciple(principleId).subscribe({
+      next: () => {
+        this.decomposingPrinciple.set(false);
+        this.subConceptsFacade.loadSubConceptsByPrinciple(principleId);
+      },
+      error: () => {
+        this.decomposingPrinciple.set(false);
+      },
+    });
+  }
+
+  // =================
+  // AI Generation: Generate Structured KU
+  // =================
+  generateStructuredKU() {
+    const subConceptId = this.selectedSubConcept()?.id;
+    const pathId = this.selectedLearningPath()?.id;
+    if (!subConceptId || !pathId) return;
+
+    this.generatingStructuredKU.set(true);
+    this.learningMapService.generateStructuredKU(subConceptId).subscribe({
+      next: () => {
+        this.generatingStructuredKU.set(false);
+        this.knowledgeUnitFacade.loadKnowledgeUnitsByPath(pathId);
+      },
+      error: () => {
+        this.generatingStructuredKU.set(false);
+      },
+    });
   }
 
   // Pipeline actions

@@ -62,3 +62,6 @@ export * from './lib/services/enrollments/enrollments.service';
 
 /* Gymnasium */
 export * from './lib/services/gymnasium/gymnasium.service';
+
+/* SubConcepts */
+export * from './lib/services/sub-concepts/sub-concepts.service';

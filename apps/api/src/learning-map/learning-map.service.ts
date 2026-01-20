@@ -6,7 +6,9 @@ import { exec } from 'child_process';
 import { Repository } from 'typeorm';
 import { promisify } from 'util';
 
+import { DECOMPOSE_PRINCIPLE_PROMPT } from './prompts/decompose-principle.prompt';
 import { GENERATE_PRINCIPLES_PROMPT } from './prompts/generate-principles.prompt';
+import { GENERATE_STRUCTURED_KU_PROMPT } from './prompts/generate-structured-ku.prompt';
 import { SUGGEST_SOURCES_PROMPT } from './prompts/suggest-sources.prompt';
 
 const execAsync = promisify(exec);
@@ -27,6 +29,7 @@ import { Principle } from '../principles/entities/principle.entity';
 import { RawContent } from '../raw-content/entities/raw-content.entity';
 import { SourcePathLink } from '../source-configs/entities/source-path-link.entity';
 import { SourcesService } from '../source-configs/sources.service';
+import { SubConcept } from '../sub-concepts/entities/sub-concept.entity';
 
 @Injectable()
 export class LearningMapService {
@@ -46,6 +49,8 @@ export class LearningMapService {
     private readonly sourcePathLinkRepository: Repository<SourcePathLink>,
     @InjectRepository(RawContent)
     private readonly rawContentRepository: Repository<RawContent>,
+    @InjectRepository(SubConcept)
+    private readonly subConceptRepository: Repository<SubConcept>,
     private readonly configService: ConfigService,
     private readonly sourcesService: SourcesService,
   ) {
@@ -816,5 +821,204 @@ export class LearningMapService {
       }
       throw new BadRequestException(`Synthesis failed: ${errorMessage}`);
     }
+  }
+
+  /**
+   * Decompose a principle into sub-concepts using AI
+   * @param principleId - The principle ID to decompose
+   * @returns The generated sub-concepts
+   */
+  async decomposeIntoSubConcepts(principleId: string): Promise<{
+    subConcepts: SubConcept[];
+    message: string;
+  }> {
+    if (!this.anthropic) {
+      throw new BadRequestException(
+        'AI generation is not available. Please configure ANTHROPIC_API_KEY in .env'
+      );
+    }
+
+    // Fetch the principle with its learning path
+    const principle = await this.principleRepository.findOne({
+      where: { id: principleId },
+      relations: ['learningPath'],
+    });
+
+    if (!principle) {
+      throw new NotFoundException(`Principle ${principleId} not found`);
+    }
+
+    // Check if sub-concepts already exist
+    const existingSubConcepts = await this.subConceptRepository.find({
+      where: { principleId },
+    });
+
+    if (existingSubConcepts.length > 0) {
+      throw new BadRequestException(
+        `Principle already has ${existingSubConcepts.length} sub-concepts. Delete them first to regenerate.`
+      );
+    }
+
+    // Get domain from learning path
+    const domain = principle.learningPath?.domain || 'general';
+
+    // Generate sub-concepts using Claude
+    const prompt = DECOMPOSE_PRINCIPLE_PROMPT
+      .replace('{name}', principle.name)
+      .replace('{description}', principle.description)
+      .replace('{difficulty}', principle.difficulty)
+      .replace('{domain}', domain);
+
+    const response = await this.anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 2048,
+      messages: [{ role: 'user', content: prompt }],
+    });
+
+    const content = response.content[0];
+    if (content.type !== 'text') {
+      throw new BadRequestException('Unexpected response type from Claude API');
+    }
+
+    // Parse JSON (handle potential markdown wrapping)
+    let jsonText = content.text.trim();
+    if (jsonText.startsWith('```')) {
+      jsonText = jsonText.replace(/```json\n?|\n?```/g, '');
+    }
+
+    let generatedData: { subConcepts: Array<{ name: string; description: string; order: number }> };
+    try {
+      generatedData = JSON.parse(jsonText);
+      if (!generatedData.subConcepts || !Array.isArray(generatedData.subConcepts)) {
+        throw new Error('Invalid response structure');
+      }
+    } catch (error) {
+      throw new BadRequestException(
+        `Failed to parse AI response: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
+    }
+
+    // Save sub-concepts
+    const savedSubConcepts: SubConcept[] = [];
+    for (const subConceptData of generatedData.subConcepts) {
+      const subConcept = this.subConceptRepository.create({
+        principleId,
+        name: subConceptData.name,
+        description: subConceptData.description,
+        order: subConceptData.order || 0,
+      });
+      const saved = await this.subConceptRepository.save(subConcept);
+      savedSubConcepts.push(saved);
+    }
+
+    return {
+      subConcepts: savedSubConcepts,
+      message: `Successfully generated ${savedSubConcepts.length} sub-concepts for "${principle.name}"`,
+    };
+  }
+
+  /**
+   * Generate a structured knowledge unit for a sub-concept using AI
+   * @param subConceptId - The sub-concept ID to generate a KU for
+   * @returns The generated knowledge unit
+   */
+  async generateStructuredKU(subConceptId: string): Promise<{
+    knowledgeUnit: KnowledgeUnit;
+    message: string;
+  }> {
+    if (!this.anthropic) {
+      throw new BadRequestException(
+        'AI generation is not available. Please configure ANTHROPIC_API_KEY in .env'
+      );
+    }
+
+    // Fetch the sub-concept with its principle and learning path
+    const subConcept = await this.subConceptRepository.findOne({
+      where: { id: subConceptId },
+      relations: ['principle', 'principle.learningPath'],
+    });
+
+    if (!subConcept) {
+      throw new NotFoundException(`SubConcept ${subConceptId} not found`);
+    }
+
+    const principle = subConcept.principle;
+    const learningPath = principle?.learningPath;
+    const domain = learningPath?.domain || 'general';
+
+    // Generate structured KU using Claude
+    const prompt = GENERATE_STRUCTURED_KU_PROMPT
+      .replace('{subConceptName}', subConcept.name)
+      .replace('{subConceptDescription}', subConcept.description)
+      .replace('{principleName}', principle?.name || 'Unknown')
+      .replace('{domain}', domain);
+
+    const response = await this.anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 2048,
+      messages: [{ role: 'user', content: prompt }],
+    });
+
+    const content = response.content[0];
+    if (content.type !== 'text') {
+      throw new BadRequestException('Unexpected response type from Claude API');
+    }
+
+    // Parse JSON (handle potential markdown wrapping)
+    let jsonText = content.text.trim();
+    if (jsonText.startsWith('```')) {
+      jsonText = jsonText.replace(/```json\n?|\n?```/g, '');
+    }
+
+    let kuData: {
+      concept: string;
+      question: string;
+      answer: string;
+      elaboration: string;
+      examples: string[];
+      analogies: string[];
+      commonMistakes: string[];
+      difficulty: string;
+      cognitiveLevel: string;
+      tags: string[];
+    };
+
+    try {
+      kuData = JSON.parse(jsonText);
+      if (!kuData.concept || !kuData.question || !kuData.answer) {
+        throw new Error('Invalid response structure - missing required fields');
+      }
+    } catch (error) {
+      throw new BadRequestException(
+        `Failed to parse AI response: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
+    }
+
+    // Create the structured knowledge unit
+    const knowledgeUnit = this.knowledgeUnitRepository.create({
+      pathId: learningPath?.id || '',
+      principleId: principle?.id,
+      subConceptId: subConcept.id,
+      type: 'structured',
+      concept: kuData.concept,
+      question: kuData.question,
+      answer: kuData.answer,
+      elaboration: kuData.elaboration || '',
+      examples: kuData.examples || [],
+      analogies: kuData.analogies || [],
+      commonMistakes: kuData.commonMistakes || [],
+      difficulty: kuData.difficulty || 'intermediate',
+      cognitiveLevel: kuData.cognitiveLevel || 'understand',
+      tags: kuData.tags || [],
+      sourceIds: [],
+      status: 'approved',
+    });
+
+    const saved = await this.knowledgeUnitRepository.save(knowledgeUnit);
+
+    return {
+      knowledgeUnit: saved,
+      message: `Successfully generated structured knowledge unit for "${subConcept.name}"`,
+    };
   }
 }

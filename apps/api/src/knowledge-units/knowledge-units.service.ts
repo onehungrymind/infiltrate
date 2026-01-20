@@ -16,6 +16,7 @@ export class KnowledgeUnitsService {
   async create(createKnowledgeUnitDto: CreateKnowledgeUnitDto): Promise<KnowledgeUnit> {
     const knowledgeUnit = this.knowledgeUnitRepository.create({
       ...createKnowledgeUnitDto,
+      type: createKnowledgeUnitDto.type || 'discovered',
       examples: createKnowledgeUnitDto.examples || [],
       analogies: createKnowledgeUnitDto.analogies || [],
       commonMistakes: createKnowledgeUnitDto.commonMistakes || [],
@@ -55,5 +56,35 @@ export class KnowledgeUnitsService {
   async remove(id: string): Promise<void> {
     const knowledgeUnit = await this.findOne(id);
     await this.knowledgeUnitRepository.remove(knowledgeUnit);
+  }
+
+  /**
+   * Find knowledge units by sub-concept ID (structured KUs)
+   */
+  async findBySubConcept(subConceptId: string): Promise<KnowledgeUnit[]> {
+    return this.knowledgeUnitRepository.find({
+      where: { subConceptId },
+      order: { createdAt: 'ASC' },
+    });
+  }
+
+  /**
+   * Find knowledge units by path and type
+   */
+  async findByPathAndType(pathId: string, type: 'structured' | 'discovered'): Promise<KnowledgeUnit[]> {
+    return this.knowledgeUnitRepository.find({
+      where: { pathId, type },
+      order: { createdAt: 'DESC' },
+    });
+  }
+
+  /**
+   * Find discovered knowledge units for a learning path (for library/decoration picker)
+   */
+  async findDiscoveredByPath(pathId: string): Promise<KnowledgeUnit[]> {
+    return this.knowledgeUnitRepository.find({
+      where: { pathId, type: 'discovered' },
+      order: { createdAt: 'DESC' },
+    });
   }
 }

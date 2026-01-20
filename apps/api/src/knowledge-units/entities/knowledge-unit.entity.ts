@@ -2,6 +2,7 @@ import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany,PrimaryGenerated
 
 import { LearningPath } from '../../learning-paths/entities/learning-path.entity';
 import { Principle } from '../../principles/entities/principle.entity';
+import { SubConcept } from '../../sub-concepts/entities/sub-concept.entity';
 import { UserProgress } from '../../user-progress/entities/user-progress.entity';
 
 @Entity('knowledge_units')
@@ -20,6 +21,15 @@ export class KnowledgeUnit {
 
   @ManyToOne(() => Principle, principle => principle.knowledgeUnits, { nullable: true, onDelete: 'SET NULL' })
   principle: Principle;
+
+  @Column({ default: 'discovered' })
+  type: string; // 'structured' | 'discovered'
+
+  @Column({ nullable: true })
+  subConceptId: string;
+
+  @ManyToOne(() => SubConcept, subConcept => subConcept.knowledgeUnits, { nullable: true, onDelete: 'SET NULL' })
+  subConcept: SubConcept;
 
   @Column()
   concept: string;

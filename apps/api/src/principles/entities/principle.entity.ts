@@ -2,6 +2,7 @@ import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany,PrimaryGenerated
 
 import { KnowledgeUnit } from '../../knowledge-units/entities/knowledge-unit.entity';
 import { LearningPath } from '../../learning-paths/entities/learning-path.entity';
+import { SubConcept } from '../../sub-concepts/entities/sub-concept.entity';
 
 @Entity('principles')
 export class Principle {
@@ -34,6 +35,9 @@ export class Principle {
 
   @Column({ default: 'pending' })
   status: string; // 'pending' | 'in_progress' | 'mastered'
+
+  @OneToMany(() => SubConcept, subConcept => subConcept.principle)
+  subConcepts: SubConcept[];
 
   @OneToMany(() => KnowledgeUnit, unit => unit.principle)
   knowledgeUnits: KnowledgeUnit[];

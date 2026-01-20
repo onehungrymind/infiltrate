@@ -23,6 +23,24 @@ export class KnowledgeUnitsController {
     return this.knowledgeUnitsService.findByPath(pathId);
   }
 
+  @Get('path/:pathId/discovered')
+  findDiscoveredByPath(@Param('pathId') pathId: string) {
+    return this.knowledgeUnitsService.findDiscoveredByPath(pathId);
+  }
+
+  @Get('path/:pathId/type/:type')
+  findByPathAndType(
+    @Param('pathId') pathId: string,
+    @Param('type') type: 'structured' | 'discovered',
+  ) {
+    return this.knowledgeUnitsService.findByPathAndType(pathId, type);
+  }
+
+  @Get('sub-concept/:subConceptId')
+  findBySubConcept(@Param('subConceptId') subConceptId: string) {
+    return this.knowledgeUnitsService.findBySubConcept(subConceptId);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.knowledgeUnitsService.findOne(id);

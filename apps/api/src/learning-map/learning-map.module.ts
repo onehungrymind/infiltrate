@@ -10,6 +10,7 @@ import { RawContent } from '../raw-content/entities/raw-content.entity';
 import { Source } from '../source-configs/entities/source.entity';
 import { SourcePathLink } from '../source-configs/entities/source-path-link.entity';
 import { SourceConfigsModule } from '../source-configs/source-configs.module';
+import { SubConcept } from '../sub-concepts/entities/sub-concept.entity';
 import { LearningMapController } from './learning-map.controller';
 import { LearningMapService } from './learning-map.service';
 
@@ -23,6 +24,7 @@ import { LearningMapService } from './learning-map.service';
       Source,
       SourcePathLink,
       RawContent,
+      SubConcept,
     ]),
     ConfigModule,
     SourceConfigsModule,

@@ -12,6 +12,16 @@ export class CreateKnowledgeUnitDto {
   @IsOptional()
   principleId?: string;
 
+  @ApiProperty({ enum: ['structured', 'discovered'], default: 'discovered' })
+  @IsEnum(['structured', 'discovered'])
+  @IsOptional()
+  type?: string;
+
+  @ApiProperty({ required: false })
+  @IsString()
+  @IsOptional()
+  subConceptId?: string;
+
   @ApiProperty()
   @IsString()
   @IsNotEmpty()

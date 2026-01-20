@@ -1,22 +1,31 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, signal } from '@angular/core';
 
-interface Epic {
+interface AreaStatus {
   name: string;
   progress: number;
-  status: 'partial' | 'mostly-complete' | 'early-stage' | 'complete';
+  status: 'strong' | 'partial' | 'critical-gap';
   color: string;
+}
+
+interface CriticalGap {
+  name: string;
+  progress: number;
+  problem: string;
+  currentState: string[];
+  missingItems: string[];
 }
 
 interface ComponentStatus {
   name: string;
-  status: 'complete' | 'not-started' | 'placeholder';
+  status: 'complete' | 'not-started' | 'missing';
 }
 
-interface CriticalPathItem {
+interface PriorityItem {
+  priority: 'P0' | 'P1' | 'P2';
   name: string;
-  status: 'complete' | 'not-started';
-  blocking: string;
+  description: string;
+  status: 'not-started' | 'in-progress' | 'complete';
 }
 
 @Component({
@@ -27,259 +36,220 @@ interface CriticalPathItem {
   styleUrl: './completion-assessment.component.scss',
 })
 export class CompletionAssessment {
-  lastUpdated = signal('January 18, 2026');
-  overallCompletion = signal(92);
+  lastUpdated = signal('January 19, 2026');
+  overallCompletion = signal(55);
 
-  epics = signal<Epic[]>([
-    { name: 'Epic 1: Learning Objective & Map Generation', progress: 85, status: 'complete', color: '#22c55e' },
-    { name: 'Epic 2: Content Sourcing & Ingestion', progress: 90, status: 'complete', color: '#22c55e' },
-    { name: 'Epic 3: Content Synthesis & Knowledge Units', progress: 85, status: 'complete', color: '#22c55e' },
-    { name: 'Epic 4: Adaptive Content Presentation', progress: 80, status: 'mostly-complete', color: '#3b82f6' },
-    { name: 'Epic 5: Feedback Loops', progress: 90, status: 'complete', color: '#22c55e' },
-    { name: 'Epic 6: Progress Tracking & Validation', progress: 65, status: 'partial', color: '#f59e0b' },
-    { name: 'Epic 7: Input/Output Optionality', progress: 80, status: 'mostly-complete', color: '#3b82f6' },
-    { name: 'Gymnasium (Training Sessions)', progress: 95, status: 'complete', color: '#22c55e' },
+  // Executive summary
+  whatWeHave = signal([
+    'Full CRUD for all entities (Learning Paths, Principles, KUs, Challenges, Projects, etc.)',
+    'AI-powered content generation (principles, sources, feedback, gymnasium sessions)',
+    'Content pipeline (ingest → synthesize → knowledge units)',
+    'Study tools (flashcards, quizzes with SM-2)',
+    'Multiple visualizations (React Flow, Skill Tree, Metro Maps, Mind Map, etc.)',
+    'Mentor feedback system',
   ]);
 
-  criticalPathItems = signal<CriticalPathItem[]>([
-    { name: 'SM-2 spaced repetition algorithm', status: 'complete', blocking: 'Progress tracking' },
-    { name: 'Principle entity & CRUD', status: 'complete', blocking: 'Learning map structure' },
-    { name: 'AI principle generation', status: 'complete', blocking: 'Core user flow' },
-    { name: 'Quiz with SM-2 integration', status: 'complete', blocking: 'Learning variety' },
-    { name: 'Challenge & Project entities', status: 'complete', blocking: 'Feedback loop' },
-    { name: 'Submission system (text/URL/file)', status: 'complete', blocking: 'Feedback loop' },
-    { name: 'AI feedback generation', status: 'complete', blocking: 'Feedback loop' },
-    { name: 'Mentor feedback system', status: 'complete', blocking: 'Human review flow' },
-    { name: 'React Flow learning map', status: 'complete', blocking: 'Visualization' },
-    { name: 'Content ingestion pipeline', status: 'complete', blocking: 'Content acquisition' },
-    { name: 'Knowledge unit synthesis', status: 'complete', blocking: 'Content processing' },
-    { name: 'Gymnasium session generation', status: 'complete', blocking: 'Training content' },
-    { name: 'Pipeline orchestration', status: 'complete', blocking: 'Workflow automation' },
-    { name: 'User enrollment management', status: 'complete', blocking: 'User management' },
+  whatsMissing = signal([
+    'Knowledge Architecture: No semantic link between KUs and Principles',
+    'Curriculum Structure: No way to sequence content or define prerequisites',
+    'Learner Experience: No guided learning UI - only admin CRUD screens',
+    'Progress Rollup: SM-2 tracks items, not curriculum completion',
+    'Mastery Model: No way to prove competency or gate progress',
+    'Quality Control: No KU approval workflow',
   ]);
 
-  apiComponents = signal<ComponentStatus[]>([
-    // Core CRUD
-    { name: 'User CRUD + JWT Auth', status: 'complete' },
-    { name: 'Learning Path CRUD', status: 'complete' },
-    { name: 'Knowledge Unit CRUD', status: 'complete' },
-    { name: 'Principle CRUD', status: 'complete' },
-    { name: 'Challenge CRUD', status: 'complete' },
-    { name: 'Project CRUD', status: 'complete' },
-    { name: 'Submission CRUD', status: 'complete' },
-    { name: 'Feedback CRUD', status: 'complete' },
-    { name: 'User Progress CRUD', status: 'complete' },
-    { name: 'Raw Content CRUD', status: 'complete' },
-    // Gymnasium
-    { name: 'Session CRUD', status: 'complete' },
-    { name: 'Session Generator (AI)', status: 'complete' },
-    { name: 'Session Renderer', status: 'complete' },
-    { name: 'Session Templates', status: 'complete' },
-    // Source management
-    { name: 'Sources (many-to-many)', status: 'complete' },
-    { name: 'Source Path Links', status: 'complete' },
-    // Learning map
-    { name: 'Learning map endpoints', status: 'complete' },
-    { name: 'Node status tracking (partial)', status: 'placeholder' },
-    // AI features
-    { name: 'AI principle generation', status: 'complete' },
-    { name: 'AI source suggestions', status: 'complete' },
-    { name: 'AI feedback generation', status: 'complete' },
-    { name: 'AI session generation', status: 'complete' },
-    // Ingestion & synthesis
-    { name: 'Ingestion trigger endpoint', status: 'complete' },
-    { name: 'Synthesis trigger endpoint', status: 'complete' },
-    { name: 'Knowledge graph generation', status: 'complete' },
-    // Submissions
-    { name: 'File upload (Multer)', status: 'complete' },
-    { name: 'URL metadata extraction', status: 'complete' },
-    { name: 'Submit for review flow', status: 'complete' },
-    // Mentor system
-    { name: 'Mentor assignment', status: 'complete' },
-    { name: 'Mentor submissions query', status: 'complete' },
-    { name: 'Mentor feedback submission', status: 'complete' },
-    // SM-2
-    { name: 'SM-2 record attempt', status: 'complete' },
-    { name: 'SM-2 due for review', status: 'complete' },
-    { name: 'SM-2 study stats', status: 'complete' },
+  // Area status
+  areaStatus = signal<AreaStatus[]>([
+    { name: 'Content Components', progress: 85, status: 'strong', color: '#22c55e' },
+    { name: 'Admin/Authoring Tools', progress: 90, status: 'strong', color: '#22c55e' },
+    { name: 'AI Integration', progress: 85, status: 'strong', color: '#22c55e' },
+    { name: 'Knowledge Architecture', progress: 15, status: 'critical-gap', color: '#ef4444' },
+    { name: 'Curriculum Design', progress: 10, status: 'critical-gap', color: '#ef4444' },
+    { name: 'Learner Experience', progress: 20, status: 'critical-gap', color: '#ef4444' },
+    { name: 'Progress & Mastery', progress: 30, status: 'partial', color: '#f59e0b' },
+    { name: 'Content Quality Control', progress: 25, status: 'partial', color: '#f59e0b' },
   ]);
 
-  dashboardComponents = signal<ComponentStatus[]>([
-    // Auth & navigation
-    { name: 'Login/auth flow', status: 'complete' },
-    { name: 'Sidebar navigation', status: 'complete' },
-    { name: 'Home dashboard', status: 'complete' },
-    // Core CRUD pages
-    { name: 'Users management', status: 'complete' },
-    { name: 'User Enrollments (drag-drop)', status: 'complete' },
-    { name: 'Learning Paths CRUD', status: 'complete' },
-    { name: 'Knowledge Units CRUD', status: 'complete' },
-    { name: 'Principles CRUD', status: 'complete' },
-    { name: 'Challenges CRUD', status: 'complete' },
-    { name: 'Projects CRUD', status: 'complete' },
-    { name: 'Submissions CRUD', status: 'complete' },
-    { name: 'Raw Content CRUD', status: 'complete' },
-    { name: 'Sources CRUD', status: 'complete' },
-    { name: 'User Progress CRUD', status: 'complete' },
-    // Gymnasium
-    { name: 'Sessions list', status: 'complete' },
-    { name: 'Session Generator UI', status: 'complete' },
-    { name: 'Session Viewer', status: 'complete' },
-    { name: 'Public Session Page', status: 'complete' },
-    // Filters
-    { name: 'Learning Path filter (Principles)', status: 'complete' },
-    { name: 'Learning Path filter (Knowledge Units)', status: 'complete' },
-    { name: 'Search/filter bar component', status: 'complete' },
-    // Visualizations
-    { name: 'React Flow learning map', status: 'complete' },
-    { name: 'Knowledge graph (Cytoscape)', status: 'complete' },
-    { name: '3D Mind Map (React)', status: 'complete' },
-    { name: 'Skill Tree (React)', status: 'complete' },
-    { name: 'Metro Maps (React)', status: 'complete' },
-    { name: 'Linear Dashboard (React)', status: 'complete' },
-    // Study features
-    { name: 'Study Flashcards (SM-2)', status: 'complete' },
-    { name: 'Study Quiz (SM-2)', status: 'complete' },
-    // AI features
-    { name: 'AI principle generation UI', status: 'complete' },
-    { name: 'AI source suggestions UI', status: 'complete' },
-    { name: 'AI feedback request UI', status: 'complete' },
-    { name: 'AI session generation UI', status: 'complete' },
-    // Pipeline
-    { name: 'Pipeline Orchestrator service', status: 'complete' },
-    { name: 'Pipeline Progress Indicator', status: 'complete' },
-    { name: 'Ingestion trigger button', status: 'complete' },
-    { name: 'Synthesis trigger button', status: 'complete' },
-    // Submission features
-    { name: 'Content type selector', status: 'complete' },
-    { name: 'File upload dropzone', status: 'complete' },
-    { name: 'URL metadata fetcher', status: 'complete' },
-    { name: 'Challenge/Project selector', status: 'complete' },
-    { name: 'Feedback display', status: 'complete' },
-    { name: 'Grade badge display', status: 'complete' },
-    // Mentor system
+  // Critical gaps
+  criticalGaps = signal<CriticalGap[]>([
+    {
+      name: 'Knowledge Architecture',
+      progress: 15,
+      problem: 'KUs and Principles exist in parallel, not hierarchically. No semantic link.',
+      currentState: ['KU entity with CRUD', 'Principle entity with CRUD', 'Both linked to Learning Path'],
+      missingItems: ['KU → Principle mapping', 'Principle → KU requirements', 'Coverage visibility'],
+    },
+    {
+      name: 'Curriculum Design & Sequencing',
+      progress: 10,
+      problem: 'Visualizations are read-only displays. No way to author curriculum with sequencing.',
+      currentState: ['Multiple visualization components', 'Learning Path entity', 'Principle ordering'],
+      missingItems: ['Prerequisite relationships', 'Module grouping', 'Sequencing rules', 'Curriculum builder UI'],
+    },
+    {
+      name: 'Learner Experience',
+      progress: 20,
+      problem: 'Dashboard is admin-focused. No dedicated learner interface.',
+      currentState: ['Study Flashcards page', 'Study Quiz page', 'Gymnasium sessions', 'Basic home stats'],
+      missingItems: ['My Learning dashboard', 'Guided learning flow', 'Curriculum progress view', 'Next up recommendations'],
+    },
+    {
+      name: 'Progress & Mastery Model',
+      progress: 30,
+      problem: 'SM-2 tracks item recall. No rollup to principle/curriculum mastery.',
+      currentState: ['UserProgress entity with SM-2', 'Item-level tracking', 'Basic stats'],
+      missingItems: ['Principle mastery calculation', 'Module completion', 'Curriculum progress %', 'Mastery thresholds'],
+    },
+    {
+      name: 'Content Quality Control',
+      progress: 25,
+      problem: 'KUs are AI-generated with no review gate.',
+      currentState: ['KU status field exists', 'KU CRUD with editing'],
+      missingItems: ['KU approval workflow UI', 'Review queue', 'Reject/revise flow', 'Coverage report'],
+    },
+    {
+      name: 'Schedule & Deadline Integration',
+      progress: 5,
+      problem: 'No way to assign dates to curriculum items.',
+      currentState: ['Calendar component exists', 'targetDate field on Learning Path'],
+      missingItems: ['Module/principle deadlines', 'Schedule view', 'Deadline warnings', 'Pace tracking'],
+    },
+    {
+      name: 'Assessment & Competency',
+      progress: 20,
+      problem: 'No way to prove mastery. Challenges not tied to principles.',
+      currentState: ['Challenge/Project entities', 'Submission system', 'AI/mentor feedback', 'Grading'],
+      missingItems: ['Challenge → Principle mapping', 'Mastery gates', 'Competency portfolio', 'Certificates'],
+    },
+  ]);
+
+  // Functional components
+  functionalComponents = signal<ComponentStatus[]>([
+    { name: 'Entity CRUD (all)', status: 'complete' },
+    { name: 'JWT Authentication', status: 'complete' },
+    { name: 'Content Ingestion Pipeline', status: 'complete' },
+    { name: 'Knowledge Unit Synthesis', status: 'complete' },
+    { name: 'AI Principle Generation', status: 'complete' },
+    { name: 'AI Source Suggestions', status: 'complete' },
+    { name: 'AI Feedback Generation', status: 'complete' },
+    { name: 'AI Session Generation', status: 'complete' },
+    { name: 'SM-2 Algorithm', status: 'complete' },
+    { name: 'Study Flashcards', status: 'complete' },
+    { name: 'Study Quiz', status: 'complete' },
+    { name: 'Submission System', status: 'complete' },
     { name: 'Mentor Dashboard', status: 'complete' },
-    { name: 'Mentor assignment selector', status: 'complete' },
-    { name: 'Mentor review form', status: 'complete' },
-    // Other
-    { name: 'Completion Assessment', status: 'complete' },
-    { name: 'Search/filter bar component', status: 'complete' },
-    // Not started
-    { name: 'KU approval workflow UI', status: 'not-started' },
-    { name: 'Portfolio generation', status: 'not-started' },
+    { name: 'Visualizations (6 types)', status: 'complete' },
+    { name: 'User Enrollments', status: 'complete' },
+    { name: 'Pipeline Orchestrator', status: 'complete' },
   ]);
 
-  patchbayComponents = signal<ComponentStatus[]>([
-    { name: 'RSS/Atom adapter', status: 'complete' },
-    { name: 'Article adapter (Trafilatura)', status: 'complete' },
-    { name: 'PDF adapter (PyPDF2)', status: 'complete' },
-    { name: 'JavaScript Weekly adapter', status: 'complete' },
-    { name: 'API integration', status: 'complete' },
-    { name: 'Adapter pattern architecture', status: 'complete' },
-    { name: 'YouTube adapter', status: 'not-started' },
-    { name: 'Podcast adapter', status: 'not-started' },
-    { name: 'Newsletter (IMAP) adapter', status: 'not-started' },
+  // Missing integration layer
+  missingIntegration = signal<ComponentStatus[]>([
+    { name: 'KU → Principle Mapping', status: 'missing' },
+    { name: 'Curriculum Builder', status: 'missing' },
+    { name: 'Prerequisite System', status: 'missing' },
+    { name: 'Learner Dashboard', status: 'missing' },
+    { name: 'Progress Rollup', status: 'missing' },
+    { name: 'Mastery Gates', status: 'missing' },
+    { name: 'KU Approval Workflow', status: 'missing' },
+    { name: 'Schedule Integration', status: 'missing' },
+    { name: 'Competency Proof', status: 'missing' },
   ]);
 
-  synthesizerComponents = signal<ComponentStatus[]>([
-    { name: 'Embeddings processor', status: 'complete' },
-    { name: 'Clustering processor', status: 'complete' },
-    { name: 'Knowledge unit generator', status: 'complete' },
-    { name: 'API integration', status: 'complete' },
-    { name: 'Pipeline orchestrator', status: 'complete' },
-    { name: 'Claude AI integration', status: 'complete' },
-  ]);
-
-  learningApps = signal<ComponentStatus[]>([
-    { name: 'Infiltrate (Gamified Flashcards)', status: 'complete' },
-    { name: 'Study Flashcards (SM-2)', status: 'complete' },
-    { name: 'Study Quiz (SM-2)', status: 'complete' },
-    { name: 'Gymnasium Sessions', status: 'complete' },
-    { name: 'Challenge Arena', status: 'not-started' },
+  // Priority roadmap
+  priorityRoadmap = signal<PriorityItem[]>([
+    { priority: 'P0', name: 'KU → Principle Mapping', description: 'Add relationship and basic mapping UI', status: 'not-started' },
+    { priority: 'P0', name: 'Learner Dashboard (MVP)', description: 'Show enrolled paths and principles with KUs', status: 'not-started' },
+    { priority: 'P0', name: 'Basic Progress Rollup', description: 'Calculate principle mastery from KU progress', status: 'not-started' },
+    { priority: 'P1', name: 'Curriculum Sequencing', description: 'Prerequisites field and ordering UI', status: 'not-started' },
+    { priority: 'P1', name: 'KU Approval Workflow', description: 'Review queue with approve/reject', status: 'not-started' },
+    { priority: 'P1', name: 'Challenge → Principle Mapping', description: 'Link challenges to principles they assess', status: 'not-started' },
+    { priority: 'P2', name: 'Schedule Integration', description: 'Deadlines and pace tracking', status: 'not-started' },
+    { priority: 'P2', name: 'Portfolio & Certificates', description: 'Export work and generate credentials', status: 'not-started' },
+    { priority: 'P2', name: 'Cohort Management', description: 'Group enrollments and class progress', status: 'not-started' },
   ]);
 
   // Computed stats
-  completedCriticalItems = computed(() =>
-    this.criticalPathItems().filter(item => item.status === 'complete').length
+  strongAreas = computed(() =>
+    this.areaStatus().filter(a => a.status === 'strong').length
   );
 
-  totalCriticalItems = computed(() => this.criticalPathItems().length);
+  criticalGapCount = computed(() =>
+    this.areaStatus().filter(a => a.status === 'critical-gap').length
+  );
 
-  apiCompletionRate = computed(() => {
-    const items = this.apiComponents();
-    const complete = items.filter(i => i.status === 'complete').length;
-    return Math.round((complete / items.length) * 100);
-  });
+  functionalCount = computed(() =>
+    this.functionalComponents().filter(c => c.status === 'complete').length
+  );
 
-  dashboardCompletionRate = computed(() => {
-    const items = this.dashboardComponents();
-    const complete = items.filter(i => i.status === 'complete').length;
-    return Math.round((complete / items.length) * 100);
-  });
+  missingCount = computed(() =>
+    this.missingIntegration().filter(c => c.status === 'missing').length
+  );
 
-  patchbayCompletionRate = computed(() => {
-    const items = this.patchbayComponents();
-    const complete = items.filter(i => i.status === 'complete').length;
-    return Math.round((complete / items.length) * 100);
-  });
+  p0Items = computed(() =>
+    this.priorityRoadmap().filter(p => p.priority === 'P0')
+  );
 
-  synthesizerCompletionRate = computed(() => {
-    const items = this.synthesizerComponents();
-    const complete = items.filter(i => i.status === 'complete').length;
-    return Math.round((complete / items.length) * 100);
-  });
+  p1Items = computed(() =>
+    this.priorityRoadmap().filter(p => p.priority === 'P1')
+  );
 
-  learningAppsCompletionRate = computed(() => {
-    const items = this.learningApps();
-    const complete = items.filter(i => i.status === 'complete').length;
-    return Math.round((complete / items.length) * 100);
-  });
+  p2Items = computed(() =>
+    this.priorityRoadmap().filter(p => p.priority === 'P2')
+  );
 
-  getStatusClass(status: 'complete' | 'not-started' | 'placeholder'): string {
+  getAreaStatusClass(status: AreaStatus['status']): string {
+    switch (status) {
+      case 'strong':
+        return 'bg-green-100 text-green-700';
+      case 'partial':
+        return 'bg-yellow-100 text-yellow-700';
+      case 'critical-gap':
+        return 'bg-red-100 text-red-700';
+    }
+  }
+
+  getAreaStatusLabel(status: AreaStatus['status']): string {
+    switch (status) {
+      case 'strong':
+        return 'Strong';
+      case 'partial':
+        return 'Partial';
+      case 'critical-gap':
+        return 'Critical Gap';
+    }
+  }
+
+  getStatusClass(status: ComponentStatus['status']): string {
     switch (status) {
       case 'complete':
         return 'bg-green-100 text-green-700';
       case 'not-started':
+        return 'bg-gray-100 text-gray-700';
+      case 'missing':
         return 'bg-red-100 text-red-700';
-      case 'placeholder':
-        return 'bg-yellow-100 text-yellow-700';
     }
   }
 
-  getStatusIcon(status: 'complete' | 'not-started' | 'placeholder'): string {
+  getStatusIcon(status: ComponentStatus['status']): string {
     switch (status) {
       case 'complete':
         return '✓';
       case 'not-started':
         return '○';
-      case 'placeholder':
-        return '◐';
+      case 'missing':
+        return '✗';
     }
   }
 
-  getEpicStatusClass(status: Epic['status']): string {
-    switch (status) {
-      case 'complete':
-        return 'bg-green-100 text-green-700';
-      case 'mostly-complete':
-        return 'bg-blue-100 text-blue-700';
-      case 'partial':
-        return 'bg-yellow-100 text-yellow-700';
-      case 'early-stage':
+  getPriorityClass(priority: PriorityItem['priority']): string {
+    switch (priority) {
+      case 'P0':
         return 'bg-red-100 text-red-700';
-    }
-  }
-
-  getEpicStatusLabel(status: Epic['status']): string {
-    switch (status) {
-      case 'complete':
-        return 'Complete';
-      case 'mostly-complete':
-        return 'Mostly Complete';
-      case 'partial':
-        return 'Partial';
-      case 'early-stage':
-        return 'Early Stage';
+      case 'P1':
+        return 'bg-yellow-100 text-yellow-700';
+      case 'P2':
+        return 'bg-blue-100 text-blue-700';
     }
   }
 }

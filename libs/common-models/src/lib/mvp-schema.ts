@@ -46,6 +46,8 @@ export interface BaseEntity {
 
   export type PrincipleStatus = 'pending' | 'in_progress' | 'mastered';
 
+  export type KnowledgeUnitType = 'structured' | 'discovered';
+
   export type EnrollmentStatus = 'active' | 'completed' | 'dropped';
 
   export type PathVisibility = 'private' | 'shared' | 'public';
@@ -114,6 +116,25 @@ export interface BaseEntity {
     prerequisites: string[];         // IDs of prerequisite principles
     order: number;                   // Display order in learning map
     status: PrincipleStatus;         // 'pending' | 'in_progress' | 'mastered'
+  }
+
+  /**
+   * A sub-concept - intermediate layer between principle and knowledge units
+   * Used in the Assembly Flow to break down principles into smaller teachable units
+   */
+  export interface SubConcept extends BaseEntity {
+    principleId: string;             // Links to Principle
+    name: string;                    // "Component Composition"
+    description: string;             // What this sub-concept covers
+    order: number;                   // Display order within principle
+  }
+
+  /**
+   * Decoration - links a discovered KU to a sub-concept as supplementary material
+   */
+  export interface SubConceptDecoration extends BaseEntity {
+    subConceptId: string;
+    knowledgeUnitId: string;
   }
 
   /**
@@ -265,23 +286,25 @@ export interface BaseEntity {
   export interface KnowledgeUnit extends BaseEntity {
     pathId: string;
     principleId?: string;            // Optional link to Principle
+    type: KnowledgeUnitType;         // 'structured' | 'discovered'
+    subConceptId?: string;           // Optional link to SubConcept (for structured KUs)
 
     // Core content
     concept: string;                 // "Server Components"
     question: string;                // "What are Server Components?"
     answer: string;                  // "Components that render on the server..."
-    
+
     // Additional context (optional for MVP)
     elaboration?: string;
     examples: string[];              // Simplified from Example[] in full model
     analogies: string[];
     commonMistakes: string[];
-    
+
     // Classification
     difficulty: DifficultyLevel;
     cognitiveLevel: CognitiveLevel;
     estimatedTimeSeconds: number;
-    
+
     // Metadata
     tags: string[];
     sourceIds: string[];             // Links to RawContent IDs
@@ -410,6 +433,19 @@ export interface BaseEntity {
     status?: PrincipleStatus;
   }
 
+  export interface CreateSubConceptDto {
+    principleId: string;
+    name: string;
+    description: string;
+    order?: number;
+  }
+
+  export interface UpdateSubConceptDto {
+    name?: string;
+    description?: string;
+    order?: number;
+  }
+
   export interface CreateSourceConfigDto {
     pathId: string;
     url: string;
@@ -486,6 +522,8 @@ export interface BaseEntity {
   export interface CreateKnowledgeUnitDto {
     pathId: string;
     principleId?: string;
+    type?: KnowledgeUnitType;
+    subConceptId?: string;
     concept: string;
     question: string;
     answer: string;
@@ -499,9 +537,11 @@ export interface BaseEntity {
     tags?: string[];
     sourceIds?: string[];
   }
-  
+
   export interface UpdateKnowledgeUnitDto {
     principleId?: string;
+    type?: KnowledgeUnitType;
+    subConceptId?: string;
     concept?: string;
     question?: string;
     answer?: string;

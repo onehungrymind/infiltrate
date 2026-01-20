@@ -1,7 +1,7 @@
 :host {
   display: flex;
   height: 100vh;
-  width: 100%;
+  width: 100vw;
   overflow: hidden;
 }
 
@@ -10,16 +10,17 @@ app-sidebar {
 }
 
 main {
-  flex: 1 1 auto;
+  flex: 1 1 0;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   min-height: 0;
+  overflow: hidden;
 }
 
 main > div {
-  flex: 1 1 0%;
-  display: flex;
-  flex-direction: column;
+  flex: 1 1 0;
+  min-width: 0;
   min-height: 0;
   overflow: hidden;
 }
@@ -31,11 +32,10 @@ router-outlet {
 // The routed component is inserted as a sibling AFTER router-outlet
 // ::ng-deep is needed to pierce Angular's view encapsulation
 :host ::ng-deep router-outlet + * {
-  flex: 1 1 0%;
-  display: flex;
-  flex-direction: column;
+  flex: 1 1 0;
+  min-width: 0;
   min-height: 0;
-  overflow: auto;
+  overflow: hidden;
 }
 
 

@@ -14,7 +14,7 @@
 
 // Header
 .header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
   border-radius: 16px;
   padding: 32px;
   margin-bottom: 24px;
@@ -67,7 +67,7 @@
     width: 80px;
     height: 80px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
   }
 
   .progress-value {
@@ -146,6 +146,11 @@
     background: #ffedd5;
     color: #ea580c;
   }
+
+  &.kpi-icon-red {
+    background: #fee2e2;
+    color: #dc2626;
+  }
 }
 
 .kpi-content {
@@ -164,6 +169,63 @@
   color: #6b7280;
 }
 
+// Summary Row
+.summary-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 900px) {
+  .summary-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.summary-card {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+  h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0 0 16px;
+  }
+
+  ul {
+    margin: 0;
+    padding: 0 0 0 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  li {
+    font-size: 14px;
+    color: #374151;
+    line-height: 1.5;
+  }
+
+  &.summary-have {
+    border-left: 4px solid #22c55e;
+
+    h3 {
+      color: #16a34a;
+    }
+  }
+
+  &.summary-missing {
+    border-left: 4px solid #ef4444;
+
+    h3 {
+      color: #dc2626;
+    }
+  }
+}
+
 // Two Column Layout
 .two-column-row {
   display: grid;
@@ -176,7 +238,7 @@
   }
 }
 
-@media (max-width: 1000px) {
+@media (max-width: 1200px) {
   .two-column-row {
     grid-template-columns: 1fr;
   }
@@ -208,20 +270,20 @@
   }
 }
 
-// Epic List
-.epic-list {
+// Area List
+.area-list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
 }
 
-.epic-item {
+.area-item {
   background: #f9fafb;
   border-radius: 10px;
   padding: 16px;
 }
 
-.epic-header {
+.area-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -230,25 +292,173 @@
   gap: 8px;
 }
 
-.epic-name {
+.area-name {
   font-size: 14px;
   font-weight: 500;
   color: #374151;
 }
 
-.epic-status {
+.area-status {
   font-size: 12px;
   font-weight: 500;
   padding: 4px 10px;
   border-radius: 20px;
 }
 
-.epic-progress-row {
+.area-progress-row {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
+// Gap List
+.gap-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.gap-item {
+  background: #fef2f2;
+  border-radius: 10px;
+  padding: 16px;
+  border-left: 4px solid #ef4444;
+}
+
+.gap-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.gap-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #991b1b;
+}
+
+.gap-progress {
+  font-size: 14px;
+  font-weight: 600;
+  color: #dc2626;
+}
+
+.gap-problem {
+  font-size: 13px;
+  color: #7f1d1d;
+  margin: 0 0 12px;
+  line-height: 1.4;
+}
+
+.gap-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.gap-current,
+.gap-missing {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+
+  strong {
+    font-size: 12px;
+    color: #6b7280;
+    min-width: 40px;
+  }
+}
+
+.gap-tag {
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 4px;
+
+  &.have {
+    background: #dcfce7;
+    color: #166534;
+  }
+
+  &.need {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+}
+
+// Priority Section
+.priority-section {
+  margin-bottom: 20px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.priority-header {
+  font-size: 13px;
+  font-weight: 600;
+  margin: 0 0 12px;
+  padding: 8px 12px;
+  border-radius: 6px;
+
+  &.p0 {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+
+  &.p1 {
+    background: #fef3c7;
+    color: #92400e;
+  }
+
+  &.p2 {
+    background: #dbeafe;
+    color: #1e40af;
+  }
+}
+
+.priority-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  background: #f9fafb;
+  border-radius: 8px;
+  margin-bottom: 8px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.priority-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.priority-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.priority-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1f2937;
+}
+
+.priority-desc {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+// Progress Bar
 .progress-bar {
   flex: 1;
   height: 8px;
@@ -271,83 +481,33 @@
   text-align: right;
 }
 
-// Critical Path
-.critical-path-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 12px;
-}
-
-.critical-path-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.critical-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 14px;
-  background: #fef2f2;
-  border-radius: 10px;
-  border-left: 4px solid #ef4444;
-
-  &.complete {
-    background: #f0fdf4;
-    border-left-color: #22c55e;
-  }
-}
-
-.critical-icon {
-  flex-shrink: 0;
-
-  svg {
-    width: 24px;
-    height: 24px;
-  }
-
-  .icon-complete {
-    color: #22c55e;
-  }
-
-  .icon-pending {
-    color: #ef4444;
-  }
-}
-
-.critical-content {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.critical-name {
-  font-size: 14px;
-  font-weight: 500;
-  color: #1f2937;
-}
-
-.critical-blocking {
-  font-size: 12px;
-  color: #6b7280;
-
-  del {
-    color: #9ca3af;
-  }
-}
-
 // Component Grid
 .component-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 20px;
+
+  &.two-col {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .component-grid.two-col {
+    grid-template-columns: 1fr;
+  }
 }
 
 .component-card {
-  background: #f9fafb;
+  background: #f0fdf4;
   border-radius: 12px;
   padding: 16px;
+  border: 1px solid #bbf7d0;
+
+  &.missing {
+    background: #fef2f2;
+    border-color: #fecaca;
+  }
 }
 
 .component-header {
@@ -358,7 +518,6 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
 }
 
 .component-name {
@@ -368,23 +527,16 @@
 }
 
 .component-rate {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
-  color: #667eea;
-}
 
-.mini-progress {
-  height: 4px;
-  background: #e5e7eb;
-  border-radius: 2px;
-  overflow: hidden;
-}
+  &.complete {
+    color: #16a34a;
+  }
 
-.mini-progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-  border-radius: 2px;
-  transition: width 0.3s ease;
+  &.missing {
+    color: #dc2626;
+  }
 }
 
 .component-list {
@@ -419,6 +571,50 @@
   color: #374151;
 }
 
+// Honest Assessment
+.honest-assessment {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+  border: 1px solid #fbbf24;
+
+  h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #92400e;
+    margin: 0 0 16px;
+  }
+}
+
+.assessment-content {
+  p {
+    font-size: 14px;
+    color: #78350f;
+    margin: 0 0 12px;
+    line-height: 1.6;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    strong {
+      color: #92400e;
+    }
+  }
+
+  ul {
+    margin: 8px 0 12px;
+    padding: 0 0 0 20px;
+
+    li {
+      font-size: 14px;
+      color: #78350f;
+      margin-bottom: 4px;
+    }
+  }
+}
+
 // Legend
 .legend {
   display: flex;
@@ -449,6 +645,38 @@
   font-weight: 600;
 }
 
+// Utility classes
+.bg-green-100 {
+  background-color: #dcfce7;
+}
+.text-green-700 {
+  color: #15803d;
+}
+.bg-yellow-100 {
+  background-color: #fef3c7;
+}
+.text-yellow-700 {
+  color: #a16207;
+}
+.bg-red-100 {
+  background-color: #fee2e2;
+}
+.text-red-700 {
+  color: #b91c1c;
+}
+.bg-gray-100 {
+  background-color: #f3f4f6;
+}
+.text-gray-700 {
+  color: #374151;
+}
+.bg-blue-100 {
+  background-color: #dbeafe;
+}
+.text-blue-700 {
+  color: #1d4ed8;
+}
+
 // Responsive
 @media (max-width: 640px) {
   .completion-assessment {
@@ -473,10 +701,6 @@
   }
 
   .component-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .critical-path-grid {
     grid-template-columns: 1fr;
   }
 }
