@@ -444,3 +444,38 @@ export {
   addDecoration,
   removeDecoration,
 };
+
+/* BuildJobs (BullMQ Pipeline) */
+import * as BuildJobsActions from './lib/build-jobs/build-jobs.actions';
+import * as BuildJobsFeature from './lib/build-jobs/build-jobs.feature';
+import * as BuildJobsEffects from './lib/build-jobs/build-jobs.effects';
+import { BuildJobsFacade } from './lib/build-jobs/build-jobs.facade';
+import { buildJobsFeature } from './lib/build-jobs/build-jobs.feature';
+import {
+  createBuildJob,
+  loadJobsByPath,
+  loadActiveJob,
+  loadJobProgress,
+  cancelJob,
+  subscribeToJobEventsAfterCreate,
+  subscribeToActiveJobOnLoad,
+  subscribeToJobEvents,
+  loadProgressOnJobComplete,
+} from './lib/build-jobs/build-jobs.effects';
+
+export {
+  buildJobsFeature,
+  BuildJobsFacade,
+  BuildJobsActions,
+  BuildJobsFeature,
+  BuildJobsEffects,
+  createBuildJob,
+  loadJobsByPath,
+  loadActiveJob,
+  loadJobProgress,
+  cancelJob,
+  subscribeToJobEventsAfterCreate,
+  subscribeToActiveJobOnLoad,
+  subscribeToJobEvents,
+  loadProgressOnJobComplete,
+};

@@ -764,3 +764,90 @@ export interface BaseEntity {
     sortBy?: string;
     sortOrder?: 'asc' | 'desc';
   }
+
+  // ============================================================================
+  // BUILD JOB TYPES (BullMQ Pipeline)
+  // ============================================================================
+
+  export type BuildJobStatus = 'pending' | 'running' | 'completed' | 'failed' | 'cancelled';
+  export type JobStepType = 'generate-concepts' | 'decompose-concept' | 'generate-ku';
+  export type JobStepStatus = 'pending' | 'running' | 'completed' | 'failed' | 'skipped';
+
+  /**
+   * Build job - tracks a learning path build operation
+   */
+  export interface BuildJob extends BaseEntity {
+    pathId: string;
+    status: BuildJobStatus;
+    bullJobId?: string;
+    totalSteps: number;
+    completedSteps: number;
+    failedSteps: number;
+    currentOperation?: string;
+    errorMessage?: string;
+    metadata?: Record<string, unknown>;
+    startedAt?: Date;
+    completedAt?: Date;
+  }
+
+  /**
+   * Job step - tracks individual steps within a build job
+   */
+  export interface JobStep extends BaseEntity {
+    buildJobId: string;
+    type: JobStepType;
+    status: JobStepStatus;
+    bullJobId?: string;
+    entityId?: string;
+    entityName?: string;
+    order: number;
+    retryCount: number;
+    errorMessage?: string;
+    result?: Record<string, unknown>;
+    startedAt?: Date;
+    completedAt?: Date;
+  }
+
+  /**
+   * Job progress event - emitted via WebSocket for real-time updates
+   */
+  export interface JobProgressEvent {
+    buildJobId: string;
+    type: 'step-started' | 'step-completed' | 'step-failed' | 'job-completed' | 'job-failed';
+    stepId?: string;
+    stepType?: string;
+    message: string;
+    progress?: {
+      completed: number;
+      total: number;
+      percentage: number;
+    };
+    error?: string;
+    timestamp: Date;
+
+    // Entity data for real-time UI updates
+    entities?: {
+      concepts?: Concept[];
+      subConcepts?: SubConcept[];
+      knowledgeUnits?: KnowledgeUnit[];
+      // Context for selection
+      selectedConceptId?: string;
+      selectedSubConceptId?: string;
+    };
+  }
+
+  /**
+   * Job progress response - returned by progress endpoint
+   */
+  export interface JobProgressResponse {
+    job: BuildJob;
+    steps: JobStep[];
+    percentage: number;
+  }
+
+  /**
+   * Create build job DTO
+   */
+  export interface CreateBuildJobDto {
+    pathId: string;
+  }

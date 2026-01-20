@@ -7,6 +7,7 @@ export const ConceptsActions = createActionGroup({
     'Select Concept': props<{ selectedId: string }>(),
     'Reset Selected Concept': emptyProps(),
     'Reset Concepts': emptyProps(),
+    'Add Concepts To Store': props<{ concepts: Concept[] }>(),
     'Load Concepts': emptyProps(),
     'Load Concepts Success': props<{ concepts: Concept[] }>(),
     'Load Concepts Failure': props<{ error: string | null }>(),

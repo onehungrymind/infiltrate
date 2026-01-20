@@ -9,17 +9,13 @@
     </div>
     <div class="header-right">
       @if (isRunning()) {
-        <div class="pipeline-status">
-          <app-pipeline-progress-indicator
-            [stages]="pipelineStages"
-            [currentStage]="currentStage"
-            [completedStages]="completedStages"
-            [errorStage]="errorStage"
-          ></app-pipeline-progress-indicator>
-          @if (currentProgress()) {
-            <span class="progress-text">{{ currentProgress() }}</span>
-          }
-        </div>
+        <span class="progress-text">{{ currentProgress() }}</span>
+        <app-pipeline-progress-indicator
+          [stages]="pipelineStages"
+          [currentStage]="currentStage"
+          [completedStages]="completedStages"
+          [errorStage]="errorStage"
+        ></app-pipeline-progress-indicator>
       }
       <button
         class="run-pipeline-btn"

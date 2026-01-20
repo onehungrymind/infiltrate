@@ -65,3 +65,9 @@ export * from './lib/services/gymnasium/gymnasium.service';
 
 /* SubConcepts */
 export * from './lib/services/sub-concepts/sub-concepts.service';
+
+/* Jobs (BullMQ Pipeline) */
+export * from './lib/services/jobs/jobs.service';
+
+/* WebSocket */
+export * from './lib/services/websocket/websocket.service';

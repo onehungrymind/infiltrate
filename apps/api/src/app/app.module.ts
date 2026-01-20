@@ -1,5 +1,7 @@
+import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { join } from 'path';
 
@@ -15,6 +17,9 @@ import { Session } from '../gymnasium/entities/session.entity';
 import { SessionTemplate } from '../gymnasium/entities/session-template.entity';
 import { GymnasiumModule } from '../gymnasium/gymnasium.module';
 import { IngestionModule } from '../ingestion/ingestion.module';
+import { BuildJob } from '../jobs/entities/build-job.entity';
+import { JobStep } from '../jobs/entities/job-step.entity';
+import { JobsModule } from '../jobs/jobs.module';
 import { GraphSearch } from '../knowledge-graph/entities/graph-search.entity';
 import { KnowledgeGraphModule } from '../knowledge-graph/knowledge-graph.module';
 import { KnowledgeUnit } from '../knowledge-units/entities/knowledge-unit.entity';
@@ -58,12 +63,19 @@ import { AppService } from './app.service';
         '.env', // fallback to process.cwd()
       ],
     }),
+    EventEmitterModule.forRoot(),
+    BullModule.forRoot({
+      connection: {
+        host: process.env.REDIS_HOST || 'localhost',
+        port: parseInt(process.env.REDIS_PORT || '6379', 10),
+      },
+    }),
     TypeOrmModule.forRoot({
       type: 'sqlite',
       database: process.env.DATABASE_URL?.replace('file:', '') || 'kasita.db',
       synchronize: process.env.NODE_ENV !== 'production', // Auto-sync in dev
       logging: false, // Disable SQL logging for better performance
-      entities: [LearningPath, Source, SourcePathLink, RawContent, KnowledgeUnit, UserProgress, User, DataSource, GraphSearch, NotebookProgress, Concept, Submission, Feedback, Challenge, Project, ProjectConcept, Enrollment, Session, SessionTemplate, SubConcept, SubConceptDecoration],
+      entities: [LearningPath, Source, SourcePathLink, RawContent, KnowledgeUnit, UserProgress, User, DataSource, GraphSearch, NotebookProgress, Concept, Submission, Feedback, Challenge, Project, ProjectConcept, Enrollment, Session, SessionTemplate, SubConcept, SubConceptDecoration, BuildJob, JobStep],
     }),
     LearningPathsModule,
     SourceConfigsModule,
@@ -85,6 +97,7 @@ import { AppService } from './app.service';
     EnrollmentsModule,
     GymnasiumModule,
     SubConceptsModule,
+    JobsModule,
   ],
   controllers: [AppController],
   providers: [AppService, ProgressGateway],

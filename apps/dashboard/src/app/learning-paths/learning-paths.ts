@@ -1,8 +1,9 @@
-import { Component, computed, effect, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, effect, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Concept, KnowledgeUnit, LearningPath, SubConcept } from '@kasita/common-models';
 import { LearningMapService } from '@kasita/core-data';
 import {
+  BuildJobsFacade,
   ConceptsFacade,
   KnowledgeUnitFacade,
   LearningPathsFacade,
@@ -17,7 +18,7 @@ import { LearningPathDetail } from './learning-path-detail/learning-path-detail'
 import { LearningPathsList } from './learning-paths-list/learning-paths-list';
 import { ConceptDetail } from './concept-detail/concept-detail';
 import { SubConceptDetail } from './sub-concept-detail/sub-concept-detail';
-import { PipelineOrchestratorService } from './services/pipeline-orchestrator.service';
+import { BuildProgress } from './build-progress/build-progress';
 
 @Component({
   selector: 'app-learning-paths',
@@ -30,17 +31,18 @@ import { PipelineOrchestratorService } from './services/pipeline-orchestrator.se
     MaterialModule,
     PipelineColumn,
     PipelineProgressIndicator,
+    BuildProgress,
   ],
   templateUrl: './learning-paths.html',
   styleUrl: './learning-paths.scss',
 })
-export class LearningPaths implements OnInit {
+export class LearningPaths implements OnInit, OnDestroy {
   private learningPathsFacade = inject(LearningPathsFacade);
   private conceptsFacade = inject(ConceptsFacade);
   private subConceptsFacade = inject(SubConceptsFacade);
   private knowledgeUnitFacade = inject(KnowledgeUnitFacade);
   private learningMapService = inject(LearningMapService);
-  private pipelineOrchestrator = inject(PipelineOrchestratorService);
+  private buildJobsFacade = inject(BuildJobsFacade);
 
   // Learning Paths
   learningPaths = toSignal(this.learningPathsFacade.allLearningPaths$, { initialValue: [] as LearningPath[] });
@@ -97,12 +99,24 @@ export class LearningPaths implements OnInit {
   decomposing = signal(false);
   generatingKU = signal(false);
 
-  // Pipeline orchestrator state
-  isRunning = this.pipelineOrchestrator.isRunning;
-  currentStage = this.pipelineOrchestrator.currentStage;
-  completedStages = this.pipelineOrchestrator.completedStages;
-  errorStage = this.pipelineOrchestrator.errorStage;
-  currentProgress = this.pipelineOrchestrator.currentProgress;
+  // BullMQ build job state
+  activeJob = toSignal(this.buildJobsFacade.activeJob$);
+  isRunning = toSignal(this.buildJobsFacade.isRunning$, { initialValue: false });
+  buildProgress = toSignal(this.buildJobsFacade.currentProgress$, { initialValue: 0 });
+  latestEvent = toSignal(this.buildJobsFacade.latestEvent$);
+
+  // Computed progress message from SSE events
+  currentProgress = computed(() => {
+    const event = this.latestEvent();
+    if (event?.message) return event.message;
+    const job = this.activeJob();
+    return job?.currentOperation || '';
+  });
+
+  // Legacy: For PipelineProgressIndicator (will migrate later)
+  currentStage = signal<string>('');
+  completedStages = signal<string[]>([]);
+  errorStage = signal<string | null>(null);
 
   // Pipeline stages definition (Build Learning Path)
   pipelineStages: PipelineStage[] = [
@@ -187,6 +201,103 @@ export class LearningPaths implements OnInit {
       const subConceptId = this.selectedSubConcept()?.id;
       if (subConceptId) {
         this.knowledgeUnitFacade.loadKnowledgeUnitsBySubConcept(subConceptId);
+      }
+    });
+
+    // Load active build job when path is selected
+    effect(() => {
+      const pathId = this.selectedLearningPath()?.id;
+      if (pathId) {
+        this.buildJobsFacade.loadActiveJob(pathId);
+      }
+    });
+
+    // Reload data when build completes
+    effect(() => {
+      const event = this.latestEvent();
+      if (event?.type === 'job-completed') {
+        this.onBuildComplete();
+      }
+    });
+
+    // Real-time UI updates: Handle entity data from job progress events
+    effect(() => {
+      const event = this.latestEvent();
+      if (!event || event.type !== 'step-completed' || !event.entities) return;
+
+      // Concepts generated - add to store and select first one
+      if (event.stepType === 'generate-concepts' && event.entities.concepts?.length) {
+        this.conceptsFacade.addConceptsToStore(event.entities.concepts);
+        // Select the first concept to show sub-concepts column
+        const firstConcept = event.entities.concepts[0];
+        if (firstConcept) {
+          this.selectConcept(firstConcept);
+        }
+      }
+
+      // Sub-concepts generated - add to store and select parent concept
+      if (event.stepType === 'decompose-concept' && event.entities.subConcepts?.length) {
+        this.subConceptsFacade.addSubConceptsToStore(event.entities.subConcepts);
+        // Select the parent concept if specified
+        if (event.entities.selectedConceptId) {
+          const concept = this.allConcepts().find(c => c.id === event.entities!.selectedConceptId);
+          if (concept) {
+            this.selectConcept(concept);
+            // Select the first sub-concept to show KUs column
+            const firstSubConcept = event.entities.subConcepts[0];
+            if (firstSubConcept) {
+              this.selectSubConcept(firstSubConcept);
+            }
+          }
+        }
+      }
+
+      // Knowledge units generated - add to store and select parent concept/sub-concept
+      if (event.stepType === 'generate-ku' && event.entities.knowledgeUnits?.length) {
+        this.knowledgeUnitFacade.addKnowledgeUnitsToStore(event.entities.knowledgeUnits);
+        // Select the parent concept and sub-concept if specified
+        if (event.entities.selectedConceptId) {
+          const concept = this.allConcepts().find(c => c.id === event.entities!.selectedConceptId);
+          if (concept) {
+            this.selectConcept(concept);
+          }
+        }
+        if (event.entities.selectedSubConceptId) {
+          const subConcept = this.allSubConcepts().find(sc => sc.id === event.entities!.selectedSubConceptId);
+          if (subConcept) {
+            this.selectSubConcept(subConcept);
+          }
+        }
+      }
+    });
+
+    // Update legacy progress indicator from SSE events
+    effect(() => {
+      const event = this.latestEvent();
+      if (!event) return;
+
+      if (event.stepType) {
+        this.currentStage.set(event.stepType);
+      }
+
+      if (event.type === 'step-completed' && event.stepType) {
+        this.completedStages.update(stages => {
+          if (!stages.includes(event.stepType!)) {
+            return [...stages, event.stepType!];
+          }
+          return stages;
+        });
+      }
+
+      if (event.type === 'step-failed' && event.stepType) {
+        this.errorStage.set(event.stepType);
+      }
+
+      if (event.type === 'job-completed' || event.type === 'job-failed') {
+        // Reset stages after job completes
+        this.currentStage.set('');
+        this.completedStages.set([]);
+        this.errorStage.set(null);
       }
     });
   }
@@ -428,20 +539,19 @@ export class LearningPaths implements OnInit {
     const pathId = this.selectedLearningPath()?.id;
     if (!pathId) return;
 
-    // Build complete learning path: Concepts → Sub-concepts → Knowledge Units
-    this.pipelineOrchestrator.buildCompleteLearningPath(pathId).subscribe({
-      next: (result) => {
-        console.log(`[Pipeline] ${result.stage}: ${result.message}`);
-        // Reload data after each stage completes
-        if (result.success) {
-          this.loadPathData(pathId);
-        }
-      },
-      complete: () => {
-        // Final reload when pipeline completes
-        this.loadPathData(pathId);
-        console.log('[Pipeline] Complete learning path build finished!');
-      },
-    });
+    // Start BullMQ build job (runs in backend, survives browser refresh)
+    this.buildJobsFacade.createBuildJob(pathId);
+  }
+
+  // Called when build completes (from BuildProgress component or SSE event)
+  onBuildComplete() {
+    const pathId = this.selectedLearningPath()?.id;
+    if (pathId) {
+      this.loadPathData(pathId);
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.buildJobsFacade.unsubscribeFromJobEvents();
   }
 }

@@ -133,6 +133,17 @@ import {
   generateStructuredKU,
   addDecoration,
   removeDecoration,
+  // BuildJobs (BullMQ Pipeline)
+  buildJobsFeature,
+  createBuildJob,
+  loadJobsByPath,
+  loadActiveJob,
+  loadJobProgress,
+  cancelJob,
+  subscribeToJobEventsAfterCreate,
+  subscribeToActiveJobOnLoad,
+  subscribeToJobEvents,
+  loadProgressOnJobComplete,
 } from '@kasita/core-state';
 import { provideEffects } from '@ngrx/effects';
 import { provideStore } from '@ngrx/store';
@@ -164,6 +175,7 @@ export const appConfig: ApplicationConfig = {
       enrollments: enrollmentsFeature.reducer,
       gymnasium: gymnasiumFeature.reducer,
       subConcepts: subConceptsFeature.reducer,
+      buildJobs: buildJobsFeature.reducer,
     }),
     provideEffects({
       // Learning Paths
@@ -277,6 +289,16 @@ export const appConfig: ApplicationConfig = {
       generateStructuredKU,
       addDecoration,
       removeDecoration,
+      // BuildJobs (BullMQ Pipeline)
+      createBuildJob,
+      loadJobsByPath,
+      loadActiveJob,
+      loadJobProgress,
+      cancelJob,
+      subscribeToJobEventsAfterCreate,
+      subscribeToActiveJobOnLoad,
+      subscribeToJobEvents,
+      loadProgressOnJobComplete,
     }),
     provideStoreDevtools({
       maxAge: 25,

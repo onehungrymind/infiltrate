@@ -77,6 +77,14 @@ export class ConceptFacade {
     this.dispatch(ConceptsActions.deleteConcept({ concept }));
   }
 
+  /**
+   * Add concepts directly to the store (e.g., after AI generation returns them)
+   * This avoids needing to reload from the API
+   */
+  addConceptsToStore(concepts: Concept[]) {
+    this.dispatch(ConceptsActions.addConceptsToStore({ concepts }));
+  }
+
   dispatch(action: Action) {
     this.store.dispatch(action);
   }

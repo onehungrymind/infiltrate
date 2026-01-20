@@ -68,6 +68,15 @@ const conceptsReducer = createReducer(
     }),
   ),
 
+  // Add concepts directly to store (for real-time UI updates during build)
+  on(ConceptsActions.addConceptsToStore, (state, { concepts }) =>
+    conceptsAdapter.upsertMany(concepts, {
+      ...state,
+      loaded: true,
+      error: null,
+    }),
+  ),
+
   // CRUD Success
   on(
     ConceptsActions.loadConceptsSuccess,
