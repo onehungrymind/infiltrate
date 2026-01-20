@@ -104,7 +104,11 @@
       (secondaryAction)="createNewPrinciple()"
     >
       @for (principle of principles(); track principle.id) {
-        <div class="item-card" (click)="editPrinciple(principle)">
+        <div
+          class="item-card"
+          [class.selected]="selectedPrinciple()?.id === principle.id"
+          (click)="selectPrinciple(principle)"
+        >
           <div class="item-title">{{ principle.name }}</div>
           @if (principle.description) {
             <div class="item-description">{{ principle.description }}</div>
@@ -113,6 +117,9 @@
             <span class="difficulty-badge" [class]="'difficulty-' + principle.difficulty">
               {{ principle.difficulty }}
             </span>
+            <button class="edit-btn" (click)="editPrinciple(principle); $event.stopPropagation()">
+              <mat-icon>edit</mat-icon>
+            </button>
           </div>
         </div>
       }
@@ -140,122 +147,81 @@
       </div>
     </div>
 
-    <!-- Column 3: Sources -->
+    <!-- Column 3: Sub-concepts -->
     <app-pipeline-column
-      title="Sources"
-      actionLabel="Suggest"
-      actionIcon="tips_and_updates"
-      [items]="sourcesSignal"
-      [loading]="suggestingSources"
-      [enabled]="canSuggestSources"
+      title="Sub-concepts"
+      actionLabel="Decompose"
+      actionIcon="account_tree"
+      [items]="subConceptsSignal"
+      [loading]="decomposing"
+      [enabled]="canDecompose"
       [showSecondaryAction]="true"
-      emptyMessage="No sources configured"
-      emptyIcon="link"
-      (action)="suggestSources()"
-      (secondaryAction)="createNewSource()"
+      emptyMessage="Select a principle to see sub-concepts"
+      emptyIcon="category"
+      (action)="decomposePrinciple()"
+      (secondaryAction)="createNewSubConcept()"
     >
-      @for (source of sources(); track source.id) {
-        <div class="item-card" (click)="editSource(source)">
-          <div class="item-title">{{ source.name }}</div>
+      @for (subConcept of subConcepts(); track subConcept.id) {
+        <div
+          class="item-card"
+          [class.selected]="selectedSubConcept()?.id === subConcept.id"
+          (click)="selectSubConcept(subConcept)"
+        >
+          <div class="item-title">{{ subConcept.name }}</div>
+          @if (subConcept.description) {
+            <div class="item-description">{{ subConcept.description }}</div>
+          }
           <div class="item-meta">
-            <span class="source-type">{{ source.type }}</span>
-            @if (!source.enabled) {
-              <span class="source-disabled">Disabled</span>
-            }
+            <button class="edit-btn" (click)="editSubConcept(subConcept); $event.stopPropagation()">
+              <mat-icon>edit</mat-icon>
+            </button>
           </div>
         </div>
       }
     </app-pipeline-column>
 
-    <!-- Source Editor Panel -->
-    <div class="editor-panel" [class.open]="isEditingSource()">
+    <!-- Sub-concept Editor Panel -->
+    <div class="editor-panel" [class.open]="isEditingSubConcept()">
       <div class="editor-panel-inner">
         <div class="editor-header">
-          <h3>{{ editingSource() ? 'Edit Source' : 'New Source' }}</h3>
-          <button class="close-btn" (click)="closeSourceEditor()">
+          <h3>{{ editingSubConcept() ? 'Edit Sub-concept' : 'New Sub-concept' }}</h3>
+          <button class="close-btn" (click)="closeSubConceptEditor()">
             <mat-icon>close</mat-icon>
           </button>
         </div>
         <div class="editor-content">
-          @if (isEditingSource()) {
-            <app-source-detail
-              [source]="editingSource()"
-              [pathId]="selectedLearningPath()?.id || null"
-              (saved)="saveSource($event)"
-              (cancelled)="closeSourceEditor()"
-            ></app-source-detail>
+          @if (isEditingSubConcept()) {
+            <app-sub-concept-detail
+              [subConcept]="editingSubConcept()"
+              [principleId]="selectedPrinciple()?.id || null"
+              (saved)="saveSubConcept($event)"
+              (cancelled)="closeSubConceptEditor()"
+            ></app-sub-concept-detail>
           }
         </div>
       </div>
     </div>
 
-    <!-- Column 4: Raw Content -->
-    <app-pipeline-column
-      title="Raw Content"
-      actionLabel="Ingest"
-      actionIcon="download"
-      [items]="rawContentSignal"
-      [loading]="ingesting"
-      [enabled]="canIngest"
-      [showSecondaryAction]="true"
-      emptyMessage="No raw content"
-      emptyIcon="description"
-      (action)="triggerIngestion()"
-      (secondaryAction)="createNewRawContent()"
-    >
-      @for (content of rawContent(); track content.id) {
-        <div class="item-card" (click)="editRawContent(content)">
-          <div class="item-title">{{ content.title || 'Untitled' }}</div>
-          @if (content.sourceType) {
-            <div class="item-meta">
-              <span class="source-type">{{ content.sourceType }}</span>
-            </div>
-          }
-        </div>
-      }
-    </app-pipeline-column>
-
-    <!-- Raw Content Editor Panel -->
-    <div class="editor-panel" [class.open]="isEditingRawContent()">
-      <div class="editor-panel-inner">
-        <div class="editor-header">
-          <h3>{{ editingRawContent() ? 'Edit Raw Content' : 'New Raw Content' }}</h3>
-          <button class="close-btn" (click)="closeRawContentEditor()">
-            <mat-icon>close</mat-icon>
-          </button>
-        </div>
-        <div class="editor-content">
-          @if (isEditingRawContent()) {
-            <app-raw-content-detail
-              [rawContent]="editingRawContent()"
-              [pathId]="selectedLearningPath()?.id || null"
-              (saved)="saveRawContent($event)"
-              (cancelled)="closeRawContentEditor()"
-            ></app-raw-content-detail>
-          }
-        </div>
-      </div>
-    </div>
-
-    <!-- Column 5: Knowledge Units -->
+    <!-- Column 4: Knowledge Units -->
     <app-pipeline-column
       title="Knowledge Units"
-      actionLabel="Synthesize"
+      actionLabel="Generate"
       actionIcon="auto_awesome"
-      [items]="knowledgeUnitsSignal"
-      [loading]="synthesizing"
-      [enabled]="canSynthesize"
+      [items]="structuredKnowledgeUnitsSignal"
+      [loading]="generatingKU"
+      [enabled]="canGenerateKU"
       [showSecondaryAction]="true"
-      emptyMessage="No knowledge units"
+      emptyMessage="Select a sub-concept to see KUs"
       emptyIcon="psychology"
-      (action)="triggerSynthesis()"
+      (action)="generateStructuredKU()"
       (secondaryAction)="createNewKnowledgeUnit()"
     >
-      @for (unit of knowledgeUnits(); track unit.id) {
+      @for (unit of structuredKnowledgeUnits(); track unit.id) {
         <div class="item-card" (click)="editKnowledgeUnit(unit)">
           <div class="item-title">{{ unit.concept }}</div>
           @if (unit.status) {
             <div class="item-meta">
+              <span class="unit-type structured">structured</span>
               <span class="unit-status" [class]="'status-' + unit.status">{{ unit.status }}</span>
             </div>
           }

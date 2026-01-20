@@ -751,3 +751,39 @@ export const submissionFields: FieldDef[] = [
   },
 ];
 
+/**
+ * Field definitions for SubConcept entity
+ * Note: principleId is handled separately
+ */
+export const subConceptFields: FieldDef[] = [
+  {
+    name: 'name',
+    label: 'Name',
+    type: 'text',
+    required: true,
+    minLength: 1,
+    maxLength: 200,
+    placeholder: 'e.g., RSC Data Fetching',
+  },
+  {
+    name: 'description',
+    label: 'Description',
+    type: 'textarea',
+    required: false,
+    maxLength: 2000,
+    rows: 4,
+    placeholder: 'Describe this sub-concept...',
+    helpText: 'Detailed explanation of this sub-concept',
+  },
+  {
+    name: 'order',
+    label: 'Order',
+    type: 'number',
+    required: false,
+    min: 0,
+    max: 1000,
+    placeholder: '0',
+    helpText: 'Display order within the principle',
+  },
+];
+

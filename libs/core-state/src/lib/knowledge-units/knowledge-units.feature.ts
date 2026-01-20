@@ -50,6 +50,11 @@ const knowledgeUnitsReducer = createReducer(
     loaded: false,
     error: null,
   })),
+  on(KnowledgeUnitsActions.loadKnowledgeUnitsBySubConcept, (state) => ({
+    ...state,
+    loaded: false,
+    error: null,
+  })),
 
   // Selection / Reset
   on(KnowledgeUnitsActions.selectKnowledgeUnit, (state, { selectedId }) => ({
@@ -97,6 +102,15 @@ const knowledgeUnitsReducer = createReducer(
       }),
   ),
   on(
+    KnowledgeUnitsActions.loadKnowledgeUnitsBySubConceptSuccess,
+    (state, { knowledgeUnits }) =>
+      knowledgeUnitsAdapter.upsertMany(knowledgeUnits, {
+        ...state,
+        loaded: true,
+        error: null,
+      }),
+  ),
+  on(
     KnowledgeUnitsActions.createKnowledgeUnitSuccess,
     (state, { knowledgeUnit }) =>
       knowledgeUnitsAdapter.addOne(knowledgeUnit, { ...state, error: null }),
@@ -123,6 +137,7 @@ const knowledgeUnitsReducer = createReducer(
     KnowledgeUnitsActions.loadKnowledgeUnitsFailure,
     KnowledgeUnitsActions.loadKnowledgeUnitFailure,
     KnowledgeUnitsActions.loadKnowledgeUnitsByPathFailure,
+    KnowledgeUnitsActions.loadKnowledgeUnitsBySubConceptFailure,
     KnowledgeUnitsActions.createKnowledgeUnitFailure,
     KnowledgeUnitsActions.updateKnowledgeUnitFailure,
     KnowledgeUnitsActions.deleteKnowledgeUnitFailure,

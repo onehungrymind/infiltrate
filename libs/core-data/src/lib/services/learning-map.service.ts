@@ -432,15 +432,16 @@ export class LearningMapService {
   }
 
   /**
-   * Generate a structured knowledge unit for a sub-concept using AI
+   * Generate structured knowledge units for a sub-concept using AI
    * @param subConceptId - The sub-concept ID
+   * @returns 3-5 knowledge units covering different cognitive levels
    */
   generateStructuredKU(subConceptId: string): Observable<{
-    knowledgeUnit: KnowledgeUnit;
+    knowledgeUnits: KnowledgeUnit[];
     message: string;
   }> {
     return this.http.post<{
-      knowledgeUnit: KnowledgeUnit;
+      knowledgeUnits: KnowledgeUnit[];
       message: string;
     }>(`${this.apiUrl}/learning-map/sub-concepts/${subConceptId}/generate-ku`, {});
   }

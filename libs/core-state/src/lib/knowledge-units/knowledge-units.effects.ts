@@ -58,6 +58,32 @@ export const loadKnowledgeUnitsByPath = createEffect(
   { functional: true },
 );
 
+export const loadKnowledgeUnitsBySubConcept = createEffect(
+  (
+    actions$ = inject(Actions),
+    knowledgeUnitsService = inject(KnowledgeUnitsService),
+  ) => {
+    return actions$.pipe(
+      ofType(KnowledgeUnitsActions.loadKnowledgeUnitsBySubConcept),
+      exhaustMap((action) => {
+        return knowledgeUnitsService.findBySubConcept(action.subConceptId).pipe(
+          map((knowledgeUnits: KnowledgeUnit[]) =>
+            KnowledgeUnitsActions.loadKnowledgeUnitsBySubConceptSuccess({ knowledgeUnits }),
+          ),
+          catchError((error) =>
+            of(
+              KnowledgeUnitsActions.loadKnowledgeUnitsBySubConceptFailure({
+                error: formatErrorMessage(error),
+              }),
+            ),
+          ),
+        );
+      }),
+    );
+  },
+  { functional: true },
+);
+
 export const loadKnowledgeUnit = createEffect(
   (
     actions$ = inject(Actions),

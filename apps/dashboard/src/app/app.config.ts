@@ -53,6 +53,7 @@ import {
   // Knowledge Units Effects
   loadKnowledgeUnits,
   loadKnowledgeUnitsByPath,
+  loadKnowledgeUnitsBySubConcept,
   loadLeaderboard,
   loadLearningPath,
   // Learning Paths Effects
@@ -175,6 +176,7 @@ export const appConfig: ApplicationConfig = {
       loadKnowledgeUnits,
       loadKnowledgeUnit,
       loadKnowledgeUnitsByPath,
+      loadKnowledgeUnitsBySubConcept,
       createKnowledgeUnit,
       updateKnowledgeUnit,
       deleteKnowledgeUnit,

@@ -63,6 +63,10 @@ export class KnowledgeUnitsService {
     return this.http.get<KnowledgeUnit[]>(`${this.getUrl()}/path/${pathId}`);
   }
 
+  findBySubConcept(subConceptId: string) {
+    return this.http.get<KnowledgeUnit[]>(`${this.getUrl()}/sub-concept/${subConceptId}`);
+  }
+
   create(knowledgeUnit: KnowledgeUnit) {
     const createDto = toCreateKnowledgeUnitDto(knowledgeUnit);
     return this.http.post(this.getUrl(), createDto);

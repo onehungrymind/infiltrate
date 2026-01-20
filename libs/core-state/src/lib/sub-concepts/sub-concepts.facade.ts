@@ -105,6 +105,14 @@ export class SubConceptsFacade {
     this.dispatch(SubConceptsActions.removeDecoration({ subConceptId, knowledgeUnitId }));
   }
 
+  /**
+   * Add sub-concepts directly to the store (e.g., after AI decomposition returns them)
+   * This avoids needing to reload from the API
+   */
+  addSubConceptsToStore(subConcepts: SubConcept[], message = '') {
+    this.dispatch(SubConceptsActions.decomposePrincipleSuccess({ subConcepts, message }));
+  }
+
   dispatch(action: Action) {
     this.store.dispatch(action);
   }

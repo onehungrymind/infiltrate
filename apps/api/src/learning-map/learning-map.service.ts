@@ -918,12 +918,12 @@ export class LearningMapService {
   }
 
   /**
-   * Generate a structured knowledge unit for a sub-concept using AI
-   * @param subConceptId - The sub-concept ID to generate a KU for
-   * @returns The generated knowledge unit
+   * Generate structured knowledge units for a sub-concept using AI
+   * @param subConceptId - The sub-concept ID to generate KUs for
+   * @returns The generated knowledge units (3-5 per sub-concept)
    */
   async generateStructuredKU(subConceptId: string): Promise<{
-    knowledgeUnit: KnowledgeUnit;
+    knowledgeUnits: KnowledgeUnit[];
     message: string;
   }> {
     if (!this.anthropic) {
@@ -946,7 +946,7 @@ export class LearningMapService {
     const learningPath = principle?.learningPath;
     const domain = learningPath?.domain || 'general';
 
-    // Generate structured KU using Claude
+    // Generate structured KUs using Claude
     const prompt = GENERATE_STRUCTURED_KU_PROMPT
       .replace('{subConceptName}', subConcept.name)
       .replace('{subConceptDescription}', subConcept.description)
@@ -955,7 +955,7 @@ export class LearningMapService {
 
     const response = await this.anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
-      max_tokens: 2048,
+      max_tokens: 4096,
       messages: [{ role: 'user', content: prompt }],
     });
 
@@ -970,23 +970,28 @@ export class LearningMapService {
       jsonText = jsonText.replace(/```json\n?|\n?```/g, '');
     }
 
-    let kuData: {
-      concept: string;
-      question: string;
-      answer: string;
-      elaboration: string;
-      examples: string[];
-      analogies: string[];
-      commonMistakes: string[];
-      difficulty: string;
-      cognitiveLevel: string;
-      tags: string[];
+    let kuDataArray: {
+      knowledgeUnits: Array<{
+        concept: string;
+        question: string;
+        answer: string;
+        elaboration: string;
+        examples: string[];
+        analogies: string[];
+        commonMistakes: string[];
+        difficulty: string;
+        cognitiveLevel: string;
+        tags: string[];
+      }>;
     };
 
     try {
-      kuData = JSON.parse(jsonText);
-      if (!kuData.concept || !kuData.question || !kuData.answer) {
-        throw new Error('Invalid response structure - missing required fields');
+      kuDataArray = JSON.parse(jsonText);
+      if (!kuDataArray.knowledgeUnits || !Array.isArray(kuDataArray.knowledgeUnits)) {
+        throw new Error('Invalid response structure - missing knowledgeUnits array');
+      }
+      if (kuDataArray.knowledgeUnits.length === 0) {
+        throw new Error('No knowledge units generated');
       }
     } catch (error) {
       throw new BadRequestException(
@@ -994,31 +999,41 @@ export class LearningMapService {
       );
     }
 
-    // Create the structured knowledge unit
-    const knowledgeUnit = this.knowledgeUnitRepository.create({
-      pathId: learningPath?.id || '',
-      principleId: principle?.id,
-      subConceptId: subConcept.id,
-      type: 'structured',
-      concept: kuData.concept,
-      question: kuData.question,
-      answer: kuData.answer,
-      elaboration: kuData.elaboration || '',
-      examples: kuData.examples || [],
-      analogies: kuData.analogies || [],
-      commonMistakes: kuData.commonMistakes || [],
-      difficulty: kuData.difficulty || 'intermediate',
-      cognitiveLevel: kuData.cognitiveLevel || 'understand',
-      tags: kuData.tags || [],
-      sourceIds: [],
-      status: 'approved',
-    });
+    // Create and save all knowledge units
+    const savedKnowledgeUnits: KnowledgeUnit[] = [];
 
-    const saved = await this.knowledgeUnitRepository.save(knowledgeUnit);
+    for (const kuData of kuDataArray.knowledgeUnits) {
+      if (!kuData.concept || !kuData.question || !kuData.answer) {
+        this.logger.warn(`Skipping invalid KU: missing required fields`);
+        continue;
+      }
+
+      const knowledgeUnit = this.knowledgeUnitRepository.create({
+        pathId: learningPath?.id || '',
+        principleId: principle?.id,
+        subConceptId: subConcept.id,
+        type: 'structured',
+        concept: kuData.concept,
+        question: kuData.question,
+        answer: kuData.answer,
+        elaboration: kuData.elaboration || '',
+        examples: kuData.examples || [],
+        analogies: kuData.analogies || [],
+        commonMistakes: kuData.commonMistakes || [],
+        difficulty: kuData.difficulty || 'intermediate',
+        cognitiveLevel: kuData.cognitiveLevel || 'understand',
+        tags: kuData.tags || [],
+        sourceIds: [],
+        status: 'approved',
+      });
+
+      const saved = await this.knowledgeUnitRepository.save(knowledgeUnit);
+      savedKnowledgeUnits.push(saved);
+    }
 
     return {
-      knowledgeUnit: saved,
-      message: `Successfully generated structured knowledge unit for "${subConcept.name}"`,
+      knowledgeUnits: savedKnowledgeUnits,
+      message: `Successfully generated ${savedKnowledgeUnits.length} knowledge units for "${subConcept.name}"`,
     };
   }
 }

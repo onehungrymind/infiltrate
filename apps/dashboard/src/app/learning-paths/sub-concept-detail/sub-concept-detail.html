@@ -1,0 +1,27 @@
+<div class="detail-container">
+  <form (submit)="onSubmit($event)" class="detail-form">
+    <div class="detail-content">
+      <app-dynamic-form
+        [metaInfo]="metaInfo"
+        [dynamicForm]="dynamicForm"
+      />
+    </div>
+
+    <div class="detail-actions">
+      <button
+        type="button"
+        class="detail-button detail-button-secondary"
+        (click)="onCancel()"
+      >
+        Cancel
+      </button>
+      <button
+        type="submit"
+        class="detail-button detail-button-primary"
+        [disabled]="!isFormValid()"
+      >
+        {{ subConcept?.id ? 'Update' : 'Create' }}
+      </button>
+    </div>
+  </form>
+</div>

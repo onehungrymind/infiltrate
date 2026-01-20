@@ -22,7 +22,7 @@ main > div {
   flex: 1 1 0;
   min-width: 0;
   min-height: 0;
-  overflow: hidden;
+  overflow: auto; // Allow vertical scroll by default
 }
 
 router-outlet {
@@ -35,7 +35,7 @@ router-outlet {
   flex: 1 1 0;
   min-width: 0;
   min-height: 0;
-  overflow: hidden;
+  overflow: auto; // Allow vertical scroll by default
 }
 
 

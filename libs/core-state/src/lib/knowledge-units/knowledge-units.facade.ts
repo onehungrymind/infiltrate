@@ -57,6 +57,10 @@ export class KnowledgeUnitFacade {
     this.dispatch(KnowledgeUnitsActions.loadKnowledgeUnitsByPath({ pathId }));
   }
 
+  loadKnowledgeUnitsBySubConcept(subConceptId: string) {
+    this.dispatch(KnowledgeUnitsActions.loadKnowledgeUnitsBySubConcept({ subConceptId }));
+  }
+
   saveKnowledgeUnit(knowledgeUnit: KnowledgeUnit) {
     if (knowledgeUnit.id) {
       this.updateKnowledgeUnit(knowledgeUnit);
@@ -75,6 +79,24 @@ export class KnowledgeUnitFacade {
 
   deleteKnowledgeUnit(knowledgeUnit: KnowledgeUnit) {
     this.dispatch(KnowledgeUnitsActions.deleteKnowledgeUnit({ knowledgeUnit }));
+  }
+
+  /**
+   * Add a KU directly to the store (e.g., after AI generation returns it)
+   * This avoids needing to reload from the API
+   */
+  addKnowledgeUnitToStore(knowledgeUnit: KnowledgeUnit) {
+    this.dispatch(KnowledgeUnitsActions.createKnowledgeUnitSuccess({ knowledgeUnit }));
+  }
+
+  /**
+   * Add multiple KUs directly to the store (e.g., after AI generation returns them)
+   * This avoids needing to reload from the API
+   */
+  addKnowledgeUnitsToStore(knowledgeUnits: KnowledgeUnit[]) {
+    for (const knowledgeUnit of knowledgeUnits) {
+      this.dispatch(KnowledgeUnitsActions.createKnowledgeUnitSuccess({ knowledgeUnit }));
+    }
   }
 
   dispatch(action: Action) {
