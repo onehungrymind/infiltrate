@@ -303,6 +303,48 @@ const ControlsHint = () => (
   </div>
 );
 
+// Hover label component
+const HoverLabel = ({ node, position }) => {
+  if (!node || !position) return null;
+
+  const categoryColors = {
+    core: '#4ade80',
+    networking: '#3b82f6',
+    storage: '#f97316',
+    advanced: '#a855f7',
+    concept_0: '#4ade80',
+    concept_1: '#3b82f6',
+    concept_2: '#f97316',
+    concept_3: '#a855f7',
+    concept_4: '#ec4899',
+    concept_5: '#14b8a6',
+    default: '#6b7280',
+  };
+
+  const color = categoryColors[node.category] || categoryColors.default;
+
+  return (
+    <div style={{
+      position: 'absolute',
+      left: position.x,
+      top: position.y - 50,
+      transform: 'translateX(-50%)',
+      backgroundColor: 'rgba(10, 22, 40, 0.95)',
+      border: `2px solid ${color}`,
+      borderRadius: 8,
+      padding: '8px 14px',
+      pointerEvents: 'none',
+      zIndex: 200,
+      whiteSpace: 'nowrap',
+    }}>
+      <div style={{ color: '#fff', fontSize: 14, fontWeight: 600 }}>{node.name}</div>
+      <div style={{ color: color, fontSize: 10, textTransform: 'uppercase', letterSpacing: 1 }}>
+        {node.category}
+      </div>
+    </div>
+  );
+};
+
 // Main component
 export default function KubernetesMindMap3D({
   pathName = 'Kubernetes Knowledge Map',
@@ -311,10 +353,20 @@ export default function KubernetesMindMap3D({
 }: MindMapProps) {
   const containerRef = useRef(null);
   const [selectedNode, setSelectedNode] = useState(null);
+  const [hoveredNode, setHoveredNode] = useState(null);
+  const [hoverPosition, setHoverPosition] = useState(null);
   const sceneRef = useRef(null);
   const cameraRef = useRef(null);
   const rendererRef = useRef(null);
   const nodeMeshesRef = useRef({});
+  const highlightRingRef = useRef(null);
+  const selectionRingRef = useRef(null);
+  const hoveredNodeRef = useRef(null);
+  const selectedNodeRef = useRef(null);
+
+  // Keep refs in sync with state
+  useEffect(() => { hoveredNodeRef.current = hoveredNode; }, [hoveredNode]);
+  useEffect(() => { selectedNodeRef.current = selectedNode; }, [selectedNode]);
 
   // Use props if provided, otherwise use defaults
   const nodes = useMemo(() => propNodes && propNodes.length > 0 ? propNodes : defaultNodes, [propNodes]);
@@ -471,6 +523,32 @@ export default function KubernetesMindMap3D({
     scene.add(nodeGroup);
     nodeMeshesRef.current = nodeMeshes;
 
+    // Create highlight ring (for hover)
+    const highlightRingGeometry = new THREE.RingGeometry(0.7, 0.85, 32);
+    const highlightRingMaterial = new THREE.MeshBasicMaterial({
+      color: 0xffffff,
+      transparent: true,
+      opacity: 0.8,
+      side: THREE.DoubleSide,
+    });
+    const highlightRing = new THREE.Mesh(highlightRingGeometry, highlightRingMaterial);
+    highlightRing.visible = false;
+    scene.add(highlightRing);
+    highlightRingRef.current = highlightRing;
+
+    // Create selection ring (for selected node)
+    const selectionRingGeometry = new THREE.RingGeometry(0.8, 0.95, 32);
+    const selectionRingMaterial = new THREE.MeshBasicMaterial({
+      color: 0x1cb0f6,
+      transparent: true,
+      opacity: 0.9,
+      side: THREE.DoubleSide,
+    });
+    const selectionRing = new THREE.Mesh(selectionRingGeometry, selectionRingMaterial);
+    selectionRing.visible = false;
+    scene.add(selectionRing);
+    selectionRingRef.current = selectionRing;
+
     // Create connections
     const lineGroup = new THREE.Group();
 
@@ -549,12 +627,36 @@ export default function KubernetesMindMap3D({
     let spherical = new THREE.Spherical();
     spherical.setFromVector3(camera.position);
 
+    // Raycaster for click/hover detection
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+
     const onMouseDown = (e) => {
       isDragging = true;
       previousMousePosition = { x: e.clientX, y: e.clientY };
     };
 
     const onMouseMove = (e) => {
+      // Hover detection
+      const rect = container.getBoundingClientRect();
+      mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects(nodeGroup.children);
+
+      if (intersects.length > 0 && !isDragging) {
+        const hovered = intersects[0].object.userData;
+        setHoveredNode(hovered);
+        setHoverPosition({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+        container.style.cursor = 'pointer';
+      } else {
+        setHoveredNode(null);
+        setHoverPosition(null);
+        container.style.cursor = isDragging ? 'grabbing' : 'grab';
+      }
+
+      // Drag rotation
       if (!isDragging) return;
 
       const deltaX = e.clientX - previousMousePosition.x;
@@ -583,9 +685,6 @@ export default function KubernetesMindMap3D({
     };
 
     // Click detection
-    const raycaster = new THREE.Raycaster();
-    const mouse = new THREE.Vector2();
-
     const onClick = (e) => {
       const rect = container.getBoundingClientRect();
       mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
@@ -597,6 +696,8 @@ export default function KubernetesMindMap3D({
       if (intersects.length > 0) {
         const clickedNode = intersects[0].object.userData;
         setSelectedNode(clickedNode);
+      } else {
+        setSelectedNode(null);
       }
     };
 
@@ -621,6 +722,35 @@ export default function KubernetesMindMap3D({
 
       // Rotate particles slowly
       particles.rotation.y += 0.0002;
+
+      // Update highlight ring (hover)
+      const highlightRing = highlightRingRef.current;
+      const hoveredNodeId = hoveredNodeRef.current?.id;
+      if (highlightRing && hoveredNodeId && nodeMeshes[hoveredNodeId]) {
+        const targetMesh = nodeMeshes[hoveredNodeId];
+        highlightRing.position.copy(targetMesh.position);
+        highlightRing.lookAt(camera.position);
+        highlightRing.visible = true;
+        // Pulse effect
+        const pulse = 1 + Math.sin(time * 4) * 0.1;
+        highlightRing.scale.set(pulse, pulse, pulse);
+      } else if (highlightRing) {
+        highlightRing.visible = false;
+      }
+
+      // Update selection ring
+      const selectionRing = selectionRingRef.current;
+      const selectedNodeId = selectedNodeRef.current?.id;
+      if (selectionRing && selectedNodeId && nodeMeshes[selectedNodeId]) {
+        const targetMesh = nodeMeshes[selectedNodeId];
+        selectionRing.position.copy(targetMesh.position);
+        selectionRing.lookAt(camera.position);
+        selectionRing.visible = true;
+        // Gentle rotation
+        selectionRing.rotation.z = time * 0.5;
+      } else if (selectionRing) {
+        selectionRing.visible = false;
+      }
 
       renderer.render(scene, camera);
     };
@@ -660,6 +790,7 @@ export default function KubernetesMindMap3D({
     <div style={{ position: 'relative', width: '100%', height: '100vh', paddingTop: 60, boxSizing: 'border-box', overflow: 'hidden' }}>
       <div ref={containerRef} style={{ width: '100%', height: '100%' }} />
 
+      <HoverLabel node={hoveredNode} position={hoverPosition} />
       <DetailPanel node={selectedNode} onClose={() => setSelectedNode(null)} />
       <Legend />
       <ControlsHint />

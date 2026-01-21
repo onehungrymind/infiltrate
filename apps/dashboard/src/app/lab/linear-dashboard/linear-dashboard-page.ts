@@ -158,19 +158,17 @@ export class LinearDashboardPage implements OnInit, OnDestroy {
     // Load concepts for this path
     this.conceptsFacade.loadConceptsByPath(pathId);
 
-    // Wait for concepts to load, then load sub-concepts
+    // Load ALL sub-concepts (avoids exhaustMap issue with per-concept loading)
+    this.subConceptsFacade.loadSubConcepts();
+
+    // Wait for concepts to load
     this.conceptsFacade.selectConceptsByPath(pathId)
       .pipe(
         takeUntil(this.destroy$),
         filter(concepts => concepts.length > 0)
       )
       .subscribe(concepts => {
-        // Load sub-concepts for each concept
-        concepts.forEach(concept => {
-          this.subConceptsFacade.loadSubConceptsByConcept(concept.id);
-        });
-
-        // Transform data when sub-concepts are loaded
+        // Transform data - sub-concepts are already loading
         this.transformAndSetSections(path, concepts);
       });
   }
@@ -239,20 +237,14 @@ export class LinearDashboardPage implements OnInit, OnDestroy {
     index: number,
     allConcepts: Concept[]
   ): 'completed' | 'current' | 'available' | 'locked' {
+    // All sections available for browsing
     switch (conceptStatus) {
       case 'mastered':
         return 'completed';
       case 'in_progress':
         return 'current';
-      case 'pending':
-        // First pending concept after completed ones is "available"
-        const previousConcept = index > 0 ? allConcepts[index - 1] : null;
-        if (!previousConcept || previousConcept.status === 'mastered') {
-          return 'available';
-        }
-        return 'locked';
       default:
-        return 'available'; // Default to available for demo purposes
+        return 'available';
     }
   }
 
@@ -261,18 +253,13 @@ export class LinearDashboardPage implements OnInit, OnDestroy {
     index: number,
     totalSubConcepts: number
   ): 'completed' | 'current' | 'available' | 'locked' {
+    // All sub-concepts available for browsing
     if (sectionStatus === 'completed') {
       return 'completed';
     }
-    if (sectionStatus === 'locked') {
-      return 'locked';
+    if (sectionStatus === 'current' && index === 0) {
+      return 'current';
     }
-    if (sectionStatus === 'current') {
-      // First sub-concept is current, rest are available
-      if (index === 0) return 'current';
-      return 'available';
-    }
-    // Section is available - all sub-concepts are available
     return 'available';
   }
 }
