@@ -235,7 +235,7 @@ export class SkillTreePage implements OnInit, OnDestroy {
       icon: 'compass',
       x: centerX,
       y: centerY,
-      category: 'foundations',
+      category: 'root',
       tier: 0,
       cost: 0,
       status: 'unlocked',
@@ -244,12 +244,12 @@ export class SkillTreePage implements OnInit, OnDestroy {
 
     // Branch configurations - each category has its own direction
     const branchConfig = {
-      // Foundations: goes straight up
-      foundations: { startX: centerX, startY: centerY - 100, dx: 0, dy: -90 },
-      // Intermediate: goes up and to the right
-      intermediate: { startX: centerX + 180, startY: centerY - 80, dx: 30, dy: -90 },
-      // Advanced: goes up and to the left
-      advanced: { startX: centerX - 180, startY: centerY - 80, dx: -30, dy: -90 },
+      // Foundations: left side, goes up and slightly left
+      foundations: { startX: centerX - 180, startY: centerY - 80, dx: -30, dy: -90 },
+      // Intermediate: center, goes straight up
+      intermediate: { startX: centerX, startY: centerY - 100, dx: 0, dy: -90 },
+      // Advanced: right side, goes up and slightly right
+      advanced: { startX: centerX + 180, startY: centerY - 80, dx: 30, dy: -90 },
     };
 
     // Process each category branch
@@ -295,16 +295,16 @@ export class SkillTreePage implements OnInit, OnDestroy {
           // Position sub-concepts to the side of their parent
           let scX: number, scY: number;
 
-          if (category === 'core') {
-            // Core: sub-concepts go left and right
+          if (category === 'intermediate') {
+            // Intermediate (center): sub-concepts go left and right
             scX = x + (scIndex === 0 ? -70 : 70);
             scY = y - 30;
-          } else if (category === 'networking') {
-            // Networking: sub-concepts branch further right
+          } else if (category === 'advanced') {
+            // Advanced (right): sub-concepts branch further right
             scX = x + 60 + scIndex * 50;
             scY = y - 20 - scIndex * 30;
           } else {
-            // Storage: sub-concepts branch further left
+            // Foundations (left): sub-concepts branch further left
             scX = x - 60 - scIndex * 50;
             scY = y - 20 - scIndex * 30;
           }

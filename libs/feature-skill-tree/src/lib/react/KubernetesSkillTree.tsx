@@ -19,6 +19,8 @@ const COLORS = {
   foundations: { primary: '#4ade80', secondary: '#22c55e', glow: '#4ade8066', label: 'FOUNDATIONS' },
   intermediate: { primary: '#3b82f6', secondary: '#2563eb', glow: '#3b82f666', label: 'INTERMEDIATE' },
   advanced: { primary: '#f97316', secondary: '#ea580c', glow: '#f9731666', label: 'ADVANCED' },
+  // Root/center node (no label rendered)
+  root: { primary: '#a855f7', secondary: '#9333ea', glow: '#a855f766', label: '' },
 
   // Node states
   unlocked: '#e8e8e8',
@@ -783,7 +785,10 @@ const CategoryLabel = ({ category, x, y, align = 'center' }) => {
   const subtitles = {
     core: 'WORKLOADS',
     networking: 'CONNECTIVITY',
-    storage: 'PERSISTENCE'
+    storage: 'PERSISTENCE',
+    foundations: 'FUNDAMENTALS',
+    intermediate: 'BUILDING SKILLS',
+    advanced: 'MASTERY',
   };
 
   const labelWidth = colors.label.length * 10 + 24;
@@ -1137,9 +1142,11 @@ export default function KubernetesSkillTree({
         </g>
 
         {/* Category labels - dynamically positioned above topmost node */}
-        <CategoryLabel category="storage" {...getCategoryLabelPosition(skills, 'storage')} />
-        <CategoryLabel category="core" {...getCategoryLabelPosition(skills, 'core')} />
-        <CategoryLabel category="networking" {...getCategoryLabelPosition(skills, 'networking')} />
+        {[...new Set(Object.values(skills).map(s => s.category))].map(category => (
+          COLORS[category] && COLORS[category].label && (
+            <CategoryLabel key={category} category={category} {...getCategoryLabelPosition(skills, category)} />
+          )
+        ))}
       </svg>
 
       <DetailPanel
