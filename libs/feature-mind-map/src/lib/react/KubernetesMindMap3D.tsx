@@ -795,7 +795,7 @@ export default function KubernetesMindMap3D({
   }, [nodes, connections]);
 
   return (
-    <div style={{ position: 'relative', width: '100%', height: '100vh', paddingTop: 60, boxSizing: 'border-box', overflow: 'hidden' }}>
+    <div style={{ position: 'relative', width: '100%', height: 'calc(100vh - 60px)', marginTop: 60, overflow: 'hidden' }}>
       <div ref={containerRef} style={{ width: '100%', height: '100%' }} />
 
       <HoverLabel node={hoveredNode} position={hoverPosition} />
