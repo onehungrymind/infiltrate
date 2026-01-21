@@ -120,12 +120,7 @@ const defaultConnections: MindMapConnection[] = [
 const DetailPanel = ({ node, onClose }) => {
   if (!node) return null;
 
-  const categoryColors = {
-    core: '#4ade80',
-    networking: '#3b82f6',
-    storage: '#f97316',
-    advanced: '#a855f7',
-  };
+  const nodeColor = node.color || CATEGORY_COLORS[node.category] || CATEGORY_COLORS.default;
 
   const statusLabels = {
     completed: 'COMPLETED',
@@ -141,7 +136,7 @@ const DetailPanel = ({ node, onClose }) => {
       left: 20,
       width: 280,
       backgroundColor: 'rgba(10, 22, 40, 0.95)',
-      border: `2px solid ${categoryColors[node.category]}`,
+      border: `2px solid ${nodeColor}`,
       borderRadius: 8,
       padding: 20,
       color: COLORS.text,
@@ -156,7 +151,7 @@ const DetailPanel = ({ node, onClose }) => {
           <h2 style={{ margin: 0, fontSize: 20, fontWeight: 700 }}>{node.name}</h2>
           <span style={{
             fontSize: 10,
-            color: categoryColors[node.category],
+            color: nodeColor,
             textTransform: 'uppercase',
             letterSpacing: 2,
           }}>
@@ -186,12 +181,11 @@ const DetailPanel = ({ node, onClose }) => {
         borderBottom: '1px solid rgba(255,255,255,0.1)',
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-          <span style={{ color: COLORS.textMuted, fontSize: 12 }}>Category</span>
+          <span style={{ color: COLORS.textMuted, fontSize: 12 }}>Concept</span>
           <span style={{
-            color: categoryColors[node.category],
+            color: nodeColor,
             fontSize: 12,
             fontWeight: 600,
-            textTransform: 'capitalize',
           }}>
             {node.category}
           </span>
@@ -220,7 +214,7 @@ const DetailPanel = ({ node, onClose }) => {
           width: '100%',
           marginTop: 16,
           padding: '12px 16px',
-          backgroundColor: categoryColors[node.category],
+          backgroundColor: nodeColor,
           border: 'none',
           borderRadius: 6,
           color: '#000',
@@ -235,54 +229,77 @@ const DetailPanel = ({ node, onClose }) => {
   );
 };
 
-// Legend component
-const Legend = () => (
-  <div style={{
-    position: 'absolute',
-    bottom: 100,
-    left: 40,
-    backgroundColor: 'rgba(10, 22, 40, 0.9)',
-    borderRadius: 8,
-    padding: 16,
-    zIndex: 100,
-  }}>
-    <div style={{ fontSize: 11, color: COLORS.textMuted, marginBottom: 12, fontWeight: 600, letterSpacing: 1 }}>
-      CATEGORIES
-    </div>
-    {[
-      { name: 'Core', color: '#4ade80' },
-      { name: 'Networking', color: '#3b82f6' },
-      { name: 'Storage', color: '#f97316' },
-      { name: 'Advanced', color: '#a855f7' },
-    ].map(cat => (
-      <div key={cat.name} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-        <div style={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: cat.color }} />
-        <span style={{ fontSize: 12, color: COLORS.text }}>{cat.name}</span>
-      </div>
-    ))}
+// Category color mapping (hex strings for CSS)
+const CATEGORY_COLORS: Record<string, string> = {
+  core: '#4ade80',
+  networking: '#3b82f6',
+  storage: '#f97316',
+  advanced: '#a855f7',
+  concept_0: '#4ade80',
+  concept_1: '#3b82f6',
+  concept_2: '#f97316',
+  concept_3: '#a855f7',
+  concept_4: '#ec4899',
+  concept_5: '#14b8a6',
+  default: '#6b7280',
+};
 
-    <div style={{ fontSize: 11, color: COLORS.textMuted, marginTop: 16, marginBottom: 12, fontWeight: 600, letterSpacing: 1 }}>
-      STATUS
-    </div>
-    {[
-      { name: 'Completed', style: { opacity: 1, border: '2px solid #58cc02' } },
-      { name: 'Current', style: { opacity: 1, border: '2px solid #1cb0f6' } },
-      { name: 'Available', style: { opacity: 0.7 } },
-      { name: 'Locked', style: { opacity: 0.3 } },
-    ].map(status => (
-      <div key={status.name} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-        <div style={{
-          width: 12,
-          height: 12,
-          borderRadius: '50%',
-          backgroundColor: '#6b7280',
-          ...status.style,
-        }} />
-        <span style={{ fontSize: 12, color: COLORS.text }}>{status.name}</span>
+// Legend component
+const Legend = ({ nodes }: { nodes: MindMapNode[] }) => {
+  // Build category-to-color map from nodes (excluding root)
+  const categoryColorMap = new Map<string, string>();
+  nodes.filter(n => !n.isRoot).forEach(node => {
+    if (!categoryColorMap.has(node.category) && node.color) {
+      categoryColorMap.set(node.category, node.color);
+    }
+  });
+
+  // Get unique categories preserving order
+  const categories = [...categoryColorMap.entries()];
+
+  return (
+    <div style={{
+      position: 'absolute',
+      bottom: 100,
+      left: 40,
+      backgroundColor: 'rgba(10, 22, 40, 0.9)',
+      borderRadius: 8,
+      padding: 16,
+      zIndex: 100,
+    }}>
+      <div style={{ fontSize: 11, color: COLORS.textMuted, marginBottom: 12, fontWeight: 600, letterSpacing: 1 }}>
+        CONCEPTS
       </div>
-    ))}
-  </div>
-);
+      {categories.map(([name, color]) => (
+        <div key={name} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+          <div style={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: color }} />
+          <span style={{ fontSize: 12, color: COLORS.text }}>{name}</span>
+        </div>
+      ))}
+
+      <div style={{ fontSize: 11, color: COLORS.textMuted, marginTop: 16, marginBottom: 12, fontWeight: 600, letterSpacing: 1 }}>
+        STATUS
+      </div>
+      {[
+        { name: 'Completed', style: { opacity: 1, border: '2px solid #58cc02' } },
+        { name: 'Current', style: { opacity: 1, border: '2px solid #1cb0f6' } },
+        { name: 'Available', style: { opacity: 0.7 } },
+        { name: 'Locked', style: { opacity: 0.3 } },
+      ].map(status => (
+        <div key={status.name} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+          <div style={{
+            width: 12,
+            height: 12,
+            borderRadius: '50%',
+            backgroundColor: '#6b7280',
+            ...status.style,
+          }} />
+          <span style={{ fontSize: 12, color: COLORS.text }}>{status.name}</span>
+        </div>
+      ))}
+    </div>
+  );
+};
 
 // Controls hint
 const ControlsHint = () => (
@@ -307,21 +324,7 @@ const ControlsHint = () => (
 const HoverLabel = ({ node, position }) => {
   if (!node || !position) return null;
 
-  const categoryColors = {
-    core: '#4ade80',
-    networking: '#3b82f6',
-    storage: '#f97316',
-    advanced: '#a855f7',
-    concept_0: '#4ade80',
-    concept_1: '#3b82f6',
-    concept_2: '#f97316',
-    concept_3: '#a855f7',
-    concept_4: '#ec4899',
-    concept_5: '#14b8a6',
-    default: '#6b7280',
-  };
-
-  const color = categoryColors[node.category] || categoryColors.default;
+  const color = node.color || CATEGORY_COLORS[node.category] || CATEGORY_COLORS.default;
 
   return (
     <div style={{
@@ -458,8 +461,13 @@ export default function KubernetesMindMap3D({
       const size = node.size || 0.6;
       const geometry = new THREE.SphereGeometry(size, 32, 32);
 
-      // Get color based on category
-      const categoryColor = COLORS[node.category] || 0x6b7280;
+      // Get color - prefer node.color, then category lookup, then default
+      let categoryColor: number;
+      if (node.color) {
+        categoryColor = parseInt(node.color.replace('#', ''), 16);
+      } else {
+        categoryColor = COLORS[node.category] || 0x6b7280;
+      }
 
       // Adjust material based on status
       let opacity = 1;
@@ -792,7 +800,7 @@ export default function KubernetesMindMap3D({
 
       <HoverLabel node={hoveredNode} position={hoverPosition} />
       <DetailPanel node={selectedNode} onClose={() => setSelectedNode(null)} />
-      <Legend />
+      <Legend nodes={nodes} />
       <ControlsHint />
 
       {/* Title */}

@@ -14,14 +14,14 @@ import { MindMapComponent, MindMapNode, MindMapConnection } from '@kasita/featur
 import { Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
 
-// Category colors for different concepts
-const CATEGORY_COLORS = [
-  'concept_0', // green
-  'concept_1', // blue
-  'concept_2', // orange
-  'concept_3', // purple
-  'concept_4', // pink
-  'concept_5', // teal
+// Color palette for concepts (assigned by index)
+const COLOR_PALETTE = [
+  '#4ade80', // green
+  '#3b82f6', // blue
+  '#f97316', // orange
+  '#a855f7', // purple
+  '#ec4899', // pink
+  '#14b8a6', // teal
 ];
 
 @Component({
@@ -236,12 +236,13 @@ export class MindMapPage implements OnInit, OnDestroy {
       const conceptNode: MindMapNode = {
         id: concept.id,
         name: concept.name,
-        category: CATEGORY_COLORS[index % CATEGORY_COLORS.length],
+        category: concept.name, // Use actual concept name as category
         status,
         x,
         y,
         z,
         size: 0.8,
+        color: COLOR_PALETTE[index % COLOR_PALETTE.length],
       };
       nodes.push(conceptNode);
 
@@ -269,12 +270,13 @@ export class MindMapPage implements OnInit, OnDestroy {
         const subConceptNode: MindMapNode = {
           id: subConcept.id,
           name: subConcept.name,
-          category: CATEGORY_COLORS[index % CATEGORY_COLORS.length], // Same color as parent
+          category: concept.name, // Same category as parent concept
           status: scStatus,
           x: scX,
           y: scY,
           z: scZ,
           size: 0.4,
+          color: COLOR_PALETTE[index % COLOR_PALETTE.length], // Same color as parent
         };
         nodes.push(subConceptNode);
 

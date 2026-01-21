@@ -12,6 +12,7 @@ export interface MindMapNode {
   z: number;
   size?: number;
   isRoot?: boolean;
+  color?: string; // Hex color for custom coloring
 }
 
 export interface MindMapConnection {
