@@ -1,3 +1,14 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  flex: 1 1 auto;
+  min-height: 100%;
+  background: #0a0a0a;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
 .container {
   background: #1a1a1a;
   border-radius: 0;
@@ -6,6 +17,7 @@
   max-width: 1600px;
   margin: 0 auto;
   border: 1px solid #2a2a2a;
+  flex: 1 1 auto;
 }
 
 .header {

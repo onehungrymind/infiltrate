@@ -130,7 +130,10 @@ export class UsersService {
   }
 
   async findById(id: string): Promise<User | null> {
-    return this.usersRepository.findOne({ where: { id } });
+    return this.usersRepository.findOne({
+      where: { id },
+      select: ['id', 'email', 'name', 'role', 'isActive', 'createdAt', 'updatedAt'],
+    });
   }
 
   async validatePassword(plainPassword: string, hashedPassword: string): Promise<boolean> {

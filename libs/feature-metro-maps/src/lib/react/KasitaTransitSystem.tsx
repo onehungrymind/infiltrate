@@ -1,16 +1,21 @@
 // @ts-nocheck
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
+import type { MetroCityData, MetroMapsProps } from '../types';
 
 import Advancedonia from './Advancedonia';
 import Basicburgh from './Basicburgh';
+import DynamicCityMap from './DynamicCityMap';
 import Intermetropolis from './Intermetropolis';
 
 // ============================================================================
 // KASITA TRANSIT SYSTEM - Container Component
 // Composes all three city maps with navigation
+// Uses DynamicCityMap when branchData is provided, otherwise falls back to
+// hardcoded demo components.
 // ============================================================================
 
-const cities = [
+// Default city data (used when no props provided - demo mode)
+const defaultCities: MetroCityData[] = [
   {
     id: 'basicburgh',
     name: 'Basicburgh',
@@ -18,9 +23,8 @@ const cities = [
     color: '#E63946',
     stations: 12,
     branches: 3,
-    status: 'in-progress', // 'locked', 'in-progress', 'completed'
+    status: 'in-progress',
     progress: 42,
-    component: Basicburgh
   },
   {
     id: 'intermetropolis',
@@ -31,7 +35,6 @@ const cities = [
     branches: 4,
     status: 'in-progress',
     progress: 0,
-    component: Intermetropolis
   },
   {
     id: 'advancedonia',
@@ -42,9 +45,15 @@ const cities = [
     branches: 4,
     status: 'in-progress',
     progress: 0,
-    component: Advancedonia
   },
 ];
+
+// Hardcoded city components for demo mode (when no branchData provided)
+const demoCityComponents = {
+  basicburgh: Basicburgh,
+  intermetropolis: Intermetropolis,
+  advancedonia: Advancedonia,
+};
 
 // City selector tab
 const CityTab = ({ city, isActive, isLocked, onClick }) => (
@@ -79,65 +88,72 @@ const CityTab = ({ city, isActive, isLocked, onClick }) => (
 );
 
 // Mini system map showing all cities
-const SystemOverview = ({ cities, activeCity, onCitySelect }) => (
-  <div className="absolute top-4 right-4 rounded-lg p-4 border z-50"
+const SystemOverview = ({ cities, activeCity, onCitySelect, title }) => (
+  <div className="absolute top-4 right-4 rounded-lg border z-50"
     style={{ backgroundColor: '#0D0D0D', borderColor: '#3A3A3A' }}>
-    <h4 className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-3">
-      Kubernetes Transit System
-    </h4>
-    
-    {/* Mini map visualization */}
-    <svg width="200" height="60" className="mb-3">
-      {/* Connection lines */}
-      <line x1="35" y1="30" x2="100" y2="30" stroke="#3A3A3A" strokeWidth="3" />
-      <line x1="100" y1="30" x2="165" y2="30" stroke="#3A3A3A" strokeWidth="3" />
-      
-      {/* City nodes */}
-      {cities.map((city, idx) => {
-        const x = 35 + (idx * 65);
+    <div className="px-4 pt-4">
+      <h4 className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-3">
+        {title}
+      </h4>
+    </div>
+
+    {/* Mini map container - line + nodes */}
+    <div className="relative mb-3 h-[40px]">
+      {/* Connection line - full width */}
+      <div className="absolute top-1/2 left-0 right-0 h-[3px] bg-[#3A3A3A]" />
+
+      {/* City nodes centered on the line */}
+      <div className="relative flex justify-between px-4 h-full items-center">
+      {cities.map((city) => {
         const isActive = activeCity === city.id;
         const isAccessible = city.status !== 'locked';
-        
+
         return (
-          <g key={city.id} 
+          <div
+            key={city.id}
             onClick={() => isAccessible && onCitySelect(city.id)}
-            style={{ cursor: isAccessible ? 'pointer' : 'not-allowed' }}>
-            {/* Pulse for active */}
-            {isActive && (
-              <circle cx={x} cy={30} r={16} fill="none" stroke={city.color} strokeWidth="2" opacity="0.5">
-                <animate attributeName="r" values="12;18;12" dur="2s" repeatCount="indefinite" />
-                <animate attributeName="opacity" values="0.5;0;0.5" dur="2s" repeatCount="indefinite" />
-              </circle>
-            )}
-            
-            {/* Node */}
-            <circle 
-              cx={x} cy={30} r={12}
-              fill={isAccessible ? city.color : '#2A2A2A'}
-              stroke={isActive ? '#FFFFFF' : 'none'}
-              strokeWidth={isActive ? 2 : 0}
-              opacity={isAccessible ? 1 : 0.5}
-            />
-            
-            {/* Status indicator */}
-            {city.status === 'completed' && (
-              <text x={x} y={34} textAnchor="middle" fill="white" fontSize="10" fontWeight="bold">✓</text>
-            )}
-            {city.status === 'in-progress' && (
-              <text x={x} y={34} textAnchor="middle" fill="white" fontSize="8" fontWeight="bold">
-                {city.progress}%
-              </text>
-            )}
-            {city.status === 'locked' && (
-              <text x={x} y={34} textAnchor="middle" fill="#6A6A6A" fontSize="8">🔒</text>
-            )}
-          </g>
+            className="flex items-center justify-center"
+            style={{ cursor: isAccessible ? 'pointer' : 'not-allowed' }}
+          >
+            <svg width="40" height="40" viewBox="0 0 40 40">
+              {/* Pulse for active */}
+              {isActive && (
+                <circle cx={20} cy={20} r={16} fill="none" stroke={city.color} strokeWidth="2" opacity="0.5">
+                  <animate attributeName="r" values="12;18;12" dur="2s" repeatCount="indefinite" />
+                  <animate attributeName="opacity" values="0.5;0;0.5" dur="2s" repeatCount="indefinite" />
+                </circle>
+              )}
+
+              {/* Node */}
+              <circle
+                cx={20} cy={20} r={12}
+                fill={isAccessible ? city.color : '#2A2A2A'}
+                stroke={isActive ? '#FFFFFF' : 'none'}
+                strokeWidth={isActive ? 2 : 0}
+                opacity={isAccessible ? 1 : 0.5}
+              />
+
+              {/* Status indicator */}
+              {city.status === 'completed' && (
+                <text x={20} y={24} textAnchor="middle" fill="white" fontSize="10" fontWeight="bold">✓</text>
+              )}
+              {city.status === 'in-progress' && (
+                <text x={20} y={24} textAnchor="middle" fill="white" fontSize="8" fontWeight="bold">
+                  {city.progress}%
+                </text>
+              )}
+              {city.status === 'locked' && (
+                <text x={20} y={24} textAnchor="middle" fill="#6A6A6A" fontSize="8">🔒</text>
+              )}
+            </svg>
+          </div>
         );
       })}
-    </svg>
-    
+      </div>
+    </div>
+
     {/* Stats */}
-    <div className="grid grid-cols-3 gap-2 text-center">
+    <div className="grid grid-cols-3 gap-2 text-center px-4 pb-4">
       {cities.map(city => (
         <div key={city.id} className={activeCity === city.id ? 'opacity-100' : 'opacity-50'}>
           <p className="text-xs font-mono" style={{ color: city.color }}>{city.stations}</p>
@@ -199,20 +215,39 @@ const CityNavigation = ({ currentCity, cities, onNavigate }) => {
 };
 
 // Main container component
-export default function KasitaTransitSystem() {
+export default function KasitaTransitSystem({
+  pathName = 'Kubernetes Transit System',
+  cities: propCities,
+}: MetroMapsProps) {
   const [activeCity, setActiveCity] = useState('basicburgh');
-  
+
+  // Use props if provided, otherwise use defaults
+  const cities = useMemo(() => {
+    const cityData = propCities && propCities.length > 0 ? propCities : defaultCities;
+    return cityData;
+  }, [propCities]);
+
+  // Check if we have dynamic data (branchData) - if so, use DynamicCityMap
+  const hasDynamicData = useMemo(() => {
+    return cities.some(city => city.branchData && city.branchData.length > 0);
+  }, [cities]);
+
   const handleCityChange = (cityId) => {
     const city = cities.find(c => c.id === cityId);
     if (city && city.status !== 'locked') {
       setActiveCity(cityId);
     }
   };
-  
-  const ActiveCityComponent = cities.find(c => c.id === activeCity)?.component;
+
+  const activeCity_ = cities.find(c => c.id === activeCity);
+  // Use DynamicCityMap for dynamic data, fall back to demo components otherwise
+  const DemoCityComponent = demoCityComponents[activeCity] || null;
   
   return (
-    <div className="relative w-full h-screen overflow-hidden" style={{ backgroundColor: '#0A0A0A' }}>
+    <div className="relative w-full h-screen overflow-hidden" style={{
+        backgroundColor: '#0A0A0A',
+        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpath d='M 40 0 L 0 0 0 40' fill='none' stroke='%231A1A1A' stroke-width='0.5'/%3E%3C/svg%3E")`
+      }}>
       {/* City tabs */}
       <div className="absolute top-0 left-0 right-0 z-40 flex justify-center pt-2 gap-1">
         {cities.map(city => (
@@ -228,16 +263,19 @@ export default function KasitaTransitSystem() {
 
       {/* Active city map */}
       <div className="w-full h-full pt-14">
-        {ActiveCityComponent && (
-          <ActiveCityComponent onNavigateToCity={handleCityChange} />
-        )}
+        {hasDynamicData && activeCity_ ? (
+          <DynamicCityMap city={activeCity_} onNavigateToCity={handleCityChange} />
+        ) : DemoCityComponent ? (
+          <DemoCityComponent onNavigateToCity={handleCityChange} />
+        ) : null}
       </div>
       
       {/* System overview mini-map */}
-      <SystemOverview 
-        cities={cities} 
-        activeCity={activeCity} 
-        onCitySelect={handleCityChange} 
+      <SystemOverview
+        cities={cities}
+        activeCity={activeCity}
+        onCitySelect={handleCityChange}
+        title={pathName}
       />
       
       {/* Navigation arrows */}

@@ -1,5 +1,6 @@
 // @ts-nocheck
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
+import type { SkillTreeProps, SkillNode } from '../types';
 
 // ============================================================================
 // KUBERNETES SKILL TREE - Jedi Survivor Style (v2)
@@ -10,10 +11,14 @@ const COLORS = {
   background: '#0a1628',
   backgroundGradient: 'radial-gradient(ellipse at center, #0f2847 0%, #0a1628 70%)',
 
-  // Skill categories
+  // Skill categories (supports both legacy K8s names and new generic names)
   core: { primary: '#4ade80', secondary: '#22c55e', glow: '#4ade8066', label: 'CORE' },
   networking: { primary: '#3b82f6', secondary: '#2563eb', glow: '#3b82f666', label: 'NETWORKING' },
   storage: { primary: '#f97316', secondary: '#ea580c', glow: '#f9731666', label: 'STORAGE' },
+  // Generic categories
+  foundations: { primary: '#4ade80', secondary: '#22c55e', glow: '#4ade8066', label: 'FOUNDATIONS' },
+  intermediate: { primary: '#3b82f6', secondary: '#2563eb', glow: '#3b82f666', label: 'INTERMEDIATE' },
+  advanced: { primary: '#f97316', secondary: '#ea580c', glow: '#f9731666', label: 'ADVANCED' },
 
   // Node states
   unlocked: '#e8e8e8',
@@ -193,10 +198,105 @@ const Icons = {
       <path d="M10 7v6M10 7l-2 2M10 7l2 2" stroke={color} strokeWidth="1.2" strokeLinecap="round"/>
     </g>
   ),
+
+  // Generic icons for dynamic learning paths
+  book: (color) => (
+    <g transform="translate(-9, -9)">
+      <path d="M4 3h12a1 1 0 011 1v12a1 1 0 01-1 1H4a1 1 0 01-1-1V4a1 1 0 011-1z" fill="none" stroke={color} strokeWidth="1.5"/>
+      <path d="M7 3v14M10 7h4M10 10h4M10 13h2" stroke={color} strokeWidth="1.2" strokeLinecap="round"/>
+    </g>
+  ),
+  star: (color) => (
+    <g transform="translate(-10, -10)">
+      <path d="M10 2l2.5 5.5 6 .5-4.5 4 1.5 6-5.5-3.5L4 18l1.5-6-4.5-4 6-.5z" fill="none" stroke={color} strokeWidth="1.5" strokeLinejoin="round"/>
+    </g>
+  ),
+  concept: (color) => (
+    <g transform="translate(-9, -9)">
+      <circle cx="10" cy="10" r="7" fill="none" stroke={color} strokeWidth="1.5"/>
+      <circle cx="10" cy="8" r="2" fill="none" stroke={color} strokeWidth="1.2"/>
+      <path d="M8 12h4M10 12v3" stroke={color} strokeWidth="1.2" strokeLinecap="round"/>
+    </g>
+  ),
+  module: (color) => (
+    <g transform="translate(-9, -9)">
+      <rect x="3" y="3" width="14" height="14" rx="2" fill="none" stroke={color} strokeWidth="1.5"/>
+      <rect x="6" y="6" width="8" height="8" rx="1" fill="none" stroke={color} strokeWidth="1"/>
+    </g>
+  ),
+  lesson: (color) => (
+    <g transform="translate(-9, -9)">
+      <path d="M4 4h12v14H4z" fill="none" stroke={color} strokeWidth="1.5"/>
+      <path d="M7 8h6M7 11h6M7 14h4" stroke={color} strokeWidth="1.2" strokeLinecap="round"/>
+    </g>
+  ),
+  checkpoint: (color) => (
+    <g transform="translate(-9, -9)">
+      <path d="M10 2v16M4 6h12M4 14h12" stroke={color} strokeWidth="1.5" strokeLinecap="round"/>
+      <circle cx="10" cy="10" r="3" fill="none" stroke={color} strokeWidth="1.5"/>
+    </g>
+  ),
+  trophy: (color) => (
+    <g transform="translate(-9, -9)">
+      <path d="M6 4h8v6c0 2-2 4-4 4s-4-2-4-4V4z" fill="none" stroke={color} strokeWidth="1.5"/>
+      <path d="M6 6H3v2c0 1 1 2 3 2M14 6h3v2c0 1-1 2-3 2" stroke={color} strokeWidth="1.2"/>
+      <path d="M8 14h4v3H8z" fill="none" stroke={color} strokeWidth="1.2"/>
+    </g>
+  ),
+  puzzle: (color) => (
+    <g transform="translate(-9, -9)">
+      <path d="M4 8h3v-2c0-1 2-1 2 0v2h2c1 0 1 2 0 2h-2v4h6v-2c0-1 2-1 2 0v2h3v6H4V8z" fill="none" stroke={color} strokeWidth="1.3"/>
+    </g>
+  ),
+  lightbulb: (color) => (
+    <g transform="translate(-9, -9)">
+      <path d="M10 2c-3 0-5 2-5 5 0 2 1 3 2 4v3h6v-3c1-1 2-2 2-4 0-3-2-5-5-5z" fill="none" stroke={color} strokeWidth="1.5"/>
+      <path d="M8 16h4M9 18h2" stroke={color} strokeWidth="1.2" strokeLinecap="round"/>
+    </g>
+  ),
+  target: (color) => (
+    <g transform="translate(-9, -9)">
+      <circle cx="10" cy="10" r="7" fill="none" stroke={color} strokeWidth="1.5"/>
+      <circle cx="10" cy="10" r="4" fill="none" stroke={color} strokeWidth="1.2"/>
+      <circle cx="10" cy="10" r="1.5" fill={color}/>
+    </g>
+  ),
+  code: (color) => (
+    <g transform="translate(-9, -9)">
+      <path d="M7 6L3 10l4 4M13 6l4 4-4 4" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M12 4l-4 12" stroke={color} strokeWidth="1.2"/>
+    </g>
+  ),
+  brain: (color) => (
+    <g transform="translate(-9, -9)">
+      <path d="M10 18c-3 0-5-2-5-5 0-2 1-3 1-5 0-3 2-5 4-5s4 2 4 5c0 2 1 3 1 5 0 3-2 5-5 5z" fill="none" stroke={color} strokeWidth="1.5"/>
+      <path d="M8 8c1 0 2 1 2 2M10 10c0 1 1 2 2 2" stroke={color} strokeWidth="1"/>
+    </g>
+  ),
+  rocket: (color) => (
+    <g transform="translate(-9, -9)">
+      <path d="M10 2c3 2 5 5 5 10l-5 5-5-5c0-5 2-8 5-10z" fill="none" stroke={color} strokeWidth="1.5"/>
+      <circle cx="10" cy="9" r="2" fill="none" stroke={color} strokeWidth="1.2"/>
+      <path d="M7 15l-2 3M13 15l2 3" stroke={color} strokeWidth="1.2" strokeLinecap="round"/>
+    </g>
+  ),
+  layers: (color) => (
+    <g transform="translate(-9, -9)">
+      <path d="M10 2l8 4-8 4-8-4 8-4z" fill="none" stroke={color} strokeWidth="1.5" strokeLinejoin="round"/>
+      <path d="M2 10l8 4 8-4" stroke={color} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M2 14l8 4 8-4" stroke={color} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+    </g>
+  ),
+  compass: (color) => (
+    <g transform="translate(-9, -9)">
+      <circle cx="10" cy="10" r="7" fill="none" stroke={color} strokeWidth="1.5"/>
+      <path d="M10 10l3-5-5 3 5 5-3-5z" fill="none" stroke={color} strokeWidth="1.2" strokeLinejoin="round"/>
+    </g>
+  ),
 };
 
-// Skill tree data - much wider spacing
-const skills = {
+// Default skill tree data - much wider spacing (used when no props provided)
+const defaultSkills: Record<string, SkillNode> = {
   // Central starting node
   center: {
     id: 'center',
@@ -527,10 +627,10 @@ const skills = {
   },
 };
 
-const getSkill = (id) => skills[id];
+const getSkill = (skills, id) => skills[id];
 
 // Calculate the topmost node position for each category and determine alignment
-const getCategoryLabelPosition = (category) => {
+const getCategoryLabelPosition = (skills, category) => {
   const categorySkills = Object.values(skills).filter(s => s.category === category);
   const topNode = categorySkills.reduce((top, skill) =>
     skill.y < top.y ? skill : top
@@ -655,9 +755,9 @@ const SkillNode = ({ skill, isSelected, onClick }) => {
 };
 
 // Connection line
-const SkillConnection = ({ from, to }) => {
-  const fromSkill = getSkill(from);
-  const toSkill = getSkill(to);
+const SkillConnection = ({ from, to, skills }) => {
+  const fromSkill = getSkill(skills, from);
+  const toSkill = getSkill(skills, to);
   if (!fromSkill || !toSkill) return null;
 
   const isActive = fromSkill.status === 'unlocked' || fromSkill.status === 'current';
@@ -945,20 +1045,31 @@ const ControlHints = () => (
 );
 
 // Main component
-export default function KubernetesSkillTree() {
+export default function KubernetesSkillTree({
+  pathName = 'Kubernetes Skill Tree',
+  skills: propSkills,
+}: SkillTreeProps) {
   const [selectedSkill, setSelectedSkill] = useState(null);
   const [clickPosition, setClickPosition] = useState({ x: 0, y: 0 });
   const containerRef = useRef(null);
   const skillPoints = 3;
 
-  const connections = [];
-  Object.values(skills).forEach(skill => {
-    if (skill.children) {
-      skill.children.forEach(childId => {
-        connections.push({ from: skill.id, to: childId });
-      });
-    }
-  });
+  // Use props if provided, otherwise use defaults
+  const skills = useMemo(() =>
+    propSkills && Object.keys(propSkills).length > 0 ? propSkills : defaultSkills,
+    [propSkills]
+  );
+
+  // Build connections using parent relationships (more reliable than children arrays)
+  const connections = useMemo(() => {
+    const conns: { from: string; to: string }[] = [];
+    Object.values(skills).forEach(skill => {
+      if (skill.parent && skills[skill.parent]) {
+        conns.push({ from: skill.parent, to: skill.id });
+      }
+    });
+    return conns;
+  }, [skills]);
 
   const handleNodeClick = (skill, event) => {
     // Get click position relative to the container
@@ -992,7 +1103,7 @@ export default function KubernetesSkillTree() {
       onClick={handleBackgroundClick}
     >
       <svg
-        viewBox="-20 -80 1040 660"
+        viewBox="-50 -120 1100 700"
         style={{ width: '100%', height: '100%' }}
         preserveAspectRatio="xMidYMid meet"
       >
@@ -1009,7 +1120,7 @@ export default function KubernetesSkillTree() {
         {/* Connections */}
         <g>
           {connections.map((conn, i) => (
-            <SkillConnection key={i} from={conn.from} to={conn.to} />
+            <SkillConnection key={i} from={conn.from} to={conn.to} skills={skills} />
           ))}
         </g>
 
@@ -1026,9 +1137,9 @@ export default function KubernetesSkillTree() {
         </g>
 
         {/* Category labels - dynamically positioned above topmost node */}
-        <CategoryLabel category="storage" {...getCategoryLabelPosition('storage')} />
-        <CategoryLabel category="core" {...getCategoryLabelPosition('core')} />
-        <CategoryLabel category="networking" {...getCategoryLabelPosition('networking')} />
+        <CategoryLabel category="storage" {...getCategoryLabelPosition(skills, 'storage')} />
+        <CategoryLabel category="core" {...getCategoryLabelPosition(skills, 'core')} />
+        <CategoryLabel category="networking" {...getCategoryLabelPosition(skills, 'networking')} />
       </svg>
 
       <DetailPanel

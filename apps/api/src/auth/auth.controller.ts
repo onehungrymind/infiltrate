@@ -49,10 +49,7 @@ export class AuthController {
   @ApiResponse({ status: 200, description: 'User info retrieved successfully' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async getMe(@CurrentUser() user: any) {
-    return {
-      id: user.userId,
-      email: user.email,
-    };
+    return this.authService.getProfile(user.userId);
   }
 }
 

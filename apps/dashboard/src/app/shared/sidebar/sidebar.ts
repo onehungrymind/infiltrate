@@ -186,13 +186,14 @@ export class Sidebar implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   // Track collapsed state for each section by title
+  // Default Laboratory to open (false = not collapsed)
   private sectionCollapsedState = signal<Record<string, boolean>>({
-    'Laboratory': true,
+    'Laboratory': false,
     'Reports': true,
   });
 
   protected sections = computed(() => {
-    const user = this.authService.getCurrentUser();
+    const user = this.authService.currentUser();
     const role = user?.role || 'user';
     const isAdmin = ['admin', 'manager', 'mentor'].includes(role);
     const collapsedState = this.sectionCollapsedState();

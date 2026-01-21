@@ -148,22 +148,22 @@ export const appRoutes: Route[] = [
       {
         path: 'metro-maps',
         loadComponent: () =>
-          import('@kasita/feature-metro-maps').then((m) => m.MetroMapsComponent),
+          import('./lab/metro-maps/metro-maps-page').then((m) => m.MetroMapsPage),
       },
       {
         path: 'skill-tree',
         loadComponent: () =>
-          import('@kasita/feature-skill-tree').then((m) => m.SkillTreeComponent),
+          import('./lab/skill-tree/skill-tree-page').then((m) => m.SkillTreePage),
       },
       {
         path: 'linear-dashboard',
         loadComponent: () =>
-          import('@kasita/feature-linear-dashboard').then((m) => m.LinearDashboardComponent),
+          import('./lab/linear-dashboard/linear-dashboard-page').then((m) => m.LinearDashboardPage),
       },
       {
         path: 'mind-map',
         loadComponent: () =>
-          import('@kasita/feature-mind-map').then((m) => m.MindMapComponent),
+          import('./lab/mind-map/mind-map-page').then((m) => m.MindMapPage),
       },
       {
         path: 'visualization/bfs',

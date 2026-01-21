@@ -31,6 +31,8 @@ export class AuthService {
 
   // Use signal for reactive current user state
   private currentUserSignal = signal<User | null>(null);
+  // Expose as readonly for components to track reactively
+  public currentUser = this.currentUserSignal.asReadonly();
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
 
   // Observable for components that prefer observables
@@ -146,12 +148,13 @@ export class AuthService {
       // Verify token is still valid by calling /me endpoint
       // Use setTimeout to make this non-blocking - don't delay app initialization
       setTimeout(() => {
-        this.http.get<{ id: string; email: string }>(`${this.apiUrl}/auth/me`).pipe(
+        this.http.get<{ id: string; email: string; name: string; role?: string }>(`${this.apiUrl}/auth/me`).pipe(
           tap((userData) => {
             const user: User = {
               id: userData.id,
               email: userData.email,
-              name: '', // Will be updated when we fetch full profile
+              name: userData.name,
+              role: userData.role,
             };
             this.currentUserSignal.set(user);
             this.isAuthenticatedSubject.next(true);
@@ -159,30 +162,17 @@ export class AuthService {
           catchError((error) => {
             // Only clear token if it's a 401 (unauthorized) - network errors shouldn't log out
             if (error.status === 401) {
-              console.warn('Auth token validation failed - token expired or invalid:', error);
+              console.warn('Auth token validation failed - token expired or invalid');
               // Token is invalid, remove it and set unauthenticated
               localStorage.removeItem('authToken');
               this.isAuthenticatedSubject.next(false);
               this.currentUserSignal.set(null);
-            } else {
-              // Network error or other issue - keep token but don't set as authenticated
-              // This allows the app to continue working if API is temporarily down
-              console.warn('Auth token validation error (non-401):', error);
-              // Don't clear the token on network errors - user might still be valid
-              // Just don't set as authenticated until we can verify
-              this.isAuthenticatedSubject.next(false);
             }
+            // For network errors, keep the optimistic auth state - don't log out
+            // The token might still be valid, API might just be slow/temporarily down
             return of(null);
           })
-        ).subscribe({
-          error: (error) => {
-            // Only log network errors, don't clear token
-            if (error.status !== 401) {
-              console.warn('Auth service initialization error (non-401):', error);
-              // Don't clear token on network errors
-            }
-          }
-        });
+        ).subscribe();
       }, 0); // Execute in next event loop tick - non-blocking
     } else {
       this.isAuthenticatedSubject.next(false);

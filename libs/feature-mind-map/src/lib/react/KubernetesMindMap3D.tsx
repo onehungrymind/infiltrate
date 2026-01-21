@@ -1,6 +1,7 @@
 // @ts-nocheck
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useMemo } from 'react';
 import * as THREE from 'three';
+import type { MindMapNode, MindMapConnection, MindMapProps } from '../types';
 
 // ============================================================================
 // KUBERNETES MIND MAP - Three.js 3D Version
@@ -15,6 +16,15 @@ const COLORS = {
   networking: 0x3b82f6,
   storage: 0xf97316,
   advanced: 0xa855f7,
+
+  // Dynamic category colors (for data-driven paths)
+  concept_0: 0x4ade80,
+  concept_1: 0x3b82f6,
+  concept_2: 0xf97316,
+  concept_3: 0xa855f7,
+  concept_4: 0xec4899,
+  concept_5: 0x14b8a6,
+  default: 0x6b7280,
 
   // Status
   completed: 0x58cc02,
@@ -31,8 +41,8 @@ const COLORS = {
   textMuted: '#94a3b8',
 };
 
-// Node data for the mind map
-const nodes = [
+// Default node data for the mind map (used when no props provided)
+const defaultNodes: MindMapNode[] = [
   // Central node
   { id: 'k8s', name: 'Kubernetes', category: 'core', status: 'completed', x: 0, y: 0, z: 0, size: 1.5, isRoot: true },
 
@@ -68,8 +78,8 @@ const nodes = [
   { id: 'statefulsets', name: 'StatefulSets', category: 'advanced', status: 'locked', x: 1, y: 5, z: -1 },
 ];
 
-// Connections between nodes
-const connections = [
+// Default connections between nodes (used when no props provided)
+const defaultConnections: MindMapConnection[] = [
   // From root
   { from: 'k8s', to: 'pods' },
   { from: 'k8s', to: 'services' },
@@ -294,13 +304,21 @@ const ControlsHint = () => (
 );
 
 // Main component
-export default function KubernetesMindMap3D() {
+export default function KubernetesMindMap3D({
+  pathName = 'Kubernetes Knowledge Map',
+  nodes: propNodes,
+  connections: propConnections,
+}: MindMapProps) {
   const containerRef = useRef(null);
   const [selectedNode, setSelectedNode] = useState(null);
   const sceneRef = useRef(null);
   const cameraRef = useRef(null);
   const rendererRef = useRef(null);
   const nodeMeshesRef = useRef({});
+
+  // Use props if provided, otherwise use defaults
+  const nodes = useMemo(() => propNodes && propNodes.length > 0 ? propNodes : defaultNodes, [propNodes]);
+  const connections = useMemo(() => propConnections && propConnections.length > 0 ? propConnections : defaultConnections, [propConnections]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -636,7 +654,7 @@ export default function KubernetesMindMap3D() {
       envMap.dispose();
       renderer.dispose();
     };
-  }, []);
+  }, [nodes, connections]);
 
   return (
     <div style={{ position: 'relative', width: '100%', height: '100vh', paddingTop: 60, boxSizing: 'border-box', overflow: 'hidden' }}>
@@ -660,7 +678,7 @@ export default function KubernetesMindMap3D() {
           fontWeight: 700,
           color: COLORS.text,
         }}>
-          Kubernetes Knowledge Map
+          {pathName}
         </h1>
         <p style={{
           margin: '4px 0 0 0',

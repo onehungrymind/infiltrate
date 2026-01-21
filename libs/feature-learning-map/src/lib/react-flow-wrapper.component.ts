@@ -99,8 +99,10 @@ export class ReactFlowWrapperComponent implements AfterViewInit, OnDestroy, OnCh
         return;
       }
 
-      // Create React root
-      this.reactRoot = createRoot(container);
+      // Only create root if it doesn't exist
+      if (!this.reactRoot) {
+        this.reactRoot = createRoot(container);
+      }
 
       // Load custom node components if not provided
       let finalNodeTypes = this.nodeTypes;

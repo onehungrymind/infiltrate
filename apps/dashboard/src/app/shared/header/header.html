@@ -4,8 +4,8 @@
   </div>
   <div class="flex items-center gap-4">
     <!-- Theme toggle hidden - using light theme only -->
-    @if (currentUser) {
-      <span class="text-sm font-semibold text-gray-900">{{ currentUser.name }}</span>
+    @if (currentUser(); as user) {
+      <span class="text-sm font-semibold text-gray-900">{{ user.name }}</span>
     }
     <button
       (click)="logout()"

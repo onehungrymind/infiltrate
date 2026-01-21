@@ -1,8 +1,9 @@
 // @ts-nocheck
 import React, { useState } from 'react';
+import type { Principle, Section, LinearDashboardProps } from '../types';
 
 // ============================================================================
-// KUBERNETES LINEAR DASHBOARD - Duolingo Style
+// LINEAR DASHBOARD - Duolingo Style
 // Clean vertical progression with expandable sections
 // ============================================================================
 
@@ -32,77 +33,6 @@ const COLORS = {
   xp: '#ffc800',
   streak: '#ff9600',
 };
-
-// Learning path data - all unlocked for testing
-const sections = [
-  {
-    id: 'fundamentals',
-    title: 'Fundamentals',
-    description: 'Core concepts every K8s developer needs',
-    status: 'completed',
-    progress: 100,
-    xpEarned: 600,
-    xpTotal: 600,
-    principles: [
-      { id: 'containers', name: 'Container Basics', status: 'completed', xp: 50, units: 4 },
-      { id: 'architecture', name: 'Cluster Architecture', status: 'completed', xp: 75, units: 6 },
-      { id: 'pods', name: 'Pods', status: 'completed', xp: 60, units: 5 },
-      { id: 'replicasets', name: 'ReplicaSets', status: 'completed', xp: 50, units: 4 },
-      { id: 'deployments', name: 'Deployments', status: 'completed', xp: 80, units: 8 },
-      { id: 'services', name: 'Services', status: 'completed', xp: 70, units: 6 },
-      { id: 'capstone1', name: 'Fundamentals Capstone', status: 'completed', xp: 150, units: 1, isCapstone: true },
-    ]
-  },
-  {
-    id: 'configuration',
-    title: 'Configuration & Storage',
-    description: 'Managing application config and persistent data',
-    status: 'current',
-    progress: 45,
-    xpEarned: 225,
-    xpTotal: 500,
-    principles: [
-      { id: 'configmaps', name: 'ConfigMaps', status: 'completed', xp: 60, units: 5 },
-      { id: 'secrets', name: 'Secrets', status: 'completed', xp: 70, units: 6 },
-      { id: 'volumes', name: 'Volumes', status: 'current', xp: 80, units: 7, currentUnit: 4 },
-      { id: 'pv-pvc', name: 'PersistentVolumes & PVCs', status: 'available', xp: 90, units: 8 },
-      { id: 'storage-classes', name: 'StorageClasses', status: 'available', xp: 60, units: 5 },
-      { id: 'capstone2', name: 'Storage Capstone', status: 'available', xp: 140, units: 1, isCapstone: true },
-    ]
-  },
-  {
-    id: 'networking',
-    title: 'Networking',
-    description: 'Connect and expose your applications',
-    status: 'available',
-    progress: 0,
-    xpEarned: 0,
-    xpTotal: 550,
-    principles: [
-      { id: 'service-types', name: 'Service Types', status: 'available', xp: 70, units: 6 },
-      { id: 'dns', name: 'CoreDNS', status: 'available', xp: 50, units: 4 },
-      { id: 'ingress', name: 'Ingress', status: 'available', xp: 90, units: 8 },
-      { id: 'network-policies', name: 'Network Policies', status: 'available', xp: 80, units: 7 },
-      { id: 'capstone3', name: 'Networking Capstone', status: 'available', xp: 150, units: 1, isCapstone: true },
-    ]
-  },
-  {
-    id: 'workloads',
-    title: 'Advanced Workloads',
-    description: 'Beyond Deployments: Jobs, DaemonSets, and more',
-    status: 'available',
-    progress: 0,
-    xpEarned: 0,
-    xpTotal: 480,
-    principles: [
-      { id: 'jobs', name: 'Jobs & CronJobs', status: 'available', xp: 70, units: 6 },
-      { id: 'daemonsets', name: 'DaemonSets', status: 'available', xp: 60, units: 5 },
-      { id: 'statefulsets', name: 'StatefulSets', status: 'available', xp: 100, units: 9 },
-      { id: 'hpa', name: 'Horizontal Pod Autoscaling', status: 'available', xp: 80, units: 7 },
-      { id: 'capstone4', name: 'Workloads Capstone', status: 'available', xp: 170, units: 1, isCapstone: true },
-    ]
-  },
-];
 
 // Icons as SVG components
 const Icons = {
@@ -290,7 +220,7 @@ const PrincipleRow = ({ principle, isLast }) => {
         </div>
 
         {/* Progress for current principle */}
-        {principle.status === 'current' && (
+        {principle.status === 'current' && principle.currentUnit && (
           <div style={{ marginTop: 6 }}>
             <div style={{
               display: 'flex',
@@ -432,7 +362,7 @@ const SectionCard = ({ section, isExpanded, onToggle }) => {
             fontSize: 12,
             color: COLORS.textMuted,
           }}>
-            <span>{completedCount}/{section.principles.length} principles</span>
+            <span>{completedCount}/{section.principles.length} topics</span>
             <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
               <span style={{ color: COLORS.xp }}>{Icons.star}</span>
               {section.xpEarned}/{section.xpTotal} XP
@@ -478,9 +408,9 @@ const SectionCard = ({ section, isExpanded, onToggle }) => {
 };
 
 // Stats header
-const StatsHeader = () => {
+const StatsHeader = ({ pathName, pathDescription, sections }) => {
   const totalXP = sections.reduce((acc, s) => acc + s.xpEarned, 0);
-  const streak = 7;
+  const streak = 7; // TODO: Get from user progress
 
   return (
     <div style={{
@@ -499,14 +429,14 @@ const StatsHeader = () => {
           fontWeight: 700,
           color: COLORS.textPrimary,
         }}>
-          Kubernetes Fundamentals
+          {pathName}
         </h1>
         <p style={{
           margin: '4px 0 0 0',
           fontSize: 14,
           color: COLORS.textSecondary,
         }}>
-          Master container orchestration from zero to production
+          {pathDescription}
         </p>
       </div>
 
@@ -552,13 +482,13 @@ const StatsHeader = () => {
 };
 
 // Overall progress bar
-const OverallProgress = () => {
+const OverallProgress = ({ sections }) => {
   const totalPrinciples = sections.reduce((acc, s) => acc + s.principles.length, 0);
   const completedPrinciples = sections.reduce(
     (acc, s) => acc + s.principles.filter(p => p.status === 'completed').length,
     0
   );
-  const progress = Math.round((completedPrinciples / totalPrinciples) * 100);
+  const progress = totalPrinciples > 0 ? Math.round((completedPrinciples / totalPrinciples) * 100) : 0;
 
   return (
     <div style={{
@@ -577,7 +507,7 @@ const OverallProgress = () => {
           Overall Progress
         </span>
         <span style={{ fontSize: 14, color: COLORS.textPrimary, fontWeight: 600 }}>
-          {completedPrinciples} of {totalPrinciples} principles
+          {completedPrinciples} of {totalPrinciples} topics
         </span>
       </div>
       <div style={{
@@ -607,7 +537,7 @@ const OverallProgress = () => {
 };
 
 // Continue button
-const ContinueButton = () => {
+const ContinueButton = ({ sections }) => {
   const currentSection = sections.find(s => s.status === 'current');
   const currentPrinciple = currentSection?.principles.find(p => p.status === 'current');
 
@@ -646,17 +576,57 @@ const ContinueButton = () => {
   );
 };
 
-// Main component
-export default function KubernetesLinearDashboard() {
-  const [expandedSections, setExpandedSections] = useState(['fundamentals']);
+// Empty state component
+const EmptyState = () => (
+  <div style={{
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '64px 24px',
+    color: COLORS.textSecondary,
+  }}>
+    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+    </svg>
+    <h3 style={{ margin: '16px 0 8px', color: COLORS.textPrimary, fontSize: 18 }}>No Learning Path Selected</h3>
+    <p style={{ margin: 0, textAlign: 'center' }}>Select a learning path to view your progress</p>
+  </div>
+);
 
-  const toggleSection = (sectionId) => {
+// Main component
+export default function LinearDashboard({
+  pathName = 'Learning Path',
+  pathDescription = 'Your learning journey',
+  sections = []
+}: LinearDashboardProps) {
+  const [expandedSections, setExpandedSections] = useState<string[]>(() => {
+    // Auto-expand the current section
+    const currentSection = sections.find(s => s.status === 'current');
+    return currentSection ? [currentSection.id] : sections.length > 0 ? [sections[0].id] : [];
+  });
+
+  const toggleSection = (sectionId: string) => {
     setExpandedSections(prev =>
       prev.includes(sectionId)
         ? prev.filter(id => id !== sectionId)
         : [...prev, sectionId]
     );
   };
+
+  if (sections.length === 0) {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        backgroundColor: COLORS.background,
+        padding: '84px 24px 24px 24px',
+      }}>
+        <div style={{ maxWidth: 680, margin: '0 auto' }}>
+          <EmptyState />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{
@@ -669,8 +639,8 @@ export default function KubernetesLinearDashboard() {
         margin: '0 auto',
         paddingBottom: 100,
       }}>
-        <StatsHeader />
-        <OverallProgress />
+        <StatsHeader pathName={pathName} pathDescription={pathDescription} sections={sections} />
+        <OverallProgress sections={sections} />
 
         {sections.map(section => (
           <SectionCard
@@ -682,7 +652,7 @@ export default function KubernetesLinearDashboard() {
         ))}
       </div>
 
-      <ContinueButton />
+      <ContinueButton sections={sections} />
     </div>
   );
 }

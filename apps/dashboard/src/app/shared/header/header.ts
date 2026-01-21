@@ -16,7 +16,7 @@ export class Header {
   private authService = inject(AuthService);
   protected themeService = inject(ThemeService);
 
-  currentUser = this.authService.getCurrentUser();
+  currentUser = this.authService.currentUser;
 
   logout(): void {
     this.authService.logout();
