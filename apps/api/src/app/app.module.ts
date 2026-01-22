@@ -46,6 +46,12 @@ import { SubConceptsModule } from '../sub-concepts/sub-concepts.module';
 import { Feedback } from '../submissions/entities/feedback.entity';
 import { Submission } from '../submissions/entities/submission.entity';
 import { SubmissionsModule } from '../submissions/submissions.module';
+import { ClassroomContent } from '../classroom/entities/classroom-content.entity';
+import { ReadingProgress } from '../classroom/entities/reading-progress.entity';
+import { ReadingPreferences } from '../classroom/entities/reading-preferences.entity';
+import { MicroQuiz } from '../classroom/entities/micro-quiz.entity';
+import { MicroQuizAttempt } from '../classroom/entities/micro-quiz-attempt.entity';
+import { ClassroomModule } from '../classroom/classroom.module';
 import { UserProgress } from '../user-progress/entities/user-progress.entity';
 import { UserProgressModule } from '../user-progress/user-progress.module';
 import { User } from '../users/entities/user.entity';
@@ -75,7 +81,7 @@ import { AppService } from './app.service';
       database: process.env.DATABASE_URL?.replace('file:', '') || 'kasita.db',
       synchronize: process.env.NODE_ENV !== 'production', // Auto-sync in dev
       logging: false, // Disable SQL logging for better performance
-      entities: [LearningPath, Source, SourcePathLink, RawContent, KnowledgeUnit, UserProgress, User, DataSource, GraphSearch, NotebookProgress, Concept, Submission, Feedback, Challenge, Project, ProjectConcept, Enrollment, Session, SessionTemplate, SubConcept, SubConceptDecoration, BuildJob, JobStep],
+      entities: [LearningPath, Source, SourcePathLink, RawContent, KnowledgeUnit, UserProgress, User, DataSource, GraphSearch, NotebookProgress, Concept, Submission, Feedback, Challenge, Project, ProjectConcept, Enrollment, Session, SessionTemplate, SubConcept, SubConceptDecoration, BuildJob, JobStep, ClassroomContent, ReadingProgress, ReadingPreferences, MicroQuiz, MicroQuizAttempt],
     }),
     LearningPathsModule,
     SourceConfigsModule,
@@ -98,6 +104,7 @@ import { AppService } from './app.service';
     GymnasiumModule,
     SubConceptsModule,
     JobsModule,
+    ClassroomModule,
   ],
   controllers: [AppController],
   providers: [AppService, ProgressGateway],

@@ -479,3 +479,52 @@ export {
   subscribeToJobEvents,
   loadProgressOnJobComplete,
 };
+
+/* Classroom Admin */
+import * as ClassroomAdminActions from './lib/classroom-admin/classroom-admin.actions';
+import * as ClassroomAdminFeature from './lib/classroom-admin/classroom-admin.feature';
+import * as ClassroomAdminEffects from './lib/classroom-admin/classroom-admin.effects';
+import { ClassroomAdminFacade } from './lib/classroom-admin/classroom-admin.facade';
+import { classroomAdminFeature } from './lib/classroom-admin/classroom-admin.feature';
+import {
+  loadOverview as loadClassroomOverview,
+  loadPathStatus as loadClassroomPathStatus,
+  loadContentList as loadClassroomContentList,
+  loadContent as loadClassroomContent,
+  loadErrors as loadClassroomErrors,
+  generateForPath,
+  generateForConcept,
+  generateForSubConcept,
+  clearPathContent,
+  updateContent as updateClassroomContent,
+  approveContent,
+  regenerateContent,
+  loadJobs as loadClassroomJobs,
+  cancelJob as cancelClassroomJob,
+  reloadOverviewAfterGenerate,
+  reloadJobsAfterGenerate,
+} from './lib/classroom-admin/classroom-admin.effects';
+
+export {
+  classroomAdminFeature,
+  ClassroomAdminFacade,
+  ClassroomAdminActions,
+  ClassroomAdminFeature,
+  ClassroomAdminEffects,
+  loadClassroomOverview,
+  loadClassroomPathStatus,
+  loadClassroomContentList,
+  loadClassroomContent,
+  loadClassroomErrors,
+  generateForPath,
+  generateForConcept,
+  generateForSubConcept,
+  clearPathContent,
+  updateClassroomContent,
+  approveContent,
+  regenerateContent,
+  loadClassroomJobs,
+  cancelClassroomJob,
+  reloadOverviewAfterGenerate,
+  reloadJobsAfterGenerate,
+};

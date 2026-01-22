@@ -72,3 +72,6 @@ export * from './lib/services/jobs/jobs.service';
 
 /* WebSocket */
 export * from './lib/services/websocket/websocket.service';
+
+/* Classroom Admin */
+export * from './lib/services/classroom-admin/classroom-admin.service';

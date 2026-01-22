@@ -68,6 +68,16 @@ export const appRoutes: Route[] = [
         path: 'gymnasium',
         loadComponent: () => import('./student/gymnasium/gymnasium').then((m) => m.Gymnasium),
       },
+      {
+        path: 'classroom',
+        loadComponent: () =>
+          import('./student/classroom/classroom-list').then((m) => m.ClassroomList),
+      },
+      {
+        path: 'classroom/:subConceptId',
+        loadComponent: () =>
+          import('./student/classroom/classroom-page').then((m) => m.ClassroomPage),
+      },
     ],
   },
 
@@ -121,6 +131,11 @@ export const appRoutes: Route[] = [
         path: 'mentor-dashboard',
         loadComponent: () =>
           import('./admin/mentor-dashboard/mentor-dashboard').then((m) => m.MentorDashboard),
+      },
+      {
+        path: 'classroom',
+        loadComponent: () =>
+          import('./admin/classroom-admin/classroom-admin').then((m) => m.ClassroomAdmin),
       },
       {
         path: 'reports/completion-assessment',

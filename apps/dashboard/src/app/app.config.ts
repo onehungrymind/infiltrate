@@ -144,6 +144,24 @@ import {
   subscribeToActiveJobOnLoad,
   subscribeToJobEvents,
   loadProgressOnJobComplete,
+  // Classroom Admin
+  classroomAdminFeature,
+  loadClassroomOverview,
+  loadClassroomPathStatus,
+  loadClassroomContentList,
+  loadClassroomContent,
+  loadClassroomErrors,
+  generateForPath,
+  generateForConcept,
+  generateForSubConcept,
+  clearPathContent,
+  updateClassroomContent,
+  approveContent,
+  regenerateContent,
+  loadClassroomJobs,
+  cancelClassroomJob,
+  reloadOverviewAfterGenerate,
+  reloadJobsAfterGenerate,
 } from '@kasita/core-state';
 import { provideEffects } from '@ngrx/effects';
 import { provideStore } from '@ngrx/store';
@@ -176,6 +194,7 @@ export const appConfig: ApplicationConfig = {
       gymnasium: gymnasiumFeature.reducer,
       subConcepts: subConceptsFeature.reducer,
       buildJobs: buildJobsFeature.reducer,
+      classroomAdmin: classroomAdminFeature.reducer,
     }),
     provideEffects({
       // Learning Paths
@@ -299,6 +318,23 @@ export const appConfig: ApplicationConfig = {
       subscribeToActiveJobOnLoad,
       subscribeToJobEvents,
       loadProgressOnJobComplete,
+      // Classroom Admin
+      loadClassroomOverview,
+      loadClassroomPathStatus,
+      loadClassroomContentList,
+      loadClassroomContent,
+      loadClassroomErrors,
+      generateForPath,
+      generateForConcept,
+      generateForSubConcept,
+      clearPathContent,
+      updateClassroomContent,
+      approveContent,
+      regenerateContent,
+      loadClassroomJobs,
+      cancelClassroomJob,
+      reloadOverviewAfterGenerate,
+      reloadJobsAfterGenerate,
     }),
     provideStoreDevtools({
       maxAge: 25,

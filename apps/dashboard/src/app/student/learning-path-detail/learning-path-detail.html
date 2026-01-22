@@ -126,10 +126,16 @@
                     <!-- Knowledge units (expanded) -->
                     @if (subConceptItem.expanded) {
                       <div class="border-t border-gray-200 p-3 space-y-2">
-                        <button (click)="studySubConcept(subConceptItem.subConcept.id)"
-                          class="mb-2 rounded-md bg-indigo-50 px-3 py-1.5 text-xs font-semibold text-indigo-600 hover:bg-indigo-100 transition-colors">
-                          Study Topic
-                        </button>
+                        <div class="flex gap-2 mb-2">
+                          <button (click)="readSubConcept(subConceptItem.subConcept.id, conceptItem.concept.name)"
+                            class="rounded-md bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-600 hover:bg-emerald-100 transition-colors">
+                            📖 Read
+                          </button>
+                          <button (click)="studySubConcept(subConceptItem.subConcept.id)"
+                            class="rounded-md bg-indigo-50 px-3 py-1.5 text-xs font-semibold text-indigo-600 hover:bg-indigo-100 transition-colors">
+                            🎯 Practice
+                          </button>
+                        </div>
 
                         @for (unitItem of subConceptItem.knowledgeUnits; track unitItem.unit.id) {
                           <div class="flex items-center justify-between p-2 rounded-md bg-gray-50">

@@ -1,0 +1,182 @@
+<div class="pipeline-container">
+  <!-- Pipeline Header -->
+  <div class="pipeline-header">
+    <div class="header-left">
+      <h1 class="page-title">Classroom Content</h1>
+      @if (selectedPathName()) {
+        <span class="selected-path-name">{{ selectedPathName() }}</span>
+      }
+    </div>
+    <div class="header-right">
+      @if (statsText()) {
+        <span class="stats-text">{{ statsText() }}</span>
+      }
+      @if (hasActiveJobs()) {
+        <span class="jobs-badge">
+          <mat-icon class="spinning">sync</mat-icon>
+          {{ (jobs()?.active?.length ?? 0) + (jobs()?.waiting?.length ?? 0) }} active
+        </span>
+      }
+      <button
+        class="run-pipeline-btn"
+        [disabled]="!canGenerateContent()"
+        (click)="generateForPath()"
+      >
+        @if (loading()) {
+          <mat-spinner diameter="18" class="btn-spinner"></mat-spinner>
+          <span>Generating...</span>
+        } @else {
+          <mat-icon>auto_awesome</mat-icon>
+          <span>Generate Content</span>
+        }
+      </button>
+    </div>
+  </div>
+
+  <!-- Columns Container -->
+  <div class="columns-container">
+    <div class="columns-inner">
+      <!-- Column 1: Learning Paths -->
+      <app-pipeline-column
+        title="Learning Paths"
+        [showAction]="false"
+        [items]="learningPathsSignal"
+        [loading]="alwaysFalse"
+        [enabled]="alwaysTrue"
+        emptyMessage="No learning paths"
+        emptyIcon="school"
+      >
+        @for (path of learningPaths(); track path.id) {
+          <div
+            class="item-card"
+            [class.selected]="selectedPath()?.id === path.id"
+            (click)="selectPath(path)"
+          >
+            <div class="item-title">{{ path.name }}</div>
+            @if (path.targetSkill) {
+              <div class="item-description">{{ path.targetSkill }}</div>
+            }
+          </div>
+        }
+      </app-pipeline-column>
+
+      <!-- Column 2: Classroom Content -->
+      <app-pipeline-column
+        title="Content"
+        actionLabel="Generate"
+        actionIcon="auto_awesome"
+        [items]="contentSignal"
+        [loading]="generatingContent"
+        [enabled]="alwaysTrue"
+        emptyMessage="Select a path to see content"
+        emptyIcon="article"
+        [showAction]="!!selectedPath()"
+        (action)="generateForPath()"
+      >
+        @for (content of allContent(); track content.id) {
+          <div
+            class="item-card"
+            [class.selected]="editingContent()?.id === content.id"
+            (click)="selectContent(content)"
+          >
+            <div class="item-title">{{ content.title || 'Untitled' }}</div>
+            @if (content.summary) {
+              <div class="item-description">{{ content.summary }}</div>
+            }
+            <div class="item-meta">
+              <span class="content-status" [class]="getStatusClass(content.status)">
+                <mat-icon>{{ getStatusIcon(content.status) }}</mat-icon>
+                {{ content.status }}
+              </span>
+              <span class="content-version">v{{ content.version }}</span>
+              @if (content.sections?.length) {
+                <span class="section-count">{{ content.sections.length }} sections</span>
+              }
+            </div>
+          </div>
+        }
+      </app-pipeline-column>
+
+      <!-- Content Editor Panel -->
+      <div class="editor-panel" [class.open]="isEditingContent()">
+        <div class="editor-panel-inner">
+          <div class="editor-header">
+            <h3>Edit Content</h3>
+            <button class="close-btn" (click)="closeContentEditor()">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+          <div class="editor-content">
+            @if (editingContent()) {
+              <div class="detail-form">
+                <div class="form-group">
+                  <label for="title" class="form-label">Title</label>
+                  <input
+                    type="text"
+                    id="title"
+                    class="form-control"
+                    [value]="editingContent()!.title"
+                    #titleInput
+                  >
+                </div>
+
+                <div class="form-group">
+                  <label for="summary" class="form-label">Summary</label>
+                  <textarea
+                    id="summary"
+                    class="form-control"
+                    rows="4"
+                    #summaryInput
+                  >{{ editingContent()!.summary }}</textarea>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Sections ({{ editingContent()!.sections?.length || 0 }})</label>
+                  @for (section of editingContent()!.sections || []; track $index) {
+                    <div class="section-preview">
+                      <strong>{{ section.heading || 'Section ' + ($index + 1) }}</strong>
+                      <p>{{ section.content?.substring(0, 200) }}...</p>
+                    </div>
+                  }
+                </div>
+
+                <div class="detail-actions">
+                  <button
+                    type="button"
+                    class="detail-button detail-button-secondary"
+                    (click)="closeContentEditor()"
+                  >
+                    Cancel
+                  </button>
+                  @if (editingContent()!.status === 'ready') {
+                    <button
+                      type="button"
+                      class="detail-button detail-button-success"
+                      (click)="approveContent(editingContent()!)"
+                    >
+                      Approve
+                    </button>
+                  }
+                  <button
+                    type="button"
+                    class="detail-button detail-button-warning"
+                    (click)="regenerateContent(editingContent()!)"
+                  >
+                    Regenerate
+                  </button>
+                  <button
+                    type="button"
+                    class="detail-button detail-button-primary"
+                    (click)="saveContent({ title: titleInput.value, summary: summaryInput.value })"
+                  >
+                    Save Changes
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

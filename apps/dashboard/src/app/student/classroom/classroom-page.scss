@@ -1,0 +1,228 @@
+/* Theme variables */
+.theme-light {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-sidebar: #f1f3f5;
+  --text-primary: #212529;
+  --text-secondary: #6c757d;
+  --text-muted: #adb5bd;
+  --border-color: #dee2e6;
+  --accent-color: #228be6;
+  --accent-hover: #1c7ed6;
+  --success-color: #40c057;
+  --warning-color: #fab005;
+  --error-color: #fa5252;
+}
+
+.theme-dark {
+  --bg-primary: #1a1b1e;
+  --bg-secondary: #25262b;
+  --bg-sidebar: #2c2e33;
+  --text-primary: #c1c2c5;
+  --text-secondary: #909296;
+  --text-muted: #5c5f66;
+  --border-color: #373a40;
+  --accent-color: #4dabf7;
+  --accent-hover: #74c0fc;
+  --success-color: #51cf66;
+  --warning-color: #fcc419;
+  --error-color: #ff6b6b;
+}
+
+.theme-sepia {
+  --bg-primary: #f4ecd8;
+  --bg-secondary: #ebe3d0;
+  --bg-sidebar: #e2dac7;
+  --text-primary: #5c4b37;
+  --text-secondary: #7a6b5a;
+  --text-muted: #a99c8c;
+  --border-color: #d4cbb8;
+  --accent-color: #8b5e3c;
+  --accent-hover: #a67043;
+  --success-color: #6b8e23;
+  --warning-color: #daa520;
+  --error-color: #cd5c5c;
+}
+
+/* Container */
+.classroom-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Header */
+.classroom-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 2rem;
+  background-color: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+
+  .back-btn {
+    background: none;
+    border: none;
+    color: var(--accent-color);
+    cursor: pointer;
+    font-size: 0.875rem;
+    padding: 0.5rem;
+
+    &:hover {
+      color: var(--accent-hover);
+    }
+  }
+
+  .header-title {
+    flex: 1;
+
+    .concept-label {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    h1 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin: 0;
+      color: var(--text-primary);
+    }
+  }
+}
+
+/* Body layout */
+.classroom-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Sidebar */
+.classroom-sidebar {
+  width: 280px;
+  min-width: 280px;
+  background-color: var(--bg-sidebar);
+  border-right: 1px solid var(--border-color);
+  padding: 1.5rem;
+  height: calc(100vh - 65px); /* Subtract header height */
+  overflow-y: auto;
+  overscroll-behavior: contain; /* Prevent scroll chaining */
+  flex-shrink: 0;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+}
+
+/* Main content */
+.classroom-main {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain; /* Prevent scroll chaining */
+  padding: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+  height: calc(100vh - 65px); /* Match sidebar height */
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+    height: auto;
+  }
+}
+
+/* States */
+.loading-state,
+.error-state,
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+  color: var(--text-secondary);
+
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--border-color);
+    border-top-color: var(--accent-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+  }
+
+  button {
+    margin-top: 1rem;
+    padding: 0.5rem 1.5rem;
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: var(--accent-hover);
+    }
+  }
+
+  .hint {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin-top: 0.5rem;
+  }
+}
+
+/* Complete section */
+.complete-section {
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+  margin-top: 2rem;
+  border-top: 1px solid var(--border-color);
+
+  .complete-btn {
+    padding: 0.75rem 2rem;
+    background-color: var(--success-color);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+  }
+}
+
+.completed-badge {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  margin-top: 2rem;
+  background-color: var(--success-color);
+  color: white;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

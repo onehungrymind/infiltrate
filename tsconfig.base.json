@@ -28,7 +28,8 @@
       "@kasita/feature-metro-maps": ["libs/feature-metro-maps/src/index.ts"],
       "@kasita/feature-skill-tree": ["libs/feature-skill-tree/src/index.ts"],
       "@kasita/feature-linear-dashboard": ["libs/feature-linear-dashboard/src/index.ts"],
-      "@kasita/feature-mind-map": ["libs/feature-mind-map/src/index.ts"]
+      "@kasita/feature-mind-map": ["libs/feature-mind-map/src/index.ts"],
+      "@kasita/feature-classroom": ["libs/feature-classroom/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

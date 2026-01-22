@@ -1,6 +1,7 @@
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Logger } from '@nestjs/common';
 import { Job } from 'bullmq';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 import { LearningMapService } from '../../learning-map/learning-map.service';
 import { JobsService } from '../jobs.service';
@@ -14,6 +15,7 @@ export class GenerateKUWorker extends WorkerHost {
   constructor(
     private readonly jobsService: JobsService,
     private readonly learningMapService: LearningMapService,
+    private readonly eventEmitter: EventEmitter2,
   ) {
     super();
   }
@@ -150,6 +152,13 @@ export class GenerateKUWorker extends WorkerHost {
         });
 
         this.logger.log(`[GenerateKU] Build job ${buildJobId} completed successfully!`);
+
+        // Emit event for classroom generation to pick up
+        this.eventEmitter.emit('build.completed', {
+          buildJobId,
+          pathId: job.pathId,
+          pathName: job.metadata?.pathName || 'Unknown Path',
+        });
       }
     }
   }

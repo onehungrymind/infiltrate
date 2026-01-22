@@ -158,6 +158,10 @@ const pipelineIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBo
   <path stroke-linecap="round" stroke-linejoin="round" d="M14.5 17.25h-2.5" />
 </svg>`;
 
+const classroomIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
+</svg>`;
+
 interface NavSection {
   title?: string;
   routes: NavRoute[];
@@ -205,6 +209,7 @@ export class Sidebar implements OnInit, OnDestroy {
       routes: [
         { label: 'Home', path: '/', icon: 'home' },
         { label: 'My Learning Paths', path: '/student/learning-paths', icon: 'learning-path' },
+        { label: 'Classroom', path: '/student/classroom', icon: 'classroom' },
         { label: 'Study', path: '/student/study', icon: 'study' },
         { label: 'Schedule', path: '/student/schedule', icon: 'schedule' },
         { label: 'Gymnasium', path: '/student/gymnasium', icon: 'gymnasium' },
@@ -234,16 +239,13 @@ export class Sidebar implements OnInit, OnDestroy {
       sections.push({
         title: 'Admin',
         routes: [
-          { label: 'Discovery Pipeline', path: '/admin/pipeline', icon: 'pipeline' },
           { label: 'Learning Paths', path: '/admin/learning-paths', icon: 'learning-path' },
-          { label: 'Concepts', path: '/admin/concepts', icon: 'concepts' },
-          { label: 'Knowledge Units', path: '/admin/knowledge-units', icon: 'knowledge-unit' },
+          { label: 'Classroom Content', path: '/admin/classroom', icon: 'classroom' },
+          { label: 'Discovery Pipeline', path: '/admin/pipeline', icon: 'pipeline' },
           { label: 'Challenges', path: '/admin/challenges', icon: 'challenges' },
           { label: 'Projects', path: '/admin/projects', icon: 'projects' },
-          { label: 'Users', path: '/admin/users', icon: 'users' },
-          { label: 'Source Configs', path: '/admin/source-configs', icon: 'source-config' },
-          { label: 'Raw Content', path: '/admin/raw-content', icon: 'raw-content' },
           { label: 'Mentor Dashboard', path: '/admin/mentor-dashboard', icon: 'mentor' },
+          { label: 'Users', path: '/admin/users', icon: 'users' },
         ],
         collapsed: collapsedState['Admin'] ?? false,
       });
@@ -361,6 +363,9 @@ export class Sidebar implements OnInit, OnDestroy {
         break;
       case 'pipeline':
         iconHtml = pipelineIcon;
+        break;
+      case 'classroom':
+        iconHtml = classroomIcon;
         break;
       default:
         iconHtml = '';

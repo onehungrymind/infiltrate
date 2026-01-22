@@ -194,6 +194,12 @@ export class LearningPathDetail implements OnInit {
     });
   }
 
+  readSubConcept(subConceptId: string, conceptName: string): void {
+    this.router.navigate(['/student/classroom', subConceptId], {
+      queryParams: { concept: conceptName }
+    });
+  }
+
   goBack(): void {
     this.router.navigate(['/student/learning-paths']);
   }

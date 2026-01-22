@@ -41,3 +41,32 @@ export interface JobProgressEvent {
     selectedSubConceptId?: string;
   };
 }
+
+// Classroom generation job data types
+export interface GenerateClassroomForPathJobData {
+  learningPathId: string;
+  learningPathName: string;
+}
+
+export interface GenerateClassroomContentJobData {
+  learningPathId: string;
+  conceptId: string;
+  conceptName: string;
+  subConceptId: string;
+  subConceptName: string;
+}
+
+export interface ClassroomProgressEvent {
+  learningPathId: string;
+  type: 'started' | 'subconcept-generating' | 'subconcept-ready' | 'subconcept-failed' | 'concept-ready' | 'path-ready' | 'failed';
+  conceptId?: string;
+  subConceptId?: string;
+  message: string;
+  progress?: {
+    completed: number;
+    total: number;
+    percentage: number;
+  };
+  error?: string;
+  timestamp: Date;
+}
