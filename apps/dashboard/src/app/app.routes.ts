@@ -190,6 +190,11 @@ export const appRoutes: Route[] = [
         loadComponent: () =>
           import('@kasita/feature-notebook').then((m) => m.NotebookComponent),
       },
+      {
+        path: 'board-game',
+        loadComponent: () =>
+          import('./lab/board-game/board-game-page').then((m) => m.BoardGamePage),
+      },
     ],
   },
 
